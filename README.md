@@ -1,5 +1,5 @@
-¹ØÓÚShuipFCMS
+å…³äºŽShuipFCMS
 -------------
->ShuipFCMSÊÇÒ»¿î»ùÓÚThinkPHP¿ò¼Ü¿ª·¢µÄÄÚÈÝ¹ÜÀíÏµÍ³£¡
->¹Ù·½ÍøÕ¾£ºhttp://www.abc3210.com
->¿ª·¢ÈËÔ±£ºË®Æ½·²
+>ShuipFCMSæ˜¯ä¸€æ¬¾åŸºäºŽThinkPHPæ¡†æž¶å¼€å‘çš„å†…å®¹ç®¡ç†ç³»ç»Ÿï¼
+>å®˜æ–¹ç½‘ç«™ï¼šhttp://www.abc3210.com
+>å¼€å‘äººå‘˜ï¼šæ°´å¹³å‡¡
