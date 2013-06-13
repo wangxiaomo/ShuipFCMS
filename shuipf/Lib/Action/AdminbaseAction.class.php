@@ -109,29 +109,24 @@ class AdminbaseAction extends AppframeAction {
 
     /**
      * 分页输出
-     * @param type $Total_Size 总记录数
-     * @param type $Page_Size 分页大小
-     * @param type $Current_Page 当前页
-     * @param type $listRows 显示页数
-     * @param type $PageParam 分页参数
-     * @param type $PageLink 分页链接
-     * @param type $Static 是否(伪)静态
-     * @return \Page 
-     * 其他说明 ：当开启静态的时候 $PageLink 传入的是数组，数组格式
-     * array(
-      "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
-      "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
-      )
+     * @staticvar array $_pageCache
+     * @param type $Total_Size 信息总数
+     * @param type $Page_Size 每页显示信息数量
+     * @param type $Current_Page 当前分页号
+     * @param type $List_Page 每次显示几个分页导航链接
+     * @param type $PageParam 接收分页号参数的标识符
+     * @param type $PageLink 分页规则 
+     *                          array(
+                                    "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
+                                    "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
+                                 )
+     * @param type $static 是否开启静态
+     * @param string $TP 模板
+     * @param array $Tp_Config 模板配置
+     * @return array|\Page
      */
-    protected function page($Total_Size = 1, $Page_Size = 0, $Current_Page = 1, $listRows = 6, $PageParam = '', $PageLink = '', $Static = FALSE) {
-        import('Page');
-        if ($Page_Size == 0) {
-            $Page_Size = C("PAGE_LISTROWS");
-        }
-        if (empty($PageParam)) {
-            $PageParam = C("VAR_PAGE");
-        }
-        $Page = new Page($Total_Size, $Page_Size, $Current_Page, $listRows, $PageParam, $PageLink, $Static);
+    protected function page($Total_Size = 1, $Page_Size = 0, $Current_Page = 0, $List_Page = 6, $PageParam = '', $PageLink = '', $static = FALSE, $TP = "", $Tp_Config = "") {
+        $Page = page($Total_Size, $Page_Size, $Current_Page, $List_Page, $PageParam, $PageLink, $static, $TP, $Tp_Config);
         $Page->SetPager('Admin', '{first}{prev}&nbsp;{liststart}{list}{listend}&nbsp;{next}{last}', array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => ""));
         return $Page;
     }

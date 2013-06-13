@@ -664,48 +664,53 @@ function parseTemplateFile($templateFile = '') {
 
 /**
  * 分页输出
- * @param type $Total_Size 总记录数
- * @param type $Page_Size 分页大小
- * @param type $Current_Page 当前页
- * @param type $listRows 显示页数
- * @param type $PageParam 分页参数
- * @param type $PageLink 分页链接
- * @param type $Static 是否(伪)静态
- * @return \Page 
- * 其他说明 ：当开启静态的时候 $PageLink 传入的是数组，数组格式
- * array(
-  "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
-  "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
-  )
+ * @staticvar array $_pageCache
+ * @param type $Total_Size 信息总数
+ * @param type $Page_Size 每页显示信息数量
+ * @param type $Current_Page 当前分页号
+ * @param type $List_Page 每次显示几个分页导航链接
+ * @param type $PageParam 接收分页号参数的标识符
+ * @param type $PageLink 分页规则 
+ *                          array(
+                                 "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
+                                 "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
+                             )
+ * @param type $static 是否开启静态
+ * @param string $TP 模板
+ * @param array $Tp_Config 模板配置
+ * @return array|\Page
  */
-function page($Total_Size = 1, $Page_Size = 0, $Current_Page = 1, $listRows = 6, $PageParam = '', $PageLink = '', $Static = FALSE, $TP = "") {
+function page($Total_Size = 1, $Page_Size = 0, $Current_Page = 0, $List_Page = 6, $PageParam = '', $PageLink = '', $static = FALSE, $TP = "", $Tp_Config = "") {
     static $_pageCache = array();
-    $cacheIterateId = md5($Total_Size . $Page_Size . $Current_Page . $listRows . $PageParam);
-    if (isset($_pageCache[$cacheIterateId]))
+    $cacheIterateId = to_guid_string(func_get_args());
+    if (isset($_pageCache[$cacheIterateId])) {
         return $_pageCache[$cacheIterateId];
-
+    }
     import('Page');
+    //分页数
     if ($Page_Size == 0) {
         $Page_Size = C("PAGE_LISTROWS");
     }
-    if (empty($PageParam)) {
+    //接收分页号参数的标识符
+    if (!$PageParam) {
         $PageParam = C("VAR_PAGE");
     }
     //生成静态，需要传递一个常量URLRULE，来生成对应规则
-    if (empty($PageLink) && $Static == true) {
-        $P = explode("~", URLRULE);
+    //不建议使用常量定义分页规则，推荐直接传统参数方式
+    if (empty($PageLink) && $static) {
+        $P = explode("~", $GLOBALS['URLRULE']?$GLOBALS['URLRULE']:URLRULE);
         $PageLink = array();
         $PageLink['index'] = $P[0];
         $PageLink['list'] = $P[1];
     }
-    if (empty($TP)) {
-        $TP = '共有{recordcount}条信息&nbsp;{pageindex}/{pagecount}&nbsp;{first}{prev}&nbsp;{liststart}{list}{listend}&nbsp;{next}{last}';
+    if(!$Tp_Config){
+        $Tp_Config = array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => "");
     }
-    $Page = new Page($Total_Size, $Page_Size, $Current_Page, $listRows, $PageParam, $PageLink, $Static);
-    $Page->SetPager('default', $TP, array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => ""));
+    $Page = new Page($Total_Size, $Page_Size, $Current_Page, $List_Page, $PageParam, $PageLink, $static);
+    $Page->SetPager('default', $TP, $Tp_Config);
+    $_pageCache[$cacheIterateId] = $Page;
 
-    $_pageCache[$cacheIterateId];
-    return $Page;
+    return $_pageCache[$cacheIterateId];
 }
 
 /**
@@ -867,20 +872,20 @@ function commcount($catid, $id) {
  */
 function title_style($style, $html = 1) {
     $str = '';
-    if ($html){
+    if ($html) {
         $str = ' style="';
     }
     $style_arr = explode(';', $style);
-    if (!empty($style_arr[0])){
+    if (!empty($style_arr[0])) {
         $str .= 'color:' . $style_arr[0] . ';';
     }
-    if (!empty($style_arr[1])){
+    if (!empty($style_arr[1])) {
         $str .= 'font-weight:' . $style_arr[1] . ';';
     }
-    if ($html){
+    if ($html) {
         $str .= '" ';
     }
-    return $style?$str:"";
+    return $style ? $str : "";
 }
 
 ?>

@@ -1,35 +1,6 @@
 <?php
 
-/*
- * 模板分页类,源于Easp的数据库分页方法，算是Easp分页的的PHP独立版
- * 支持动态和静态分页方式
- * Easp官网http://easp.lengshi.com/
- * 作者：钟晶晶
- * 日期：2010-11-3
- * 邮箱：zhongjingjing@gmail.com
- * 博客：http://blog.zaimer.com
- * Page([总记录数=1]，[分页大小=20]，[当前页=1]，[显示页数=6]，[分页参数='page'],[分页链接=当前页面],[是否静态=FALSE])
- * 动态：
- * 简单用法：
- * $page = new Page(50);
- * $page->SetPager('zjj','<div class="newpager">共有{recordcount} 个商品&nbsp;&nbsp;当前第&nbsp;{pageindex}&nbsp;页&nbsp;/&nbsp;共&nbsp;{pagecount}&nbsp;页&nbsp;分页：&nbsp;{first}{prev}&nbsp;&nbsp;{list}&nbsp;&nbsp;{next}{last}&nbsp;&nbsp;转到&nbsp;{jump}&nbsp;页</div>',array("listlong"=>"6","first"=>"首页","last"=>"尾页","prev"=>"上一页","next"=>"下一页","list"=>"第*页","jump"=>"select"));
- * echo $page->show('zjj');
- * 全参数用法：
- * $page = new Page(50,20,1,6,'page','prrr.php',false);
- * $page->SetPager('zjj','<div class="newpager">共有{recordcount} 个商品&nbsp;&nbsp;当前第&nbsp;{pageindex}&nbsp;页&nbsp;/&nbsp;共&nbsp;{pagecount}&nbsp;页&nbsp;分页：&nbsp;{first}{prev}&nbsp;&nbsp;{list}&nbsp;&nbsp;{next}{last}&nbsp;&nbsp;转到&nbsp;{jump}&nbsp;页</div>',array("listlong"=>"6","first"=>"首页","last"=>"尾页","prev"=>"上一页","next"=>"下一页","list"=>"第*页","jump"=>"select"));
- * echo $page->show('zjj');
- * 静态：
- * $page = new Page(50,20,1,6,'page','prrr{page}.html',true);
- * $page->SetPager('zjj','<div class="newpager">共有{recordcount} 个商品&nbsp;&nbsp;当前第&nbsp;{pageindex}&nbsp;页&nbsp;/&nbsp;共&nbsp;{pagecount}&nbsp;页&nbsp;分页：&nbsp;{first}{prev}&nbsp;&nbsp;{list}&nbsp;&nbsp;{next}{last}&nbsp;&nbsp;转到&nbsp;{jump}&nbsp;页</div>',array("listlong"=>"6","first"=>"首页","last"=>"尾页","prev"=>"上一页","next"=>"下一页","list"=>"第*页","jump"=>"select"));
- * echo $page->show('zjj');
-  其他说明：
-  $page = new Page($Total_Size , $Page_Size $Current_Page , $List_Page, $PageParam , $pageRule ,$Static);
-  SetPager()方法设置分页导航列表样式语法
-  $page->SetPager($name, $html, $config);
-  参数说明：
-  $name:
-  String (字符串)  分页导航样式配置名称，默认样式的名称为”default”
-
+/**
   $html:
   String (字符串)
   分页导航样式HTML模板，可以用以下代码嵌入HTML代码中代表相应的项目(均为可选)：
@@ -45,7 +16,6 @@
   “{prev}” - 上一页的链接
   “{next}” - 下一页的链接
   “{jump}” - 页面跳转文本框或下拉菜单
-
   $config:
   “” (空字符串) 或 Array (数组)
   分页导航样式配置选项。如果留空将采用默认配置，否则使用数组配置，可配置项目包括：
@@ -81,10 +51,19 @@ class Page {
     public $firstRow;
     public $listRows;
 
-    //Page([总记录数=1]，   [分页大小=20]，     [当前页=1]，         [显示页数=6]，     [分页参数='page'],      [分页链接=当前页面],[是否静态=FALSE])
-    function __construct($Total_Size = 1, $Page_Size = 20, $Current_Page = 1, $List_Page = 6, $PageParam = 'page', $pageRule = '', $Static = FALSE) {
+    /**
+     * 构造函数
+     * @param type $Total_Size 信息总数
+     * @param type $Page_Size 每页显示信息数量
+     * @param type $Current_Page 当前分页号
+     * @param type $List_Page 每次显示几个分页导航链接
+     * @param type $PageParam 接收分页号参数的标识符
+     * @param type $pageRule 分页规则
+     * @param type $static 是否开启静态
+     */
+    function __construct($Total_Size = 1, $Page_Size = 20, $Current_Page = 1, $List_Page = 6, $PageParam = 'page', $pageRule = '', $static = FALSE) {
         //默认模板配置
-        $this->Page_tpl ['default'] = array('Tpl' => '<div class="pager">{first}{prev}{liststart}{list}{listend}{next}{last} 跳转到{jump}页</div>', 'Config' => array());
+        $this->Page_tpl['default'] = array('Tpl' => '共有{recordcount}条信息&nbsp;{pageindex}/{pagecount}&nbsp;{first}{prev}&nbsp;{liststart}{list}{listend}&nbsp;{next}{last}', 'Config' => array());
         //每页显示信息数量
         $this->Page_size = (int) $Page_Size;
         //信息总数
@@ -98,10 +77,13 @@ class Page {
         //分页规则
         $this->pageRule = (empty($pageRule) ? $_SERVER ["PHP_SELF"] : $pageRule);
         //是否开启静态
-        $this->Static = $Static;
+        $this->Static = $static;
         //初始当前分页号
-        //$this->Current_page = (int) $Current_Page < 1 ? 1 : (int) $Current_Page;
-        $this->GetCurrentPage();
+        if((int)$Current_Page < 1 || empty($Current_Page)){
+            $this->GetCurrentPage();
+        }else{
+            $this->Current_page = (int) $Current_Page;
+        }
 
         $this->listRows = $Page_Size;
 
@@ -151,7 +133,7 @@ class Page {
             'last' => '&raquo;', //最后一页链接的HTML代码，默认为”»”,即显示为 »
             'more' => '...', //被省略的页码链接显示为，默认为”…”
             'disabledclass' => 'disabled', //当处于首尾页时不可用链接的CSS样式名称，默认为”disabled”
-            'jump' => 'input', //页面跳转方式，默认为”input”文本框，可设置为”select”下拉菜单
+            'jump' => '', //页面跳转方式，默认为”input”文本框，可设置为”select”下拉菜单
             'jumpplus' => '', //页面跳转文本框或下拉菜单的附加内部代码
             'jumpaction' => '', //跳转时要执行的javascript代码，用*代表页码，可用于Ajax分页
             'jumplong' => 50, //当跳转方式为下拉菜单时最多同时显示的页码数量，0为全部显示，默认为50
@@ -199,7 +181,7 @@ class Page {
             } else {
                 //此处是为了照顾静态地址生成时，第一页不显示当前分页1，启用该方法，静态地址需要$this->pageRule传入的是array，并且包含两个 index,list。index是首页规则,list是其他分页规则
                 if ($this->Static && $i == 1) {
-                    $pList .= ' <a href="' . $this->pageRule['index'] . '"> ' . str_replace('*', $i, $cfg ['list']) . '</a> ';
+                    $pList .= ' <a href="' . $this->pageRule['index'] . '"> ' . str_replace('*', $i, $cfg['list']) . '</a> ';
                 } else {
                     $pList .= ' <a href="' . str_replace('*', $i, $cfg['link']) . '"> ' . str_replace('*', $i, $cfg['list']) . '</a> ';
                 }
@@ -210,39 +192,39 @@ class Page {
             if ($cfg ['listsidelong'] < $pStart) {
                 for ($i = 1; $i <= $cfg ['listsidelong']; $i++) {
                     if ($this->Static && $i == 1) {
-                        $pListStart .= '<a href="' . $this->pageRule['index'] . '">' . str_replace('*', $i, $cfg ['list']) . '</a> ';
+                        $pListStart .= '<a href="' . $this->pageRule['index'] . '">' . str_replace('*', $i, $cfg['list']) . '</a> ';
                     } else {
-                        $pListStart .= '<a href="' . str_replace('*', $i, $cfg ['link']) . '">' . str_replace('*', $i, $cfg ['list']) . '</a> ';
+                        $pListStart .= '<a href="' . str_replace('*', $i, $cfg['link']) . '">' . str_replace('*', $i, $cfg ['list']) . '</a> ';
                     }
                 }
-                $pListStart .= ($cfg ['listsidelong'] + 1) == $pStart ? '' : $cfg ['more'] . ' ';
+                $pListStart .= ($cfg['listsidelong'] + 1) == $pStart ? '' : $cfg['more'] . ' ';
             } else {
-                if ($cfg ['listsidelong'] >= $pStart && $pStart > 1) {
+                if ($cfg['listsidelong'] >= $pStart && $pStart > 1) {
                     for ($i = 1; $i <= ($pStart - 1); $i++) {
                         if ($this->Static && $i == 1) {
-                            $pListStart .= ' <a href="' . $this->pageRule['index'] . '"> ' . str_replace('*', $i, $cfg ['list']) . '</a> ';
+                            $pListStart .= ' <a href="' . $this->pageRule['index'] . '"> ' . str_replace('*', $i, $cfg['list']) . '</a> ';
                         } else {
-                            $pListStart .= ' <a href="' . str_replace('*', $i, $cfg ['link']) . '"> ' . str_replace('*', $i, $cfg ['list']) . '</a> ';
+                            $pListStart .= ' <a href="' . str_replace('*', $i, $cfg['link']) . '"> ' . str_replace('*', $i, $cfg['list']) . '</a> ';
                         }
                     }
                 }
             }
-            if (($cfg ['pagecount'] - $cfg ['listsidelong']) > $pEnd) {
+            if (($cfg['pagecount'] - $cfg['listsidelong']) > $pEnd) {
                 $pListEnd = ' ' . $cfg ['more'] . $pListEnd;
-                for ($i = (($cfg ['pagecount'] - $cfg ['listsidelong']) + 1); $i <= $cfg ['pagecount']; $i++) {
+                for ($i = (($cfg ['pagecount'] - $cfg['listsidelong']) + 1); $i <= $cfg['pagecount']; $i++) {
                     if ($this->Static && $i == 1) {
-                        $pListEnd .= '<a href="' . $this->pageRule['index'] . '">' . str_replace('*', $i, $cfg ['list']) . '</a> ';
+                        $pListEnd .= '<a href="' . $this->pageRule['index'] . '">' . str_replace('*', $i, $cfg['list']) . '</a> ';
                     } else {
-                        $pListEnd .= ' <a href="' . str_replace('*', $i, $cfg ['link']) . '"> ' . str_replace('*', $i, $cfg ['list']) . ' </a> ';
+                        $pListEnd .= ' <a href="' . str_replace('*', $i, $cfg ['link']) . '"> ' . str_replace('*', $i, $cfg['list']) . ' </a> ';
                     }
                 }
             } else {
-                if (($cfg ['pagecount'] - $cfg ['listsidelong']) <= $pEnd && $pEnd < $cfg ['pagecount']) {
+                if (($cfg['pagecount'] - $cfg['listsidelong']) <= $pEnd && $pEnd < $cfg['pagecount']) {
                     for ($i = ($pEnd + 1); $i <= $cfg ['pagecount']; $i++) {
                         if ($this->Static && $i == 1) {
-                            $pListEnd .= '<a href="' . $this->pageRule['index'] . '">' . str_replace('*', $i, $cfg ['list']) . '</a> ';
+                            $pListEnd .= '<a href="' . $this->pageRule['index'] . '">' . str_replace('*', $i, $cfg['list']) . '</a> ';
                         } else {
-                            $pListEnd .= ' <a href="' . str_replace('*', $i, $cfg ['link']) . '"> ' . str_replace('*', $i, $cfg ['list']) . ' </a> ';
+                            $pListEnd .= ' <a href="' . str_replace('*', $i, $cfg['link']) . '"> ' . str_replace('*', $i, $cfg['list']) . ' </a> ';
                         }
                     }
                 }
@@ -250,7 +232,7 @@ class Page {
         }
         
         //当前页码大于1表示存在上一页/首页
-        if ($cfg ['pageindex'] > 1) {
+        if ($cfg['pageindex'] > 1) {
             //第一页链接的HTML代码
             if ($this->Static) {
                 $pFirst = ' <a href="' . $this->pageRule['index'] . '">' . $cfg['first'] . '</a> '; 
