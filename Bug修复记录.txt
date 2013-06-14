@@ -1,6 +1,7 @@
 [数据库调整]
 1、INSERT INTO `shuipfcms_menu` VALUES (NULL, '10', 'Admin', 'Config', 'addition', '', '1', '1', '高级配置', '', '0');
 2、ALTER TABLE  `shuipfcms_hits` ADD  `modelid` SMALLINT( 5 ) NOT NULL COMMENT  '模型ID' AFTER  `hitsid`
+3、INSERT INTO `shuipfcms_menu`  VALUES (NULL, 75, 'Comments', 'emotion', 'index', '', 1, 1, '表情管理', '', 0);
 
 版本：20130517
 [Bug修复]
