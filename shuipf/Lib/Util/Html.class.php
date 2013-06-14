@@ -187,9 +187,23 @@ class Html extends BaseAction {
             }
         }
         $this->assign("content", $output_data['content']);
-        //分页处理结束
-        $urlrules = $this->url->show($data);
-        $this->buildHtml($urlrules['path'], SITE_PATH . "/", $tempstatus);
+        //当没有启用内容页分页时候（如果内容字段有启用分页，不会执行到此步骤），判断其他支持分页的标签进行分页处理
+        $page = 1;
+        $j = 1;
+        //开始生成列表
+        do {
+            $this->assign(C("VAR_PAGE"), $page);
+            //生成路径
+            $category_url = $this->url->show($data, $page);
+            if(!defined("URLRULE")){
+                define('URLRULE', implode("~", $category_url['page']));
+            }
+            //生成
+            $this->buildHtml($category_url["path"], SITE_PATH . "/", $tempstatus);
+            $page++;
+            $j++;
+            $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : (int) $GLOBALS["Total_Pages"];
+        } while ($j <= $total_number);
         return true;
     }
 
