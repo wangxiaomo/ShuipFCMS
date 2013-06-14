@@ -195,9 +195,7 @@ class Html extends BaseAction {
             $this->assign(C("VAR_PAGE"), $page);
             //生成路径
             $category_url = $this->url->show($data, $page);
-            if(!defined("URLRULE")){
-                define('URLRULE', implode("~", $category_url['page']));
-            }
+            $GLOBALS['URLRULE'] = implode("~", $category_url['page']);
             //生成
             $this->buildHtml($category_url["path"], SITE_PATH . "/", $tempstatus);
             $page++;
