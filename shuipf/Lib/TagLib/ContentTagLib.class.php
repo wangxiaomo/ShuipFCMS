@@ -180,6 +180,7 @@ class ContentTagLib {
         $modelid = intval($data['modelid']);
         //初始化模型
         if ($modelid) {
+            $this->modelid = $modelid;
             $tablename = ucwords($this->model[$this->modelid]['tablename']);
             $this->table_name = $tablename;
             $this->db = M($this->table_name);
@@ -245,7 +246,11 @@ class ContentTagLib {
             $where['id'] = array("IN", $ids);
         }
         $array = array();
-        $result = $this->db->where($where)->getField("id,title,thumb,url,status,username,updatetime", true);
+        $_result = $this->db->where($where)->select();
+        $_result = $_result?$_result:array();
+        foreach($_result as $r){
+            $result[$r['id']] = $r;
+        }
         foreach ($ids_array as $id) {
             if ($result[$id]['title'] != '') {
                 $array[$id] = array_merge($result[$id], $hits[$id]);
