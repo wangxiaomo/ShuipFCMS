@@ -88,8 +88,8 @@ class Create_htmlAction extends AdminbaseAction {
                 $this->html->category($catid, $page);
                 $page++;
                 $j++;
-                //如果GET有total_number参数则直接使用GET的，如果没有则根据常量 PAGES获取分页总数
-                $total_number = isset($total_number) ? $total_number : PAGES;
+                //如果GET有total_number参数则直接使用GET的，如果没有则根据$GLOBALS["Total_Pages"]获取分页总数
+                $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : $GLOBALS["Total_Pages"];
             } while ($page <= $total_number && $j <= $pagesize);
 
             if ($page <= $total_number) {
@@ -507,13 +507,13 @@ class Create_htmlAction extends AdminbaseAction {
 
                 foreach ($data as $r) {
                     //转向地址信息无需生成
-                    if ($r['islink']){
+                    if ($r['islink']) {
                         continue;
                     }
                     $r2 = $r[$tablename];
                     unset($r[$tablename]);
                     $r = array_merge($r, $r2);
-                    $this->html->show($r,1,'edit');
+                    $this->html->show($r, 1, 'edit');
                 }
 
                 if ($pages > $page) {
