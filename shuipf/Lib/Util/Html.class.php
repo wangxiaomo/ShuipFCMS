@@ -213,6 +213,21 @@ class Html extends BaseAction {
         if (!$category['ishtml']) {
             return true;
         }
+        //生成静态分页数
+        $repagenum = (int) $setting['repagenum'];
+        if ($repagenum && !$GLOBALS['dynamicRules']) {
+            //设置动态访问规则给page分页使用
+            $GLOBALS["Total_Pages"] = $GLOBALS['Rule_Static_Size'] = $repagenum;
+            $GLOBALS['dynamicRules'] = CONFIG_SITEURL_MODEL."index.php?a=lists&catid={$catid}&page=*";
+        }
+        if ($repagenum && $page > $repagenum) {
+            try {
+                unset($GLOBALS['dynamicRules']);
+            } catch (Exception $exc) {
+                
+            }
+            return true;
+        }
         //分页
         $page = intval($page);
         //父目录
@@ -265,7 +280,7 @@ class Html extends BaseAction {
             $page++;
             $j++;
             //如果GET有total_number参数则直接使用GET的，如果没有则根据$GLOBALS["Total_Pages"]获取分页总数
-            $total_number = isset($_GET['total_number']) ? (int)$_GET['total_number'] : $GLOBALS["Total_Pages"];
+            $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : $GLOBALS["Total_Pages"];
         } while ($j <= $total_number);
 
         return true;
@@ -315,7 +330,7 @@ class Html extends BaseAction {
                 $this->buildHtml($filename, SITE_PATH . "/", $template);
             }
             //如果GET有total_number参数则直接使用GET的，如果没有则根据$GLOBALS["Total_Pages"]获取分页总数
-            $total_number = isset($_GET['total_number']) ? (int)$_GET['total_number'] : $GLOBALS["Total_Pages"];
+            $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : $GLOBALS["Total_Pages"];
             $page++;
             $j++;
         } while ($j <= $total_number);
@@ -334,7 +349,7 @@ class Html extends BaseAction {
             $page++;
             $j++;
             //如果GET有total_number参数则直接使用GET的，如果没有则根据$GLOBALS["Total_Pages"]获取分页总数
-            $total_number = isset($_GET['total_number']) ? (int)$_GET['total_number'] : $GLOBALS["Total_Pages"];
+            $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : $GLOBALS["Total_Pages"];
         } while ($j <= $total_number && $j < 7);
         //检查当前栏目的父栏目，如果存在则生成
         $arrparentid = $this->categorys[$catid]['arrparentid'];

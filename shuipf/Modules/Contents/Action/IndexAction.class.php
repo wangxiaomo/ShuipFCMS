@@ -14,9 +14,7 @@ class IndexAction extends BaseAction {
         $this->url = new Url();
     }
 
-    /**
-     * 首页 
-     */
+    //首页
     public function index() {
         $page = isset($_GET[C("VAR_PAGE")]) ? $_GET[C("VAR_PAGE")] : 1;
         $page = max($page, 1);
@@ -49,9 +47,7 @@ class IndexAction extends BaseAction {
         $this->display($template);
     }
 
-    /**
-     * 栏目列表 
-     */
+    //栏目列表 
     public function lists() {
         //栏目ID
         $catid = intval($_GET['catid']);
@@ -68,6 +64,13 @@ class IndexAction extends BaseAction {
         }
         //栏目扩展配置信息反序列化
         $setting = unserialize($category['setting']);
+        //生成静态分页数
+        $repagenum = (int) $setting['repagenum'];
+        if ($repagenum && !$GLOBALS['dynamicRules']) {
+            //设置动态访问规则给page分页使用
+            $GLOBALS['Rule_Static_Size'] = $repagenum;
+            $GLOBALS['dynamicRules'] = CONFIG_SITEURL_MODEL."index.php?a=lists&catid={$catid}&page=*";
+        }
         //父目录
         $parentdir = $category['parentdir'];
         //目录

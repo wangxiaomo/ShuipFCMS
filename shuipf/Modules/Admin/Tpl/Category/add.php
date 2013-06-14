@@ -30,6 +30,7 @@
       <li class="current"><a href="javascript:;;">基本属性</a></li>
       <li class=""><a href="javascript:;;">选项设置</a></li>
       <li class=""><a href="javascript:;;">模板设置</a></li>
+      <li class=""><a href="javascript:;;">生成设置</a></li>
       <li class=""><a href="javascript:;;">权限设置</a></li>
     </ul>
   </div>
@@ -75,51 +76,6 @@
             <tr>
               <th>栏目简介：</th>
               <td><textarea name="info[description]" maxlength="255" style="width:300px;height:60px;"></textarea></td>
-            </tr>
-            <tr>
-              <th width="200">栏目生成Html：</th>
-              <td><ul class="switch_list cc ">
-                  <li>
-                    <label>
-                      <input type="radio" onClick="$('#category_php_ruleid').css('display','none');$('#category_html_ruleid').css('display','');$('#tr_domain').css('display','');" value="1" name="setting[ishtml]">
-                      <span>栏目生成静态</span></label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="radio" onClick="$('#category_php_ruleid').css('display','');$('#category_html_ruleid').css('display','none');$('#tr_domain').css('display','none');" checked="" value="0" name="setting[ishtml]">
-                      <span>栏目不生成静态</span></label>
-                  </li>
-                </ul></td>
-            </tr>
-            <tr>
-              <th>内容页生成Html：</th>
-              <td><ul class="switch_list cc ">
-                  <li>
-                    <label>
-                      <input type="radio" onClick="$('#show_php_ruleid').css('display','none');$('#show_html_ruleid').css('display','')" value="1" name="setting[content_ishtml]">
-                      <span>内容页生成静态</span></label>
-                  </li>
-                  <li>
-                    <label>
-                      <input type="radio" onClick="$('#show_php_ruleid').css('display','');$('#show_html_ruleid').css('display','none')" checked="" value="0" name="setting[content_ishtml]">
-                      <span>内容页不生成静态</span></label>
-                  </li>
-                </ul></td>
-            </tr>
-            <tr>
-              <th>栏目页URL规则：</th>
-              <td><div style="display:" id="category_php_ruleid"> {$category_php_ruleid} </div>
-                <div style="display:none" id="category_html_ruleid"> {$category_html_ruleid} </div></td>
-            </tr>
-            <tr>
-              <th>内容页URL规则：</th>
-              <td><div style="display:" id="show_php_ruleid"> {$show_php_ruleid} </div>
-                <div style="display:none" id="show_html_ruleid"> {$show_html_ruleid} </div></td>
-            </tr>
-            <tr style="display:none" id="tr_domain">
-              <th>绑定域名：</th>
-              <td><input type="text" value="" size="50" class="input" id="url" name="info[url]">
-                <span class="gray"> 域名可为空，格式应该为http://www.abc3210.com/</span></td>
             </tr>
           </table>
         </div>
@@ -264,6 +220,62 @@
         </div>
       </div>
       <div style="display:none">
+        <div class="h_a">生成设置</div>
+        <div class="table_full">
+          <table width="100%" class="table_form ">
+            <tr>
+              <th width="200">栏目生成Html：</th>
+              <td><ul class="switch_list cc ">
+                  <li>
+                    <label>
+                      <input type="radio" onClick="$('#category_php_ruleid').css('display','none');$('#category_html_ruleid').css('display','');$('#tr_domain').css('display','');$('.repagenum').css('display','');" value="1" name="setting[ishtml]">
+                      <span>栏目生成静态</span></label>
+                  </li>
+                  <li>
+                    <label>
+                      <input type="radio" onClick="$('#category_php_ruleid').css('display','');$('#category_html_ruleid').css('display','none');$('#tr_domain').css('display','none');$('.repagenum').css('display','none');" checked="" value="0" name="setting[ishtml]">
+                      <span>栏目不生成静态</span></label>
+                  </li>
+                </ul></td>
+            </tr>
+            <tr style="display:none" class="repagenum">
+              <th width="200">栏目生成静态页数：</th>
+              <td><input type="text" name="setting[repagenum]" id="listorder" class="input" value="{$setting.repagenum}"> <span class="gray"> 页(超过分页采用动态链接，0为不限)</span></td>
+            </tr>
+            <tr>
+              <th>内容页生成Html：</th>
+              <td><ul class="switch_list cc ">
+                  <li>
+                    <label>
+                      <input type="radio" onClick="$('#show_php_ruleid').css('display','none');$('#show_html_ruleid').css('display','')" value="1" name="setting[content_ishtml]">
+                      <span>内容页生成静态</span></label>
+                  </li>
+                  <li>
+                    <label>
+                      <input type="radio" onClick="$('#show_php_ruleid').css('display','');$('#show_html_ruleid').css('display','none')" checked="" value="0" name="setting[content_ishtml]">
+                      <span>内容页不生成静态</span></label>
+                  </li>
+                </ul></td>
+            </tr>
+            <tr>
+              <th>栏目页URL规则：</th>
+              <td><div style="display:" id="category_php_ruleid"> {$category_php_ruleid} </div>
+                <div style="display:none" id="category_html_ruleid"> {$category_html_ruleid} </div></td>
+            </tr>
+            <tr>
+              <th>内容页URL规则：</th>
+              <td><div style="display:" id="show_php_ruleid"> {$show_php_ruleid} </div>
+                <div style="display:none" id="show_html_ruleid"> {$show_html_ruleid} </div></td>
+            </tr>
+            <tr style="display:none" id="tr_domain">
+              <th>绑定域名：</th>
+              <td><input type="text" value="" size="50" class="input" id="url" name="info[url]">
+                <span class="gray"> 域名可为空，格式应该为http://www.abc3210.com/</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div style="display:none">
         <div class="h_a">权限设置</div>
         <div class="table_full">
           <table width="100%" >
@@ -307,7 +319,7 @@
         </div>
       </div>
     </div>
-    <div class="btn_wrap">
+    <div class="">
       <div class="btn_wrap_pd">
         <button class="btn btn_submit mr10 " type="submit">提交</button>
       </div>

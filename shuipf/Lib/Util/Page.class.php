@@ -35,7 +35,6 @@
   “jumpaction” - 跳转时要执行的javascript代码，用*代表页码，可用于Ajax分页
   “jumplong” - 当跳转方式为下拉菜单时最多同时显示的页码数量，0为全部显示，默认为50
  */
-
 class Page {
 
     public $Page_size; //每页显示信息数量
@@ -45,8 +44,9 @@ class Page {
     public $Total_Pages; //总页数
     public $Page_tpl = array(); // 分页模板
     public $PageParam; //接收分页号参数的标识符
-    public $pageRule;//分页规则
-    public $Static;
+    public $pageRule; //分页规则
+    public $Static; //是否生成静态
+    public $Static_Size = 0; //生成静态页面数量，0为不限制
     // 起始行数
     public $firstRow;
     public $listRows;
@@ -60,8 +60,9 @@ class Page {
      * @param type $PageParam 接收分页号参数的标识符
      * @param type $pageRule 分页规则
      * @param type $static 是否开启静态
+     * @param type $static_size 生成静态页面数量，0为不限制
      */
-    function __construct($Total_Size = 1, $Page_Size = 20, $Current_Page = 1, $List_Page = 6, $PageParam = 'page', $pageRule = '', $static = FALSE) {
+    function __construct($Total_Size = 1, $Page_Size = 20, $Current_Page = 1, $List_Page = 6, $PageParam = 'page', $pageRule = '', $static = FALSE, $static_size = 0) {
         //默认模板配置
         $this->Page_tpl['default'] = array('Tpl' => '共有{recordcount}条信息&nbsp;{pageindex}/{pagecount}&nbsp;{first}{prev}&nbsp;{liststart}{list}{listend}&nbsp;{next}{last}', 'Config' => array());
         //每页显示信息数量
@@ -78,10 +79,11 @@ class Page {
         $this->pageRule = (empty($pageRule) ? $_SERVER ["PHP_SELF"] : $pageRule);
         //是否开启静态
         $this->Static = $static;
+        $this->Static_Size = $GLOBALS['Rule_Static_Size'] ? $GLOBALS['Rule_Static_Size'] : $static_size;
         //初始当前分页号
-        if((int)$Current_Page < 1 || empty($Current_Page)){
+        if ((int) $Current_Page < 1 || empty($Current_Page)) {
             $this->GetCurrentPage();
-        }else{
+        } else {
             $this->Current_page = (int) $Current_Page;
         }
 
@@ -107,6 +109,34 @@ class Page {
     }
 
     /**
+     * 组合地址
+     * @param type $url
+     * @return type
+     */
+    private function urlParameters($url = array()) {
+        foreach ($url as $key => $val) {
+            if ($key != $this->PageParam && $key != "_URL_") {
+                $arg[$key] = $val;
+            }
+        }
+        //分页符号
+        $arg[$this->PageParam] = '*';
+
+        if ($this->Static) {
+            //当启用静态地址，$this->pageRule传入的是array，并且包含两个 index,list
+            if (is_array($this->pageRule)) {
+                return str_replace('{$page}', '*', $this->pageRule['list']);
+            } else {
+                //兼容性代码
+                return str_replace(array('{page}', '{$page}'), '*', $this->pageRule);
+            }
+        } else {
+            //动态地址是根据当前页面模块方法使用U方法生成的
+            return str_replace("%2A", "*", U("" . GROUP_NAME . "/" . MODULE_NAME . "/" . ACTION_NAME, $arg));
+        }
+    }
+
+    /**
      * 处理分页
      * @param type $Page_tpl 分页模板和配置
      * @return string
@@ -126,7 +156,7 @@ class Page {
             'listsidelong' => 2, //分页链接列表首尾导航页码数量，默认为2，html 参数中有”{liststart}”或”{listend}”时才有效
             'list' => '*', //分页链接列表
             'currentclass' => 'current', //当前页码的CSS样式名称，默认为”current”
-            'link' => $this->UrlParameters($_GET), //自定义页码链接，用*代表页码，用于静态页面分页或Ajax分页
+            'link' => $this->urlParameters($_GET), //自定义页码链接，用*代表页码，用于静态页面分页或Ajax分页
             'first' => '&laquo;', //第一页链接的HTML代码，默认为 ”«”，即显示为 «
             'prev' => '&#8249;', //上一页链接的HTML代码，默认为”‹”,即显示为 ‹
             'next' => '&#8250;', //下一页链接的HTML代码，默认为”›”,即显示为 ›
@@ -138,7 +168,7 @@ class Page {
             'jumpaction' => '', //跳转时要执行的javascript代码，用*代表页码，可用于Ajax分页
             'jumplong' => 50, //当跳转方式为下拉菜单时最多同时显示的页码数量，0为全部显示，默认为50
         );
-        
+
         //进行配置覆盖
         if (!empty($Page_tpl['Config'])) {
             foreach ($Page_tpl['Config'] as $key => $val) {
@@ -172,8 +202,14 @@ class Page {
         }
         //分页导航html代码
         $pList = '';
+        $dynamicRules = 0;
         //分页导航处理，* 表示循环到第几页的页码
         for ($i = $pStart; $i <= $pEnd; $i++) {
+            //如果启用了静态地址生成前几页，剩余的使用另外一直规则时
+            if ($this->Static_Size && $i > $this->Static_Size && !$dynamicRules) {
+                $cfg['link'] = $GLOBALS['dynamicRules'] ? $GLOBALS['dynamicRules'] : $this->urlParameters($_GET);
+                $dynamicRules = 1;
+            }
             //如果当前页码等于$i，表示当前页，进行高亮显示
             //此处不分静态动态页面
             if ($i == $cfg ['pageindex']) {
@@ -230,12 +266,12 @@ class Page {
                 }
             }
         }
-        
+
         //当前页码大于1表示存在上一页/首页
         if ($cfg['pageindex'] > 1) {
             //第一页链接的HTML代码
             if ($this->Static) {
-                $pFirst = ' <a href="' . $this->pageRule['index'] . '">' . $cfg['first'] . '</a> '; 
+                $pFirst = ' <a href="' . $this->pageRule['index'] . '">' . $cfg['first'] . '</a> ';
             } else {
                 $pFirst = ' <a href="' . str_replace('*', 1, $cfg['link']) . '">' . $cfg['first'] . '</a> ';
             }
@@ -244,10 +280,10 @@ class Page {
             if ($this->Static && ($cfg['pageindex'] - 1) == 1) {
                 $pPrev = ' <a href="' . $this->pageRule['index'] . '">' . $cfg ['prev'] . '</a> '; //显示首页
             } else {
-                $pPrev = ' <a href="' . str_replace('*', $cfg['pageindex'] - 1, $cfg['link']) . '">' . $cfg['prev'] . '</a> ';//显示上一页
+                $pPrev = ' <a href="' . str_replace('*', $cfg['pageindex'] - 1, $cfg['link']) . '">' . $cfg['prev'] . '</a> '; //显示上一页
             }
         }
-        
+
         //下一页，尾页
         if ($cfg ['pageindex'] < $cfg ['pagecount']) {
             //最后一页
@@ -294,7 +330,7 @@ class Page {
                 $pJump .= '</select>';
                 break;
         }
-        
+
         $patterns = array('/{recordcount}/', '/{pagecount}/', '/{pageindex}/', '/{pagesize}/', '/{list}/', '/{liststart}/', '/{listend}/', '/{first}/', '/{prev}/', '/{next}/', '/{last}/', '/{jump}/');
         $replace = array($cfg['recordcount'], $cfg['pagecount'], $cfg['pageindex'], $cfg['pagesize'], $pList, $pListStart, $pListEnd, $pFirst, $pPrev, $pNext, $pLast, $pJump);
         $tmpStr = chr(13) . chr(10) . preg_replace($patterns, $replace, $tmpStr) . chr(13) . chr(10);
@@ -328,36 +364,6 @@ class Page {
 
     public function __get($Param) {
         return $this->$Param;
-    }
-
-    /**
-     * 组合地址
-     * @param type $url
-     * @return type
-     */
-    private function UrlParameters($url = array()) {
-        foreach ($url as $key => $val) {
-            if ($key != $this->PageParam && $key != "_URL_"){
-                $arg [$key] = $val;
-            }
-        }
-        $arg[$this->PageParam] = '*';
-        if ($this->Static) {
-            //当启用静态地址，$this->pageRule传入的是array，并且包含两个 index,list
-            /*
-             * array(
-             *    "index"=>"http://www.a.com/192.html",//这种是表示当前是首页，无需加分页1
-             *    "list"=>"http://www.a.com/192-{page}.html",//这种表示分页非首页时启用
-             * )
-             */
-            if (is_array($this->pageRule)) {
-                return str_replace('{$page}', '*', $this->pageRule['list']);
-            } else {
-                return str_replace('{page}', '*', $this->pageRule);
-            }
-        } else {
-            return str_replace("%2A", "*", U("" . GROUP_NAME . "/" . MODULE_NAME . "/" . ACTION_NAME, $arg));
-        }
     }
 
 }

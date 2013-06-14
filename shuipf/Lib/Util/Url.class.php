@@ -275,7 +275,7 @@ class Url {
      *   )
      *  )
      */
-    public function category_url($catid, $page = 1) {
+    public function category_url($catid, $page = 1,$category_ruleid = false) {
         //栏目数据
         $category = $this->categorys[$catid];
         //外部链接直接返回外部地址
@@ -286,7 +286,7 @@ class Url {
         //栏目扩展配置信息反序列化
         $setting = unserialize($category['setting']);
         //栏目URL生成规则ID
-        $category_ruleid = $setting['category_ruleid'];
+        $category_ruleid = $category_ruleid?$category_ruleid:(int)$setting['category_ruleid'];
         //取得规则
         $urlrule = $this->urlrules[$category_ruleid];
 

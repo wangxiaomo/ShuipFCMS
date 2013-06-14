@@ -226,17 +226,17 @@
               <td><ul class="switch_list cc ">
                   <li>
                     <label>
-                      <input type="radio" onClick="$('#category_php_ruleid').css('display','none');$('#category_html_ruleid').css('display','');$('#tr_domain').css('display','');" value="1" name="setting[ishtml]" <if condition="$setting['ishtml'] eq '1' ">checked</if>>
+                      <input type="radio" onClick="$('#category_php_ruleid').css('display','none');$('#category_html_ruleid').css('display','');$('#tr_domain').css('display','');$('.repagenum').css('display','');" value="1" name="setting[ishtml]" <if condition="$setting['ishtml'] eq '1' ">checked</if>>
                       <span>栏目生成静态</span></label>
                   </li>
                   <li>
                     <label>
-                      <input type="radio" onClick="$('#category_php_ruleid').css('display','');$('#category_html_ruleid').css('display','none');$('#tr_domain').css('display','none');" value="0" name="setting[ishtml]" <if condition="$setting['ishtml'] eq '0' ">checked</if>>
+                      <input type="radio" onClick="$('#category_php_ruleid').css('display','');$('#category_html_ruleid').css('display','none');$('#tr_domain').css('display','none');$('.repagenum').css('display','none');" value="0" name="setting[ishtml]" <if condition="$setting['ishtml'] eq '0' ">checked</if>>
                       <span>栏目不生成静态</span></label>
                   </li>
                 </ul></td>
             </tr>
-            <tr class="repagenum">
+            <tr style="<if condition="$setting['ishtml'] eq '0' ">display:none</if>"  class="repagenum">
               <th width="200">栏目生成静态页数：</th>
               <td><input type="text" name="setting[repagenum]" id="listorder" class="input" value="{$setting.repagenum}"> <span class="gray"> 页(超过分页采用动态链接，0为不限)</span></td>
             </tr>
