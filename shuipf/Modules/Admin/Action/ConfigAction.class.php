@@ -99,6 +99,8 @@ class ConfigAction extends AdminbaseAction {
             $_POST['DEFAULT_AJAX_RETURN'] = $_POST['DEFAULT_AJAX_RETURN']?$_POST['DEFAULT_AJAX_RETURN']:"JSON";
             $_POST['SESSION_OPTIONS'] = $_POST['SESSION_OPTIONS']?$_POST['SESSION_OPTIONS']:array();
             $_POST['URL_PATHINFO_DEPR'] = $_POST['URL_PATHINFO_DEPR']?$_POST['URL_PATHINFO_DEPR']:"/";
+            //URL区分大小写设置
+            $_POST['URL_CASE_INSENSITIVE'] = (int)$_POST['URL_CASE_INSENSITIVE']?true:false;
             try {
                 $filename = SITE_PATH . '/shuipf/Conf/addition.php';
                 file_exists($filename) or touch($filename);

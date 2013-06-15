@@ -55,7 +55,7 @@
       <div class="h_a">URL设置</div>
       <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
         <tr>
-          <th width="140">URL区分大小写:</th>
+          <th width="140">URL不区分大小写:</th>
           <td><input name="URL_CASE_INSENSITIVE" type="radio" value="1" <if condition=" $addition['URL_CASE_INSENSITIVE'] ">checked</if>> 开启 <input name="URL_CASE_INSENSITIVE" type="radio" value="0" <if condition=" !$addition['URL_CASE_INSENSITIVE'] ">checked</if>> 关闭</td>
         </tr>
         <tr>
