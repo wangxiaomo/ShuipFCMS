@@ -26,6 +26,8 @@ define('SITEDIR', _dir_path(substr(dirname(__FILE__), 0, -8)));
 $version = include(SITEDIR . "/shuipf/Conf/version.php");
 define("SHUIPF_VERSION", $version['SHUIPF_VERSION']);
 include(SITEDIR . "/shuipf/Common/common.php");
+include(SITEDIR . "/shuipf/Lib/Util/Dir.class.php");
+$Dir = new Dir(SITEDIR);
 //数据库
 $sqlFile = 'shuipfblog.sql';
 $configFile = 'config.php';
@@ -107,6 +109,7 @@ switch ($step) {
             'd/file',
             'install',
             'shuipf/Conf',
+            'shuipf/Conf/addition.php',
             'shuipf/Template',
             'api/uc_client/data',
         );
@@ -264,20 +267,6 @@ switch ($step) {
         exit();
 }
 
-function testwrite($d) {
-    $tfile = "_test.txt";
-    $fp = @fopen($d . "/" . $tfile, "w");
-    if (!$fp) {
-        return false;
-    }
-    fclose($fp);
-    $rs = @unlink($d . "/" . $tfile);
-    if ($rs) {
-        return true;
-    }
-    return false;
-}
-
 function sql_execute($sql, $tablepre) {
     $sqls = sql_split($sql, $tablepre);
     if (is_array($sqls)) {
@@ -347,22 +336,21 @@ function get_client_ip() {
     return $ip;
 }
 
-function dir_create($path, $mode = 0777) {
-    if (is_dir($path))
-        return TRUE;
-    $ftp_enable = 0;
-    $path = dir_path($path);
-    $temp = explode('/', $path);
-    $cur_dir = '';
-    $max = count($temp) - 1;
-    for ($i = 0; $i < $max; $i++) {
-        $cur_dir .= $temp[$i] . '/';
-        if (@is_dir($cur_dir))
-            continue;
-        @mkdir($cur_dir, 0777, true);
-        @chmod($cur_dir, 0777);
+//检查目录文件权限
+function dir_create($path) {
+    global $Dir;
+    if (!$path) {
+        return false;
     }
-    return is_dir($path);
+    if (is_dir($path)) {
+        $Dir->listFile($path, '/');
+        $dir = $Dir->toArray();
+        $dir = $dir[0];
+    } else {
+        $dir['isReadable'] = is_readable($path);
+        $dir['isWritable'] = is_writable($path);
+    }
+    return $dir;
 }
 
 function dir_path($path) {

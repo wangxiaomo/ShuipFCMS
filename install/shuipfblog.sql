@@ -316,6 +316,19 @@ CREATE TABLE `shuipfcms_comments_setting` (
 INSERT INTO `shuipfcms_comments_setting` VALUES ('1', '0', '0', '1', '1', 'date DESC', '400', '1', '60');
 
 -- ----------------------------
+-- Table structure for `shuipfcms_comments_emotion`
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_comments_emotion`;
+CREATE TABLE `shuipfcms_comments_emotion` (
+  `emotion_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '表情ID',
+  `emotion_name` varchar(20) NOT NULL DEFAULT '' COMMENT '表情名称',
+  `emotion_icon` varchar(50) NOT NULL DEFAULT '' COMMENT '表情图标',
+  `vieworder` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `isused` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否使用',
+  PRIMARY KEY (`emotion_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='表情数据表' AUTO_INCREMENT=1 ;
+
+-- ----------------------------
 -- Table structure for `shuipfcms_config`
 -- ----------------------------
 DROP TABLE IF EXISTS `shuipfcms_config`;
@@ -730,6 +743,7 @@ INSERT INTO `shuipfcms_menu` VALUES ('214', '213', 'Admin', 'Censor', 'add', '',
 INSERT INTO `shuipfcms_menu` VALUES ('215', '213', 'Admin', 'Censor', 'classify', '', '1', '1', '分类管理', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('230', '86', 'Member', 'Member', 'connect', '', '1', '1', '登陆授权管理', '登陆授权管理', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('231', '10', 'Admin', 'Config', 'addition', '', '1', '1', '高级配置', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('232', '75', 'Comments', 'emotion', 'index', '', '1', '1', '表情管理', '', '0');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_model`

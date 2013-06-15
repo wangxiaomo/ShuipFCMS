@@ -64,14 +64,14 @@
 <?php
 foreach($folder as $dir){
      $Testdir = SITEDIR.$dir;
-     dir_create($Testdir);
-	 if(TestWrite($Testdir)){
+     $dirInfo = dir_create($Testdir);
+	 if($dirInfo['isWritable']){
 	     $w = '<span class="correct_span">&radic;</span>可写 ';
 	 }else{
 	     $w = '<span class="correct_span error_span">&radic;</span>不可写 ';
 		 $err++;
 	 }
-	 if(is_readable($Testdir)){
+	 if($dirInfo['isReadable']){
 	     $r = '<span class="correct_span">&radic;</span>可读' ;
 	 }else{
 	     $r = '<span class="correct_span error_span">&radic;</span>不可读';
