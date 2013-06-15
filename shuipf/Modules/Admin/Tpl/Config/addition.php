@@ -26,10 +26,6 @@
       <div class="h_a">Session配置</div>
       <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
         <tr>
-          <th width="140">是否自动开启Session:</th>
-          <td><input name="SESSION_AUTO_START" type="radio" value="1" <if condition=" $addition['SESSION_AUTO_START'] ">checked</if>> 开启 <input name="SESSION_AUTO_START" type="radio" value="0" <if condition=" !$addition['SESSION_AUTO_START'] ">checked</if>> 关闭</td>
-        </tr>
-        <tr>
           <th width="140">Session前缀:</th>
           <td><input type="text" class="input"  name="SESSION_PREFIX" value="{$addition.SESSION_PREFIX}" size="40">
             <span class="gray">一般为空即可</span></td>

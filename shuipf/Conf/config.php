@@ -37,6 +37,7 @@ return array(
     'DB_SQL_BUILD_QUEUE' => 'file', // SQL缓存队列的缓存方式 支持 file xcache和apc
     'DB_SQL_BUILD_LENGTH' => 20, // SQL缓存的队列长度
     
+    'SESSION_AUTO_START' => true,
     'SESSION_TYPE' => '', // session hander类型 默认无需设置 除非扩展了session hander驱动
     'VAR_SESSION_ID' => 'session_id', //sessionID的提交变量
     
