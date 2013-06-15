@@ -8,144 +8,78 @@
 class IndexAction extends BaseAction {
 
     public $setting;
+    protected $db;
 
     function _initialize() {
         parent::_initialize();
         $this->setting = F("Comments_setting");
-        if(!$this->setting){
+        if (!$this->setting) {
             $this->setting = D("Comments")->comments_cache();
         }
-        import('Comment');
+        $this->db = D("Comments");
     }
 
+    //显示某篇信息的评论页面
     public function index() {
-        $Comment = new Comment();
         //所属文章id
-        $comment_id = $this->_get("commentid");
+        $comment_id = I('get.commentid', '', '');
         //评论
-        $id = $this->_get("id");
-        if (!empty($comment_id)) {
-            $status = $Comment->show($comment_id);
-        } else if ($id > 0) {
-            
-        } else {
-            $this->error("缺少参数！");
+        $id = I('get.id', 0, 'intval');
+        if (!$comment_id && !$id) {
+            $this->error('缺少参数！');
         }
     }
 
-    /**
-     * 添加评论 
-     */
+    //添加评论 
     public function add() {
         if (IS_POST) {
-            foreach ($_POST as $k => $v) {
-                $_POST[$k] = Input::hsc($v);
-            }
-            $catid = (int) $_POST['comment_catid'];
-            $id = (int) $_POST['comment_id'];
-            if ($this->comoff($catid, $id) == false) {
+            $catid = I('post.comment_catid', 0, 'intval');
+            $id = I('post.comment_id', 0, 'intval');
+            if (false === $this->db->noAllowComments($catid, $id)) {
                 $this->error("该信息不允许评论！");
             }
-            $co = $this->cookie("c-$catid-" . $id);
-            if(!empty($co)){
-                if (IS_AJAX) {
-                        $this->ajaxReturn(array(
-                            "error" => "expire"
-                                ), "评论发布间隔为".$this->setting['expire']."秒！", false);
-                    } else {
-                        $this->error("评论发布间隔为".$this->setting['expire']."秒！");
-                    }
+            $post = I('post.');
+            $post['comment_id'] = "c-{$catid}-{$id}";
+
+            //检查评论间隔时间
+            $co = $this->cookie($post['comment_id']);
+            if ($co) {
+                $this->error("评论发布间隔为" . $this->setting['expire'] . "秒！");
             }
 
             //判断游客是否有发表权限
             if ((int) $this->setting['guest'] < 1) {
                 if (!isset(AppframeAction::$Cache['uid']) && empty(AppframeAction::$Cache['uid'])) {
-                    if (IS_AJAX) {
-                        $this->ajaxReturn(array(
-                            "error" => "guest"
-                                ), "游客不允许参与评论！", false);
-                    } else {
-                        $this->error("游客不允许参与评论！");
-                    }
+                    $this->error("游客不允许参与评论！");
                 }
             }
 
             //验证码判断开始
             if ($this->setting['code'] == 1) {
-                if (empty($_POST['verify']) || !$this->verify($_POST['verify'])) {
-                    if (IS_AJAX) {
-                        $this->ajaxReturn(array(
-                            "error" => "verify"
-                                ), "验证码错误，请重新输入！", false);
-                    } else {
-                        $this->error("验证码错误，请重新输入！");
-                    }
+                $verify = I('post.verify');
+                if (empty($verify) || !$this->verify($verify)) {
+                    $this->error("验证码错误，请重新输入！");
                 }
             }
 
-            if (iconv_strlen($_POST['content']) > (int) $this->setting['strlength']) {
-                return $this->error("评论内容超出系统设置允许的最大长度" . $this->setting['strlength'] . "字节！");
+            //评论内容长度验证
+            $content = I('post.content');
+            if (false === $this->db->check($content, '0,' . (int) $this->setting['strlength'], 'length')) {
+                $this->error("评论内容超出系统设置允许的最大长度" . $this->setting['strlength'] . "字节！");
             }
 
-            $db = M("Comments");
-
-            C("TOKEN_ON", false);
-            if ($data = $db->create()) {
-                $Comment = new Comment();
-                $data = array_merge($_POST, $data);
-                $data['user_id'] = AppframeAction::$Cache['uid'];
-                if (empty($catid) || empty($_POST['comment_id'])) {
-                    $this->error("参数有误！");
-                }
-                $data['comment_id'] = "c-$catid-" . $_POST['comment_id'];
-
-                $status = $Comment->add($data);
-                if ($status['status']) {
-                    if (!empty($this->setting['expire'])) {
-                        $this->cookie($data['comment_id'], 1, array(
-                            "expire" => $this->setting['expire']
-                        ));
-                    }
-                    if($this->setting['check'] >0){
-                        $status['status'] = 3;
-                        $status["info"] = "评论发送成功，但需要审核后才显示！";
-                    }
-                    if (IS_AJAX) {
-                        $this->ajaxReturn($status['data'], $status["info"], $status['status']);
-                    } else {
-                        $this->success($status["info"]);
-                    }
+            $commentsId = $this->db->addComments($post);
+            if (false !== $commentsId) {
+                if ($commentsId === -1) {
+                    $this->error($this->db->getError());
                 } else {
-                    $this->error($status['info']);
+                    $this->success("评论发表成功！");
                 }
             } else {
-                $this->error($db->getError());
+                $this->error($this->db->getError());
             }
         } else {
             $this->error("请使用post方式新增评论！");
-        }
-    }
-
-    /**
-     * 检查当前信息是否允许评论 
-     */
-    protected function comoff($catid, $id) {
-        $model = F("Model");
-        $category = F("Category");
-        if (empty($category[$catid])) {
-            return false;
-        }
-        $modelid = $category[$catid]['modelid'];
-        if (empty($model[$modelid])) {
-            return false;
-        }
-        $tablename = ucwords($model[$modelid]['tablename']);
-        $db = M($tablename . "_data");
-        $allow_comment = $db->where(array("id" => $id))->getField("allow_comment");
-        if ((int) $allow_comment <= 0) {
-            return false;
-        } else {
-            return true;
         }
     }
 

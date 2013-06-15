@@ -6,30 +6,34 @@
  * Contact email:admin@abc3210.com
  */
 class CommentsAction extends AdminbaseAction {
-    
+
+    public $setting;
+    protected $db;
+
     public function _initialize() {
         parent::_initialize();
-        import('Comment');
+        $this->setting = F("Comments_setting");
+        if (!$this->setting) {
+            $this->setting = D("Comments")->comments_cache();
+        }
+        $this->db = D("Comments");
     }
 
-    /**
-     * 显示全部评论 
-     */
+    //显示全部评论 
     public function index() {
         if (IS_POST) {
-            $ids = $_POST['ids'];
+            $ids = I('post.ids');
             if (empty($ids)) {
                 $this->error("没有信息被选择！");
             }
-            $db = M("Comments");
-            $Comment = new Comment();
-            foreach($ids as $k=>$id){
-                $Comment->delete($id);
+            if (false !== $this->db->deleteComments($ids)) {
+                $this->success("删除评论成功！");
+            } else {
+                $this->error($this->db->getError());
             }
-            $this->success("删除评论成功！");
         } else {
-            $keyword = $this->_get("keyword");
-            $searchtype = (int) $this->_get("searchtype");
+            $keyword = I('get.keyword', '', 'trim');
+            $searchtype = I('get.searchtype', 0, 'intval');
             $type = array(
                 0 => "content", //评论内容
                 1 => "author", //评论作者
@@ -40,17 +44,20 @@ class CommentsAction extends AdminbaseAction {
             if (!empty($keyword) && isset($type[$searchtype])) {
                 $where[$type[$searchtype]] = array("LIKE", "%" . $keyword . "%");
             }
-            $db = M("Comments");
             $Category = F("Category");
             $Model = F("Model");
-            $count = $db->where($where)->count();
+            $count = $this->db->where($where)->count();
             $page = $this->page($count, 20);
-            $data = $db->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "DESC"))->select();
+            $data = $this->db->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "DESC"))->select();
             foreach ($data as $k => $v) {
-                $r = M("Comments_data_" . $v['stb'])->where(array("id" => $v['id']))->find();
+                //取得副表记录
+                $r = M($this->db->viceTableName($v['stb']))->where(array("id" => $v['id']))->find();
                 $aid = explode("-", $v['comment_id']);
+                //栏目id
                 $catid = $aid[1];
+                //信息id
                 $id = $aid[2];
+                //取得对应文章信息
                 $title = M(ucwords($Model[$Category[$catid]['modelid']]["tablename"]))->where(array("id" => $id))->find();
                 $title['article_id'] = $title['id'];
                 unset($title['id']);
@@ -62,42 +69,41 @@ class CommentsAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 评论审核 
-     */
+    //待审核评论列表
     public function check() {
         $db = M("Comments");
         if (IS_POST) {
-            $ids = $_POST['ids'];
+            $ids = I('post.ids');
             if (empty($ids)) {
                 $this->error("没有信息被选择！");
             }
-            $ids = implode(",", $ids);
-            $db = M("Comments");
-            $where['id'] = array("IN", $ids);
-            $status = $db->where($where)->data(array("approved" => 1))->save();
-            if ($status !== false) {
+            if (false !== $this->db->checkComments($ids)) {
                 $this->success("审核成功！");
             } else {
                 $this->error("审核失败！");
             }
         } else {
-            $id = (int) $this->_get("id");
-            if ($id > 0) {
+            //查看单条评论
+            $id = I('get.id', 0, 'intval');
+            $Category = F("Category");
+            $Model = F("Model");
+            if ($id) {
                 
             } else {
-                $Category = F("Category");
-                $Model = F("Model");
                 $where = array();
-                $where["approved"] = array("EQ", '0');
-                $count = $db->where($where)->count();
+                $where["approved"] = array("EQ", 0);
+                $count = $this->db->where($where)->count();
                 $page = $this->page($count, 20);
-                $data = $db->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "DESC"))->select();
+                $data = $this->db->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "DESC"))->select();
                 foreach ($data as $k => $v) {
-                    $r = M("Comments_data_" . $v['stb'])->where(array("id" => $v['id']))->find();
+                    //取得副表记录
+                    $r = M($this->db->viceTableName($v['stb']))->where(array("id" => $v['id']))->find();
                     $aid = explode("-", $v['comment_id']);
+                    //栏目id
                     $catid = $aid[1];
+                    //信息id
                     $id = $aid[2];
+                    //取得对应文章信息
                     $title = M(ucwords($Model[$Category[$catid]['modelid']]["tablename"]))->where(array("id" => $id))->find();
                     $title['article_id'] = $title['id'];
                     unset($title['id']);
@@ -110,40 +116,30 @@ class CommentsAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 评论编辑 
-     */
+    //评论编辑
     public function edit() {
         if (IS_POST) {
-            $Comment = new Comment();
-            $db = M("Comments");
-            foreach ($_POST as $k => $v) {
-                $_POST[$k] = Input::hsc($v);
+            $post = I('post.');
+            if (!$post) {
+                $this->error('参数有误！');
             }
-            if ($data = $db->create()) {
-                $data = array_merge($_POST, $data);
-                $status = $Comment->edit($data);
-                if ($status['status']) {
-                    $this->success("更新成功！", U("Comments/Comments/index"));
-                } else {
-                    $this->error($status['info']);
-                }
+            if (false !== $this->db->editComments($post)) {
+                $this->success('评论更新成功！');
             } else {
-                $this->error($db->getError());
+                $this->error($this->db->getError());
             }
         } else {
-            $id = (int) $this->_get("id");
-            if ($id <= 0) {
+            $id = I('get.id', 0, 'intval');
+            if (!$id) {
                 $this->error("参数有误！");
             }
-            $r = M("Comments")->where(array("id" => $id))->find();
+            $r = $this->db->where(array("id" => $id))->find();
             if ($r) {
-                $r2 = M("Comments_data_" . $r['stb'])->where(array("id" => $id))->find();
+                $r2 = M($this->db->viceTableName($r['stb']))->where(array("id" => $id))->find();
                 $data = array_merge($r, $r2);
                 $data['content'] = Input::forTarea($data['content']);
                 //取得自定义字段
-                $field = M("Comments_field")->order(array("fid" => "DESC"))->select();
-
+                $field = $this->db->sideTablesField();
                 $this->assign("data", $data);
                 $this->assign("field", $field);
                 $this->display();
@@ -157,84 +153,73 @@ class CommentsAction extends AdminbaseAction {
      * 删除评论 
      */
     public function delete() {
-        $id = (int) $this->_get("id");
-        if ($id <= 0) {
+        $id = I('get.id', 0, 'intval');
+        if (!$id) {
             $this->error("参数有误！");
         }
-        $r = M("Comments")->where(array("id" => $id))->find();
-        if ($r) {
-            $Comment = new Comment();
-            $status = $Comment->delete($id);
-            if ($status["status"]) {
-                $this->success("评论删除成功！");
-            } else {
-                $this->error($status['info']);
-            }
+        if (false !== $this->db->deleteComments($id)) {
+            $this->success("评论删除成功！");
         } else {
-            $this->error("该评论不存在！");
+            $this->error("评论删除失败！");
         }
     }
 
-    /**
-     * 垃圾评论 
-     */
+    //垃圾评论也就是取消审核
     public function spamcomment() {
-        $id = (int) $this->_get("id");
-        if ($id <= 0) {
+        $id = I('get.id', 0, 'intval');
+        if (!$id) {
             $this->error("参数有误！");
         }
-        $r = M("Comments")->where(array("id" => $id))->find();
+        $r = $this->db->where(array("id" => $id))->find();
         if ($r) {
-            $Comment = new Comment();
-            $status = $Comment->status($id);
-            if ($status["status"]) {
-                $this->success("状态转换成功！");
+            $approved = ((int) $r['approved'] == 1) ? 0 : 1;
+            if (false !== $this->db->checkComments($id, $approved)) {
+                if ($approved) {
+                    $this->success("评论审核成功！");
+                } else {
+                    $this->success("评论取消审核成功！");
+                }
             } else {
-                $this->error($status['info']);
+                $this->error('操作失败！');
             }
         } else {
             $this->error("该评论不存在！");
         }
     }
 
-    /**
-     * 回复评论 
-     */
+    //回复评论
     public function replycomment() {
         if (IS_POST) {
-            $db = M("Comments");
-            C("TOKEN_ON", false);
-            $data = $db->create();
-            if ($data) {
-                $Comment = new Comment();
-                $data = array_merge($_POST, $data);
-                $data['user_id'] = AppframeAction::$Cache['uid'];
-                $catid = $_POST['comment_catid'];
-                if (empty($catid) || empty($_POST['comment_id'])) {
-                    $this->error("参数有误！");
-                }
-                $data['comment_id'] = "c-$catid-" . $_POST['comment_id'];
-                $status = $Comment->add($data, 1);
-                if ($status['status']) {
-                    $this->success("评论回复成功！",U("Comments/index"));
+            $post = I('post.');
+            if (!$post) {
+                $this->error('提交信息有误！');
+            }
+            $catid = I('post.comment_catid', 0, 'intval');
+            $id = I('post.comment_id', 0, 'intval');
+            $post['comment_id'] = "c-{$catid}-{$id}";
+
+            $commentsId = $this->db->addComments($post);
+            if (false !== $commentsId) {
+                if ($commentsId === -1) {
+                    $this->error($this->db->getError());
                 } else {
-                    $this->error($status['info']);
+                    $this->success("评论发表成功！", U('Comments/Comments/index'));
                 }
             } else {
-                $this->error($db->getError());
+                $this->error($this->db->getError());
             }
         } else {
-            $id = (int) $this->_get("id");
-            if ($id <= 0) {
+            $id = I('get.id', 0, 'intval');
+            if (!$id) {
                 $this->error("参数有误！");
             }
-            $r = M("Comments")->where(array("id" => $id))->find();
+            $r = $this->db->where(array("id" => $id))->find();
             if ($r) {
-                $r2 = M("Comments_data_" . $r['stb'])->where(array("id" => $id))->find();
+                $r2 = M($this->db->viceTableName($r['stb']))->where(array("id" => $id))->find();
                 $data = array_merge($r, $r2);
                 $data['content'] = Input::forTarea($data['content']);
                 //取得自定义字段
-                $field = M("Comments_field")->where(array("system"=>0))->order(array("fid" => "DESC"))->select();
+                $field = M("CommentsField")->where(array("system" => 0))->order(array("fid" => "DESC"))->select();
                 $ca = explode("-", $data["comment_id"]);
                 //如果是回复评论，也就是approved不等于0的评论
                 if (!$r['parent'] == 0) {
@@ -243,9 +228,9 @@ class CommentsAction extends AdminbaseAction {
                     $this->assign("parent", $data['id']);
                 }
                 import("Form");
-                $this->assign("author_url",AppframeAction::$Cache['Config']['siteurl']);
-                $this->assign("author_email",AppframeAction::$Cache['User']['email']);
-                $this->assign("author",AppframeAction::$Cache['username']);
+                $this->assign("author_url", AppframeAction::$Cache['Config']['siteurl']);
+                $this->assign("author_email", AppframeAction::$Cache['User']['email']);
+                $this->assign("author", AppframeAction::$Cache['username']);
                 $this->assign("data", $data);
                 $this->assign("catid", $ca[1]);
                 $this->assign("commentid", $ca[2]);
@@ -257,9 +242,7 @@ class CommentsAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 评论配置 
-     */
+    //评论配置 
     public function config() {
         $db = M("CommentsSetting");
         if (IS_POST) {
@@ -267,10 +250,10 @@ class CommentsAction extends AdminbaseAction {
             $check = isset($_POST['check']) && intval($_POST['check']) ? intval($_POST['check']) : 0;
             $code = isset($_POST['code']) && intval($_POST['code']) ? intval($_POST['code']) : 0;
             $stb = isset($_POST['stb']) && intval($_POST['stb']) ? intval($_POST['stb']) : 1;
-            $order = isset($_POST['order']) && $this->_post("order")  ? $this->_post("order") : "id ASC";
+            $order = isset($_POST['order']) && $this->_post("order") ? $this->_post("order") : "id ASC";
             $strlength = isset($_POST['strlength']) && intval($_POST['strlength']) ? intval($_POST['strlength']) : 0;
             $status = isset($_POST['status']) && intval($_POST['status']) ? intval($_POST['status']) : 0;
-            $expire  = isset($_POST['expire']) && intval($_POST['expire']) ? intval($_POST['expire']) : 0;
+            $expire = isset($_POST['expire']) && intval($_POST['expire']) ? intval($_POST['expire']) : 0;
             $data = array(
                 "guest" => $guest,
                 "check" => $check,
@@ -281,7 +264,6 @@ class CommentsAction extends AdminbaseAction {
                 "status" => $status,
                 "expire" => $expire,
             );
-            
             $where = $db->find();
             if ($db->where($where)->save($data) !== false) {
                 F("Comments_setting", $data);
@@ -296,14 +278,11 @@ class CommentsAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 分表 
-     */
+    //分表
     public function fenbiao() {
-        $db = M("Comments_setting");
+        $db = M("CommentsSetting");
         $r = $db->find();
         $stbsum = $r['stbsum'];
-
         for ($i = 1; $i <= $stbsum; $i++) {
             $d = M("Comments_data_" . $i);
             $data[] = array(
@@ -312,19 +291,16 @@ class CommentsAction extends AdminbaseAction {
                 "tablename" => C("DB_PREFIX") . "comments_data_" . $i
             );
         }
-
         $this->assign("data", $data);
         $this->assign("r", $r);
         $this->display();
     }
 
-    /**
-     * 创建一张新的分表 
-     */
+    //创建一张新的分表
     public function addfenbiao() {
-        if(D("CommentsField")->addfenbiao()){
+        if (D("CommentsField")->addfenbiao()) {
             $this->success("分表创建成功！");
-        }else{
+        } else {
             $this->error("创建分表失败！");
         }
     }
