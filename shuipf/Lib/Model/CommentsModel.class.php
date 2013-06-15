@@ -65,6 +65,8 @@ class CommentsModel extends CommonModel {
         $mainData['comment_id'] = $data['comment_id'];
         //评论状态
         $mainData['approved'] = $this->commentsApproved;
+        //回复评论id
+        $mainData['parent'] = $data['parent'];
         $mainData = $this->token(false)->create($mainData);
         if (!$mainData) {
             return false;

@@ -10,6 +10,12 @@ class IndexAction extends BaseAction {
     public $setting;
     protected $db;
 
+    /**
+     * 生成树型结构所需要的2维数组
+     * @var array
+     */
+    protected $arr = array();
+
     function _initialize() {
         parent::_initialize();
         $this->setting = F("Comments_setting");
@@ -19,8 +25,63 @@ class IndexAction extends BaseAction {
         $this->db = D("Comments");
     }
 
-    //显示某篇信息的评论页面
+    //显示信息评论
     public function index() {
+        //信息ID
+        $id = I('get.id', 0, 'intval');
+        //栏目ID
+        $catid = I('get.catid', 0, 'intval');
+        //评论标识id
+        $comment_id = "c-$catid-$id";
+        if (!$id || !$catid) {
+            $this->error('参数错误！');
+        }
+        //每页显示评论信息量
+        $pageSize = I('get.size', 20, 'intval');
+        //当前分页号
+        $page = I('get.page', 1, 'intval');
+        //条件
+        $where = array(
+            'comment_id' => $comment_id,
+            'approved' => 1,
+            'parent' => 0, //非回复类评论
+        );
+
+        $commentCount = $this->db->where($where)->count();
+        $page = page($commentCount, $pageSize, $page, 6, '');
+        //评论主表数据
+        $commentData = $this->db->where($where)->order($this->setting['order'])->limit($page->firstRow . ',' . $page->listRows)->select();
+        foreach ($commentData as $r) {
+            $this->getParentComment($r['id']);
+            $this->arr[] = $r;
+        }
+        //取详细数据
+        $listStbArr = array();
+        $listComment = array();
+        foreach($this->arr as $r){
+            $listArr[$r['stb']][] = $r['id'];
+        }
+        foreach($listArr as $stb=>$ids){
+            if((int)$stb > 0){
+                $list = M($this->db->viceTableName($stb))->where(array('id'=>array('IN',$ids)))->select();
+                foreach($list as $r){
+                    $listComment[$r['id']] = $r;
+                }
+            }
+        }
+        foreach($this->arr as $k=>$r){
+            if((int)$r['id']){
+                $this->arr[$k] = array_merge($r,$listComment[$r['id']]);
+            }
+        }
+        //取得树状结构数组
+        $treeArray = $this->get_tree_array();
+        print_r($treeArray);
+        exit;
+    }
+
+    //显示某篇信息的评论页面
+    public function comment() {
         //所属文章id
         $comment_id = I('get.commentid', '', '');
         //评论
@@ -70,6 +131,10 @@ class IndexAction extends BaseAction {
 
             $commentsId = $this->db->addComments($post);
             if (false !== $commentsId) {
+                //设置评论间隔时间，cookie没啥样的感觉-__,-!
+                if ($this->setting['expire']) {
+                    $this->cookie($post['comment_id'], '1', array('expire' => (int) $this->setting['expire'] * 60));
+                }
                 if ($commentsId === -1) {
                     $this->error($this->db->getError());
                 } else {
@@ -81,6 +146,83 @@ class IndexAction extends BaseAction {
         } else {
             $this->error("请使用post方式新增评论！");
         }
+    }
+
+    /**
+     * 使用递归的方式查询出回复评论...效率如何俺也不清楚，能力限制了。。
+     * @param type $id
+     * @return boolean
+     */
+    protected function getParentComment($id) {
+        if (!$id) {
+            return false;
+        }
+        $where = array(
+            'parent' => $id,
+            'approved' => 1,
+        );
+        $count = $this->db->where($where)->count();
+        //如果大于5条以上，只显示最久的第一条，和最新的3条
+        if ($count > 5) {
+            $oldData = $this->db->where($where)->order(array('date' => 'ASC'))->find();
+            $newsData = $this->db->where($where)->limit(3)->order(array('date' => 'DESC'))->select();
+            //数组从新排序
+            sort($newsData);
+            array_unshift($newsData, $oldData, array(
+                'id' => 'load',
+                'comment_id' => $oldData['comment_id'],
+                'parent' => $oldData['parent'],
+                'info' => '已经省略中间部分...',
+            ));
+            $data = $newsData;
+        } else {
+            $data = $this->db->where($where)->select();
+        }
+        if ($data) {
+            foreach ($data as $r) {
+                $this->getParentComment((int)$r['id']);
+                $this->arr[] = $r;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 得到子级数组
+     * @param int
+     * @return array
+     */
+    protected function get_child($myid) {
+        $a = $newarr = array();
+        if (is_array($this->arr)) {
+            foreach ($this->arr as $id => $a) {
+                if ($a['parent'] == $myid)
+                    $newarr[$id] = $a;
+            }
+        }
+        return $newarr ? $newarr : false;
+    }
+
+    /**
+     * 得到树型结构数组
+     * @param int $myid，开始父id
+     */
+    protected function get_tree_array($myid = 0) {
+        $retarray = array();
+        //一级栏目数组
+        $child = $this->get_child($myid);
+        if (is_array($child)) {
+            //数组长度
+            $total = count($child);
+            foreach ($child as $id => $value) {
+                @extract($value);
+                $retarray[$value['id']] = $value;
+                $retarray[$value['id']]["child"] = $this->get_tree_array($id, '');
+            }
+        }
+        return $retarray;
     }
 
 }
