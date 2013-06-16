@@ -93,12 +93,15 @@ class IndexAction extends BaseAction {
             //分页相关
             'cursor' => array(
                 'total' => $pages->Total_Pages,//总页数
+                'size' => $pageSize,//每页显示多少
                 C("VAR_PAGE") => $page,//当前分页号
             )
         );
-        echo '程序处理时间：'.G('run','end')."s \r\n";
-        print_r($return);
-        exit;
+        $this->ajaxReturn(array(
+            'data' => $return,
+            'info' => '',
+            'status' => true,
+        ),(isset($_GET['callback'])?'JSONP':'JSON'));
     }
 
     //显示某篇信息的评论页面
