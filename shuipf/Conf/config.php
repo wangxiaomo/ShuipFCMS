@@ -68,7 +68,7 @@ return array(
     'TMPL_TEMPLATE_SUFFIX' => '.php', //模板后缀
     /* 路由规则配置 */
     'URL_ROUTER_ON' => false, //是否开启路由
-    'URL_ROUTE_RULES ' => array(),
+    'URL_ROUTE_RULES' => array(),
     /* 系统变量名称设置  提示：请不要修改，否则出现未知问题 */
     'VAR_GROUP' => 'g', // 默认分组获取变量
     'VAR_MODULE' => 'm', // 默认模块获取变量
