@@ -25,8 +25,9 @@ class IndexAction extends BaseAction {
         $this->db = D("Comments");
     }
 
-    //显示信息评论
-    public function index() {
+    //显示信息评论,json格式
+    public function json() {
+        G('run');
         //信息ID
         $id = I('get.id', 0, 'intval');
         //栏目ID
@@ -48,35 +49,55 @@ class IndexAction extends BaseAction {
         );
 
         $commentCount = $this->db->where($where)->count();
-        $page = page($commentCount, $pageSize, $page, 6, '');
+        $pages = page($commentCount, $pageSize, $page, 6, '');
         //评论主表数据
-        $commentData = $this->db->where($where)->order($this->setting['order'])->limit($page->firstRow . ',' . $page->listRows)->select();
+        $commentData = $this->db->where($where)->order($this->setting['order'])->limit($pages->firstRow . ',' . $pages->listRows)->select();
         foreach ($commentData as $r) {
             $this->getParentComment($r['id']);
             $this->arr[] = $r;
         }
         //取详细数据
-        $listStbArr = array();
         $listComment = array();
-        foreach($this->arr as $r){
+        foreach ($this->arr as $r) {
             $listArr[$r['stb']][] = $r['id'];
         }
-        foreach($listArr as $stb=>$ids){
-            if((int)$stb > 0){
-                $list = M($this->db->viceTableName($stb))->where(array('id'=>array('IN',$ids)))->select();
-                foreach($list as $r){
+        foreach ($listArr as $stb => $ids) {
+            if ((int) $stb > 0) {
+                $list = M($this->db->viceTableName($stb))->where(array('id' => array('IN', $ids)))->select();
+                foreach ($list as $r) {
+                    //替换表情
+                    if ($r['content']) {
+                        $this->db->replaceExpression($r['content']);
+                    }
                     $listComment[$r['id']] = $r;
                 }
             }
         }
-        foreach($this->arr as $k=>$r){
-            if((int)$r['id']){
-                $this->arr[$k] = array_merge($r,$listComment[$r['id']]);
+        //评论主表数据和副表数据合并
+        foreach ($this->arr as $k => $r) {
+            if ((int) $r['id']) {
+                $this->arr[$k] = array_merge($r, $listComment[$r['id']]);
             }
         }
         //取得树状结构数组
         $treeArray = $this->get_tree_array();
-        print_r($treeArray);
+        //最终返回数组
+        $return = array(
+            //当前登陆会员信息
+            'users' => array(
+                'user_id' => self::$Cache['uid'],
+                'name' => self::$Cache['username'],
+            ),
+            //评论列表
+            'response' => $treeArray,
+            //分页相关
+            'cursor' => array(
+                'total' => $pages->Total_Pages,//总页数
+                C("VAR_PAGE") => $page,//当前分页号
+            )
+        );
+        echo '程序处理时间：'.G('run','end')."s \r\n";
+        print_r($return);
         exit;
     }
 
@@ -180,7 +201,7 @@ class IndexAction extends BaseAction {
         }
         if ($data) {
             foreach ($data as $r) {
-                $this->getParentComment((int)$r['id']);
+                $this->getParentComment((int) $r['id']);
                 $this->arr[] = $r;
             }
             return true;

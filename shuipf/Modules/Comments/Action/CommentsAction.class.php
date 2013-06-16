@@ -13,10 +13,10 @@ class CommentsAction extends AdminbaseAction {
     public function _initialize() {
         parent::_initialize();
         $this->setting = F("Comments_setting");
-        if (!$this->setting) {
-            $this->setting = D("Comments")->comments_cache();
-        }
         $this->db = D("Comments");
+        if (!$this->setting) {
+            $this->setting = $this->db->comments_cache();
+        }
     }
 
     //显示全部评论 
@@ -61,6 +61,10 @@ class CommentsAction extends AdminbaseAction {
                 $title = M(ucwords($Model[$Category[$catid]['modelid']]["tablename"]))->where(array("id" => $id))->find();
                 $title['article_id'] = $title['id'];
                 unset($title['id']);
+                //替换表情
+                if ($r['content']) {
+                    $this->db->replaceExpression($r['content']);
+                }
                 $data[$k] = array_merge($title, $data[$k], $r);
             }
             $this->assign("Page", $page->show('Admin'));
@@ -71,7 +75,6 @@ class CommentsAction extends AdminbaseAction {
 
     //待审核评论列表
     public function check() {
-        $db = M("Comments");
         if (IS_POST) {
             $ids = I('post.ids');
             if (empty($ids)) {
@@ -107,6 +110,10 @@ class CommentsAction extends AdminbaseAction {
                     $title = M(ucwords($Model[$Category[$catid]['modelid']]["tablename"]))->where(array("id" => $id))->find();
                     $title['article_id'] = $title['id'];
                     unset($title['id']);
+                    //替换表情
+                    if ($r['content']) {
+                        $this->db->replaceExpression($r['content']);
+                    }
                     $data[$k] = array_merge($title, $data[$k], $r);
                 }
                 $this->assign("Page", $page->show('Admin'));
@@ -124,7 +131,7 @@ class CommentsAction extends AdminbaseAction {
                 $this->error('参数有误！');
             }
             if (false !== $this->db->editComments($post)) {
-                $this->success('评论更新成功！');
+                $this->success('评论更新成功！', U('Comments/index'));
             } else {
                 $this->error($this->db->getError());
             }
@@ -266,7 +273,7 @@ class CommentsAction extends AdminbaseAction {
             );
             $where = $db->find();
             if ($db->where($where)->save($data) !== false) {
-                F("Comments_setting", $data);
+                $this->db->comments_cache();
                 $this->success("更新成功！", U("Comments/Comments/config"));
             } else {
                 $this->error("更新失败！", U("Comments/Comments/config"));

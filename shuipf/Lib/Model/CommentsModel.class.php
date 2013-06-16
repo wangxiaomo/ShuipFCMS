@@ -142,9 +142,6 @@ class CommentsModel extends CommonModel {
         }
         //信息ID comment_id
         $mainData['comment_id'] = $info['comment_id'];
-
-        //评论状态
-        $mainData['approved'] = $this->commentsApproved;
         $mainData = $this->token(false)->create($mainData, 2);
         if (!$mainData) {
             return false;
@@ -400,15 +397,43 @@ class CommentsModel extends CommonModel {
     }
 
     /**
-     * 生成评论配置缓存
-     * @return type
+     * 评论表情替换
+     * 以后在进行效率优化。。。菜鸟-__,-!
+     * @param type $content 评论内容
+     * @param string $emotionPath 表情存放路径，以'/'结尾
+     * @param type $classStyle 表情img附加样式
+     * @return boolean
      */
-    public function comments_cache() {
-        $data = M("CommentsSetting")->find();
-        //生成缓存
-        F("Comments_setting", $data);
-
-        return $data;
+    public function replaceExpression(&$content, $emotionPath = '', $classStyle = '') {
+        if (!$content) {
+            return false;
+        }
+        //表情存放路径
+        if (empty($emotionPath)) {
+            $emotionPath = CONFIG_SITEURL_MODEL . 'statics/images/emotion/';
+        }
+        $cacheReplaceExpression = S('cacheReplaceExpression');
+        if ($cacheReplaceExpression) {
+            $replace = $cacheReplaceExpression;
+        } else {
+            //加载表情缓存
+            $emotion = F('Emotion');
+            if (!$emotion) {
+                $emotion = D('Emotion')->emotion_cache();
+            }
+            //需要替换的标签
+            $replace = array();
+            foreach ($emotion as $lab => $info) {
+                if ($lab) {
+                    $replace[$lab] = '<img src="' . $emotionPath . $info['emotion_icon'] . '" alt="' . $lab . '" title="' . $lab . '" ' . $classStyle . ' />';
+                }
+            }
+            //进行缓存
+            S('cacheReplaceExpression', $replace, 3600);
+        }
+        //替换表情
+        $content = strtr($content, $replace);
+        return true;
     }
 
     /**
@@ -417,6 +442,18 @@ class CommentsModel extends CommonModel {
      */
     public function commentsFirewall() {
         return false;
+    }
+
+    /**
+     * 生成评论配置缓存
+     * @return type
+     */
+    public function comments_cache() {
+        $data = M("CommentsSetting")->find();
+        //生成缓存
+        F("Comments_setting", $data);
+        S('cacheReplaceExpression', NULL);
+        return $data;
     }
 
 }

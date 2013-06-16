@@ -29,6 +29,7 @@ class EmotionModel extends CommonModel {
             $cacheList['['.$r['emotion_name'].']'] = $r;
         }
         F("Emotion", $cacheList);
+        S('cacheReplaceExpression', NULL);
         return $data;
     }
 
