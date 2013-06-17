@@ -46,6 +46,7 @@
                             	addModel.comments(thread);
                             }
                             init.LOAD += 1;
+                            init.binds();
                             if (init.DEBUG) {
                             	console.log('LOAD次数', init.LOAD);
                                 console.log('评论数据：', init.response);
@@ -54,18 +55,6 @@
                         }
                     }
                 });
-            },
-            //获取cookis
-            getCookie: function (e) {
-                var r = " " + e + "=",
-                    i = n.cookie.split(";"),
-                    s = 0,
-                    o, u, a;
-                for (; s < i.length; s++) {
-                    o = " " + i[s], u = o.indexOf(r);
-                    if (u >= 0 && u + r.length == (a = o.indexOf("=") + 1)) return decodeURIComponent(o.substring(a, o.length).replace(/\+/g, ""))
-                }
-                return t
             },
             //加载样式
             injectStylesheet: function (e) {
@@ -124,7 +113,26 @@
                 }
                 return str;
             },
-            htmls: function () {
+            //绑定各种事件
+            binds:function(){
+                //对回复按钮绑定点击事件
+                jQuery('a.ds-post-reply').bind('click',function(){
+                    //jQuery('.replybox_'+$(this).data('comentid')).show();
+                    var reply = jQuery(this);
+                    var replyparent = reply.parent();
+                    var replyactive = replyparent.next();
+                    jQuery('.ds-post .ds-replybox').hide();
+                    jQuery('.ds-post .ds-comment-footer').removeClass('ds-reply-active');
+                    //回复 高亮
+                    replyparent.addClass('ds-reply-active');
+                    //载入评论框
+                    if(replyactive.html() == ''){
+                        replyactive.html(addModel.replybox());
+                    }
+                    replyactive.show();
+                });
+            },
+            htmls:function () {
                 var thread = jQuery('#ds-reset');
                 thread.append('<div id="ds-waiting"></div>');
                 this.getComment();
@@ -156,12 +164,19 @@
                 jQuery.each(init.response, function(comentId,rs){
                 	if(rs.content){
                 		post.append('<li class="ds-post">\
-	                				  <div class="ds-post-self" data-comentid="'+comentId+'">\
-										  <div class="ds-avatar"><a rel="nofollow author" target="_blank" href="#" title="'+rs.author+'"><img src="http://app.qlogo.cn/mbloghead/ec22b0ee6435895f7da8/50" alt="'+rs.author+'"></a></div>\
+	                				  <div class="ds-post-self">\
+										  <div class="ds-avatar">\
+                                            <a rel="nofollow author" href="javascript:;;" title="'+rs.author+'"><img src="'+tool.getAvatar(rs.user_id,rs.author_email)+'" alt="'+rs.author+'"></a>\
+                                          </div>\
 										  <div class="ds-comment-body">\
-										    <div class="ds-comment-header"><a class="ds-user-name ds-highlight" data-qqt-account="" href="#" rel="nofollow" target="_blank" data-user-id="940614">'+rs.author+'</a></div>\
+										    <div class="ds-comment-header"><a class="ds-user-name ds-highlight" href="javascript:;;" rel="nofollow" data-userid="'+rs.user_id+'">'+rs.author+'</a></div>\
 										    <p>'+rs.content+'</p>\
-										    <div class="ds-comment-footer ds-comment-actions ds-reply-active"> <span class="ds-time" title="2013年6月16日 07:55:36">17分钟前</span> <a class="ds-post-reply" href="javascript:void(0);"><span class="ds-ui-icon"></span>回复</a> <a class="ds-post-likes" href="javascript:void(0);"><span class="ds-ui-icon"></span>顶</a> <a class="ds-post-report" href="javascript:void(0);"><span class="ds-ui-icon"></span>举报</a> <a class="ds-post-delete" href="javascript:void(0);"><span class="ds-ui-icon"></span>删除</a> </div>\
+										    <div class="ds-comment-footer ds-comment-actions"> \
+                                                <span class="ds-time" title="'+tool.getYearsMonthDay(rs.date*1000)+'">'+tool.getTimeBefore(rs.date*1000)+'</span> \
+                                                <a class="ds-post-reply" href="javascript:void(0);" data-comentid="'+comentId+'"><span class="ds-ui-icon"></span>回复</a> \
+                                                <a class="ds-post-likes" href="javascript:void(0);" data-comentid="'+comentId+'"><span class="ds-ui-icon"></span>顶</a> \
+                                            </div>\
+                                            <div class="ds-replybox ds-inline-replybox replybox_'+comentId+'" style="display:none;"></div>\
 										  </div>\
 									  </div>\
 									</li>');
@@ -192,28 +207,26 @@
 										  </li>';
                 		}else{
                 			strHtml +='\
-								  <li class="ds-post" data-comentid="'+comentId+'">\
+								  <li class="ds-post">\
 								    <div class="ds-post-self">\
-								      <div class="ds-avatar"><a rel="nofollow author" target="_blank" href="#" title="'+rs.author+'"><img src="http://app.qlogo.cn/mbloghead/ec22b0ee6435895f7da8/50" alt="'+rs.author+'"></a></div>\
+								      <div class="ds-avatar"><a rel="nofollow author" href="javascript:;;" title="'+rs.author+'"><img src="'+tool.getAvatar(rs.user_id,rs.author_email)+'" alt="'+rs.author+'"></a></div>\
 								      <div class="ds-comment-body">\
-								        <div class="ds-comment-header"><a class="ds-user-name ds-highlight" data-qqt-account="" href="#" rel="nofollow" target="_blank" data-user-id="940614">'+rs.author+'</a></div>\
+								        <div class="ds-comment-header">\
+                                            <a class="ds-user-name ds-highlight" data-qqt-account="" href="javascript:;;" rel="nofollow" data-userid="'+rs.user_id+'">'+rs.author+'</a>\
+                                        </div>\
 								        <p>'+rs.content+'</p>\
-								        <div class="ds-comment-footer ds-comment-actions ds-reply-active"> <span class="ds-time" title="2013年6月16日 07:55:36">17分钟前</span> <a class="ds-post-reply" href="javascript:void(0);"><span class="ds-ui-icon"></span>回复</a> <a class="ds-post-likes" href="javascript:void(0);"><span class="ds-ui-icon"></span>顶</a> <a class="ds-post-report" href="javascript:void(0);"><span class="ds-ui-icon"></span>举报</a> <a class="ds-post-delete" href="javascript:void(0);"><span class="ds-ui-icon"></span>删除</a> </div>\
-								        <div class="ds-replybox ds-inline-replybox" style="display: none;"><a class="ds-avatar" href="http://duoshuo.com/settings/avatar/" target="_blank" title="设置头像"><img src="http://app.qlogo.cn/mbloghead/ec22b0ee6435895f7da8/50" alt="水平凡"></a>\
-								          <form method="post">\
-								            <div class="ds-textarea-wrapper ds-rounded-top">\
-								              <textarea name="message" placeholder="说点什么吧…"></textarea>\
-								            </div>\
-								            <div class="ds-post-toolbar">\
-								              <div class="ds-post-options ds-gradient-bg"></div>\
-								              <button class="ds-post-button" type="submit">发布</button>\
-								              <div class="ds-toolbar-buttons"><a class="ds-toolbar-button ds-add-emote" title="插入表情"></a></div>\
-								            </div>\
-								          </form>\
-								        </div>\
+								        <div class="ds-comment-footer ds-comment-actions"> \
+                                            <span class="ds-time" title="'+tool.getYearsMonthDay(rs.date*1000)+'">'+tool.getTimeBefore(rs.date*1000)+'</span> \
+                                            <a class="ds-post-reply" href="javascript:void(0);" data-comentid="'+comentId+'"><span class="ds-ui-icon"></span>回复</a> \
+                                            <a class="ds-post-likes" href="javascript:void(0);" data-comentid="'+comentId+'"><span class="ds-ui-icon"></span>顶</a> \
+                                        </div>\
+								        <div class="ds-replybox ds-inline-replybox replybox_'+comentId+'"></div>\
 								      </div>\
 								    </div>\
 								  </li>';
+                            if(rs.child){
+                                addModel.commetnReply(rs.child);
+                            }
                 		}
                 	});
 					post.append('<ul class="ds-children" id="commetnReply_'+json.id+'">'+strHtml+'</ul>');
@@ -241,10 +254,24 @@
             		});
             	}
             	//显示评论框
-                this.replybox(thread);
+                this.newsCommentBox(thread);
             },
-            //评论框
-            replybox: function (thread) {
+            //回复评论框
+            replybox:function(){
+                return '<a class="ds-avatar" href="http://duoshuo.com/settings/avatar/" target="_blank" title="设置头像"><img src="http://app.qlogo.cn/mbloghead/ec22b0ee6435895f7da8/50" alt="水平凡"></a>\
+                                          <form method="post">\
+                                            <div class="ds-textarea-wrapper ds-rounded-top">\
+                                              <textarea name="message" placeholder="说点什么吧…"></textarea>\
+                                            </div>\
+                                            <div class="ds-post-toolbar">\
+                                              <div class="ds-post-options ds-gradient-bg"></div>\
+                                              <button class="ds-post-button" type="submit">发布</button>\
+                                              <div class="ds-toolbar-buttons"><a class="ds-toolbar-button ds-add-emote" title="插入表情"></a></div>\
+                                            </div>\
+                                          </form>';
+            },
+            //发表评论框
+            newsCommentBox: function (thread) {
             	if(init.LOAD){
             		return true;
             	}
@@ -277,6 +304,65 @@
 							      </div>\
 							    </form>\
 							  </div>');
+            }
+        },
+        //工具
+        tool={
+            //友好时间
+            getTimeBefore: function (time) {
+                var ret = "";
+                var nowd = new Date();
+                var now = nowd.getTime();
+                var delay = now - time;
+                var t = new Date(time);
+                var getHours = t.getHours();
+                var getMinutes = t.getMinutes();
+                if (delay > (10 * 24 * 60 * 60 * 1000)) {
+                    nowd.setTime(time);
+                    ret = nowd.toLocaleString();
+                } else if (delay >= (24 * 60 * 60 * 1000)) {
+                    delay = (delay / (24 * 60 * 60 * 1000));
+                    var num = Math.floor(delay);
+                    if (num == 1) {
+                        ret = "昨天"+getHours+":"+getMinutes;
+                    } else if (num == 2) {
+                        ret = "前天"+getHours+":"+getMinutes;
+                    } else {
+                        ret = num + "天前";
+                    }
+                } else if (delay >= (60 * 60 * 1000)) {
+                    delay = (delay / (60 * 60 * 1000))
+                    ret = Math.floor(delay) + "小时前";
+                } else if (delay >= (60 * 1000)) {
+                    delay = (delay / (60 * 1000))
+                    ret = Math.floor(delay) + "分钟前";
+                } else if (delay >= (1000)) {
+                    delay = (delay / (1000))
+                    ret = Math.floor(delay) + "秒前";
+                } else {
+                    ret = "刚刚";
+                }
+
+                return ret;
+            },
+            //获取 年月日的时间格式
+            getYearsMonthDay:function(time){
+                var dt= new Date(time);
+                var year=dt.getFullYear();//获取年
+                var month=dt.getMonth();//获取月
+                var day=dt.getDay();//获取日
+                var hours = dt.getHours();//时
+                var minutes = dt.getMinutes();//分
+                var seconds = dt.getSeconds();//秒
+                return year + '年' + month + '月' + day +'日' + hours + ':' + minutes + ':' + seconds;
+            },
+            //获取头像地址
+            getAvatar:function(uid , email){
+                if(Math.floor(uid) > 0){
+                    return init.DOMAIN + 'api.php?m=avatar&uid='+ uid;
+                }else{
+                    return init.DOMAIN + 'api.php?m=avatar&a=gravatar&email='+ email;
+                }
             }
         };
     //加载样式
