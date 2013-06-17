@@ -91,16 +91,19 @@ class IndexAction extends BaseAction {
             'response' => $treeArray,
             //分页相关
             'cursor' => array(
-                'total' => $pages->Total_Pages,//总页数
+                'pagetotal' => $pages->Total_Pages,//总页数
+                'total' => $commentCount,//总信息数
                 'size' => $pageSize,//每页显示多少
                 C("VAR_PAGE") => $page,//当前分页号
             )
         );
+        // jsonp callback
+        $callback = I('get.callback');
         $this->ajaxReturn(array(
             'data' => $return,
             'info' => '',
             'status' => true,
-        ),(isset($_GET['callback'])?'JSONP':'JSON'));
+        ),(isset($_GET['callback']) && $callback?'JSONP':'JSON'));
     }
 
     //显示某篇信息的评论页面
@@ -188,11 +191,12 @@ class IndexAction extends BaseAction {
         //如果大于5条以上，只显示最久的第一条，和最新的3条
         if ($count > 5) {
             $oldData = $this->db->where($where)->order(array('date' => 'ASC'))->find();
-            $newsData = $this->db->where($where)->limit(3)->order(array('date' => 'DESC'))->select();
+            $newsData = $this->db->where($where)->limit(2)->order(array('date' => 'DESC'))->select();
             //数组从新排序
             sort($newsData);
             array_unshift($newsData, $oldData, array(
-                'id' => 'load',
+                'id' => $oldData['id']+1,
+                'display' => 'none',//标识这条评论不显示
                 'comment_id' => $oldData['comment_id'],
                 'parent' => $oldData['parent'],
                 'info' => '已经省略中间部分...',
@@ -244,6 +248,8 @@ class IndexAction extends BaseAction {
                 $retarray[$value['id']] = $value;
                 $retarray[$value['id']]["child"] = $this->get_tree_array($id, '');
             }
+        }else{
+            return false;
         }
         return $retarray;
     }
