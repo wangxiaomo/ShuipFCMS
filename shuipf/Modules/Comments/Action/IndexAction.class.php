@@ -18,16 +18,15 @@ class IndexAction extends BaseAction {
 
     function _initialize() {
         parent::_initialize();
+        $this->db = D("Comments");
         $this->setting = F("Comments_setting");
         if (!$this->setting) {
-            $this->setting = D("Comments")->comments_cache();
+            $this->setting = $this->db->comments_cache();
         }
-        $this->db = D("Comments");
     }
 
     //显示信息评论,json格式
     public function json() {
-        G('run');
         //信息ID
         $id = I('get.id', 0, 'intval');
         //栏目ID
