@@ -743,7 +743,7 @@ INSERT INTO `shuipfcms_menu` VALUES ('214', '213', 'Admin', 'Censor', 'add', '',
 INSERT INTO `shuipfcms_menu` VALUES ('215', '213', 'Admin', 'Censor', 'classify', '', '1', '1', '分类管理', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('230', '86', 'Member', 'Member', 'connect', '', '1', '1', '登陆授权管理', '登陆授权管理', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('231', '10', 'Admin', 'Config', 'addition', '', '1', '1', '高级配置', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('232', '75', 'Comments', 'emotion', 'index', '', '1', '1', '表情管理', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('232', '75', 'Comments', 'Emotion', 'index', '', '1', '1', '表情管理', '', '0');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_model`
