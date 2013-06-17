@@ -106,7 +106,6 @@ switch ($step) {
         }
         $folder = array('/',
             'd',
-            'd/file',
             'install',
             'shuipf/Conf',
             'shuipf/Conf/addition.php',
