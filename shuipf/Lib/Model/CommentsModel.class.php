@@ -63,8 +63,6 @@ class CommentsModel extends CommonModel {
         }
         //信息ID comment_id
         $mainData['comment_id'] = $data['comment_id'];
-        //评论状态
-        $mainData['approved'] = $this->commentsApproved;
         //回复评论id
         $mainData['parent'] = $data['parent'];
         $mainData = $this->token(false)->create($mainData);
@@ -97,6 +95,11 @@ class CommentsModel extends CommonModel {
             //设置错误信息
             $this->error = $secondaryDb->getError();
             return false;
+        }
+
+        //评论状态
+        if (!isset($mainData['approved'])) {
+            $mainData['approved'] = $this->commentsApproved;
         }
 
         //添加信息到评论主表
