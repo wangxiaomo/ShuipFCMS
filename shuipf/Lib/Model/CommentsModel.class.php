@@ -13,7 +13,9 @@ class CommentsModel extends CommonModel {
     //评论附加字段
     public $sideTablesField = '';
     //主表字段
-    public $mainField = array();
+    public $mainField = array(
+        'user_id' => array(),
+    );
     //副表字段
     public $secondaryField = array();
     //副表名称
@@ -32,6 +34,8 @@ class CommentsModel extends CommonModel {
         array('comment_id', 'require', '所属信息id不能为空！', 1),
         array('author', 'require', '评论作者不能为空！', 1),
         array('author_email', 'require', '评论作者联系邮箱不能为空！', 1),
+        array('author_email', 'email', '邮箱输入不正确！', 1),
+        array('user_id', 'number', '用户id必须为数字！'),
     );
     protected $_auto = array(
         // 新增的时候把date字段设置为当前时间
@@ -296,11 +300,11 @@ class CommentsModel extends CommonModel {
                 $this->mainField[$v['f']] = $v;
                 //非空验证
                 if ($v['ismust'] == 1) {
-                    $this->_auto[] = array($v['f'], 'require', $v['fzs'] ? $v['fzs'] : $v['fname'] . '不能为空！', 1);
+                    $this->_validate[] = array($v['f'], 'require', $v['fzs'] ? $v['fzs'] : $v['fname'] . '不能为空！', 1);
                 }
                 //正则验证
                 if ($v['regular']) {
-                    $this->_auto[] = array($v['f'], $v['regular'], $v['fzs'] ? $v['fzs'] : $v['fname'] . '输入的信息有误！', 0, 'regex', 1);
+                    $this->_validate[] = array($v['f'], $v['regular'], $v['fzs'] ? $v['fzs'] : $v['fname'] . '输入的信息有误！', 0, 'regex', 1);
                 }
             } else {
                 $this->secondaryField[$v['f']] = $v;

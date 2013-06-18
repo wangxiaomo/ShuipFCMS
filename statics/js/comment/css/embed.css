@@ -77,6 +77,7 @@
 #ds-reset ul.ds-children .ds-avatar img{width:30px;height:30px;max-width:100%;}
 #ds-reset ul.ds-children .ds-post-self{padding-left:0;}
 #ds-reset ul.ds-children .ds-comment-body{padding-left:38px;}
+#ds-reset li.ds-post-placeholder{text-align:center;color:#999999;padding:1em 0;}
 
 #ds-smilies-tooltip{border:1px #aaa solid;position:absolute;width:400px;background-color:#FFF;z-index:9999;box-shadow:0 0 2px rgba(0, 0, 0, 0.2);text-shadow:0 1px 0 #fff;-webkit-border-radius:3px;border-radius:3px;}#ds-smilies-tooltip a{cursor:pointer;}
 #ds-smilies-tooltip ul{list-style-type:none;padding:0;margin:0;}
