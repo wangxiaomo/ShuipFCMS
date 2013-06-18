@@ -166,7 +166,7 @@ class IndexAction extends BaseAction {
                 ), (isset($_GET['callback']) && $callback ? 'JSONP' : 'JSON'));
     }
 
-    //获取评论
+    //获取评论表情
     public function json_emote() {
         $cacheReplaceExpression = S('cacheReplaceExpression');
         // jsonp callback
@@ -259,7 +259,7 @@ class IndexAction extends BaseAction {
             if (false !== $commentsId) {
                 //设置评论间隔时间，cookie没啥样的感觉-__,-!
                 if ($this->setting['expire']) {
-                    $this->cookie($post['comment_id'], '1', array('expire' => (int) $this->setting['expire'] * 60));
+                    $this->cookie($post['comment_id'], '1', array('expire' => (int) $this->setting['expire']));
                 }
                 if ($commentsId === -1) {
                     $this->error($this->db->getError());
