@@ -30,7 +30,7 @@ class EmotionModel extends CommonModel {
         }
         F("Emotion", $cacheList);
         S('cacheReplaceExpression', NULL);
-        return $data;
+        return $cacheList;
     }
 
 }

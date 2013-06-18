@@ -1,3 +1,45 @@
+(function($){
+    $.fn.extend({
+        insertAtCaret: function(myValue){
+            var $t=$(this)[0];
+            if (document.selection) {
+                this.focus();
+                sel = document.selection.createRange();
+                sel.text = myValue;
+                this.focus();
+            }
+            else 
+                if ($t.selectionStart || $t.selectionStart == '0') {
+                    var startPos = $t.selectionStart;
+                    var endPos = $t.selectionEnd;
+                    var scrollTop = $t.scrollTop;
+                    $t.value = $t.value.substring(0, startPos) + myValue + $t.value.substring(endPos, $t.value.length);
+                    this.focus();
+                    $t.selectionStart = startPos + myValue.length;
+                    $t.selectionEnd = startPos + myValue.length;
+                    $t.scrollTop = scrollTop;
+                }
+                else {
+                    this.value += myValue;
+                    this.focus();
+                }
+        }
+    })  
+})(jQuery);
+//获取光标位置函数
+function getCursortPosition (ctrl) {
+    var CaretPos = 0;   // IE Support
+    if (document.selection) {
+    ctrl.focus ();
+        var Sel = document.selection.createRange ();
+        Sel.moveStart ('character', -ctrl.value.length);
+        CaretPos = Sel.text.length;
+    }
+    // Firefox support
+    else if (ctrl.selectionStart || ctrl.selectionStart == '0')
+        CaretPos = ctrl.selectionStart;
+    return (CaretPos);
+}
 (function (e, jQuery, Wind) {
     var n = e.document,
         u = n.getElementsByTagName("head")[0] || n.getElementsByTagName("body")[0],
@@ -168,14 +210,18 @@
                         replyactive.show();
                         //加载登陆信息
                         addModel.getUser();
-                        this.ajaxButton();
+                        init.ajaxButton();
                         //设置回复id
                         replyactive.children("form").find('input[name="parent"]').attr('value', comentid);
                         tool.localStorages();
+                        //表情
+                        emote.init();
                     });
                     jQuery('a.ds-ReplyHide').bind('click', function () {
                         addModel.commetnReplyHide(jQuery(this).data("comentid"));
                     });
+                    //表情
+                    emote.init();
                     //加载登陆信息
                     addModel.getUser();
                     //Wind.use('ajaxForm',function () {
@@ -245,6 +291,70 @@
                 var thread = jQuery('#ds-reset');
                 thread.append('<div id="ds-waiting"></div>');
                 this.getComment();
+            }
+        },
+        //表情
+        emote = {
+            init:function(){
+                //点击表情后隐藏
+                jQuery("#ds-smilies-tooltip").hide();
+                var ts = this;
+                //表情
+                jQuery('a.ds-add-emote').bind('click',function(event){
+                    //加载表情
+                    ts.htmls();
+                    //显示表情
+                    jQuery("#ds-smilies-tooltip").show();
+                    jQuery(document).one("click", function () {//对document绑定一个影藏Div方法
+                        jQuery("#ds-smilies-tooltip").hide();
+                    });
+                    jQuery("#ds-smilies-tooltip").click(function (ev) {
+                        ev.stopPropagation();
+                    });
+                    var emote = jQuery(this);
+                    var winheight = jQuery(e).height();
+                    var top = emote.offset().top - 169;
+                    var left = emote.offset().left;//按钮的位置左边距离
+                    //表单对象
+                    var form = emote.parents('.ds_form_post');
+                    jQuery('#ds-reset #ds-smilies-tooltip').offset({ top: top, left: left });
+                    jQuery(".ds-smilies-container img").bind('click',function(es){
+                        var title = jQuery(this).attr('title');
+                        form.find('textarea[name="content"]').insertAtCaret(title);
+                        //点击表情后隐藏
+                        jQuery("#ds-smilies-tooltip").hide();
+                        jQuery(".ds-smilies-container img").unbind('click');
+                    });
+                    event.stopPropagation();
+                });
+            },
+            htmls:function(){
+                if(jQuery('#ds-reset #ds-smilies-tooltip').length){
+                    return;
+                }
+                var reset = jQuery("#ds-reset");
+                var emote = '';
+                var strhtml = '<div id="ds-smilies-tooltip" style="width: 385px;">\
+                                  <div class="ds-smilies-container">\
+                                    <ul>Loading...</ul>\
+                                  </div>\
+                                </div>';
+                reset.append(strhtml);
+                jQuery.ajax({
+                    type: "GET",
+                    async:false,
+                    url: init.DOMAIN + 'index.php?g=Comments&m=Index&a=json_emote',
+                    dataType: "jsonp",
+                    jsonp: 'callback',
+                    success: function (json) {
+                        if(json.data){
+                            jQuery.each(json.data, function (lab, img) {
+                                emote += '<li>'+img+'</li>';
+                            })
+                            jQuery('.ds-smilies-container ul').html(emote);
+                        }
+                    }
+                });
             }
         },
         addModel = {

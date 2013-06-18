@@ -304,7 +304,7 @@ class CommentsModel extends CommonModel {
                 }
                 //正则验证
                 if ($v['regular']) {
-                    $this->_validate[] = array($v['f'], $v['regular'], $v['fzs'] ? $v['fzs'] : $v['fname'] . '输入的信息有误！', 0, 'regex', 1);
+                    $this->_validate[] = array($v['f'], $v['regular'], $v['fzs'] ? $v['fzs'] : $v['fname'] . '输入的信息有误！', 2, 'regex');
                 }
             } else {
                 $this->secondaryField[$v['f']] = $v;
@@ -314,7 +314,7 @@ class CommentsModel extends CommonModel {
                 }
                 //正则验证
                 if ($v['regular']) {
-                    $this->_autoSecondary[] = array($v['f'], $v['regular'], $v['fzs'] ? $v['fzs'] : $v['fname'] . '输入的信息有误！', 0, 'regex', 1);
+                    $this->_autoSecondary[] = array($v['f'], $v['regular'], $v['fzs'] ? $v['fzs'] : $v['fname'] . '输入的信息有误！', 2, 'regex');
                 }
             }
         }

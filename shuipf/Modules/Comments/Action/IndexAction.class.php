@@ -166,6 +166,18 @@ class IndexAction extends BaseAction {
                 ), (isset($_GET['callback']) && $callback ? 'JSONP' : 'JSON'));
     }
 
+    //获取评论
+    public function json_emote() {
+        $cacheReplaceExpression = S('cacheReplaceExpression');
+        // jsonp callback
+        $callback = I('get.callback');
+        $this->ajaxReturn(array(
+            'data' => $cacheReplaceExpression,
+            'info' => '',
+            'status' => true,
+                ), (isset($_GET['callback']) && $callback ? 'JSONP' : 'JSON'));
+    }
+
     //显示某篇信息的评论页面
     public function comment() {
         //所属文章id
