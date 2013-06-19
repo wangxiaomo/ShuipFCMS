@@ -888,4 +888,15 @@ function title_style($style, $html = 1) {
     return $style ? $str : "";
 }
 
+/**
+ * 评论表情替换
+ * @param type $content 评论内容
+ * @param type $emotionPath 表情存放路径，以'/'结尾
+ * @param type $classStyle 表情img附加样式
+ * @return type
+ */
+function cReplaceExpression($content ,$emotionPath = '', $classStyle = ''){
+    D("Comments")->replaceExpression($content ,$emotionPath, $classStyle);
+    return $content;
+}
 ?>
