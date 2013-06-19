@@ -84,11 +84,11 @@
           </tr>
           <volist name="noEmotion" id="vo">
           <tr>
-            <td><input type="checkbox" name="emotionid[]" value="{$key}" class="J_check J_emotionid" data-yid="J_check_y2" data-xid="J_check_x2" /></td>
-            <td><input type="number" class="input length_1 J_orderid" name="orderid[]" /></td>
-            <td><input type="text" class="input length_3 J_emotionname" name="emotionname[] "/></td>
+            <td><input type="checkbox" name="emotionid[{$key}]" value="{$key}" class="J_check J_emotionid" data-yid="J_check_y2" data-xid="J_check_x2" /></td>
+            <td><input type="number" class="input length_1 J_orderid" name="orderid[{$key}]" /></td>
+            <td><input type="text" class="input length_3 J_emotionname" name="emotionname[{$key}] "/></td>
             <td>&nbsp;</td>
-            <td>{$vo.filename}<input type="hidden" value="{$vo.filename}" name="icon[]" class="J_icon" /></td>
+            <td>{$vo.filename}<input type="hidden" value="{$vo.filename}" name="icon[{$key}]" class="J_icon" /></td>
             <td><img src="{$config_siteurl}statics/images/emotion/{$vo.filename}" /></td>
             <td><a href="{:U('Comments/Emotion/index','action=add')}" class="J_emotion_add">[添加]</a></td>
           </tr>

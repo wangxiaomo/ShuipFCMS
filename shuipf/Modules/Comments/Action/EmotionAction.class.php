@@ -48,6 +48,7 @@ class EmotionAction extends AdminbaseAction {
                 $orderid = I('post.orderid','','');
                 $icon = I('post.icon','','');
                 $emotionname = I('post.emotionname','','');
+                C('TOKEN_ON',false);
                 foreach($emotionid as $k => $eid){
                     $info = $emotionPathArray[$eid];
                     if(!$info){
@@ -56,12 +57,18 @@ class EmotionAction extends AdminbaseAction {
                     if(!$emotionname[$k]){
                         $this->error("表情名称不能为空！");
                     }
-                    $this->db->add(array(
+                    //自动验证
+                    $data = $this->db->token(false)->create(array(
                         'emotion_name' => $emotionname[$k],
                         'emotion_icon' => $info['filename'],
                         'vieworder' => 0,
-                        'isused' => 1,
+                        'isused' => 1
                     ));
+                    if($data){
+                        $this->db->add($data);
+                    }else{
+                        $this->error($this->db->getError());
+                    }
                 }
                 $this->db->emotion_cache();
                 $this->success("表情添加成功！");
