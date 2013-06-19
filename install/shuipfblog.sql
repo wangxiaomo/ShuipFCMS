@@ -307,7 +307,7 @@ CREATE TABLE `shuipfcms_comments_setting` (
   `order` varchar(20) NOT NULL COMMENT '排序',
   `strlength` int(5) NOT NULL COMMENT '允许最大字数',
   `status` tinyint(1) NOT NULL COMMENT '关闭/开启评论',
-  `expire` tinyint(4) NOT NULL COMMENT '评论间隔时间单位秒'
+  `expire` int(11) NOT NULL COMMENT '评论间隔时间单位秒'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='评论配置';
 
 -- ----------------------------
