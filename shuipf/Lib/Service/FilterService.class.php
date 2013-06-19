@@ -7,6 +7,15 @@
  */
 
 class FilterService {
+    
+    //审核状态
+    const statusCheck = -1;
+    //拒绝状态
+    const statusRefuse = 0;
+    //替换状态
+    const statusReplace = -2;
+    //通过
+    const statusPass = 1;
 
     //错误信息
     public $error = "";
@@ -58,7 +67,7 @@ class FilterService {
                         //高亮敏感词
                         $message = $this->highlight($message, $banned_words);
                         $this->error = "抱歉，您填写的内容包含不良信息【" . $this->words_found[0] . "】而无法提交！";
-                        return 0;
+                        return self::statusRefuse;
                     }
                 }
             }
@@ -75,7 +84,7 @@ class FilterService {
                     //高亮敏感词
                     $message = $this->highlight($message, $mod_words);
                     $this->error = "抱歉，您填写的内容包含敏感关键字【" . $this->words_found[0] . "】需要进行管理员审核！";
-                    return -1;
+                    return self::statusCheck;
                 }
             }
         }
@@ -91,9 +100,9 @@ class FilterService {
                 $i += $limitnum;
                 $message = preg_replace($find_words, $replace_words, $message);
             }
-            return 2;
+            return self::statusReplace;
         }
-        return 1;
+        return self::statusPass;
     }
 
     /**
