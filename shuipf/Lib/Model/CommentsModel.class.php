@@ -7,6 +7,13 @@
  */
 
 class CommentsModel extends CommonModel {
+    
+    //审核状态
+    const statusCheck = -1;
+    //拒绝状态
+    const statusRefuse = 0;
+    //替换状态
+    const statusReplace = -2;
 
     //默认存储副表id
     public $sideTables = 0;
@@ -85,9 +92,9 @@ class CommentsModel extends CommonModel {
         //敏感词过滤
         if (defined("IN_ADMIN") && IN_ADMIN == false) {
             $filterStatus = $this->commentsFilter($secondaryField['content']);
-            if (false === $filterStatus) {
+            if (self::statusRefuse === $filterStatus) {
                 return false;
-            } else if ($filterStatus === -1) {
+            } else if ( self::statusCheck === $filterStatus) {
                 //有审核关键字，所以评论设置为审核状态
                 $mainData['approved'] = 0;
             }
@@ -112,7 +119,14 @@ class CommentsModel extends CommonModel {
             $secondaryField['id'] = $commentsId;
             $secondaryField['comment_id'] = $mainData['comment_id'];
             if ($secondaryDb->add($secondaryField)) {
-                return (isset($filterStatus)) ? $filterStatus : $commentsId;
+                //状态码 -1 审核状态， 大于0 评论id， 0或false 评论发表失败。
+                $status = $commentsId;
+                if (isset($filterStatus) && true !== $filterStatus) {
+                    $status = $filterStatus;
+                } else if (!$mainData['approved']) {
+                    $status = self::statusCheck;
+                }
+                return $status;
             } else {
                 $this->where(array('id' => $commentsId))->delete();
                 $this->error = '评论入库失败！';
@@ -165,9 +179,9 @@ class CommentsModel extends CommonModel {
         //敏感词过滤
         if (defined("IN_ADMIN") && IN_ADMIN == false) {
             $filterStatus = $this->commentsFilter($secondaryField['content']);
-            if (false === $filterStatus) {
+            if (self::statusRefuse === $filterStatus) {
                 return false;
-            } else if ($filterStatus === -1) {
+            } else if ($filterStatus === self::statusCheck) {
                 //有审核关键字，所以评论设置为审核状态
                 $mainData['approved'] = 0;
             }
@@ -185,7 +199,14 @@ class CommentsModel extends CommonModel {
         $commentsId = $this->where(array("id" => $data['id']))->save($mainData);
         if (false !== $commentsId) {
             if (false !== $secondaryDb->where(array("id" => $data['id']))->save($secondaryField)) {
-                return (isset($filterStatus)) ? $filterStatus : $commentsId;
+                //状态码 -1 审核状态， 大于0 评论id， 0或false 评论发表失败。
+                $status = $commentsId;
+                if (isset($filterStatus) && true !== $filterStatus) {
+                    $status = $filterStatus;
+                } else if (!$mainData['approved']) {
+                    $status = self::statusCheck;
+                }
+                return $status;
             } else {
                 $this->error = '更新数据库失败！';
                 return false;
@@ -247,13 +268,13 @@ class CommentsModel extends CommonModel {
         }
         return false;
     }
-    
+
     /**
      * 通过标识字段进行删除评论
      * @param type $comment_id 标识 例如 c-15-3
      * @return boolean
      */
-    public function deleteCommentsMark($comment_id){
+    public function deleteCommentsMark($comment_id) {
         if (!$comment_id) {
             $this->error = '数据类型有误！';
             return false;
@@ -328,13 +349,17 @@ class CommentsModel extends CommonModel {
         $Filter = service("Filter");
         $status = $Filter->check($content);
         switch ($status) {
-            case -1://表示需要审核
+            case self::statusCheck://表示需要审核
                 $this->error = $Filter->getError();
-                return -1;
+                return self::statusCheck;
                 break;
-            case 0://禁止发表
+            case self::statusRefuse://禁止发表
                 $this->error = $Filter->getError();
-                return false;
+                return self::statusRefuse;
+                break;
+             case self::statusReplace://禁止发表
+                $this->error = $Filter->getError();
+                return self::statusReplace;
                 break;
         }
         return true;

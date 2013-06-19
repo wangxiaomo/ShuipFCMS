@@ -235,14 +235,31 @@ class IndexAction extends BaseAction {
             if ($this->setting['code'] == 1) {
                 $verify = I('post.verify');
                 if (empty($verify) || !$this->verify($verify, 'comment')) {
-                    $this->error("验证码错误，请重新输入！");
+                    if (IS_AJAX) {
+                        $this->ajaxReturn(array(
+                            'info' => '验证码错误，请重新输入！',
+                            'focus' => 'verify',
+                            'status' => 0,
+                        ));
+                    } else {
+                        $this->error("验证码错误，请重新输入！");
+                    }
                 }
             }
 
             //评论内容长度验证
             $content = I('post.content');
             if (false === $this->db->check($content, '0,' . (int) $this->setting['strlength'], 'length')) {
-                $this->error("评论内容超出系统设置允许的最大长度" . $this->setting['strlength'] . "字节！");
+                $info = "评论内容超出系统设置允许的最大长度" . $this->setting['strlength'] . "字节！";
+                if (IS_AJAX) {
+                    $this->ajaxReturn(array(
+                        'info' => $info,
+                        'status' => 0,
+                        'focus' => 'content',
+                    ));
+                } else {
+                    $this->error($info);
+                }
             }
 
             //检查回复的评论是否存在
@@ -261,8 +278,20 @@ class IndexAction extends BaseAction {
                 if ($this->setting['expire']) {
                     $this->cookie($post['comment_id'], '1', array('expire' => (int) $this->setting['expire']));
                 }
-                if ($commentsId === -1) {
-                    $this->error($this->db->getError());
+                
+                if ($commentsId === -1) {//待审核
+                    $error = $this->db->getError();
+                    if(empty($error)){
+                        $error = '评论发表成功，但需要审核通过后才显示！';
+                    }
+                    if (IS_AJAX) {
+                        $this->ajaxReturn(array(
+                            'info' => $error,
+                            'status' => $commentsId,
+                        ));
+                    } else {
+                        $this->error($error);
+                    }
                 } else {
                     $this->success("评论发表成功！");
                 }

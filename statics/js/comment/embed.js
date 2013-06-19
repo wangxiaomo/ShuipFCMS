@@ -268,17 +268,29 @@ function getCursortPosition (ctrl) {
                                 btn.text(text + '中...').prop('disabled', true).addClass('disabled');
                             },
                             success: function (data, statusText, xhr, $form) {
+                                if(init.DEBUG){
+                                    console.log('提交后服务器返回',data);
+                                }
                                 var text = btn.text();
                                 init.LOCK = false;
                                 //按钮文案、状态修改
                                 btn.removeClass('disabled').text(text.replace('中...', '')).parent().find('span').remove();
-                                if (data.state === 'success') {
+                                if (data.status > 0) {
                                     btn.removeProp('disabled').removeClass('disabled');
                                     jQuery('textarea[name="content"]').val('')
+                                    //重新加载数据
                                     init.getComment();
-                                } else if (data.state === 'fail') {
+                                } else if (data.status == -1) {
+                                    btn.removeProp('disabled').removeClass('disabled');
+                                    jQuery('textarea[name="content"]').val('')
+                                    alert(data.info);
+                                }else{
                                     btn.removeProp('disabled').removeClass('disabled');
                                     alert(data.info);
+                                }
+                                //焦点
+                                if(data.focus){
+                                    form.find('input[name="'+data.focus+'"]').focus();
                                 }
                             }
                         });
@@ -291,7 +303,7 @@ function getCursortPosition (ctrl) {
                 this.getComment();
             }
         },
-        //表情
+        //表情处理
         emote = {
             init:function(){
                 //点击表情后隐藏
@@ -299,11 +311,13 @@ function getCursortPosition (ctrl) {
                 var ts = this;
                 //表情
                 jQuery('a.ds-add-emote').bind('click',function(event){
+                    ts.unbindclick();
                     //加载表情
                     ts.htmls();
                     //显示表情
                     jQuery("#ds-smilies-tooltip").show();
                     jQuery(document).one("click", function () {//对document绑定一个影藏Div方法
+                        ts.unbindclick();
                         jQuery("#ds-smilies-tooltip").hide();
                     });
                     jQuery("#ds-smilies-tooltip").click(function (ev) {
@@ -321,10 +335,14 @@ function getCursortPosition (ctrl) {
                         form.find('textarea[name="content"]').insertAtCaret(title);
                         //点击表情后隐藏
                         jQuery("#ds-smilies-tooltip").hide();
-                        jQuery(".ds-smilies-container img").unbind('click');
+                        ts.unbindclick();
                     });
                     event.stopPropagation();
                 });
+            },
+            //去除原来绑定的click事件
+            unbindclick:function(){
+                jQuery(".ds-smilies-container img").unbind('click');
             },
             htmls:function(){
                 if(jQuery('#ds-reset #ds-smilies-tooltip').length){
@@ -600,10 +618,14 @@ function getCursortPosition (ctrl) {
                                   <td>网址：</td>\
                                     <td><input name="author_url" class="J_CmFormField" placeholder="http://"/></td>\
                                     <td>验证码：</td>\
-                                    <td><input name="verify" placeholder="验证码"/><img  id="code_img" src="' + init.DOMAIN + init.VERIFYURL + '"  alt="验证码" onClick="this.src = \'' + init.DOMAIN + init.VERIFYURL + '&time=' + Math.random() + '\'"></td>\
+                                    <td style="vertical-align:middle"><input name="verify" placeholder="验证码"/><img  id="code_img" src="' + init.DOMAIN + init.VERIFYURL + '"  alt="验证码" onClick="this.src = \'' + init.DOMAIN + init.VERIFYURL + '&time=' + Math.random() + '\'"></td>\
                                   </tr>';
                 }
                 strHtml = '<table>' + userHtml + qtHtml + '</table>';
+                //检查是否游客允许评论
+                if(init.config.guest < 1){
+                    strHtml = '游客不运行评论，请登陆后操作！o(∩_∩)o ';
+                }
                 jQuery('.ds-user').empty().append(strHtml);
             }
         },
@@ -619,8 +641,7 @@ function getCursortPosition (ctrl) {
                 var getHours = t.getHours();
                 var getMinutes = t.getMinutes();
                 if (delay > (10 * 24 * 60 * 60 * 1000)) {
-                    nowd.setTime(time);
-                    ret = nowd.toLocaleString();
+                    ret = tool.getYearsMonthDay(time);
                 } else if (delay >= (24 * 60 * 60 * 1000)) {
                     delay = (delay / (24 * 60 * 60 * 1000));
                     var num = Math.floor(delay);
