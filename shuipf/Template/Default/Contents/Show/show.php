@@ -28,8 +28,16 @@
 }
 </style>
 <![endif]-->
+<script type="text/javascript">
+//全局变量
+var GV = {
+    DIMAUB: "{$config_siteurl}",
+    JS_ROOT: "statics/js/"
+};
+</script>
 <script type='text/javascript' src='{$Config.siteurl}statics/js/jquery.js'></script>
 <script type='text/javascript' src='{$Config.siteurl}statics/blog/js/ls.js'></script>
+<script type="text/javascript" src="{$config_siteurl}statics/js/ajaxForm.js"></script>
 <!--html5 SHIV的调用-->
 <script type='text/javascript' src='{$Config.siteurl}statics/blog/js/html5.js'></script>
 </head>
@@ -117,78 +125,7 @@
       </if>
     </content>
     <div class="cm block">
-      <h1>跟作者说两句</h1>
-      <div id="respond" class="grid">
-        <form action="{:U("Comments/Index/add")}" method="post" id="commentform" class="J_Cm">
-          <div class="g-u form-left">
-            <p>
-              <label for="author">昵称<span>（必须）</span></label>
-              <input type="text" style="width:190px;" name="author" class="J_CmFormField" id="author" value="" size="28" tabindex="1" aria-required="true">
-            </p>
-            <p>
-              <label for="email">邮箱<span>（必须，不会公开）</span></label>
-              <input type="text" style="width:190px;" name="author_email" id="author_email" class="J_CmFormField" value="" size="28" tabindex="2" aria-required="true">
-            </p>
-            <p>
-              <label for="url">网站<span>（url）</span></label>
-              <input type="text" style="width:190px;" name="author_url" id="author_url" class="J_CmFormField" value="" size="28" tabindex="3">
-            </p>
-            <input name="submit" type="submit" id="comment-form-submit" value="提 交">
-            <p class="load" style=" height:32px;line-height:32px; display:none;"><img style="vertical-align:middle;" src="{$Config.siteurl}statics/blog/images/load.gif">正在努力发布中... ...</p>
-            <input type="hidden" name="comment_id" value="{$id}" id="comment_id">
-            <input type="hidden" name="comment_catid" value="{$catid}" id="comment_catid">
-            <input type="hidden" name="parent" id="comment_parent" value="0">
-            <p></p>
-          </div>
-          <div class="g-u form-right">
-            <label for="comment"> 评论正文 <a href="javascript:void(0)" id="cancel_reply" style="display:none;" onClick="movecfm(null,0,1,null);">取消回复！</a> </label>
-            <div class="cm-smilies"> 表情 </div>
-            <textarea name="content" id="ComContent" cols="58" rows="10" tabindex="4"></textarea>
-          </div>
-        </form>
-      </div>
-      <h1 class="cm-number">评论列表</h1>
-      <ol class="comment-list">
-        <li style=" height:32px;line-height:32px;"><img style="vertical-align:middle;" src="{$Config.siteurl}statics/blog/images/load.gif">正在努力的加载数据中... ...</li>
-        <!--评论循环开始--> 
-        <script type="text/tmpl" id="comment-template">
-        <li class="comment even thread-even depth-1 comment-item J_CommentListItem" id="li-comment-<%=id%>">
-          <div class="comment-single" id="comment-<%=id%>">
-            <div class="member member-author comment-author vcard"> 
-			   <img alt="<%=author%>" src="<%=avatar%>" class="avatar avatar-50 photo" height="50" width="50"/>
-              <div class="figcaption"><b><a href="<%=author_url%>" rel="external nofollow" class="url" target="_blank"><%=author%></a></b></div>
-            </div>
-            <div class="comment-content comment-body">
-              <p><%=content%></p>
-              <p class="thdrpy"><a href="javascript:void(0)" onClick="movecfm(event,<%=id%>,<%=id%>,'<%=author%>');">回复</a></p>
-              <!--回复开始-->
-			  <% ;if (this.arrchild !== undefined) { %>
-			  <% ;$.each(arrchild ,function(i,v){ %>
-              <div class="pos-rel comment-childs chalt" id="h-comment-<%=v.id%>">
-                <div class="pos-rel comment-childs chalt" id="h-comment-<%=v.id%>">
-                  <div class="comment-yellow-box pos-rel comment-content-header"> 
-				      <span class="comment-author-first-text"><%=v.author%></span> 回复于 <span class="comment-time"><%=v.date%></span> 
-				  </div>
-                  <div class="comment-content-body grid">
-                    <div class="pos-abs avatar-container g-u"> <img alt="<%=v.author%>" src="<%=v.avatar%>" class="avatar avatar-50 photo" height="50" width="50"> </div>
-                    <div class="g-u comment-single-content">
-                      <p><%=v.content%></p>
-					  <p class="thdrpy"><a href="javascript:void(0)" onClick="movecfm(event,<%=id%>,<%=id%>,'<%=v.author%>');">回复</a></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-			  <% }); %>
-			  <% } %>
-              <!--回复结束--> 
-            </div>
-            <div class="time"><%=date%></div>
-			<div class="bianh">#<%=id%></div>
-          </div>
-        </li>
-		</script> 
-        <!--评论循环结束-->
-      </ol>
+      <div id="ds-reset"></div>
     </div>
   </div>
   <!--主体内容结束-->
@@ -353,170 +290,23 @@ $(document).ready(function (){
 	};
 	histories.save(data);
 });
-//评论开始
-var comment = new Comment('{$id}','{$catid}',{
-	container:".comment-list",
-	template:"comment-template",
-	domain:"{$Config.siteurl}",
-	formid:"#commentform"
-});
-//更多
-if(comment.TotalPages > 1){
-	$("#commentgenduo a").click(function(){
-		comment.show(comment.page+1);
-	});
-}
-$("#commentform").unbind("submit");
-$("#commentform").submit(function(e){
-	if($("#author").val()==""){
-		art.dialog({
-			 id:'error',
-             icon: 'error',
-             content: "昵称不能为空！",
-			 ok:function(){
-				 $("#author").focus();
-			 }
-        });
-		return false;
-	}
-	if($("#author_email").val()==""){
-		art.dialog({
-			 id:'error',
-             icon: 'error',
-             content: "邮箱不能为空！",
-			 ok:function(){
-				 $("#author_email").focus();
-			 }
-        });
-		return false;
-	}
-	if($("#ComContent").val()==""){
-		art.dialog({
-			 id:'error',
-             icon: 'error',
-             content: "还没输入评论内容！",
-			 ok:function(){
-				 $("#ComContent").focus();
-			 }
-        });
-		return false;
-	}
-	comment.sub();
-	return false;
- });
 //代码高亮
-SyntaxHighlighter.highlight();
-
-var commentformid = "commentform";
-var USERINFO = false;
-var atreply = "author";
-var rpPel = null;
-var Commentarea = null;
-
-function $s() {
-    if (arguments.length == 1)
-    return get$(arguments[0]);
-    var elements = [];
-    $c(arguments).each(function (el) {
-        elements.push(get$(el));
-    });
-    return elements;
-}
-
-function get$(el) {
-    if (typeof el == 'string')
-    el = document.getElementById(el);
-    return el;
-}
-
-function $c(array) {
-    var nArray = [];
-    for (i = 0; el = array[i]; i++) nArray.push(el);
-    return nArray;
-}
-
-function commentarea() {
-    var fi = $s(commentformid).getElementsByTagName('textarea');
-    for (var i = 0; i < fi.length; i++) {
-        if (fi[i].name == 'content') {
-            return fi[i];
-        }
-    }
-    return null;
-}
-
-function movecfm(event, Id, dp, author) {
-
-    var cfm = $s(commentformid);
-    if (cfm == null) {
-        alert("ERROR:\nCan't find the 'commentformid' div.");
-        return false;
-    }
-    var reRootElement = $s("cancel_reply");
-    if (reRootElement == null) {
-        alert("Error:\nNo anchor tag called 'cancel_reply'.");
-        return false;
-    }
-    var replyId = $s("comment_parent");
-    if (replyId == null) {
-        alert("Error:\nNo form field called 'comment_parent'.");
-        return false;
-    }
-    var dpId = $s("comment_parent");
-    if (Commentarea == null)
-    Commentarea = commentarea();
-    if (parseInt(Id)) {
-        if (cfm.style.display == "none") {
-            alert("New Comment is submiting, please wait a moment");
-            return false;
-        }
-        if (event == null)
-        event = window.event;
-        rpPel = event.srcElement ? event.srcElement : event.target;
-        rpPel = rpPel.parentNode.parentNode;
-        var OId = $s("comment-" + Id);
-        if (OId == null) {
-            //alert("Error:\nNo comment called 'comment-xxx'.");
-            //return false;
-            OId = rpPel;
-        }
-        replyId.value = Id;
-        if (dpId)
-        dpId.value = dp;
-        reRootElement.style.display = "block";
-        if ($s("cfmguid") == null) {
-            var c = document.createElement("div");
-            c.id = "cfmguid";
-            c.style.display = "none";
-            cfm.parentNode.insertBefore(c, cfm);
-        }
-        cfm.parentNode.removeChild(cfm);
-        OId.appendChild(cfm);
-        if (Commentarea && Commentarea.display != "none") {
-            Commentarea.focus();
-            if (atreply == 'author')
-            Commentarea.value = '@' + author + ', ';
-            else if (atreply == 'authorlink')
-            Commentarea.value = '@' + author + ', ';
-        }
-        cfm.style.display = "block";
-    } else {
-        replyId.value = "0";
-        if (dpId)
-        dpId.value = "0";
-        reRootElement.style.display = "none";
-        var c = $s("cfmguid");
-        if (c) {
-            cfm.parentNode.removeChild(cfm);
-            c.parentNode.insertBefore(cfm, c);
-        }
-        if (parseInt(dp) && Commentarea && Commentarea.display != "none") {
-            Commentarea.focus();
-            Commentarea.value = '';
-        }
-    }
-    return true;
-}              
+SyntaxHighlighter.highlight();    
+//评论
+var commentsQuery = {
+    'catid': '{$catid}',
+    'id': '{$id}',
+    'size': 10
+};
+(function () {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';
+    ds.async = true;
+    ds.src = GV.DIMAUB+'statics/js/comment/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+//评论结束
 </script> 
 <script type="text/javascript" src="http://v2.jiathis.com/code/jia.js" charset="utf-8"></script> 
 <!-- UJian Button BEGIN --> 

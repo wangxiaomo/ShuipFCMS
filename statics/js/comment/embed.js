@@ -40,7 +40,7 @@ function getCursortPosition (ctrl) {
         CaretPos = ctrl.selectionStart;
     return (CaretPos);
 }
-(function (e, jQuery, Wind) {
+(function (e, jQuery) {
     var n = e.document,
         u = n.getElementsByTagName("head")[0] || n.getElementsByTagName("body")[0],
         //初始化方法
@@ -224,9 +224,7 @@ function getCursortPosition (ctrl) {
                     emote.init();
                     //加载登陆信息
                     addModel.getUser();
-                    //Wind.use('ajaxForm',function () {
-                        init.ajaxButton();
-                    //})
+                    init.ajaxButton();
                 } else {
                     jQuery('a.ds-post-reply').hide();
                 }
@@ -602,7 +600,7 @@ function getCursortPosition (ctrl) {
                                   <td>网址：</td>\
                                     <td><input name="author_url" class="J_CmFormField" placeholder="http://"/></td>\
                                     <td>验证码：</td>\
-                                    <td><input name="url" placeholder="验证码"/><img  id="code_img" src="' + init.DOMAIN + init.VERIFYURL + '"  alt="验证码" onClick="this.src = \'' + init.DOMAIN + init.VERIFYURL + '&time=' + Math.random() + '\'"></td>\
+                                    <td><input name="verify" placeholder="验证码"/><img  id="code_img" src="' + init.DOMAIN + init.VERIFYURL + '"  alt="验证码" onClick="this.src = \'' + init.DOMAIN + init.VERIFYURL + '&time=' + Math.random() + '\'"></td>\
                                   </tr>';
                 }
                 strHtml = '<table>' + userHtml + qtHtml + '</table>';
@@ -733,4 +731,4 @@ function getCursortPosition (ctrl) {
     init.injectStylesheet(init.DOMAIN + init.EMBED_STYLESHEET);
     //加载html结构
     init.htmls();
-})(window, jQuery, Wind);
+})(window, jQuery);

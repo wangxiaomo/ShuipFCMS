@@ -247,6 +247,57 @@ class CommentsModel extends CommonModel {
         }
         return false;
     }
+    
+    /**
+     * 通过标识字段进行删除评论
+     * @param type $comment_id 标识 例如 c-15-3
+     * @return boolean
+     */
+    public function deleteCommentsMark($comment_id){
+        if (!$comment_id) {
+            $this->error = '数据类型有误！';
+            return false;
+        }
+        //判断是批量删除还是单条删除
+        if (is_array($comment_id)) {
+            $list = $this->where(array('comment_id' => array('IN', $comment_id)))->select();
+            if (!$list) {
+                $this->error = '评论不存在！';
+                return false;
+            }
+            //取出需要删除副表id
+            $sideId = array();
+            foreach ($list as $r) {
+                if ($r['id']) {
+                    $sideId[$r['stb']][] = $r['id'];
+                }
+            }
+            //删除主表评论
+            if (false !== $this->where(array('comment_id' => array('IN', $comment_id)))->delete()) {
+                //删除副表内容
+                foreach ($sideId as $stb => $dss) {
+                    M($this->viceTableName($stb))->where(array('id' => array('IN', $dss)))->delete();
+                }
+                return true;
+            } else {
+                $this->error = '删除失败！';
+                return false;
+            }
+        } else {
+            $info = $this->where(array('comment_id' => $comment_id))->find();
+            if (!$info) {
+                $this->error = '评论不存在！';
+                return false;
+            }
+            if (false !== $this->where(array('comment_id' => $comment_id))->delete()) {
+                M($this->viceTableName($stb))->where(array('id' => $info['id']))->delete();
+                return true;
+            } else {
+                $this->error = '删除失败！';
+                return false;
+            }
+        }
+    }
 
     /**
      * 审核评论
@@ -426,7 +477,7 @@ class CommentsModel extends CommonModel {
             //加载表情缓存
             $emotion = F('Emotion');
             if (!$emotion) {
-                $emotion = D('Emotion')->emotion_cache();
+                $emotion = D('Comments/Emotion')->emotion_cache();
             }
             //需要替换的标签
             $replace = array();

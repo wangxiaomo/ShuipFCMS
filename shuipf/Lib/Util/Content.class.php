@@ -511,8 +511,6 @@ class Content {
         $this->Content = new ContentModel($this->table_name);
         //删除附件
         $Attachment = service("Attachment");
-        import("Comment");
-        $Comment = new Comment();
 
         $r = $this->Content->relation(true)->where(array("id" => $id))->find();
         if ($content_ishtml && !$r['islink']) {
@@ -529,7 +527,7 @@ class Content {
         M("Hits")->where(array("hitsid" => "c-" . $catid . "-" . $id))->delete();
         //删除评论
         $comment_id = "c-$catid-$id";
-        $Comment->deletecommentid($comment_id);
+        D('Comments')->deleteCommentsMark($comment_id);
         $Attachment->api_delete('c-' . $catid . '-' . $id);
         //删除对应的会员投稿记录信息
         M("MemberContent")->where(array("content_id" => $id, "catid" => $catid))->delete();

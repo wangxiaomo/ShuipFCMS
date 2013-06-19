@@ -36,8 +36,6 @@ return array(
     "Attachment" => LIB_PATH.'Util/Attachment.class.php',
     //Ftp
     "Ftp" => LIB_PATH.'Util/Ftp.class.php',
-    //评论处理类
-    "Comment" => APP_PATH.C("APP_GROUP_PATH")."/Comments/Util/Comment.class.php",
     //Cacheapi 缓存
     "Cacheapi" => LIB_PATH.'Util/Cacheapi.class.php',
     //分页类

@@ -24,10 +24,10 @@ class CommentTagLib {
         $id = (int) $data['id'];
         $commentid = "c-$catid-$id";
         //缓存时间
-        $cache = (int)$data['cache'];
+        $cache = (int) $data['cache'];
         $cacheID = md5($commentid);
-        
-        if($cache && $datacache = S($cacheID)){
+
+        if ($cache && $datacache = S($cacheID)) {
             return $datacache;
         }
 
@@ -40,8 +40,8 @@ class CommentTagLib {
             "total" => $total,
         );
         //结果进行缓存
-        if($cache){
-            S($cacheID,$data,$cache);
+        if ($cache) {
+            S($cacheID, $data, $cache);
         }
         return $data;
     }
@@ -56,9 +56,9 @@ class CommentTagLib {
      */
     public function lists($data) {
         //缓存时间
-        $cache = (int)$data['cache'];
+        $cache = (int) $data['cache'];
         $cacheID = md5(implode(",", $data));
-        if($cache && $cachedata = S($cacheID)){
+        if ($cache && $cachedata = S($cacheID)) {
             return $cachedata;
         }
         $catid = (int) $data['catid'];
@@ -71,7 +71,7 @@ class CommentTagLib {
         $where = array();
         $where['approved'] = array("EQ", 1);
 
-        $db = M("Comments");
+        $db = D("Comments");
         $order = array("date" => "DESC");
         if ($hot == 0) {
             $order = array("date" => "DESC");
@@ -82,26 +82,34 @@ class CommentTagLib {
         }
 
         $data = $db->where($where)->order($order)->limit($num)->select();
-        import("Comment");
-        $Comment = new Comment();
-        $data = $Comment->showdata($data);
-        //头像处理
-        foreach ($data as $k => $v) {
-            //avatar头像处理
-            if((int)$v['user_id']>0){
-                $data[$k]['avatar'] = get_avatar((int)$v['user_id']);
-            }else{
-                $data[$k]['avatar'] = get_avatar($v['author_email']);
+        //取详细数据
+        $listComment = array();
+        foreach ($data as $r) {
+            $listArr[$r['stb']][] = $r['id'];
+        }
+        foreach ($listArr as $stb => $ids) {
+            if ((int) $stb > 0) {
+                $list = M($db->viceTableName($stb))->where(array('id' => array('IN', $ids)))->select();
+                foreach ($list as $r) {
+                    $listComment[$r['id']] = $r;
+                }
             }
-            $data[$k]['date'] = date($date, $v['date']);
-            if (isset($data[$k]['arrchild'])) {
-                $data[$k]['arrchild'] = $this->commentdata($data[$k]['arrchild']);
+        }
+        //评论主表数据和副表数据合并
+        foreach ($data as $k => $r) {
+            if ((int) $r['id']) {
+                $data[$k] = array_merge($r, $listComment[$r['id']]);
+                //增加头像调用
+                if($r['user_id']){
+                    $data[$k]['avatar'] = service("Passport")->user_getavatar((int)$r['user_id']);
+                }else{
+                    $data[$k]['avatar'] = CONFIG_SITEURL_MODEL.'api.php?m=avatar&a=gravatar&email='.$r['author_email'];
+                }
             }
-            $z[] = $data[$k];
         }
         //结果进行缓存
-        if($cache){
-            S($cacheID,$data,$cache);
+        if ($cache) {
+            S($cacheID, $data, $cache);
         }
         return $data;
     }
