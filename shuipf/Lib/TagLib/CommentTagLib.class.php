@@ -7,12 +7,6 @@
  */
 class CommentTagLib {
 
-    public $db, $table_name, $category, $model, $modelid;
-
-    function __construct() {
-        $this->category = F("Category");
-    }
-
     /**
      * 获取评论总数
      * 参数名	 是否必须	 默认值	 说明
@@ -20,20 +14,16 @@ class CommentTagLib {
      * id	 是	 null	 信息ID
      */
     public function get_comment($data) {
-        $catid = (int) $data['catid'];
-        $id = (int) $data['id'];
-        $commentid = "c-$catid-$id";
         //缓存时间
         $cache = (int) $data['cache'];
-        $cacheID = md5($commentid);
-
+        $cacheID = to_guid_string($data);
         if ($cache && $datacache = S($cacheID)) {
             return $datacache;
         }
+        $catid = (int) $data['catid'];
+        $id = (int) $data['id'];
+        $commentid = "c-$catid-$id";
 
-        if (empty($this->category[$catid])) {
-            return false;
-        }
         $total = commcount($catid, $id);
         $data = array(
             "commentid" => $commentid,
@@ -57,7 +47,7 @@ class CommentTagLib {
     public function lists($data) {
         //缓存时间
         $cache = (int) $data['cache'];
-        $cacheID = md5(implode(",", $data));
+        $cacheID = to_guid_string($data);
         if ($cache && $cachedata = S($cacheID)) {
             return $cachedata;
         }
@@ -100,10 +90,10 @@ class CommentTagLib {
             if ((int) $r['id']) {
                 $data[$k] = array_merge($r, $listComment[$r['id']]);
                 //增加头像调用
-                if($r['user_id']){
-                    $data[$k]['avatar'] = service("Passport")->user_getavatar((int)$r['user_id']);
-                }else{
-                    $data[$k]['avatar'] = CONFIG_SITEURL_MODEL.'api.php?m=avatar&a=gravatar&email='.$r['author_email'];
+                if ($r['user_id']) {
+                    $data[$k]['avatar'] = service("Passport")->user_getavatar((int) $r['user_id']);
+                } else {
+                    $data[$k]['avatar'] = CONFIG_SITEURL_MODEL . 'api.php?m=avatar&a=gravatar&email=' . $r['author_email'];
                 }
             }
         }

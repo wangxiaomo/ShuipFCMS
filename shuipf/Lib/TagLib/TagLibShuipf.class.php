@@ -20,7 +20,7 @@ class TagLibShuipf extends TagLib {
      */
     protected $tags = array(
         //内容标签
-        'content' => array('attr' => 'action,cache,num,page,return,pagetp,pagefun', 'level' => 3),
+        'content' => array('attr' => 'action,cache,num,page,return,where,moreinfo,thumb,order,day', 'level' => 3),
         //Tags标签
         'tags' => array('attr' => 'action,cache,num,page,return,pagetp,pagefun', 'level' => 3),
         //评论标签
@@ -30,14 +30,79 @@ class TagLibShuipf extends TagLib {
         //推荐位标签
         'position' => array('attr' => 'action,cache,num,return', 'level' => 3),
         //SQL标签
-        'get' => array("attr" => 'sql,cache,page,dbsource,return', 'level' => 3),
+        'get' => array("attr" => 'sql,cache,page,dbsource,return,num,pagetp,pagefun', 'level' => 3),
         //模板标签
         'template' => array("attr" => "file", "close" => 0),
         //后台模板标签
-        'Admintemplate' => array("attr" => "file", "close" => 0),
+        'admintemplate' => array("attr" => "file", "close" => 0),
         //Form标签
-        'Form' => array("attr" => "function,parameter", "close" => 0),
+        'form' => array("attr" => "function,parameter", "close" => 0),
+        //导航表情
+        'navigate' => array('attr' => 'cache,catid,space', 'close' => 0),
     );
+
+    /**
+     * 导航表情
+     * 使用方法：
+     *      用法示例：<navigate catid="$catid" space=" &gt; " />
+     * 参数说明：
+     *          @catid		栏目id，可以传入数字，也可以传递变量 $catid
+     *          @space		分隔符，支持html代码
+     *          @cache          缓存时间
+     * @staticvar array $_navigateCache
+     * @param type $attr 标签属性
+     * @param type $content 表情内容
+     * @return array|string
+     */
+    public function _navigate($attr, $content) {
+        static $_navigateCache = array();
+        $key = to_guid_string($attr);
+        if (isset($_navigateCache[$key])) {
+            return $_navigateCache[$key];
+        }
+        if ($cache) {
+            $_navigateCache[$key] = $data = S($key);
+            if ($data) {
+                return $data;
+            }
+        }
+        $tag = $this->parseXmlAttr($attr, 'navigate');
+        $cache = (int) $tag['cache'];
+        //分隔符，支持html代码
+        $space = !empty($tag['space']) ? $tag['space'] : '&gt;';
+        $catid = $tag['catid'];
+        $parsestr = '';
+        //如果传入的是纯数字
+        if (is_numeric($catid)) {
+            $catid = (int) $catid;
+            //获取模板中的Categorys变量
+            $Categorys = $this->tpl->get('Categorys');
+            if (!$Categorys[$catid]) {
+                return '';
+            }
+            //获取当前栏目的 父栏目列表
+            $arrparentid = array_filter(explode(',', $Categorys[$catid]['arrparentid'] . ',' . $catid));
+            foreach ($arrparentid as $cid) {
+                $parsestr[] = '<a href="' . $Categorys[$cid]['url'] . '">' . $Categorys[$cid]['catname'] . '</a>';
+            }
+            unset($Categorys);
+            $parsestr = implode($space, $parsestr);
+        } else {
+            $parsestr = '';
+            $parsestr .= '<?php';
+            $parsestr .= '  $arrparentid = array_filter(explode(\',\', $Categorys[$catid][\'arrparentid\'] . \',\' . $catid)); ';
+            $parsestr .= '  foreach ($arrparentid as $cid) {';
+            $parsestr .= '      $parsestr[] = \'<a href="\' . $Categorys[$cid][\'url\'] . \'">\' . $Categorys[$cid][\'catname\'] . \'</a>\';';
+            $parsestr .= '  }';
+            $parsestr .= '  echo  implode("' . $space . '", $parsestr);';
+            $parsestr .= '?>';
+        }
+        $_navigateCache[$key] = $parsestr;
+        if ($cache) {
+            S($key, $_navigateCache[$key], $cache);
+        }
+        return $_navigateCache[$key];
+    }
 
     /**
      * 模板包含标签 
@@ -176,8 +241,6 @@ class TagLibShuipf extends TagLib {
      * 		@catid		栏目id（必填），列表页，内容页可以使用 $catid 获取当前栏目。
      * 	公用参数：
      * 		@cache		数据缓存时间，单位秒
-     * 		@pagefun	分页函数，默认page()
-     * 		@pagetp		分页模板
      * 		@return		返回值变量名称，默认data
      * 	#当action为lists时，调用栏目列表标签
      * 	#用法示例：<content action="lists" catid="$catid"  order="id DESC" num="4" page="$page"> .. HTML ..</content>
@@ -214,44 +277,50 @@ class TagLibShuipf extends TagLib {
     public function _content($attr, $content) {
         static $content_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr . $content);
-        if (isset($content_iterateParseCache[$cacheIterateId]))
+        $cacheIterateId = to_guid_string($attr);
+        if (isset($content_iterateParseCache[$cacheIterateId])) {
             return $content_iterateParseCache[$cacheIterateId];
+        }
         //分析content标签的标签定义
         $tag = $this->parseXmlAttr($attr, 'content');
-        /* 属性列表 */
-        $num = (int) $tag['num']; //每页显示总数
-        $page = (int) $tag['page']; //当前分页
-        $pagefun = empty($tag['pagefun']) ? "page" : $tag['pagefun']; //分页函数，默认page
-        $return = empty($tag['return']) ? "data" : $tag['return']; //数据返回变量
-        $action = $tag['action']; //方法
-        $pagetp = $tag['pagetp']; //分页模板
+        $tag['catid'] = $catid = $tag['catid'];
+        //每页显示总数
+        $tag['num'] = $num = (int) $tag['num'];
+        //当前分页
+        $tag['page'] = $page = (int) $tag['page'];
+        //数据返回变量
+        $tag['return'] = $return = empty($tag['return']) ? "data" : $tag['return'];
+        //方法
+        $tag['action'] = $action = trim($tag['action']);
+        //sql语句的where部分
+        $tag['where'] = $where = $tag['where'];
 
+        //拼接php代码
         $parseStr = '<?php';
-        $parseStr .= ' $content_tag = TagLib("Content");';
+        $parseStr .= ' $content_tag = TagLib("Content");' . "\r\n";
         //如果有传入$page参数，则启用分页。
-        if (isset($tag['page'])) {
+        if (isset($tag['page']) && in_array($action,array('lists'))) {
             //进行信息数量统计 需要 action catid where
-            $parseStr .= ' $count = $content_tag->count(' . self::arr_to_html($tag) . ');';
-            //当前分页号
-            $parseStr .= ' $_GET[C("VAR_PAGE")] = $page;';
-            $parseStr .= ' $pagetp = "' . $pagetp . '";';
-            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',$page,6,C("VAR_PAGE"),"",true,$pagetp);';
-            $tag = array_merge($tag, array(
-                "count" => '$count',
-                "limit" => '$_page_->firstRow.",".$_page_->listRows'
-            ));
-            //总分页数
+            $parseStr .= ' $count = $content_tag->count(' . self::arr_to_html($tag) . ');' . "\r\n";
+            //分页函数
+            $parseStr .= ' $_page_ = page($count ,' . $num . ',$page);';
+            $tag['count'] = '$count';
+            $tag['limit'] = '$_page_->firstRow.",".$_page_->listRows';
+            //总分页数，生成静态时需要
             $parseStr .= ' $GLOBALS["Total_Pages"] = $_page_->Total_Pages;';
+            //显示分页导航
             $parseStr .= ' $pages = $_page_->show("default");';
-            $parseStr .= ' $pagesize = ' . $num . ';';
-            $parseStr .= ' $offset = ($page - 1) * $pagesize;';
+            //分页总数
+            $parseStr .= ' $pagetotal = $_page_->Total_Pages;';
+            //总信息数
+            $parseStr .= ' $totalsize = $_page_->Total_Size;';
         }
         $parseStr .= ' if(method_exists($content_tag, "' . $action . '")){';
         $parseStr .= ' $' . $return . ' = $content_tag->' . $action . '(' . self::arr_to_html($tag) . ');';
         $parseStr .= ' }';
 
         $parseStr .= ' ?>';
+        //解析模板
         $parseStr .= $this->tpl->parse($content);
         $content_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
@@ -286,9 +355,10 @@ class TagLibShuipf extends TagLib {
     public function _comment($attr, $content) {
         static $_comment_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr . $content);
-        if (isset($_comment_iterateParseCache[$cacheIterateId]))
+        $cacheIterateId = to_guid_string($attr);
+        if (isset($_comment_iterateParseCache[$cacheIterateId])){
             return $_comment_iterateParseCache[$cacheIterateId];
+        }
         $tag = $this->parseXmlAttr($attr, 'comment');
         /* 属性列表 */
         $num = (int) $tag['num']; //每页显示总数
@@ -485,7 +555,7 @@ class TagLibShuipf extends TagLib {
     public function _get($attr, $content) {
         static $_get_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr . $content);
+        $cacheIterateId = to_guid_string($attr . $content);
         if (isset($_get_iterateParseCache[$cacheIterateId]))
             return $_get_iterateParseCache[$cacheIterateId];
         $tag = $this->parseXmlAttr($attr, 'get');

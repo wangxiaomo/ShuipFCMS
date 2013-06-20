@@ -7,7 +7,7 @@
  */
 class ContentTagLib {
 
-    public $db, $table_name, $category, $model, $modelid;
+    public $db, $table_name, $category, $model, $modelid, $where;
 
     function __construct() {
         $this->category = F("Category");
@@ -15,24 +15,59 @@ class ContentTagLib {
     }
 
     /**
+     * 组合查询条件
+     * @param type $attr
+     * @return type
+     */
+    public function where($attr) {
+        $where = array();
+        //设置SQL where 部分
+        if (isset($attr['where']) && $attr['where']) {
+            $where['_string'] = $attr['where'];
+        }
+        //栏目id条件
+        if (isset($attr['catid']) && (int) $attr['catid']) {
+            $catid = (int) $attr['catid'];
+            if ($this->category[$catid]['child']) {
+                $catids_str = $this->category[$catid]['arrchildid'];
+                $pos = strpos($catids_str, ',') + 1;
+                $catids_str = substr($catids_str, $pos);
+                $where['catid'] = array("IN", $catids_str);
+            } else {
+                $where['catid'] = array("EQ", $catid);
+            }
+        }
+        //缩略图
+        if (isset($attr['thumb'])) {
+            if ($attr['thumb']) {
+                $where['thumb'] = array("NEQ", "");
+            } else {
+                $where['thumb'] = array("EQ", "");
+            }
+        }
+        //审核状态
+        $where['status'] = array("EQ", 99);
+        $this->where = $where;
+        return $this->where;
+    }
+
+    /**
      * 初始化模型
      * @param $catid
      * @param $tablename
      */
-    public function set_modelid($catid, $tablename = "") {
-        if ($this->category[$catid]['type'] != 0)
-            return false;
-        $this->modelid = $this->category[$catid]['modelid'];
-        if (empty($tablename)) {
-            $tablename = ucwords($this->model[$this->modelid]['tablename']);
+    public function set_modelid($catid = 0, $tablename = false) {
+        if ($catid) {
+            if ($this->category[$catid]['type'] && $this->category[$catid]['type'] != 0) {
+                return false;
+            }
+            $this->modelid = $this->category[$catid]['modelid'];
+            if (empty($tablename)) {
+                $tablename = ucwords($this->model[$this->modelid]['tablename']);
+            }
         }
         $this->table_name = $tablename;
-        $this->db = M($this->table_name);
-        if (empty($this->category)) {
-            return false;
-        } else {
-            return true;
-        }
+        return $this->db = M($this->table_name);
     }
 
     /**
@@ -40,24 +75,8 @@ class ContentTagLib {
      */
     public function count($data) {
         if ($data['action'] == 'lists') {
-            $catid = intval($data['catid']);
-            $where = array();
-            if (!$this->set_modelid($catid))
-                return false;
-            if (isset($data['where'])) {
-                $where['_string'] = $data['where'];
-            } else {
-                if ($this->category[$catid]['child']) {
-                    $catids_str = $this->category[$catid]['arrchildid'];
-                    $pos = strpos($catids_str, ',') + 1;
-                    $catids_str = substr($catids_str, $pos);
-                    $where['catid'] = array("IN", $catids_str);
-                } else {
-                    $where['catid'] = array("EQ", $catid);
-                }
-            }
-            $where['status'] = array("EQ", 99);
-            return $this->db->where($where)->count();
+            $this->set_modelid($data['catid']);
+            return $this->db->where($this->where($data))->count();
         }
     }
 
@@ -75,47 +94,21 @@ class ContentTagLib {
      * @param $data
      */
     public function lists($data) {
-        //栏目id
-        $catid = intval($data['catid']);
-        $this->set_modelid($catid);
         //缓存时间
         $cache = (int) $data['cache'];
         $cacheID = to_guid_string($data);
         if ($cache && $return = S($cacheID)) {
             return $return;
         }
-
-        $where = array();
-        $where['status'] = array("EQ", 99);
-        //如果有where条件
-        if (isset($data['where'])) {
-            $where['_string'] = $data['where'];
-        } else {
-            //缩略图
-            if (intval($data['thumb'])) {
-                $where['thumb'] = array("NEQ", "");
-            }
-            //如果有子栏目
-            if ($this->category[$catid]['child']) {
-                $catids_str = $this->category[$catid]['arrchildid'];
-                $pos = strpos($catids_str, ',') + 1;
-                $catids_str = substr($catids_str, $pos);
-                $where['catid'] = array("IN", $catids_str);
-            } else {
-                $where['catid'] = array("EQ", $catid);
-            }
-        }
         //判断是否启用分页，如果没启用分页则显示指定条数的内容
         if (!isset($data['limit'])) {
             $data['limit'] = (int) $data['num'] == 0 ? 10 : (int) $data['num'];
         }
-
         //排序
-        if (!empty($data['order'])) {
-            $dataList = $this->db->where($where)->order($data['order'])->limit($data['limit'])->select();
-        } else {
-            $dataList = $this->db->where($where)->order(array("updatetime" => "DESC", "id" => "DESC"))->limit($data['limit'])->select();
+        if (empty($data['order'])) {
+            $data['order'] = array("updatetime" => "DESC", "id" => "DESC");
         }
+        $dataList = $this->db->where($this->where)->limit($data['limit'])->order(array("updatetime" => "DESC", "id" => "DESC"))->select();
         //把数据组合成以id为下标的数组集合
         if ($dataList) {
             $return = array();
@@ -123,7 +116,7 @@ class ContentTagLib {
                 $return[$r['id']] = $r;
             }
         } else {
-            return $dataList;
+            return false;
         }
         $getLastSql .= $this->db->getLastSql() . "|";
         //调用副表的数据
@@ -138,7 +131,7 @@ class ContentTagLib {
             }
             if (!empty($ids)) {
                 //从新初始化模型
-                $this->set_modelid($catid, $this->table_name . '_data');
+                $this->set_modelid(0, $this->table_name . '_data');
                 $where = array();
                 $where['id'] = array("IN", $ids);
                 $r = $this->db->where($where)->select();
@@ -157,7 +150,7 @@ class ContentTagLib {
             S($cacheID, $return, $cache);
         }
         //log
-        if (APP_DEBUG && C('LOG_RECORD')) {
+        if (APP_DEBUG) {
             $msg = "ContentTagLib标签->lists：参数：catid=$catid ,modelid=$modelid ,order=" . $data['order'] . " ,
             SQL:" . $getLastSql;
             Log::write($msg);
@@ -178,6 +171,12 @@ class ContentTagLib {
     public function hits($data) {
         $catid = intval($data['catid']);
         $modelid = intval($data['modelid']);
+        //缓存时间
+        $cache = (int) $data['cache'];
+        $cacheID = to_guid_string($data);
+        if ($cache && $array = S($cacheID)) {
+            return $array;
+        }
         //初始化模型
         if ($modelid) {
             $this->modelid = $modelid;
@@ -190,13 +189,6 @@ class ContentTagLib {
             return false;
         }
 
-        //缓存时间
-        $cache = (int) $data['cache'];
-        $cacheID = to_guid_string($data);
-        if ($cache && $array = S($cacheID)) {
-            return $array;
-        }
-
         //点击表
         $this->hits_db = M("Hits");
         $desc = $ids = '';
@@ -204,7 +196,7 @@ class ContentTagLib {
         //排序
         $order = $data['order'];
         if (!$order) {
-            $order = " views DESC ";
+            $order = array('views' => 'DESC');
         }
         //条数
         $num = (int) $data['num'];
@@ -221,10 +213,11 @@ class ContentTagLib {
             $catids_str = substr($catids_str, $pos);
             $where['catid'] = array("IN", $catids_str);
         }
+        //模型id条件
         if ($modelid) {
             $where['modelid'] = array("EQ", $modelid);
         }
-
+        //调用多少天内
         if (isset($data['day'])) {
             $updatetime = time() - intval($data['day']) * 86400;
             $where['updatetime'] = array("GT", $updatetime);
@@ -241,16 +234,16 @@ class ContentTagLib {
 
         //查询文章条件
         $where = array();
-        $ids = implode(',', $ids_array);
-        if ($ids) {
-            $where['id'] = array("IN", $ids);
+        if ($ids_array) {
+            $where['id'] = array("IN", $ids_array);
         }
         $array = array();
         $_result = $this->db->where($where)->select();
-        $_result = $_result?$_result:array();
-        foreach($_result as $r){
+        $_result = $_result ? $_result : array();
+        foreach ($_result as $r) {
             $result[$r['id']] = $r;
         }
+        //数据合并
         foreach ($ids_array as $id) {
             if ($result[$id]['title'] != '') {
                 $array[$id] = array_merge($result[$id], $hits[$id]);
@@ -262,7 +255,7 @@ class ContentTagLib {
         }
 
         //log
-        if (APP_DEBUG && C('LOG_RECORD')) {
+        if (APP_DEBUG) {
             $msg = "ContentTagLib标签->hits：参数：catid=$catid ,modelid=$modelid ,order=$order ,
             SQL:" . $this->db->getLastSql() . " | " . $this->hits_db->getLastSql();
             Log::write($msg);
@@ -281,15 +274,20 @@ class ContentTagLib {
      * @param $data
      */
     public function relation($data) {
-        $catid = intval($data['catid']);
-        if (!$this->set_modelid($catid))
-            return false;
         //缓存时间
         $cache = (int) $data['cache'];
         $cacheID = to_guid_string($data);
         if ($cache && $key_array = S($cacheID)) {
             return $key_array;
         }
+        $catid = intval($data['catid']);
+        if (!$catid) {
+            return false;
+        }
+        if (!$this->set_modelid($catid)) {
+            return false;
+        }
+        //调用数量
         $data['num'] = (int) $data['num'];
         if (!$data['num']) {
             $data['num'] = 10;
@@ -307,7 +305,7 @@ class ContentTagLib {
             $relations = array_diff($relations, array(null));
             $relations = implode(',', $relations);
             $where['id'] = array("IN", $relations);
-            $_key_array = $this->db->cache(true)->where($where)->limit($limit)->order($order)->select();
+            $_key_array = $this->db->where($where)->limit($limit)->order($order)->select();
             foreach ($_key_array as $r) {
                 $key_array[$r['id']] = $r;
             }
@@ -322,11 +320,18 @@ class ContentTagLib {
         if ($data['keywords'] && $limit > $number) {//根据关键字的相关文章
             $limit = ($limit - $number <= 0) ? 0 : ($limit - $number);
             $keywords_arr = $data['keywords'];
+            if ($keywords_arr && !is_array($keywords_arr)) {
+                if (strpos($data['keywords'], ',') === false) {
+                    $keywords_arr = explode(' ', $data['keywords']);
+                } else {
+                    $keywords_arr = explode(',', $data['keywords']);
+                }
+            }
             $i = 1;
             foreach ($keywords_arr as $_k) {
                 $_k = str_replace('%', '', $_k);
                 $where['keywords'] = array("LIKE", '%' . $_k . '%');
-                $_r = $this->db->cache(true)->where($where)->limit($limit)->order($order)->select();
+                $_r = $this->db->where($where)->limit($limit)->order($order)->select();
                 //数据重组
                 $r = array();
                 foreach ($_r as $rs) {
@@ -344,6 +349,7 @@ class ContentTagLib {
                     break;
             }
         }
+
         //去除排除信息
         if ($data['nid']) {
             unset($key_array[$data['nid']]);
@@ -355,7 +361,7 @@ class ContentTagLib {
         }
 
         //log
-        if (APP_DEBUG && C('LOG_RECORD')) {
+        if (APP_DEBUG) {
             $msg = "ContentTagLib标签->relation：参数：catid=$catid ,order=$order ,
             SQL:" . $getLastSql;
             Log::write($msg);
