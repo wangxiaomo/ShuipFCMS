@@ -220,7 +220,7 @@ class IndexAction extends BaseAction {
 
             //检查评论间隔时间
             $co = $this->cookie($post['comment_id']);
-            if ($co) {
+            if ($co && (int)$this->setting['expire']) {
                 $this->error("评论发布间隔为" . $this->setting['expire'] . "秒！");
             }
 
