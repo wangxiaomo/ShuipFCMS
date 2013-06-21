@@ -48,7 +48,7 @@ class TagLibShuipf extends TagLib {
     /**
      * 获取上一篇标签
      * 使用方法：
-     *      用法示例：<pre catid="$catid" id="$id" target="1" msg="已经没有了" />
+     *      用法示例：<pre catid="1" id="1" target="1" msg="已经没有了" />
      * 参数说明：
      *          @catid		栏目id，可以传入数字,在内容页可以不传
      *          @id		信息id，可以传入数字,在内容页可以不传
@@ -109,7 +109,7 @@ class TagLibShuipf extends TagLib {
     /**
      * 获取下一篇标签
      * 使用方法：
-     *      用法示例：<next catid="$catid" id="$id" target="1" msg="已经没有了" />
+     *      用法示例：<next catid="1" id="1" target="1" msg="已经没有了" />
      * 参数说明：
      *          @catid		栏目id，可以传入数字,在内容页可以不传
      *          @id		信息id，可以传入数字,在内容页可以不传
