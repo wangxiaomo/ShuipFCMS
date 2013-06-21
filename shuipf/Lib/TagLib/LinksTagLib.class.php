@@ -17,10 +17,9 @@ class LinksTagLib {
     public function type_list($data) {
         //缓存时间
         $cache = (int) $data['cache'];
-        $cacheID = md5(implode(",", $data));
-        $cacheData = S($cacheID);
-        if ($cache && $cacheData) {
-            return $cacheData;
+        $cacheID = to_guid_string($data);
+        if ($cache && $return = S($cacheID)) {
+            return $return;
         }
         $termsid = (int) $data['termsid'];
         $id = (int) $data['id'];
@@ -28,7 +27,6 @@ class LinksTagLib {
         $order = empty($data['order']) ? "id DESC" : $data['order'];
         $db = M("Links");
         $where = array();
-
         if ($id > 0) {
             $where['id'] = array("EQ", $id);
             $data = $db->where($where)->find();
@@ -38,7 +36,6 @@ class LinksTagLib {
                 $data = $db->where($where)->order($order)->limit($num)->select();
             }
         }
-        
         //结果进行缓存
         if ($cache) {
             S($cacheID, $data, $cache);

@@ -496,8 +496,9 @@ class TagLibShuipf extends TagLib {
         static $_links_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
         $cacheIterateId = md5($attr . $content);
-        if (isset($_links_iterateParseCache[$cacheIterateId]))
+        if (isset($_links_iterateParseCache[$cacheIterateId])){
             return $_links_iterateParseCache[$cacheIterateId];
+        }
         $tag = $this->parseXmlAttr($attr, 'links');
         /* 属性列表 */
         $return = empty($tag['return']) ? "data" : $tag['return']; //数据返回变量
