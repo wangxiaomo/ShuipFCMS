@@ -36,9 +36,7 @@ class IndexAction extends BaseAction {
 
         //生成路径
         $urls = $this->url->index($page);
-        if (!defined('URLRULE')) {
-            define('URLRULE', implode("~", $urls['page']));
-        }
+        $GLOBALS['URLRULE'] = $urls['page'];
 
         //seo分配到模板
         $this->assign("SEO", $SEO);
@@ -50,7 +48,7 @@ class IndexAction extends BaseAction {
     //栏目列表 
     public function lists() {
         //栏目ID
-        $catid = intval($_GET['catid']);
+        $catid = I('get.catid',0,'intval');
         //分页
         $page = isset($_GET[C("VAR_PAGE")]) ? $_GET[C("VAR_PAGE")] : 1;
         if (!$catid) {
@@ -95,7 +93,7 @@ class IndexAction extends BaseAction {
             unset($tpar);
             //模板检测
             $template = parseTemplateFile($template);
-            define('URLRULE', implode("~", $urls));
+            $GLOBALS['URLRULE'] = $urls;
         }
         //把分页分配到模板
         $this->assign(C("VAR_PAGE"), $page);

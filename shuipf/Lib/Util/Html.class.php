@@ -242,7 +242,7 @@ class Html extends BaseAction {
             unset($tpar);
             //模板检测
             $template = parseTemplateFile($template);
-            define('URLRULE', implode("~", $urls));
+            $GLOBALS['URLRULE'] = $urls;
         }
         //把分页分配到模板
         $this->assign(C("VAR_PAGE"), $page);
@@ -309,9 +309,7 @@ class Html extends BaseAction {
             $this->assign("SEO", $SEO);
             //生成路径
             $urls = $this->url->index($page);
-            if (!defined('URLRULE')) {
-                define('URLRULE', implode("~", $urls['page']));
-            }
+            $GLOBALS['URLRULE'] = $urls['page'];
             $filename = $urls['path'];
             //判断是否生成和入口文件同名，如果是，不生成！
             if ($filename != "/index.php") {

@@ -698,10 +698,13 @@ function page($Total_Size = 1, $Page_Size = 0, $Current_Page = 0, $List_Page = 6
     //生成静态，需要传递一个常量URLRULE，来生成对应规则
     //不建议使用常量定义分页规则，推荐直接传统参数方式
     if (empty($PageLink) && $static) {
-        $P = explode("~", $GLOBALS['URLRULE']?$GLOBALS['URLRULE']:URLRULE);
+        $URLRULE = $GLOBALS['URLRULE']?$GLOBALS['URLRULE']:URLRULE;
         $PageLink = array();
-        $PageLink['index'] = $P[0];
-        $PageLink['list'] = $P[1];
+        if(!is_array($URLRULE)){
+            $URLRULE = explode("~", $URLRULE);
+        }
+        $PageLink['index'] = $URLRULE['index']?$URLRULE['index']:$URLRULE[0];
+        $PageLink['list'] = $URLRULE['list']?$URLRULE['list']:$URLRULE[1];
     }
     if(!$Tp_Config){
         $Tp_Config = array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => "");

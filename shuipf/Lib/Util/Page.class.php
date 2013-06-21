@@ -79,6 +79,7 @@ class Page {
         $this->pageRule = (empty($pageRule) ? $_SERVER ["PHP_SELF"] : $pageRule);
         //是否开启静态
         $this->Static = $static;
+        //生成静态页数，超过的使用另一只分页规则
         $this->Static_Size = $GLOBALS['Rule_Static_Size'] ? $GLOBALS['Rule_Static_Size'] : $static_size;
         //初始当前分页号
         if ((int) $Current_Page < 1 || empty($Current_Page)) {
@@ -280,6 +281,9 @@ class Page {
             if ($this->Static && ($cfg['pageindex'] - 1) == 1) {
                 $pPrev = ' <a href="' . $this->pageRule['index'] . '">' . $cfg ['prev'] . '</a> '; //显示首页
             } else {
+                if ($this->Static_Size && $cfg['pageindex'] - 1 <= $this->Static_Size) {
+                    $cfg['link'] = $this->urlParameters($_GET);
+                }
                 $pPrev = ' <a href="' . str_replace('*', $cfg['pageindex'] - 1, $cfg['link']) . '">' . $cfg['prev'] . '</a> '; //显示上一页
             }
         }
@@ -289,6 +293,12 @@ class Page {
             //最后一页
             $pLast = ' <a href="' . str_replace('*', $cfg['pagecount'], $cfg['link']) . '">' . $cfg['last'] . '</a> ';
             //下一页
+            //如果下一页还是在生成静态页访问内
+            if ($this->Static_Size && $cfg['pageindex'] + 1 <= $this->Static_Size) {
+                $cfg['link'] = $this->urlParameters($_GET);
+            } else {
+                $cfg['link'] = $GLOBALS['dynamicRules'] ? $GLOBALS['dynamicRules'] : $this->urlParameters($_GET);
+            }
             $pNext = ' <a href="' . str_replace('*', $cfg['pageindex'] + 1, $cfg['link']) . '">' . $cfg['next'] . '</a> ';
         }
 
