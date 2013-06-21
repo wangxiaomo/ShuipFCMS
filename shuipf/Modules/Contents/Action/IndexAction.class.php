@@ -155,27 +155,6 @@ class IndexAction extends BaseAction {
         //获取字段类型处理以后的数据
         $output_data = $content_output->get($data);
         $output_data['id'] = $id;
-
-        //============================上一篇 下一篇==========================
-        $this->db = M(ucwords($this->table_name));
-        //上一篇
-        $where = array();
-        $where['catid'] = $catid;
-        $where['status'] = array("EQ", "99");
-        $where['id'] = array("LT", $id);
-        $previous_page = $this->db->where($where)->order(array("id" => "DESC"))->find();
-        //下一篇
-        $where['id'] = array("GT", $id);
-        $next_page = $this->db->where($where)->find();
-        //============================结束================================
-
-        if (empty($previous_page)) {
-            $previous_page = array('title' => "第一页", 'thumb' => CONFIG_SITEURL . 'statics/images/nopic_small.gif', 'url' => 'javascript:alert(\'第一页\');');
-        }
-        if (empty($next_page)) {
-            $next_page = array('title' => "最后一页", 'thumb' => CONFIG_SITEURL . 'statics/images/nopic_small.gif', 'url' => 'javascript:alert(\'最后一页\');');
-        }
-
         $output_data['title'] = strip_tags($output_data['title']);
         //SEO
         $seo_keywords = '';
@@ -225,9 +204,6 @@ class IndexAction extends BaseAction {
         $this->assign($output_data);
         //seo分配到模板
         $this->assign("SEO", $seo);
-        //上一篇 下一篇
-        $this->assign("previous_page", $previous_page);
-        $this->assign("next_page", $next_page);
         //栏目ID
         $this->assign("catid", $catid);
 

@@ -39,7 +39,133 @@ class TagLibShuipf extends TagLib {
         'form' => array("attr" => "function,parameter", "close" => 0),
         //导航表情
         'navigate' => array('attr' => 'cache,catid,space', 'close' => 0),
+        //上一篇
+        'pre' => array('attr' => 'blank,msg', 'close' => 0),
+        //下一篇
+        'next' => array('attr' => 'blank,msg', 'close' => 0),
     );
+
+    /**
+     * 获取上一篇标签
+     * 使用方法：
+     *      用法示例：<pre catid="$catid" id="$id" target="1" msg="已经没有了" />
+     * 参数说明：
+     *          @catid		栏目id，可以传入数字,在内容页可以不传
+     *          @id		信息id，可以传入数字,在内容页可以不传
+     *          @target		是否新窗口打开，1 是 0否
+     *          @msg		当没有上一篇时的提示语
+     * @param type $attr
+     * @param type $content
+     * @return type
+     */
+    public function _pre($attr, $content) {
+        $tag = $this->parseXmlAttr($attr, 'pre');
+        //当没有内容时的提示语
+        $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
+        //是否新窗口打开
+        $target = !empty($tag['blank']) ? ' target="_blank" ' : '';
+        //栏目ID
+        if (isset($tag['catid']) && (int) $tag['catid']) {
+            $catid = (int) $tag['catid'];
+        } else {
+            $catid = $this->tpl->get('catid');
+        }
+        //信息ID
+        if (isset($tag['id']) && (int) $tag['id']) {
+            $id = (int) $tag['id'];
+        } else {
+            $id = $this->tpl->get('id');
+        }
+        if (!$catid || !$id) {
+            return $msg;
+        }
+        //获取模板中的Categorys变量
+        $Categorys = $this->tpl->get('Categorys');
+        if (!$Categorys) {
+            $Categorys = F('Categorys');
+        }
+        if (!$Categorys[$catid]) {
+            return $msg;
+        }
+        $Model = $this->tpl->get('Model');
+        if (!$Model) {
+            $Model = F("Model");
+        }
+        //模型id
+        $modelid = $Categorys[$catid]['modelid'];
+        //表名
+        $table_name = $Model[$modelid]['tablename'];
+        //获取数据
+        $where = array();
+        $where['catid'] = $catid;
+        $where['status'] = array("EQ", "99");
+        $where['id'] = array("LT", $id);
+        $r = M(ucwords($table_name))->where($where)->order(array("id" => "DESC"))->find();
+        //下面拼接输出语句
+        $parsestr = $r ? '<a class="pre_a" href="' . $r['url'] . '"' . $target . '>' . $r['title'] . '</a>' : $msg;
+        return $parsestr;
+    }
+
+    /**
+     * 获取下一篇标签
+     * 使用方法：
+     *      用法示例：<next catid="$catid" id="$id" target="1" msg="已经没有了" />
+     * 参数说明：
+     *          @catid		栏目id，可以传入数字,在内容页可以不传
+     *          @id		信息id，可以传入数字,在内容页可以不传
+     *          @target		是否新窗口打开，1 是 0否
+     *          @msg		当没有上一篇时的提示语
+     * @param type $attr
+     * @param type $content
+     * @return type
+     */
+    public function _next($attr, $content) {
+        $tag = $this->parseXmlAttr($attr, 'next');
+        //当没有内容时的提示语
+        $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
+        //是否新窗口打开
+        $target = !empty($tag['blank']) ? ' target="_blank" ' : '';
+        //栏目ID
+        if (isset($tag['catid']) && (int) $tag['catid']) {
+            $catid = (int) $tag['catid'];
+        } else {
+            $catid = $this->tpl->get('catid');
+        }
+        //信息ID
+        if (isset($tag['id']) && (int) $tag['id']) {
+            $id = (int) $tag['id'];
+        } else {
+            $id = $this->tpl->get('id');
+        }
+        if (!$catid || !$id) {
+            return $msg;
+        }
+        //获取模板中的Categorys变量
+        $Categorys = $this->tpl->get('Categorys');
+        if (!$Categorys) {
+            $Categorys = F('Categorys');
+        }
+        if (!$Categorys[$catid]) {
+            return $msg;
+        }
+        $Model = $this->tpl->get('Model');
+        if (!$Model) {
+            $Model = F("Model");
+        }
+        //模型id
+        $modelid = $Categorys[$catid]['modelid'];
+        //表名
+        $table_name = $Model[$modelid]['tablename'];
+        //获取数据
+        $where = array();
+        $where['catid'] = $catid;
+        $where['status'] = array("EQ", "99");
+        $where['id'] = array("GT", $id);
+        $r = M(ucwords($table_name))->where($where)->find();
+        //下面拼接输出语句
+        $parsestr = $r ? '<a class="pre_a" href="' . $r['url'] . '"' . $target . '>' . $r['title'] . '</a>' : $msg;
+        return $parsestr;
+    }
 
     /**
      * 导航标签
@@ -60,6 +186,7 @@ class TagLibShuipf extends TagLib {
         if (isset($_navigateCache[$key])) {
             return $_navigateCache[$key];
         }
+        $cache = (int) $tag['cache'];
         if ($cache) {
             $_navigateCache[$key] = $data = S($key);
             if ($data) {
@@ -67,7 +194,6 @@ class TagLibShuipf extends TagLib {
             }
         }
         $tag = $this->parseXmlAttr($attr, 'navigate');
-        $cache = (int) $tag['cache'];
         //分隔符，支持html代码
         $space = !empty($tag['space']) ? $tag['space'] : '&gt;';
         $catid = $tag['catid'];
@@ -77,7 +203,7 @@ class TagLibShuipf extends TagLib {
             $catid = (int) $catid;
             //获取模板中的Categorys变量
             $Categorys = $this->tpl->get('Categorys');
-            if(!$Categorys){
+            if (!$Categorys) {
                 $Categorys = F('Categorys');
             }
             if (!$Categorys[$catid]) {
@@ -643,13 +769,13 @@ class TagLibShuipf extends TagLib {
                 $parseStr .= ' }else{ ';
                 $parseStr .= ' $get_db = M(); ';
                 //如果定义了数据源 
-                if($dbsource){
+                if ($dbsource) {
                     $dbSource = F('dbSource');
                     $dbConfig = $dbSource[$dbsource];
-                    if($dbConfig){
+                    if ($dbConfig) {
                         $db = 'mysql://' . $dbConfig['username'] . ':' . $dbConfig['password'] . '@' . $dbConfig['host'] . ':' . $dbConfig['port'] . '/' . $dbConfig['dbname'];
                     }
-                    $parseStr .= ' $get_db->db(1,"'.$db.'"); ';
+                    $parseStr .= ' $get_db->db(1,"' . $db . '"); ';
                 }
                 //取得信息总数
                 $parseStr .= ' $count = $get_db->query($_count_sql);';
@@ -723,6 +849,15 @@ class TagLibShuipf extends TagLib {
             return $str . ')';
         }
         return false;
+    }
+    
+    /**
+     * 检查是否变量
+     * @param type $variable
+     * @return type
+     */
+    private function variable($variable){
+        return substr(trim($variable), 0, 1) == '$';
     }
 
 }
