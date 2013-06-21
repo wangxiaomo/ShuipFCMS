@@ -46,7 +46,7 @@ class CategoryModel extends CommonModel {
             if ($catInfo['child'] && $catInfo['type'] == 0) {
                 $arrchildid = explode(",", $catInfo['arrchildid']);
                 unset($arrchildid[0]);
-                $catid = array_merge($arrchildid,array($catid));
+                $catid = array_merge($arrchildid, array($catid));
                 $where['catid'] = array("IN", $catid);
             }
         }
@@ -63,6 +63,9 @@ class CategoryModel extends CommonModel {
             }
             foreach ($modeid as $mid) {
                 $tbname = ucwords($Model[$mid]['tablename']);
+                if (!$tbname) {
+                    return false;
+                }
                 if ($tbname && M($tbname)->where(array("catid" => array("IN", $catid)))->count()) {
                     return false;
                 }
@@ -70,7 +73,10 @@ class CategoryModel extends CommonModel {
         } else {
             $catinfo = $Category[$catid];
             $tbname = ucwords($Model[$catInfo['modelid']]['tablename']);
-            if ($tbname &&  $catinfo['type'] == 0 && M($tbname)->where(array("catid" => array("IN", $catid)))->count()) {
+            if (!$tbname) {
+                return false;
+            }
+            if ($tbname && $catinfo['type'] == 0 && M($tbname)->where(array("catid" => $catid))->count()) {
                 return false;
             }
         }
