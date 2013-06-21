@@ -100,6 +100,12 @@ class ContentTagLib {
         if ($cache && $return = S($cacheID)) {
             return $return;
         }
+        if(!is_object($this->db)){
+            $this->set_modelid($catid);
+        }
+        if(!is_array($this->where)){
+            $this->where($data);
+        }
         //判断是否启用分页，如果没启用分页则显示指定条数的内容
         if (!isset($data['limit'])) {
             $data['limit'] = (int) $data['num'] == 0 ? 10 : (int) $data['num'];
