@@ -392,7 +392,7 @@ class TagLibShuipf extends TagLib {
      * Tags标签
      * 标签：<tags></tags>
      * 作用：Tags标签
-     * 用法示例：<tags action="lists" tag="$tag" num="4" page="$page" order="id DESC"> .. HTML ..</tags>
+     * 用法示例：<tags action="lists" tag="$tag" num="4" page="$page" order="updatetime DESC"> .. HTML ..</tags>
      * 参数说明：
      * 	基本参数
      * 		@action		调用方法（必填）
@@ -404,17 +404,16 @@ class TagLibShuipf extends TagLib {
      * 		@pagefun                      分页函数，默认page()
      * 		@pagetp		分页模板
      * 	#当action为lists时，获取tag标签列表
-     * 	#用法示例：<tags action="lists" tag="$tag" num="4" page="$page" order="id DESC"> .. HTML ..</tags>
+     * 	#用法示例：<tags action="lists" tag="$tag" num="4" page="$page" order="updatetime DESC"> .. HTML ..</tags>
      * 	独有参数：
      * 		@tag	标签名，例如：厦门 支持多个，多个用空格或者英文逗号
      * 		@tagid	标签id 多个使用英文逗号隔开
      * 		@order	排序
      * 		@num	每次返回数据量
-     * 	#当action为top时，获取tag标签列表
-     * 	#用法示例：<tags action="top"  num="4"  order="id DESC"> .. HTML ..</tags>
+     * 	#当action为top时，获取tag点击排行榜
+     * 	#用法示例：<tags action="top"  num="4"  order="tagid DESC"> .. HTML ..</tags>
      * 	独有参数：
      * 		@num	每次返回数据量
-     * 		@order	排序例如 hits DESC
       +----------------------------------------------------------
      * @param string $attr 标签属性
      * @param string $content  标签内容
@@ -422,41 +421,52 @@ class TagLibShuipf extends TagLib {
     public function _tags($attr, $content) {
         static $_tags_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr . $content);
-        if (isset($_tags_iterateParseCache[$cacheIterateId]))
-            return $_tags_iterateParseCache[$cacheIterateId];
+        $cacheIterateId = to_guid_string($attr);
+        if (isset($_tags_iterateParseCache[$cacheIterateId])){
+             return $_tags_iterateParseCache[$cacheIterateId];
+        }
         $tag = $this->parseXmlAttr($attr, 'tags');
         /* 属性列表 */
-        $num = (int) $tag['num']; //每页显示总数
-        $page = (int) $tag['page']; //当前分页
-        $pagefun = empty($tag['pagefun']) ? "page" : $tag['pagefun']; //分页函数，默认page
-        $return = empty($tag['return']) ? "data" : $tag['return']; //数据返回变量
-        $action = $tag['action']; //方法
-        $pagetp = $tag['pagetp']; //分页模板
+        //每页显示总数
+        $tag['num'] = $num = (int) $tag['num'];
+        //当前分页
+        $tag['page'] = $page = (int) $tag['page'];
+        //数据返回变量
+        $tag['return'] = $return = empty($tag['return']) ? "data" : $tag['return'];
+        //方法
+        $tag['action'] = $action = trim($tag['action']);
+        //sql语句的where部分
+        $tag['where'] = $where = $tag['where'];
+        //分页模板
+        $tag['pagetp'] = $pagetp = (substr($tag['pagetp'],0,1)=='$')?$tag['pagetp']:'';
 
         $parseStr = '<?php';
         $parseStr .= ' $Tags_tag = TagLib("Tags");';
         //如果有传入$page参数，则启用分页。
-        if (isset($tag['page'])) {
+        if (isset($tag['page']) && in_array($action,array('lists'))) {
             $parseStr .= ' $count = $Tags_tag->count(' . self::arr_to_html($tag) . ');';
-            $parseStr .= ' $_GET[C("VAR_PAGE")] = $page;';
-            $parseStr .= ' $pagetp = "' . $pagetp . '";';
-            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',$page,6,C("VAR_PAGE"),"",true,$pagetp);';
-            $tag = array_merge($tag, array(
-                "count" => '$count',
-                'limit' => '$_page_->firstRow.",".$_page_->listRows'
-            ));
-            //总分页数
+            $parseStr .= ' $_page_ = page($count ,' . $num . ',$page,6,C("VAR_PAGE"),"",true);';
+             //设置分页模板，模板必须是变量传递
+            if($pagetp){
+                $parseStr .= ' $_page_->SetPager(\'default\', '.$pagetp.');';
+            }
+            $tag['count'] = '$count';
+            $tag['limit'] = '$_page_->firstRow.",".$_page_->listRows';
+             //总分页数，生成静态时需要
             $parseStr .= ' $GLOBALS["Total_Pages"] = $_page_->Total_Pages;';
+            //显示分页导航
             $parseStr .= ' $pages = $_page_->show("default");';
-            $parseStr .= ' $pagesize = ' . $num . ';';
-            $parseStr .= ' $offset = ($page - 1) * $pagesize;';
+            //分页总数
+            $parseStr .= ' $pagetotal = $_page_->Total_Pages;';
+            //总信息数
+            $parseStr .= ' $totalsize = $_page_->Total_Size;';
         }
         $parseStr .= ' if(method_exists($Tags_tag, "' . $action . '")){';
         $parseStr .= '     $' . $return . ' = $Tags_tag->' . $action . '(' . self::arr_to_html($tag) . ');';
         $parseStr .= ' };';
 
         $parseStr .= ' ?>';
+        //解析模板
         $parseStr .= $this->tpl->parse($content);
         $_tags_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
