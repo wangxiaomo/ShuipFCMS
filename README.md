@@ -4,7 +4,7 @@
 
 ----
 #ShuipFCMS简介 
-* ShuipFCMS 基于[http://www.thinlphp.cn](ThinlPHP)框架开发，采用独立分组的方式开发的内容管理系统。；
+* ShuipFCMS 基于[ThinlPHP](http://www.thinlphp.cn)框架开发，采用独立分组的方式开发的内容管理系统。；
 * 支持模块安装/卸载，模型自定义，整合UCenter通行证等。
 
 ##主要模块介绍：
@@ -27,3 +27,8 @@
 * Domains模块：域名绑定模块。
 
 * Template模块：模板管理模块。
+
+---
+
+## 界面预览：
+ ![mahua](http://file.abc3210.com/d/file/contents/2013/01/50f8dfd9cf91d.jpg)
