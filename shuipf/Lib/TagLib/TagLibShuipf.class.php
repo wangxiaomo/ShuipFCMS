@@ -42,7 +42,7 @@ class TagLibShuipf extends TagLib {
     );
 
     /**
-     * 导航表情
+     * 导航标签
      * 使用方法：
      *      用法示例：<navigate catid="$catid" space=" &gt; " />
      * 参数说明：
@@ -77,6 +77,9 @@ class TagLibShuipf extends TagLib {
             $catid = (int) $catid;
             //获取模板中的Categorys变量
             $Categorys = $this->tpl->get('Categorys');
+            if(!$Categorys){
+                $Categorys = F('Categorys');
+            }
             if (!$Categorys[$catid]) {
                 return '';
             }

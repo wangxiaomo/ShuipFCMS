@@ -1,5 +1,5 @@
 ==============================
-+更新时间：2013/3/14++++++++++++++++
++更新时间：2013/6/21++++++++++++++++
 +书写者：水平凡++++++++++++++++++++
 +联系邮箱：admin@abc3210.com+++++++++
 +如果你对标签有啥建议，欢迎发送邮件+++++++
@@ -78,7 +78,7 @@
 		
 标签：<tags></tags>
 作用：Tags标签
-用法示例：<tags action="lists" tag="$tag" num="4" page="$page" order="id DESC"> .. HTML ..</tags>
+用法示例：<tags action="lists" tag="$tag" num="4" page="$page" order="updatetime DESC"> .. HTML ..</tags>
 参数说明：
 	基本参数
 		@action		调用方法（必填）
@@ -90,14 +90,14 @@
 		@pagefun	分页函数，默认page()
 		@pagetp		分页模板
 	#当action为lists时，获取tag标签列表
-	#用法示例：<tags action="lists" tag="$tag" num="4" page="$page" order="id DESC"> .. HTML ..</tags>
+	#用法示例：<tags action="lists" tag="$tag" num="4" page="$page" order="updatetime DESC"> .. HTML ..</tags>
 	独有参数：
 		@tag		标签名，例如：厦门 支持多个，多个用空格或者英文逗号
 		@tagid		标签id 多个使用英文逗号隔开
 		@order	排序
 		@num		每次返回数据量
 	#当action为top时，获取tag标签列表
-	#用法示例：<tags action="top"  num="4"  order="id DESC"> .. HTML ..</tags>
+	#用法示例：<tags action="top"  num="4"  order="updatetime DESC"> .. HTML ..</tags>
 	独有参数：
 		@num		每次返回数据量
 		@order	排序例如 hits DESC
@@ -142,3 +142,10 @@
 	@return		返回值变量名称，默认data
 	@pagefun	分页函数，默认page()
 	@pagetp		分页模板
+	
+标签：<navigate/>
+作用：导航标签
+用法示例：<navigate catid="$catid" space=" &gt; " />
+参数说明：
+	@catid			栏目ID，可以使用$catid
+	@space			分隔符 &gt;
