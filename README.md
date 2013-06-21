@@ -29,6 +29,23 @@
 * Template模块：模板管理模块。
 
 ---
+##模板标签简单介绍：
+```html
+标签：<Form/>
+作用：生成各种表单元素
+用法示例：<Form function="date" parameter="name,$valeu"/>
+参数说明：
+	@function		表示所使用的方法名称，方法来源于Form.class.php这个类。
+	@parameter		所需要传入的参数，支持变量！
+	
+标签：<template/>
+作用：引入其他模板
+用法示例：<template file="Member/footer.php"/>
+参数说明：
+	@file				表示需要应用的模板路径。(这里需要说明的是，只能引入当前主题下的模板文件)
+```
+
+---
 
 ## 界面预览：
  ![mahua](http://file.abc3210.com/d/file/contents/2013/01/50f8dfd9cf91d.jpg)
