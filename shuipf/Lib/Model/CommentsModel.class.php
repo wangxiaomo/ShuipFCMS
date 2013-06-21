@@ -418,7 +418,11 @@ class CommentsModel extends CommonModel {
             $setting = F("Comments_setting");
             $this->sideTables = $setting['stb'] ? $setting['stb'] : 1;
             //设置评论审核
-            $this->commentsApproved = (int) $setting['check'] == 0 ? 1 : 0;
+            if (defined("IN_ADMIN") && IN_ADMIN) {
+                $this->commentsApproved = 1;
+            }else{
+                $this->commentsApproved = (int) $setting['check'] == 0 ? 1 : 0;
+            }
         }
         return $this->sideTables;
     }
