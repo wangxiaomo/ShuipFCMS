@@ -18,16 +18,15 @@ class PositionTagLib {
      * @param type $data 
      */
     public function position($data) {
+        //缓存时间
+        $cache = (int) $data['cache'];
+        $cacheID = to_guid_string($data);
+        if ($cache && $return = S($cacheID)) {
+            return $return;
+        }
         $posid = (int) $data['posid'];
         if ($posid < 1) {
             return false;
-        }
-        //缓存处理
-        $cache = (int) $data['cache'];
-        $cacheID = md5(implode(",", $data));
-        $cacheData = S($cacheID);
-        if ($cache && $cacheData) {
-            return $cacheData;
         }
         $catid = (int) $data['catid'];
         $thumb = isset($data['thumb']) ? $data['thumb'] : 0;
@@ -47,11 +46,11 @@ class PositionTagLib {
         if ($catid > 0) {
             $Category = F("Category");
             $cat = $Category[$catid];
-            if($cat){
+            if ($cat) {
                 //是否包含子栏目
-                if($cat['child']){
+                if ($cat['child']) {
                     $where['catid'] = array("IN", $cat['arrchildid']);
-                }else{
+                } else {
                     $where['catid'] = array("EQ", $catid);
                 }
             }
@@ -63,15 +62,11 @@ class PositionTagLib {
             $tab = ucwords($Model[$v['modelid']]['tablename']);
             $data[$k]['data']['url'] = M($tab)->where(array("id" => $v['id']))->getField("url");
         }
-        if ($data) {
-            //结果进行缓存
-            if ($cache) {
-                S($cacheID, $data, $cache);
-            }
-            return $data;
-        } else {
-            return false;
+        //结果进行缓存
+        if ($cache) {
+            S($cacheID, $data, $cache);
         }
+        return $data;
     }
 
 }
