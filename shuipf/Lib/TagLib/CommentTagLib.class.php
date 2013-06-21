@@ -109,9 +109,35 @@ class CommentTagLib {
      * @param type $data 
      */
     public function bang($data) {
-        $catid = (int) $data['catid'];
-        $id = (int) $data['id'];
-        $commentid = "c-$catid-$id";
+        //缓存时间
+        $cache = (int) $data['cache'];
+        $cacheID = to_guid_string($data);
+        if ($cache && $cachedata = S($cacheID)) {
+            return $cachedata;
+        }
+        //返回信息数
+        $num = $data['num'] ? (int) $data['num'] : 10;
+        $db = D("Comments");
+        $data = $db->field(array('*','count(*)'=>'total'))->group('comment_id')->order(array('total'=>'DESC'))->limit($num)->select();
+        //数据处理
+        $return = array();
+        $Category = F("Category");
+        $Model = F("Model");
+        foreach($data as $r){
+            list($m,$catid,$id) = explode('-',$r['comment_id']);
+             if ($Category[$catid]['type'] && $Category[$catid]['type'] != 0) {
+                 continue;
+             }
+            $modeid = $Category[$catid]['modelid'];
+            $tablename = ucwords($Model[$modeid]['tablename']);
+            $return[$id] = M($tablename)->where(array('id'=>$id))->find();
+            $return[$id]['comment_total'] = $r['total'];
+        }
+        //结果进行缓存
+        if ($cache) {
+            S($cacheID, $return, $cache);
+        }
+        return $return;
     }
 
 }

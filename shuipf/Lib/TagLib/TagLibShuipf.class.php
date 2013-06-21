@@ -241,6 +241,8 @@ class TagLibShuipf extends TagLib {
      * 		@catid		栏目id（必填），列表页，内容页可以使用 $catid 获取当前栏目。
      * 	公用参数：
      * 		@cache		数据缓存时间，单位秒
+     *              @pagefun            分页函数，默认page()
+     * 		@pagetp		分页模板
      * 		@return		返回值变量名称，默认data
      * 	#当action为lists时，调用栏目列表标签
      * 	#用法示例：<content action="lists" catid="$catid"  order="id DESC" num="4" page="$page"> .. HTML ..</content>
@@ -294,6 +296,8 @@ class TagLibShuipf extends TagLib {
         $tag['action'] = $action = trim($tag['action']);
         //sql语句的where部分
         $tag['where'] = $where = $tag['where'];
+        //分页模板
+        $tag['pagetp'] = $pagetp = (substr($tag['pagetp'],0,1)=='$')?$tag['pagetp']:'';
 
         //拼接php代码
         $parseStr = '<?php';
@@ -303,7 +307,11 @@ class TagLibShuipf extends TagLib {
             //进行信息数量统计 需要 action catid where
             $parseStr .= ' $count = $content_tag->count(' . self::arr_to_html($tag) . ');' . "\r\n";
             //分页函数
-            $parseStr .= ' $_page_ = page($count ,' . $num . ',$page);';
+            $parseStr .= ' $_page_ = page($count ,' . $num . ',$page,6,C("VAR_PAGE"),"",true);';
+            //设置分页模板，模板必须是变量传递
+            if($pagetp){
+                $parseStr .= ' $_page_->SetPager(\'default\', '.$pagetp.');';
+            }
             $tag['count'] = '$count';
             $tag['limit'] = '$_page_->firstRow.",".$_page_->listRows';
             //总分页数，生成静态时需要
@@ -348,6 +356,10 @@ class TagLibShuipf extends TagLib {
      * 		@id		信息ID
      * 		@hot		排序方式｛0：最新｝
      * 		@date		时间格式 Y-m-d H:i:s A
+     *    #当action为bang时，获取评论排行榜
+     * 	#用法示例：<comment action="bang" num="10"> .. HTML ..</comment>
+     * 	独有参数：
+     * 		@num		返回信息数
       +----------------------------------------------------------
      * @param string $attr 标签属性
      * @param string $content  标签内容
