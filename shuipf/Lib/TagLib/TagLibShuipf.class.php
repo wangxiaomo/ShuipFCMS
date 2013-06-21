@@ -298,6 +298,8 @@ class TagLibShuipf extends TagLib {
         $tag['where'] = $where = $tag['where'];
         //分页模板
         $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
+        //分页函数，默认page
+        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
 
         //拼接php代码
         $parseStr = '<?php';
@@ -307,7 +309,7 @@ class TagLibShuipf extends TagLib {
             //进行信息数量统计 需要 action catid where
             $parseStr .= ' $count = $content_tag->count(' . self::arr_to_html($tag) . ');' . "\r\n";
             //分页函数
-            $parseStr .= ' $_page_ = page($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
+            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
             //设置分页模板，模板必须是变量传递
             if ($pagetp) {
                 $parseStr .= ' $_page_->SetPager(\'default\', ' . $pagetp . ');';
@@ -439,13 +441,15 @@ class TagLibShuipf extends TagLib {
         $tag['where'] = $where = $tag['where'];
         //分页模板
         $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
+        //分页函数，默认page
+        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
 
         $parseStr = '<?php';
         $parseStr .= ' $Tags_tag = TagLib("Tags");';
         //如果有传入$page参数，则启用分页。
         if ($page && in_array($action, array('lists'))) {
             $parseStr .= ' $count = $Tags_tag->count(' . self::arr_to_html($tag) . ');';
-            $parseStr .= ' $_page_ = page($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
+            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
             //设置分页模板，模板必须是变量传递
             if ($pagetp) {
                 $parseStr .= ' $_page_->SetPager(\'default\', ' . $pagetp . ');';
@@ -579,75 +583,111 @@ class TagLibShuipf extends TagLib {
     public function _get($attr, $content) {
         static $_get_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($attr . $content);
-        if (isset($_get_iterateParseCache[$cacheIterateId]))
+        $cacheIterateId = to_guid_string($attr);
+        if (isset($_get_iterateParseCache[$cacheIterateId])) {
             return $_get_iterateParseCache[$cacheIterateId];
+        }
         $tag = $this->parseXmlAttr($attr, 'get');
-        $sql = $tag['sql'];
         //当前分页参数
         $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
-        $cache = (int) $tag['cache'];
-        $pagefun = empty($tag['pagefun']) ? "page" : $tag['pagefun']; //分页函数，默认page
-        $pagetp = $tag['pagetp']; //分页模板
-        $num = isset($tag['num']) && intval($tag['num']) > 0 ? intval($tag['num']) : 20; //每页显示总数
-        $return = empty($tag['return']) ? "data" : $tag['return']; //数据返回变量
-        $tag['sql'] = str_replace(array("think_", "shuipfcms_"), C("DB_PREFIX"), strtolower($tag['sql']));
-
+        //当前分页参数
+        $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
+        //数据返回变量
+        $tag['return'] = $return = empty($tag['return']) ? "data" : $tag['return'];
+        //方法
+        $tag['action'] = $action = trim($tag['action']);
+        //分页模板
+        $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
+        //分页函数，默认page
+        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
+        //缓存时间
+        $tag['cache'] = $cache = (int) $tag['cache'];
+        //每页显示总数
+        $tag['num'] = $num = isset($tag['num']) && intval($tag['num']) > 0 ? intval($tag['num']) : 20;
+        //SQL语句
+        $tag['sql'] = $sql = str_replace(array("think_", "shuipfcms_"), C("DB_PREFIX"), strtolower($tag['sql']));
+        //数据源
+        $tag['dbsource'] = $dbsource = $tag['dbsource'];
+        if (!$sql) {
+            return false;
+        }
         //删除，插入不执行！这样处理感觉有点鲁莽了，，，-__,-!
         if (strpos($tag['sql'], "delete") || strpos($tag['sql'], "insert")) {
-            return;
+            return false;
         }
 
-        $str = ' <?php ';
-        //如果配置了数据源
-        if ($datas['dbsource']) {
-            
-        } else {
-            $str .= ' $get_db = M();';
-        }
+        $parseStr = ' <?php ';
+
         //有启用分页
         if ($page) {
             //分析SQL语句
-            if ($sql = preg_replace('/select([^from].*)from/i', "SELECT COUNT(*) as count FROM ", $tag['sql'])) {
-                //缓存判断
-                $str .= ' if(' . $cache . ' && $data = S( md5("' . $tag['sql'] . $cache . '".$page) ) ){ ';
-                $str .= ' $pagetp = "' . $pagetp . '";';
-                $str .= ' $_GET[C("VAR_PAGE")] = $page;';
-                $str .= ' $_page_ = ' . $pagefun . '($data["count"] ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true,$pagetp);';
-                //总分页数
-                $str .= ' $GLOBALS["Total_Pages"] = $_page_->Total_Pages;';
-                $str .= ' $pages = $_page_->show("default");';
-                $str .= ' $pagesize = ' . $num . ';';
-                $str .= ' $offset = ($page - 1) * $pagesize;';
-                $str .= ' $' . $return . '= $data["data"];';
-                $str .= ' }else{ ';
+            if ($_sql = preg_replace('/select([^from].*)from/i', "SELECT COUNT(*) as count FROM ", $tag['sql'])) {
+                //判断是否变量传递
+                if (substr(trim($sql), 0, 1) == '$') {
+                    $parseStr .= ' $sql = str_replace(array("think_", "shuipfcms_"), C("DB_PREFIX"),' . $sql . ');';
+                    $parseStr .= ' $_count_sql = preg_replace("/select([^from].*)from/i", "SELECT COUNT(*) as count FROM ", $sql);';
+                    $parseStr .= ' $_sql = $sql;';
+                } else {
+                    //统计SQL
+                    $parseStr .= ' $_count_sql = "' . str_replace('"', '\"', $_sql) . '";';
+                    $parseStr .= ' $_sql = "' . str_replace('"', '\"', $sql) . '";';
+                }
+                $parseStr .= ' $cache = ' . $cache . ';';
+                $parseStr .= ' $cacheID = to_guid_string(array($_sql,' . $page . '));';
+                //缓存处理
+                $parseStr .= ' if($cache && $_return = S($cacheID)){ ';
+                $parseStr .= ' $count = $_return["count"];';
+                $parseStr .= ' }else{ ';
+                $parseStr .= ' $get_db = M(); ';
                 //取得信息总数
-                $str .= ' $count = $get_db->query("' . $sql . '");';
-                $str .= ' $count = $count[0]["count"]; ';
-                $str .= ' $_GET[C("VAR_PAGE")] = $page;';
-                $str .= ' $pagetp = "' . $pagetp . '";';
-                $str .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',$page,6,C("VAR_PAGE"),"",true,$pagetp);';
+                $parseStr .= ' $count = $get_db->query($_count_sql);';
+                $parseStr .= ' $count = $count[0]["count"]; ';
+                $parseStr .= ' } ';
+                $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
+                //设置分页模板，模板必须是变量传递
+                if ($pagetp) {
+                    $parseStr .= ' $_page_->SetPager(\'default\', ' . $pagetp . ');';
+                }
+                //显示分页导航
+                $parseStr .= ' $pages = $_page_->show("default");';
                 //总分页数
-                $str .= ' $GLOBALS["Total_Pages"] = $_page_->Total_Pages;';
-                $str .= ' $pages = $_page_->show("default");';
-                $str .= ' $pagesize = ' . $num . ';';
-                $str .= ' $offset = ($page - 1) * $pagesize;';
-                $str .= ' $' . $return . '=$get_db->query("' . $tag['sql'] . ' LIMIT ".$_page_->firstRow.",".$_page_->listRows." ");';
-                $str .= ' if(' . $cache . '){ S( md5("' . $tag['sql'] . $cache . '".$page)  ,array("count"=>$count,"data"=>$' . $return . '),' . $cache . '); }; ';
-                $str .= ' } ';
+                $parseStr .= ' $GLOBALS["Total_Pages"] = $_page_->Total_Pages;';
+                //分页总数
+                $parseStr .= ' $pagetotal = $_page_->Total_Pages;';
+                //总信息数
+                $parseStr .= ' $totalsize = $_page_->Total_Size;';
+                //缓存判断
+                $parseStr .= ' if($cache && $_return){ ';
+                $parseStr .= '      $' . $return . ' = $_return["data"]; ';
+                $parseStr .= ' }else{ ';
+                $parseStr .= '      $' . $return . ' = $get_db->query($_sql." LIMIT ".$_page_->firstRow.",".$_page_->listRows." ");';
+                //缓存处理
+                $parseStr .= '      if($cache){ S($cacheID ,array("count"=>$count,"data"=>$' . $return . '),$cache); }; ';
+                $parseStr .= ' } ';
+            } else {
+                return false;
             }
         } else {
-            $str .= ' if(' . $cache . ' && $data = S( md5("' . $tag['sql'] . $cache . '") ) ){ ';
-            $str .= ' $' . $return . '=$data;';
-            $str .= ' }else{ ';
-            $str .= ' $' . $return . '=$get_db->query("' . $tag['sql'] . ' LIMIT ' . $num . ' ");';
-            $str .= ' if(' . $cache . '){ S( md5("' . $tag['sql'] . $cache . '")  ,$' . $return . ',' . $cache . '); }; ';
-            $str .= ' } ';
+            //判断是否变量传递
+            if (substr(trim($sql), 0, 1) == '$') {
+                $parseStr .= ' $_sql = str_replace(array("think_", "shuipfcms_"), C("DB_PREFIX"),' . $sql . ');';
+            } else {
+                $parseStr .= ' $_sql = "' . str_replace('"', '\"', $sql) . '";';
+            }
+            $parseStr .= ' $cache = ' . $cache . ';';
+            $parseStr .= ' $cacheID = to_guid_string($_sql);';
+            $parseStr .= ' if(' . $cache . ' && $_return = S( $cacheID ) ){ ';
+            $parseStr .= '      $' . $return . '=$_return;';
+            $parseStr .= ' }else{ ';
+            $parseStr .= ' $get_db = M();';
+            $parseStr .= '      $' . $return . '=$get_db->query($_sql." LIMIT ' . $num . ' ");';
+            $parseStr .= '      if(' . $cache . '){ S( $cacheID  ,$' . $return . ',$cache); }; ';
+            $parseStr .= ' } ';
         }
-        $str .= '  ?>';
-        $str .= $this->tpl->parse($content);
-        $_get_iterateParseCache[$cacheIterateId] = $str;
-        return $str;
+        $parseStr .= '  ?>';
+        $parseStr .= $this->tpl->parse($content);
+        $_get_iterateParseCache[$cacheIterateId] = $parseStr;
+        return $parseStr;
     }
 
     /**
