@@ -642,6 +642,15 @@ class TagLibShuipf extends TagLib {
                 $parseStr .= ' $count = $_return["count"];';
                 $parseStr .= ' }else{ ';
                 $parseStr .= ' $get_db = M(); ';
+                //如果定义了数据源 
+                if($dbsource){
+                    $dbSource = F('dbSource');
+                    $dbConfig = $dbSource[$dbsource];
+                    if($dbConfig){
+                        $db = 'mysql://' . $dbConfig['username'] . ':' . $dbConfig['password'] . '@' . $dbConfig['host'] . ':' . $dbConfig['port'] . '/' . $dbConfig['dbname'];
+                    }
+                    $parseStr .= ' $get_db->db(1,"'.$db.'"); ';
+                }
                 //取得信息总数
                 $parseStr .= ' $count = $get_db->query($_count_sql);';
                 $parseStr .= ' $count = $count[0]["count"]; ';
