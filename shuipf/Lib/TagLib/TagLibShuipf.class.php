@@ -182,7 +182,7 @@ class TagLibShuipf extends TagLib {
      */
     public function _navigate($attr, $content) {
         static $_navigateCache = array();
-        $key = to_guid_string($attr);
+        $key = md5($attr.$content);
         if (isset($_navigateCache[$key])) {
             return $_navigateCache[$key];
         }
@@ -408,7 +408,7 @@ class TagLibShuipf extends TagLib {
     public function _content($attr, $content) {
         static $content_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($attr);
+        $cacheIterateId = md5($attr.$content);
         if (isset($content_iterateParseCache[$cacheIterateId])) {
             return $content_iterateParseCache[$cacheIterateId];
         }
@@ -498,7 +498,7 @@ class TagLibShuipf extends TagLib {
     public function _comment($attr, $content) {
         static $_comment_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($attr);
+        $cacheIterateId = md5($attr.$content);
         if (isset($_comment_iterateParseCache[$cacheIterateId])) {
             return $_comment_iterateParseCache[$cacheIterateId];
         }
@@ -552,7 +552,7 @@ class TagLibShuipf extends TagLib {
     public function _tags($attr, $content) {
         static $_tags_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($attr);
+        $cacheIterateId = md5($attr.$content);
         if (isset($_tags_iterateParseCache[$cacheIterateId])) {
             return $_tags_iterateParseCache[$cacheIterateId];
         }
@@ -672,7 +672,7 @@ class TagLibShuipf extends TagLib {
     public function _position($attr, $content) {
         static $_position_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($attr);
+        $cacheIterateId = md5($attr.$content);
         if (isset($_position_iterateParseCache[$cacheIterateId])) {
             return $_position_iterateParseCache[$cacheIterateId];
         }
@@ -712,7 +712,7 @@ class TagLibShuipf extends TagLib {
     public function _get($attr, $content) {
         static $_get_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($attr);
+        $cacheIterateId = md5($attr.$content);
         if (isset($_get_iterateParseCache[$cacheIterateId])) {
             return $_get_iterateParseCache[$cacheIterateId];
         }
