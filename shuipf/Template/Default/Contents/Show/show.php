@@ -1,33 +1,16 @@
 <?php if (!defined('SHUIPF_VERSION')) exit(); ?>
-<!doctype html>
-<!--[if lt IE 8 ]> <html class="no-js ie6-7"> <![endif]-->
-<!--[if IE 8 ]>    <html class="no-js ie8"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!-->
-<html class="no-js">
-<!--<![endif]-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta charset="utf-8">
-<title>
-<if condition=" isset($SEO['title']) && !empty($SEO['title']) ">{$SEO['title']}</if>
-{$SEO['site_title']}</title>
-<link rel="stylesheet" href="{$Config.siteurl}statics/blog/css/style.css" type="text/css" media="screen" />
-<link rel='stylesheet' id='wp-recentcomments-css'  href='{$Config.siteurl}statics/blog/css/wp-recentcomments.css?ver=2.0.6' type='text/css' media='screen' />
-<link rel="alternate" type="application/rss+xml" title="{$SEO['site_title']} - Rss" href="{$Config.siteurl}index.php?m=Rss&rssid={$catid}" />
-<meta name="generator" content="ThinkPHP Shuipf" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+<link href="favicon.ico" rel="shortcut icon" />
+<link rel="canonical" href="{$config_siteurl}" />
+<title><if condition=" isset($SEO['title']) && !empty($SEO['title']) ">{$SEO['title']}</if>{$SEO['site_title']}</title>
 <meta name="description" content="{$SEO['description']}" />
 <meta name="keywords" content="{$SEO['keyword']}" />
-<link rel="canonical" href="{$Config.siteurl}" />
-<!--[if IE 7]>
-<style type="text/css">
-#sidebar {
-    padding-top:40px;
-}
-.cm #commentform p {
-	float:none;
-	clear:none;
-}
-</style>
-<![endif]-->
+<link href="{$config_siteurl}statics/default/css/article_list.css" rel="stylesheet" type="text/css" />
+<link href="{$config_siteurl}statics/default/css/layout.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
 //全局变量
 var GV = {
@@ -35,38 +18,32 @@ var GV = {
     JS_ROOT: "statics/js/"
 };
 </script>
-<script type='text/javascript' src='{$Config.siteurl}statics/js/jquery.js'></script>
-<script type='text/javascript' src='{$Config.siteurl}statics/blog/js/ls.js'></script>
+<script src="{$config_siteurl}statics/js/jquery.js" type="text/javascript"></script>
+<script src="{$config_siteurl}statics/default/js/w3cer.js" type="text/javascript"></script>
 <script type="text/javascript" src="{$config_siteurl}statics/js/ajaxForm.js"></script>
-<!--html5 SHIV的调用-->
-<script type='text/javascript' src='{$Config.siteurl}statics/blog/js/html5.js'></script>
 </head>
-<body  class="single single-post postid-111 single-format-standard">
-<!--header START-->
+<body>
 <template file="Contents/header.php"/>
-<!--header END-->
-<div id="main" class="grid"> 
-  <!--主体内容开始-->
-  <div id="content" class="g-u" role="主内容">
-    <article data-id="{$id}" id="post-{$id}" class="post-4976 post type-post status-publish format-standard hentry category-jq-plus tag-jq tag-jquery tag-366 block J_SinglePost">
-      <header>
-        <h1 class="entry-title J_SinglePostTitle">{$title}</h1>
-        <p class="info">发布于
-          <time><b>{$updatetime}</b></time>
-          ，归属于<b>
-          <?php
-                        $_key=array();
-                        $_key=array();
-                        foreach($tags as $k){
-                            $_key[]='<a href="'.$k['url'].'" target="_blank">'.$k['tag'].'</a>';
-                        }
-                        echo join(",",$_key);
-           ?>
-          </b>。
-          <comment action="get_comment" catid="$catid" id="$id"> <a href="javascript:;;" onClick="slide('#respond');" title="《{$title}》上的评论">前<b>{$data.total}</b>个座位已被强势霸占！</a> </comment>
-          共有<b  id="hits">0</b>人围观&nbsp;&nbsp;&nbsp;&nbsp; </p>
-      </header>
-      <div class="bd entry-content"> {$content}
+<div class="map"><span class="home_ico">当前位置：<a href="{$config_siteurl}">{$Config.sitename}</a> &gt; <navigate catid="$catid" space=" &gt; " /></span>
+  <p style="float:right;padding-right:15px;"></p>
+</div>
+<div class="w972" style="margin-top:8px;">
+  <div class="article_article_left left">
+    <div class="article_con">
+      <h1 title="{$title}">{$title}</h1>
+      <p class="info"> 出处:本站原创&nbsp;&nbsp;&nbsp;发布时间:{$updatetime}&nbsp;&nbsp;&nbsp;   您是第<span id="hits">0</span>位浏览者 </p>
+      <div class="tool_con">
+        <div class="btn_fontsize"><a onFocus="if(this.blur)this.blur()" href="javascript:put_layer(2);"><img src="{$config_siteurl}statics/default/images/btn_fontsize_up.gif" title="工具栏"/></a> </div>
+        <div id="put_layer2" class="tools" style="display:block;"> 
+          <script src="{$config_siteurl}statics/default/js/tools.js" language="javascript" type="text/javascript"></script> 
+        </div>
+        <div style="clear:both;"></div>
+      </div>
+      <div class="article_ad"> 
+        <img src="http://lorempixel.com/640/60" />
+      </div>
+      <div class="article_txt" id="a_fontsize">
+        {$content}
         <if condition=" $voteid "> 
           <script language="javascript" src="{$Config.siteurl}index.php?g=Vote&m=Index&a=show&action=js&subjectid={$voteid}&type=2"></script> 
         </if>
@@ -77,221 +54,126 @@ var GV = {
             </volist>
           </ul>
         </if>
-        {$pages} </div>
-      <div class="bd entry-content">
-        <p>上一篇：<a href="{$previous_page.url}" target="_blank">{$previous_page.title}</a>
-          <if condition=" $previous_page['updatetime'] "><span style="font-size:12px;color:#A5A5A5;">({$previous_page.updatetime|date="Y-m-d",###})</span></if>
-        </p>
-        <p>下一篇：<a href="{$next_page.url}" target="_blank">{$next_page.title}</a>
-          <if condition=" $next_page['updatetime'] "><span style="white-space:normal;font-size:12px;color:#A5A5A5;">({$next_page.updatetime|date="Y-m-d",###})</span></if>
-        </p>
+        <div class="fanye" style="border: 0px solid #CCC;">
+      <ul>
+        {$pages}
+      </ul>
+      <div style="clear:both"></div>
+    </div>
       </div>
-      <footer class="grid">
-        <div class="author J_Author g-u" data-email="442981383@qq.com">
-          <figure> <img alt="水平凡" src="http://0.gravatar.com/avatar/6fe959902c4ed835333ea5355388df60?s=96" class="avatar avatar-70 photo" height="70" width="70">
-            <figcaption><b><a href="#" title="由 水平凡 发表">水平凡</a></b></figcaption>
-          </figure>
-        </div>
-        <div class="hi g-u">
-          <p>感谢阅读这篇文章，如果你遇到了问题，可以在文章底部留言，你可以通过以下方式联络到 水平凡：
-            1、<a href="http://t.qq.com/shuipf" target="_blank">进入我的微博首页跟随我</a> 2、我的email：442981383@qq.com</p>
-          <p class="sub-title">辛勤码日志中...求分享...O(∩_∩)O</p>
-          <div id="ckepop" class="gird"> 
-            <!-- JiaThis Button BEGIN -->
-            <div id="ckepop"> <span class="jiathis_txt">分享到：</span> <a class="jiathis_button_qzone"></a> <a class="jiathis_button_tsina"></a> <a class="jiathis_button_tqq"></a> <a class="jiathis_button_renren"></a> <a class="jiathis_button_kaixin001"></a> <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a> </div>
-            <!-- JiaThis Button END --> 
-          </div>
-        </div>
-      </footer>
-    </article>
-    <content action="relation" relation="$relation" catid="$catid"  order="id DESC" num="5" keywords="$keywords" nid="$id">
-      <if condition=" $data ">
-      <div class="similar block grid">
-        <div class="ad g-u"> 广告 </div>
-        <ul class="similar-list g-u">
-          <volist name="data" id="vo">
-            <li>
-              <h1><a class="title entry-title" role="title" href="{$vo.url}" title="点此前往{$vo.title}" rel="bookmark">{$vo.title}</a> </h1>
-              <div class="image"> <a href="{$vo.url}" title="点此前往{$vo.title}"> <img width="93" height="44" src="<if condition=" empty($vo['thumb']) ">{$Config.siteurl}statics/blog/images/no-has-thumbnail.png
-                <else />
-                {$vo['thumb']}
-                </if>
-                " class="attachment-96x44 wp-post-image" alt="kissy-mods" title="kissy-mods"> </a> </div>
-              <footer class="info"> {$vo.description|str_cut=###,80} </footer>
-            </li>
-          </volist>
+      <div class="contentpage">
+        <ul>
         </ul>
-        <s class="tag tag-similar">同类</s> </div>
-      </if>
-    </content>
-    <div class="cm block">
-      <div id="ds-reset"></div>
+        <div style="clear:both"></div>
+      </div>
+      <!--分享到-->
+      <div class="share">
+        <div class="ilike"> 
+          <!-- 将此标记放在您希望显示like按钮的位置 -->
+          <div class="bdlikebutton"></div>
+          <!-- 将此代码放在适当的位置，建议在body结束前 --> 
+          <script id="bdlike_shell"></script> 
+          <script>
+			var bdShare_config = {
+				"type":"medium",
+				"color":"blue",
+				"uid":"627811",
+				"likeText":"喜欢,顶一个",
+				"likedText":"亲.您已顶过"
+			};
+			document.getElementById("bdlike_shell").src="http://bdimg.share.baidu.com/static/js/like_shell.js?t=" + new Date().getHours();
+		  </script> 
+        </div>
+        <!-- JiaThis Button BEGIN -->
+        <div class="jiathis_style_32x32"> <a class="jiathis_button_qzone"></a> <a class="jiathis_button_tsina"></a> <a class="jiathis_button_tqq"></a> <a class="jiathis_button_renren"></a> <a class="jiathis_button_kaixin001"></a> <a class="jiathis_button_cqq"></a> <a class="jiathis_button_copy"></a> <a class="jiathis_button_email"></a> <a class="jiathis_button_baidu"></a> <a class="jiathis_button_douban"></a> <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a> <a class="jiathis_counter_style"></a> </div>
+		<script type="text/javascript" >
+        var jiathis_config={
+            summary:"",
+            hideMore:false
+        }
+        </script> 
+        <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script> 
+        <!-- JiaThis Button END --> 
+      </div>
+      <!--end-->
+      <div class="related">
+        <div class="xiangguan">
+          <h2>相关文章推荐</h2>
+          <ul>
+          <content action="relation" relation="$relation" catid="$catid"  order="id DESC" num="10" keywords="$keywords" nid="$id">
+            <volist name="data" id="vo">
+            <li><a href='{$vo.url}' target="_blank">{$vo.title}</a></li>
+            </volist>
+          </content>
+          </ul>
+        </div>
+        <div class="like_article_ad"> </div>
+        <div style="clear:both"></div>
+      </div>
+      <div class="page">
+        <p>上一篇：<pre target="1" msg="已经没有了" /> </p>
+        <p>下一篇：<next target="1" msg="已经没有了" /> </p>
+      </div>
+    </div>
+    <!--评论部分-->
+    <div class="duoshuo">
+      <h2><span>此评论不代表本站观点</span>大家说</h2>
+      <!--评论主体-->
+      <div id="ds-reset" style="margin: 8px;"></div>
     </div>
   </div>
-  <!--主体内容结束-->
-  <template file="Contents/sidebar.php"/> 
+  <!--article_list_left end-->
+  <div class="article_list_right right">
+    <div class="fenlei">
+      <h2><span class="h2_txt">分类栏目</span></h2>
+      <ul>
+      <content action="category" catid="$Categorys[$catid]['parentid']"  order="listorder ASC" >
+      <volist name="data" id="vo">
+        <li><a href='{$vo.url}' <if condition=" $catid eq $vo['catid'] "> class='thisclass'</if>  title="{$vo.catname}">{$vo.catname}</a></li>
+      </volist>
+      </content>
+      </ul>
+      <div style="clear:both"></div>
+    </div>
+    <!--分类栏目end-->
+    <div class="rand_pic">
+      <h2><span class="h2_txt">推荐图文</span></h2>
+      <ul>
+      <content action="lists" catid="$catid"  order="id DESC" num="4" thumb="1">
+       <volist name="data" id="vo">
+        <li><a href="{$vo.url}" title="{$vo.title}"><img src='<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>' border='0' width='140' height='100' alt='{$vo.title}'><span title="{$vo.title}">{$vo.title|str_cut=###,50}</span></a></li>
+       </volist>
+      </content>
+      </ul>
+      <div style="clear:both"></div>
+    </div>
+    <div class="ad250" style="width:250px;height:250px;margin-bottom:8px;border:1px solid #ccc;"> 
+      <img src="http://placekitten.com/250/250" />
+    </div>
+    <div class="hot_tj">
+      <h2><span class="h2_txt">热点推荐</span></h2>
+      <ul>
+      <content action="hits" catid="$catid"  order="weekviews DESC" num="10">
+       <volist name="data" id="vo">
+        <li><a href="{$vo.url}" title="{$vo.title}">{$vo.title|str_cut=###,42}</a></li>
+      </volist>
+      </content>
+      </ul>
+      <div style="clear:both"></div>
+    </div>
+    <!--热门推荐 end-->
+  </div>
+  <div style="clear:both"></div>
 </div>
-<template file="Contents/footer.php"/> 
-<!--[if lte IE 6]>
-<script src="http://letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
-<![endif]--> 
+<template file="Contents/footer.php"/>
 <script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F6a7ac600fcf5ef3f164732dcea2e2ba5' type='text/javascript'%3E%3C/script%3E"));
-</script> 
-<script language="javascript" type="text/javascript" src="{$Config.siteurl}statics/js/artDialog/artDialog.js?skin=blue"></script> 
-<script type="text/javascript" charset="utf-8" src="{$Config.siteurl}statics/js/lazyload.js"></script> 
-<!--代码高亮--> 
-<script type="text/javascript" charset="utf-8" src="{$Config.siteurl}statics/js/ueditor/third-party/SyntaxHighlighter/shCore.js"></script>
-<link rel="stylesheet" type="text/css" href="{$Config.siteurl}statics/js/ueditor/third-party/SyntaxHighlighter/shCoreDefault.css"/>
-<script type="text/javascript">
-// jquery.autoIMG.js - 2010-04-02 - Tang Bin - http://planeArt.cn/ - MIT Licensed
-(function ($) {
-    // 检测是否支持css2.1 max-width属性
-    var isMaxWidth = 'maxWidth' in document.documentElement.style,
-        // 检测是否IE7浏览器
-        isIE7 = !-[1, ] && !('prototype' in Image) && isMaxWidth;
-
-    $.fn.autoIMG = function () {
-        var maxWidth = this.width();
-		if(maxWidth>666){
-			maxWidth = 666;
-		}
-        return this.find('img').each(function (i, img) {
-            // 如果支持max-width属性则使用此，否则使用下面方式
-            if (isMaxWidth) return img.style.maxWidth = maxWidth + 'px';
-            var src = img.src;
-
-            // 隐藏原图
-            img.style.display = 'none';
-            img.removeAttribute('src');
-
-            // 获取图片头尺寸数据后立即调整图片
-            imgReady(src, function (width, height) {
-                // 等比例缩小
-                if (width > maxWidth) {
-                    height = maxWidth / width * height, width = maxWidth;
-                    img.style.width = width + 'px';
-                    img.style.height = height + 'px';
-                };
-                // 显示原图
-                img.style.display = '';
-                img.setAttribute('src', src);
-            });
-
-        });
-    };
-
-    // IE7缩放图片会失真，采用私有属性通过三次插值解决
-    isIE7 && (function (c, d, s) {
-        s = d.createElement('style');
-        d.getElementsByTagName('head')[0].appendChild(s);
-        s.styleSheet && (s.styleSheet.cssText += c) || s.appendChild(d.createTextNode(c))
-    })('img { -ms-interpolation-mode:bicubic }', document);
-
-    /**
-     * 图片头数据加载就绪事件
-     * @see		http://www.planeart.cn/?p=1121
-     * @param	{String}	图片路径
-     * @param	{Function}	尺寸就绪 (参数1接收width; 参数2接收height)
-     * @param	{Function}	加载完毕 (可选. 参数1接收width; 参数2接收height)
-     * @param	{Function}	加载错误 (可选)
-     */
-    var imgReady = (function () {
-        var list = [],
-            intervalId = null,
-
-            // 用来执行队列
-            tick = function () {
-                var i = 0;
-                for (; i < list.length; i++) {
-                    list[i].end ? list.splice(i--, 1) : list[i]();
-                };
-                !list.length && stop();
-            },
-
-            // 停止所有定时器队列
-            stop = function () {
-                clearInterval(intervalId);
-                intervalId = null;
-            };
-
-        return function (url, ready, load, error) {
-            var check, width, height, newWidth, newHeight, img = new Image();
-
-            img.src = url;
-
-            // 如果图片被缓存，则直接返回缓存数据
-            if (img.complete) {
-                ready(img.width, img.height);
-                load && load(img.width, img.height);
-                return;
-            };
-            // 检测图片大小的改变
-            width = img.width;
-            height = img.height;
-            check = function () {
-                newWidth = img.width;
-                newHeight = img.height;
-                if (newWidth !== width || newHeight !== height ||
-                // 如果图片已经在其他地方加载可使用面积检测
-                newWidth * newHeight > 1024) {
-                    ready(newWidth, newHeight);
-                    check.end = true;
-                };
-            };
-            check();
-            // 加载错误后的事件
-            img.onerror = function () {
-                error && error();
-                check.end = true;
-                img = img.onload = img.onerror = null;
-            };
-            // 完全加载完毕的事件
-            img.onload = function () {
-                load && load(img.width, img.height);
-                !check.end && check();
-                // IE gif动画会循环执行onload，置空onload即可
-                img = img.onload = img.onerror = null;
-            };
-            // 加入队列中定期执行
-            if (!check.end) {
-                list.push(check);
-                // 无论何时只允许出现一个定时器，减少浏览器性能损耗
-                if (intervalId === null) intervalId = setInterval(tick, 40);
-            };
-        };
-    })();
-
-})(jQuery);
-$(document).ready(function (){
-	$("#content article p").autoIMG();
-	var val;
-	$('.J_CmFormField').bind('blur',function(){
-		LS.item($(this).attr('id'),$(this).val());
-	}).each(function(){
-		val = LS.item($(this).attr('id'));
-		if(val != null) $(this).val(val);
-	});
-	$("img").lazyload({
-		placeholder:"{$Config.siteurl}statics/images/image-pending.gif",
-		effect:"fadeIn"
-	});
+$(function (){
+	$(window).toTop({showHeight : 100,});
 	//点击
-	$.get("{$Config.siteurl}api.php?m=Hits&catid={$catid}&id={$id}",function(data){
-		$("#hits").html(data.views);
-	},"json");
-	var histories = new Histories();
-	histories.appendTo('.J_Histories');
-	var data = {
-		'id' : '{$id}',
-		'title' : "{$title}",
-		'url' : '{$url}'
-	};
-	histories.save(data);
+	$.get("{$config_siteurl}api.php?m=Hits&catid={$catid}&id={$id}", function (data) {
+	    $("#hits").html(data.views);
+	}, "json");
 });
-//代码高亮
-SyntaxHighlighter.highlight();    
 //评论
 var commentsQuery = {
     'catid': '{$catid}',
@@ -308,9 +190,6 @@ var commentsQuery = {
 })();
 //评论结束
 </script> 
-<script type="text/javascript" src="http://v2.jiathis.com/code/jia.js" charset="utf-8"></script> 
-<!-- UJian Button BEGIN --> 
-<script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide"></script> 
-<!-- UJian Button END -->
+<script language="javascript" src="/js/roll_ul.js"></script>
 </body>
 </html>

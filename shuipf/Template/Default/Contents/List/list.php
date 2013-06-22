@@ -1,124 +1,82 @@
 <?php if (!defined('SHUIPF_VERSION')) exit(); ?>
-<!doctype html>
-<!--[if lt IE 8 ]> <html class="no-js ie6-7"> <![endif]-->
-<!--[if IE 8 ]>    <html class="no-js ie8"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!-->
-<html class="no-js">
-<!--<![endif]-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta charset="utf-8">
-<title>
-<if condition=" isset($SEO['title']) && !empty($SEO['title']) ">{$SEO['title']}</if>
-{$SEO['site_title']}</title>
-<link rel="stylesheet" href="{$Config.siteurl}statics/blog/css/style.css" type="text/css" media="screen" />
-<link rel='stylesheet' id='wp-recentcomments-css'  href='{$Config.siteurl}statics/blog/css/wp-recentcomments.css?ver=2.0.6' type='text/css' media='screen' />
-<link rel="alternate" type="application/rss+xml" title="{$SEO['site_title']} - Rss" href="{$Config.siteurl}index.php?m=Rss&rssid={$catid}" />
-<meta name="generator" content="ThinkPHP Shuipf" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+<link href="favicon.ico" rel="shortcut icon" />
+<link rel="canonical" href="{$config_siteurl}" />
+<title><if condition=" isset($SEO['title']) && !empty($SEO['title']) ">{$SEO['title']}</if>{$SEO['site_title']}</title>
 <meta name="description" content="{$SEO['description']}" />
 <meta name="keywords" content="{$SEO['keyword']}" />
-<link rel="canonical" href="{$Config.siteurl}" />
-<script type='text/javascript' src='{$Config.siteurl}statics/js/jquery.js'></script>
-<script type='text/javascript' src='{$Config.siteurl}statics/blog/js/ls.js'></script>
-<!--html5 SHIV的调用-->
-<script type='text/javascript' src='{$Config.siteurl}statics/blog/js/html5.js'></script>
+<link href="{$config_siteurl}statics/default/css/article_list.css" rel="stylesheet" type="text/css" />
+<link href="{$config_siteurl}statics/default/css/layout.css" rel="stylesheet" type="text/css" />
+<script src="{$config_siteurl}statics/js/jquery.js" type="text/javascript"></script>
+<script src="{$config_siteurl}statics/default/js/w3cer.js" type="text/javascript"></script>
 </head>
-<body  class="home blog">
-<!--header START-->
+<body>
 <template file="Contents/header.php"/>
-<!--header END-->
-<div id="main" class="grid">
-  <div id="content" class="g-u" role="主内容">
-    <div class="recommend block grid">
-      <ul class="recommend-list g-u" style="display: inline-block; ">
-        <!--推荐循环开始-->
-        <position action="position" posid="1" num="6">
-          <volist name="data" id="vo">
-            <li class="grid g-u">
-              <div class="image g-u"> <a title="点此前往《{$vo.data.title}》" href="{$vo.data.url}"> <img width="93" height="44" src="<if condition=" empty($vo['data']['thumb']) ">{$Config.siteurl}statics/blog/images/no-has-thumbnail.png
-                <else />
-                {$vo['data']['thumb']}
-                </if>
-                " class="attachment-96x44 wp-post-image" alt="{$vo.data.title}" title="{$vo.data.title}"> </a> </div>
-              <div class="item-detail g-u">
-                <h1><a class="title entry-title" role="title" href="{$vo.data.url}" title="点此前往《{$vo.data.title}》" rel="bookmark">{$vo.data.title}</a> </h1>
-                <footer class="info"><a href="">前<b>
-                  <?=commcount($vo['catid'],$vo['id']);?>
-                  </b>个座位已被强势霸占！</a>共有<b>
-                  <?=hits("c-".$vo['catid']."-".$vo['id']);?>
-                  </b>人围观</footer>
-              </div>
-            </li>
-          </volist>
-        </position>
-        <!--推荐循环结束-->
-      </ul>
-      <s class="tag tag-recommend">推荐</s> </div>
-    <!--内容循环-->
-    <content action="lists" catid="$catid" order="id DESC" num="5" page="$page">
+<div class="map"><span class="home_ico">当前位置：<a href="{$config_siteurl}">{$Config.sitename}</a> &gt; <navigate catid="$catid" space=" &gt; " /></span>
+  <p style="float:right;padding-right:15px;"></p>
+</div>
+<div class="article_list_con w972">
+  <div class="article_list_left left">
+    <content action="lists" catid="$catid" order="id DESC" num="7" page="$page">
+    <div class="article_lanmu">
+      <h2><span class="h2_text">{$Categorys[$catid]['catname']}</span></h2>
       <volist name="data" id="vo">
-        <article id="post-{$vo.id}" class="post-{$vo.id} post type-post status-publish format-standard hentry category-css3 category-html5 category-js category-f2e tag-firefox4 post-digest block">
-          <h1 class="J_Post_Title"><a class="title entry-title" role="title" href="{$vo.url}" title="{$vo.title}" target="_blank" rel="bookmark">{$vo.title}</a> </h1>
-          <div class="bd grid entry-content">
-            <p class="image g-u"> <a href="{$vo.url}" target="_blank" title="点此前{$vo.title}"> <img width="300" height="140" src="<if condition=" empty($vo['thumb']) ">{$Config.siteurl}statics/blog/images/no-has-thumbnail.png
-              <else />
-              {$vo['thumb']}
-              </if>
-              " class="attachment-post-thumbnail wp-post-image" alt="{$vo.title}" title="{$vo.title}"> </a> </p>
-            <div class="digest g-u">
-              <p>{$vo.description}...</p>
-            </div>
-          </div>
-          <footer>
-            <div class="author J_Author" data-weib="shuipf">
-              <figure> <img alt="作者：{$vo.username}" src="<?php echo get_avatar(1);?>" class="avatar avatar-70 photo" height="70" width="70">
-                <figcaption><b>{$vo.username}</b></figcaption>
-              </figure>
-            </div>
-            <p class="info">发布于
-              <time><b>{$vo.updatetime|date="Y-m-d H:i:s",###}</b></time>
-              ，归属于<b>
-              <?php
-          $_keywords=explode(' ',$vo[keywords]);
-          $_key=array();
-                        foreach($_keywords as $k){
-                             $_key[]='<a href="'.$Config['siteurl'].'tag-'.$k.'.html" target="_blank">'.$k.'</a>';
-                        }
-          echo join(",",$_key);
-          ?>
-              </b>,
-              <comment action="get_comment" catid="$vo['catid']" id="$vo['id']"> <a href="{$vo.url}" title="{$vo.title}" target="_blank">前<b>{$data.total}</b>个座位已被强势霸占！</a> </comment>
-              共有<b><?php echo hits("c-".$vo['catid']."-".$vo['id']);?></b>人围观 </p>
-            <s data-id="109" class="tag tag-already-read J_AlreadyRead">已阅</s> </footer>
-        </article>
+      <dl>
+        <dt><a href='{$vo.url}' title='{$vo.title}'><img src='<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>' alt='{$vo.title}'/></a></dt>
+        <dd class="arc_title"><a href="{$vo.url}" title="{$vo.title}">{$vo.title}</a></dd>
+        <dd class="arc_desc">{$vo.description}...</dd>
+        <dd class="arc_info"><span>所属栏目：<a href='{$Categorys[$catid]['url']}'>{$Categorys[$catid]['catname']}</a></span> <span>更新日期：{$vo.updatetime|date="m-d H:i:s",###}</span> <span>阅读次数：<?php echo hits("c-".$vo['catid']."-".$vo['id']);?></span></dd>
+        <div style="clear:both"></div>
+      </dl>
       </volist>
-      <!--内容循环结束-->
-      <div class="wp-pagenavi"> {$pages} </div>
+    </div>
+    <div class="fanye">
+      <ul>
+        {$pages}
+      </ul>
+      <div style="clear:both"></div>
+    </div>
     </content>
   </div>
-  <template file="Contents/sidebar.php"/> 
+  <!--article_list_left end-->
+  <div class="article_list_right right">
+    <div class="ad250" style="width:250px;height:250px;margin-bottom:8px;border:1px solid #ccc;overflow:hidden"> 
+      <img src="http://placekitten.com/250/250" /> 
+    </div>
+    <div class="rand_pic">
+      <h2><span class="h2_txt">推荐图文</span></h2>
+      <ul>
+      <content action="lists" catid="$catid"  order="id DESC" num="4" thumb="1">
+       <volist name="data" id="vo">
+        <li><a href="{$vo.url}" title="{$vo.title}"><img src='<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>' border='0' width='140' height='100' alt='{$vo.title}'><span title="{$vo.title}">{$vo.title|str_cut=###,50}</span></a></li>
+       </volist>
+      </content>
+      </ul>
+      <div style="clear:both"></div>
+    </div>
+    <div class="ad250" style="width:250px;height:250px;margin-bottom:8px;border:1px solid #ccc;overflow:hidden"> 
+      <img src="http://placekitten.com/250/250" />
+    </div>
+    <div class="hot_tj">
+      <h2><span class="h2_txt">热点推荐</span></h2>
+      <ul>
+      <content action="hits" catid="$catid"  order="weekviews DESC" num="10">
+       <volist name="data" id="vo">
+        <li><a href="{$vo.url}" title="{$vo.title}">{$vo.title|str_cut=###,42}</a></li>
+      </volist>
+      </content>
+      </ul>
+      <div style="clear:both"></div>
+    </div>
+    <!--随机推荐 end--> 
+  </div>
+  <div style="clear:both"></div>
 </div>
-<template file="Contents/footer.php"/> 
-<!--[if lte IE 6]>
-<script src="http://letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
-<![endif]--> 
-<script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F6a7ac600fcf5ef3f164732dcea2e2ba5' type='text/javascript'%3E%3C/script%3E"));
-</script> 
-<script type="text/javascript" charset="utf-8" src="{$Config.siteurl}statics/js/lazyload.js"></script> 
-<script type="text/javascript">
-$(function(){
-	$("img").lazyload({
-		placeholder:"{$Config.siteurl}statics/images/image-pending.gif",
-		effect:"fadeIn"
-	});
-	$(".recommend-list a").click(function(){
-		$(this).text('页面载入中……');
-		window.location = $(this).attr('href');
-	});
-	var histories = new Histories();
-	histories.appendTo('.J_Histories');
-});
-</script>
+<template file="Contents/footer.php"/>
+<script type="text/javascript">$(function (){$(window).toTop({showHeight : 100,});});</script>
 </body>
 </html>
