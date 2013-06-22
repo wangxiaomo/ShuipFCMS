@@ -25,12 +25,35 @@ class EmotionModel extends CommonModel {
     public function emotion_cache() {
         $data = $this->where(array('isused' => 1))->select();
         $cacheList = array();
-        foreach($data as $r){
-            $cacheList['['.$r['emotion_name'].']'] = $r;
+        foreach ($data as $r) {
+            $cacheList['[' . $r['emotion_name'] . ']'] = $r;
         }
         F("Emotion", $cacheList);
-        S('cacheReplaceExpression', NULL);
+
         return $cacheList;
+    }
+
+    //表情缓存，用于表情调用的
+    public function cacheReplaceExpression($emotionPath = '', $classStyle = '') {
+        //加载表情缓存
+        $emotion = F('Emotion');
+        if (!$emotion) {
+            $emotion = D('Comments/Emotion')->emotion_cache();
+        }
+        //表情存放路径
+        if (empty($emotionPath)) {
+            $emotionPath = CONFIG_SITEURL_MODEL . 'statics/images/emotion/';
+        }
+        //需要替换的标签
+        $replace = array();
+        foreach ($emotion as $lab => $info) {
+            if ($lab) {
+                $replace[$lab] = '<img src="' . $emotionPath . $info['emotion_icon'] . '" alt="' . $lab . '" title="' . $lab . '" ' . $classStyle . ' />';
+            }
+        }
+        //进行缓存
+        S('cacheReplaceExpression', $replace, 3600);
+        return $replace;
     }
 
 }
