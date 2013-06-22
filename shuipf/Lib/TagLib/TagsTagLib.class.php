@@ -117,6 +117,10 @@ class TagsTagLib {
         }
         $num = $data['num'] ? $data['num'] : 10;
         $return = $this->db->order(array("hits" => "DESC"))->limit($num)->select();
+        //增加访问路径
+        foreach($return as $k=>$v){
+            $return[$k]['url'] = getTagsUrl($v['tagid'], $v['tag']);
+        }
         if ($cache) {
             S($cacheID, $return, $cache);
         }

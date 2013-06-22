@@ -672,9 +672,9 @@ function parseTemplateFile($templateFile = '') {
  * @param type $PageParam 接收分页号参数的标识符
  * @param type $PageLink 分页规则 
  *                          array(
-                                 "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
-                                 "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
-                             )
+  "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
+  "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
+  )
  * @param type $static 是否开启静态
  * @param string $TP 模板
  * @param array $Tp_Config 模板配置
@@ -698,15 +698,15 @@ function page($Total_Size = 1, $Page_Size = 0, $Current_Page = 0, $List_Page = 6
     //生成静态，需要传递一个常量URLRULE，来生成对应规则
     //不建议使用常量定义分页规则，推荐直接传统参数方式
     if (empty($PageLink) && $static) {
-        $URLRULE = $GLOBALS['URLRULE']?$GLOBALS['URLRULE']:URLRULE;
+        $URLRULE = $GLOBALS['URLRULE'] ? $GLOBALS['URLRULE'] : URLRULE;
         $PageLink = array();
-        if(!is_array($URLRULE)){
+        if (!is_array($URLRULE)) {
             $URLRULE = explode("~", $URLRULE);
         }
-        $PageLink['index'] = $URLRULE['index']?$URLRULE['index']:$URLRULE[0];
-        $PageLink['list'] = $URLRULE['list']?$URLRULE['list']:$URLRULE[1];
+        $PageLink['index'] = $URLRULE['index'] ? $URLRULE['index'] : $URLRULE[0];
+        $PageLink['list'] = $URLRULE['list'] ? $URLRULE['list'] : $URLRULE[1];
     }
-    if(!$Tp_Config){
+    if (!$Tp_Config) {
         $Tp_Config = array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => "");
     }
     $Page = new Page($Total_Size, $Page_Size, $Current_Page, $List_Page, $PageParam, $PageLink, $static);
@@ -898,8 +898,46 @@ function title_style($style, $html = 1) {
  * @param type $classStyle 表情img附加样式
  * @return type
  */
-function cReplaceExpression($content ,$emotionPath = '', $classStyle = ''){
-    D("Comments")->replaceExpression($content ,$emotionPath, $classStyle);
+function cReplaceExpression($content, $emotionPath = '', $classStyle = '') {
+    D("Comments")->replaceExpression($content, $emotionPath, $classStyle);
     return $content;
 }
+
+/**
+ * 根据tagid和tag获取url访问地址
+ * @param type $tagid 
+ * @param type $tag
+ * @return type
+ */
+function getTagsUrl($tagid, $tag) {
+    //获取分页规则
+    $urlrules = F("urlrules");
+    $urlrules = $urlrules[AppframeAction::$Cache['Config']['tagurl']];
+    if (!$urlrules) {
+        $urlrules = 'index.php?g=Tags&tagid={$tagid}|index.php?g=Tags&tagid={$tagid}&page={$page}';
+    }
+    $replace_l = array(); //需要替换的标签
+    $replace_r = array(); //替换的内容
+    if (strstr($urlrules, '{$tagid}')) {
+        if ($tagid) {
+            $replace_l[] = '{$tagid}';
+            $replace_r[] = $tagid;
+        }
+    }
+    if (strstr($urlrules, '{$tag}')) {
+        $replace_l[] = '{$tag}';
+        $replace_r[] = $tag;
+    }
+    //标签替换
+    $tagurlrules = str_replace($replace_l, $replace_r, $urlrules);
+    $tagurlrules = explode("|", $tagurlrules);
+    $parse_url = parse_url($tagurlrules[0]);
+    if (!isset($parse_url['host'])) {
+        $url = CONFIG_SITEURL . $tagurlrules[0];
+    } else {
+        $url = $tagurlrules[0];
+    }
+    return $url;
+}
+
 ?>
