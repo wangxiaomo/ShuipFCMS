@@ -73,9 +73,7 @@ class TagsTagLib {
             return $return;
         }
         //查询条件
-        if (empty($this->where)) {
-            $this->where($data);
-        }
+        $this->where($data);
 
         //判断是否启用分页，如果没启用分页则显示指定条数的内容
         if (!isset($data['limit'])) {
