@@ -59,50 +59,28 @@ class TagLibShuipf extends TagLib {
      * @return type
      */
     public function _pre($attr, $content) {
+        static $_preParseCache = array();
+        $cacheIterateId = md5($attr . $content);
+        if (isset($_preParseCache[$cacheIterateId])) {
+            return $_preParseCache[$cacheIterateId];
+        }
         $tag = $this->parseXmlAttr($attr, 'pre');
         //当没有内容时的提示语
         $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
         //是否新窗口打开
-        $target = !empty($tag['blank']) ? ' target="_blank" ' : '';
-        //栏目ID
-        if (isset($tag['catid']) && (int) $tag['catid']) {
-            $catid = (int) $tag['catid'];
-        } else {
-            $catid = $this->tpl->get('catid');
+        $target = !empty($tag['blank']) ? ' target=\"_blank\" ' : '';
+        if(!$tag['catid']){
+            $tag['catid'] = '$catid';
         }
-        //信息ID
-        if (isset($tag['id']) && (int) $tag['id']) {
-            $id = (int) $tag['id'];
-        } else {
-            $id = $this->tpl->get('id');
+        if(!$tag['id']){
+            $tag['id'] = '$id';
         }
-        if (!$catid || !$id) {
-            return $msg;
-        }
-        //获取模板中的Categorys变量
-        $Categorys = $this->tpl->get('Categorys');
-        if (!$Categorys) {
-            $Categorys = F('Categorys');
-        }
-        if (!$Categorys[$catid]) {
-            return $msg;
-        }
-        $Model = $this->tpl->get('Model');
-        if (!$Model) {
-            $Model = F("Model");
-        }
-        //模型id
-        $modelid = $Categorys[$catid]['modelid'];
-        //表名
-        $table_name = $Model[$modelid]['tablename'];
-        //获取数据
-        $where = array();
-        $where['catid'] = $catid;
-        $where['status'] = array("EQ", "99");
-        $where['id'] = array("LT", $id);
-        $r = M(ucwords($table_name))->where($where)->order(array("id" => "DESC"))->find();
-        //下面拼接输出语句
-        $parsestr = $r ? '<a class="pre_a" href="' . $r['url'] . '"' . $target . '>' . $r['title'] . '</a>' : $msg;
+        
+        $parsestr = '<?php ';
+        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys['.$tag['catid'].'][\'modelid\']][\'tablename\']))->where(array("catid"=>'.$tag['catid'].',"status"=>99,"id"=>array("LT",'.$tag['id'].')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
+        $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" '.$target.'>".$_pre_r["title"]."</a>":"'.str_replace('"','\"',$msg).'";';
+        $parsestr .= ' ?> ';
+        $_preParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
     }
 
@@ -120,50 +98,28 @@ class TagLibShuipf extends TagLib {
      * @return type
      */
     public function _next($attr, $content) {
-        $tag = $this->parseXmlAttr($attr, 'next');
+         static $_nextParseCache = array();
+        $cacheIterateId = md5($attr . $content);
+        if (isset($_nextParseCache[$cacheIterateId])) {
+            return $_nextParseCache[$cacheIterateId];
+        }
+        $tag = $this->parseXmlAttr($attr, 'pre');
         //当没有内容时的提示语
         $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
         //是否新窗口打开
-        $target = !empty($tag['blank']) ? ' target="_blank" ' : '';
-        //栏目ID
-        if (isset($tag['catid']) && (int) $tag['catid']) {
-            $catid = (int) $tag['catid'];
-        } else {
-            $catid = $this->tpl->get('catid');
+        $target = !empty($tag['blank']) ? ' target=\"_blank\" ' : '';
+        if(!$tag['catid']){
+            $tag['catid'] = '$catid';
         }
-        //信息ID
-        if (isset($tag['id']) && (int) $tag['id']) {
-            $id = (int) $tag['id'];
-        } else {
-            $id = $this->tpl->get('id');
+        if(!$tag['id']){
+            $tag['id'] = '$id';
         }
-        if (!$catid || !$id) {
-            return $msg;
-        }
-        //获取模板中的Categorys变量
-        $Categorys = $this->tpl->get('Categorys');
-        if (!$Categorys) {
-            $Categorys = F('Categorys');
-        }
-        if (!$Categorys[$catid]) {
-            return $msg;
-        }
-        $Model = $this->tpl->get('Model');
-        if (!$Model) {
-            $Model = F("Model");
-        }
-        //模型id
-        $modelid = $Categorys[$catid]['modelid'];
-        //表名
-        $table_name = $Model[$modelid]['tablename'];
-        //获取数据
-        $where = array();
-        $where['catid'] = $catid;
-        $where['status'] = array("EQ", "99");
-        $where['id'] = array("GT", $id);
-        $r = M(ucwords($table_name))->where($where)->find();
-        //下面拼接输出语句
-        $parsestr = $r ? '<a class="pre_a" href="' . $r['url'] . '"' . $target . '>' . $r['title'] . '</a>' : $msg;
+        
+        $parsestr = '<?php ';
+        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys['.$tag['catid'].'][\'modelid\']][\'tablename\']))->where(array("catid"=>'.$tag['catid'].',"status"=>99,"id"=>array("GT",'.$tag['id'].')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
+        $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" '.$target.'>".$_pre_r["title"]."</a>":"'.str_replace('"','\"',$msg).'";';
+        $parsestr .= ' ?> ';
+        $_nextParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
     }
 
