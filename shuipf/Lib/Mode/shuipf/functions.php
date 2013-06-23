@@ -79,6 +79,8 @@ function U($url = '', $vars = '', $suffix = true, $redirect = false, $domain = t
                     $domain = $Module_Domains_list["Admin"];
                     $domain = explode("|", $domain);
                     $domain = $domain[0];
+                    //标识这里是后台模块，且后台绑定域名，强制以后台绑定的域名访问其他分组
+                    $admin_domain = true;
                     unset($_domain);
                 } elseif (!isset($_domain)) {
                     $domain = strtolower($config_url['host']);
@@ -154,7 +156,12 @@ function U($url = '', $vars = '', $suffix = true, $redirect = false, $domain = t
                 $var[C('VAR_GROUP')] = strtolower($var[C('VAR_GROUP')]);
             }
             if ($var[C('VAR_GROUP')] == C("DEFAULT_GROUP")) {
-                unset($var[C('VAR_GROUP')]);
+                //如果是后台绑定域名强制使用后台域名访问时，非Admin项目，都要带上g参数
+                if(isset($admin_domain) && $var[C('VAR_GROUP')] != 'Admin'){
+                    
+                }else{
+                    unset($var[C('VAR_GROUP')]);
+                }
             }
             //普通模式下，m和a默认操作都可以隐藏该参数
             if (C("URL_MODEL") == 0) {
