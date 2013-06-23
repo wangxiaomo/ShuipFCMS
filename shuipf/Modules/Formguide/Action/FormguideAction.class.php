@@ -224,7 +224,7 @@ class FormguideAction extends AdminbaseAction {
                        `datetime` int(10) unsigned NOT NULL,
                        `ip` char(15) NOT NULL,
                        PRIMARY KEY (`dataid`)
-                    ) TYPE=MyISAM;";
+                    ) ENGINE=MyISAM;";
         //表名替换
         $sql = str_replace("think_form_table", C("DB_PREFIX") . $TableName, $sql);
         $status = $this->db->execute($sql);
