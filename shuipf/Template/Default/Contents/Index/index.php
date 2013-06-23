@@ -238,8 +238,8 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     <content action="hits" catid="1"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
-      <dt><a href="{$vo.title}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
-      <dd class="textname"><a href="{$vo.title}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
+      <dt><a href="{$vo.url}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
+      <dd class="textname"><a href="{$vo.url}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
       <dd  class="texttxt" title="{$vo.description}">{$vo.description|str_cut=###,120}</dd>
       <div style="clear:both"></div>
     </volist>
@@ -258,8 +258,8 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     <content action="hits" catid="2"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
-      <dt><a href="{$vo.title}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
-      <dd class="textname"><a href="{$vo.title}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
+      <dt><a href="{$vo.url}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
+      <dd class="textname"><a href="{$vo.url}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
       <dd  class="texttxt" title="{$vo.description}">{$vo.description|str_cut=###,120}</dd>
       <div style="clear:both"></div>
     </volist>
@@ -278,8 +278,8 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     <content action="hits" catid="3"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
-      <dt><a href="{$vo.title}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
-      <dd class="textname"><a href="{$vo.title}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
+      <dt><a href="{$vo.url}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
+      <dd class="textname"><a href="{$vo.url}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
       <dd  class="texttxt" title="{$vo.description}">{$vo.description|str_cut=###,120}</dd>
       <div style="clear:both"></div>
     </volist>
@@ -305,7 +305,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     <volist name="data" id="vo">
     <dl>
       <dt><a href="{$vo.url}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
-      <dd class="textname"><a href="{$vo.title}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
+      <dd class="textname"><a href="{$vo.url}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
       <dd  class="texttxt" title="{$vo.description}">{$vo.description|str_cut=###,120}</dd>
       <div style="clear:both"></div>
     </volist>
@@ -324,8 +324,8 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     <content action="hits" catid="7"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
-      <dt><a href="{$vo.title}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
-      <dd class="textname"><a href="{$vo.title}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
+      <dt><a href="{$vo.url}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
+      <dd class="textname"><a href="{$vo.url}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
       <dd  class="texttxt" title="{$vo.description}">{$vo.description|str_cut=###,120}</dd>
       <div style="clear:both"></div>
     </volist>
@@ -344,8 +344,8 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     <content action="hits" catid="9"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
-      <dt><a href="{$vo.title}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
-      <dd class="textname"><a href="{$vo.title}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
+      <dt><a href="{$vo.url}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}" /></a></dt>
+      <dd class="textname"><a href="{$vo.url}" title="{$vo.title}">{$vo.title|str_cut=###,60}</a></dd>
       <dd  class="texttxt" title="{$vo.description}">{$vo.description|str_cut=###,120}</dd>
       <div style="clear:both"></div>
     </volist>
