@@ -385,20 +385,39 @@ function str_cut($string, $length, $dot = '...') {
  * @param $groupid 用户组id 默认游客
  * @param $isadmin 是否为管理员模式
  */
-function initupload($module, $catid, $args, $userid, $groupid = '8', $isadmin = false) {
-    //检查用户组上传权限
-    if (!$isadmin) {
+function initupload($module, $catid, $args, $userid, $groupid = 8, $isadmin = false) {
+    if(empty($module)){
+        return false;
+    }
+    //检查用户是否有上传权限
+    if ($isadmin) {
+        //后台用户
+        //上传大小
+        $file_size_limit = intval(CONFIG_UPLOADMAXSIZE);
+         //上传处理地址
+        $upload_url = U('Attachment/Admin/swfupload');
+    } else {
+        //前台用户
         $Member_group = F("Member_group");
         if ((int) $Member_group[$groupid]['allowattachment'] < 1 || empty($Member_group)) {
             return false;
         }
+        //上传大小
+        $file_size_limit = intval(CONFIG_QTUPLOADMAXSIZE);
+        //上传处理地址
+        $upload_url = U('Attachment/Upload/swfupload');
     }
-
+    //当前时间戳
     $sess_id = time();
-    $swf_auth_key = md5(C("AUTHCODE") . $sess_id);
+    //生成验证md5
+    $swf_auth_key = md5(C("AUTHCODE") . $sess_id . ($isadmin ? 1 : 0));
 
     //同时允许的上传个数, 允许上传的文件类型, 是否允许从已上传中选择, 图片高度, 图片宽度,是否添加水印1是
-    $args = explode(',', $args);
+    if (!is_array($args)) {
+        //如果不是数组传递，进行分割
+        $args = explode(',', $args);
+    }
+
     //参数补充完整
     if (empty($args[1])) {
         //如果允许上传的文件类型为空，启用网站配置的 uploadallowext
@@ -416,34 +435,30 @@ function initupload($module, $catid, $args, $userid, $groupid = '8', $isadmin = 
     }
     $upload_allowext = implode(';', $array);
 
-    //允许上传大小
-    if ($isadmin) {
-        $file_size_limit = intval(CONFIG_UPLOADMAXSIZE);
-    } else {
-        $file_size_limit = intval(CONFIG_QTUPLOADMAXSIZE);
-    }
     //上传个数
-    $file_upload_limit = intval($args[0]) ? intval($args[0]) : '8';
+    $file_upload_limit = (int) $args[0] ? (int) $args[0] : 8;
+    //swfupload flash 地址
+    $flash_url = CONFIG_SITEURL_MODEL.'statics/js/swfupload/swfupload.swf';
 
-    $init = 'var swfu = \'\';
+    $init = 'var swfu_'.$module.' = \'\';
 	$(document).ready(function(){
 		Wind.use("swfupload",GV.DIMAUB+"statics/js/swfupload/handlers.js",function(){
-		      swfu = new SWFUpload({
-			flash_url:"' . CONFIG_SITEURL . 'statics/js/swfupload/swfupload.swf?"+Math.random(),
-			upload_url:"' . CONFIG_SITEURL . 'index.php?m=Attachments&g=Attachment&a=swfupload",
+		      swfu_'.$module.' = new SWFUpload({
+			flash_url:"' . $flash_url . '?"+Math.random(),
+			upload_url:"' . $upload_url . '",
 			file_post_name : "Filedata",
 			post_params:{
-			                        "SWFUPLOADSESSID":"' . $sess_id . '",
-			                        "module":"' . $module . '",
-			                        "catid":"' . $catid . '",
-			                        "uid":"' . $userid . '",
-			                        "isadmin":"' . $isadmin . '",
-			                        "groupid":"' . $groupid . '",
-			                        "thumb_width":"' . intval($args[3]) . '",
-			                        "thumb_height":"' . intval($args[4]) . '",
-			                        "watermark_enable":"' . (($args[5] == '') ? 1 : intval($args[5])) . '",
-			                        "filetype_post":"' . $args[1] . '",
-			                        "swf_auth_key":"' . $swf_auth_key . '"
+                                    "sessid":"' . $sess_id . '",
+                                    "module":"' . $module . '",
+                                    "catid":"' . $catid . '",
+                                    "uid":"' . $userid . '",
+                                    "isadmin":"' . $isadmin . '",
+                                    "groupid":"' . $groupid . '",
+                                    "thumb_width":"' . intval($args[3]) . '",
+                                    "thumb_height":"' . intval($args[4]) . '",
+                                    "watermark_enable":"' . (($args[5] == '') ? 1 : intval($args[5])) . '",
+                                    "filetype_post":"' . $args[1] . '",
+                                    "swf_auth_key":"' . $swf_auth_key . '"
 			},
 			file_size_limit:"' . $file_size_limit . 'KB",
 			file_types:"' . $upload_allowext . '",

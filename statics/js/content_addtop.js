@@ -46,26 +46,44 @@ authkey 参数密钥，验证args
 function flashupload(uploadid, name, textareaid, funcName, args, module, catid, authkey) {
     var args = args ? '&args=' + args : '';
     var setting = '&module=' + module + '&catid=' + catid + '&authkey=' + authkey;
-    Wind.use("artDialog","iframeTools",function(){
-        art.dialog.open(GV.DIMAUB+'index.php?a=swfupload&m=Attachments&g=Attachment' + args + setting, {
-        title: name,
-        id: uploadid,
-        width: '650px',
-        height: '420px',
-        lock: true,
-        fixed: true,
-        background:"#CCCCCC",
-        opacity:0,
-        ok: function() {
-            if (funcName) {
-                funcName.apply(this, [this, textareaid]);
-            } else {
-                submit_ckeditor(this, textareaid);
+    var status = false;
+    //检查是否有上传权限
+    $.ajax({
+        type: "GET",
+        url: GV.DIMAUB + 'index.php?a=competence&m=Attachments&g=Attachment' + args + setting,
+        dataType: "json",
+        async: false,
+        success: function (json) {
+            if (json.status == false) {
+                isalert(json.info || '没有上传权限！');
+                status = false;
+                return false;
             }
-        },
-        cancel: true
+            status = true;
+        }
     });
-    });
+    if (status) {
+        Wind.use("artDialog", "iframeTools", function () {
+            art.dialog.open(GV.DIMAUB + 'index.php?a=swfupload&m=Attachments&g=Attachment' + args + setting, {
+                title: name,
+                id: uploadid,
+                width: '650px',
+                height: '420px',
+                lock: true,
+                fixed: true,
+                background: "#CCCCCC",
+                opacity: 0,
+                ok: function () {
+                    if (funcName) {
+                        funcName.apply(this, [this, textareaid]);
+                    } else {
+                        submit_ckeditor(this, textareaid);
+                    }
+                },
+                cancel: true
+            });
+        });
+    }
 }
 
 //多图上传，SWF回调函数

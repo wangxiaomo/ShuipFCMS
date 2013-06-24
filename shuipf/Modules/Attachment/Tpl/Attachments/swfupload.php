@@ -207,9 +207,9 @@ function addonlinefile(obj) {
 //是否添加水印设置
 function change_params(){
 	if($('#watermark_enable').attr('checked')) {
-		swfu.addPostParam('watermark_enable', '1');
+		swfu_{$module}.addPostParam('watermark_enable', '1');
 	} else {
-		swfu.removePostParam('watermark_enable');
+		swfu_{$module}.removePostParam('watermark_enable');
 	}
 }
 //图片选择处理回调
@@ -252,7 +252,9 @@ function album_cancel(obj,id,source){
     <ul class="J_tabs_nav">
       <li class="current"><a href="javascript:;;">上传附件</a></li>
       <li class=""><a href="javascript:;;">网络文件</a></li>
-      <li class=""><a href="javascript:;;" onClick="set_iframe('album_list','{:U("Attachments/album_load",array("args"=>$_GET['args']))}')">图库</a></li>
+      <if condition=" $isadmin "> 
+      <li class=""><a href="javascript:;;" onClick="set_iframe('album_list','{:U("Admin/public_album_load",array("args"=>$_GET['args']))}')">图库</a></li>
+      </if>
       <if condition="$att_not_used neq ''">
         <li class="" ><a href="javascript:;;" style="color:#F00">未处理文件</a></li>
       </if>

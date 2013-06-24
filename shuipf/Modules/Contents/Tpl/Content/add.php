@@ -225,6 +225,7 @@ $(function () {
             onfocusout: false,
             //验证通过，提交表单
             submitHandler: function (forms) {
+				var dialog = art.dialog({id: 'loading',fixed: true,lock: true,background: "#CCCCCC",opacity: 0,esc:false,title: false});
                 $(forms).ajaxSubmit({
                     url: form.attr('action'), //按钮上是否自定义提交地址(多按钮情况)
                     dataType: 'json',
@@ -232,6 +233,7 @@ $(function () {
                         
                     },
                     success: function (data, statusText, xhr, $form) {
+						dialog.close();
                         if(data.status){
 							setCookie("refersh_time",1);
 							//添加成功

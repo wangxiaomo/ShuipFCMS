@@ -60,7 +60,7 @@
 			// 图片地址
 			flashvars.picurl = "<?php echo $picurl;?>";
 			// 上传地址，使用了 base64 加密
-			flashvars.uploadurl = "<?php echo base64_encode("index.php?a=crop_upload&m=Attachments&g=Attachment&module=$module&catid=$catid&file=".urlencode($picurl));?>";
+			flashvars.uploadurl = "<?php echo base64_encode("index.php?a=crop_upload&m=Admin&g=Attachment&module=$module&catid=$catid&file=".urlencode($picurl));?>";
 			
             var params = {};
             params.quality = "high";

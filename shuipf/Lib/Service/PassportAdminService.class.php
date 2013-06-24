@@ -26,7 +26,7 @@ class PassportAdminService {
      */
     public function isLoggedAdmin() {
         if (session(C("USER_AUTH_KEY")) && session("username") && session(C("USER_AUTH_KEY")) && session("adminverify")) {
-            $User = $this->getLocalAdminUser((int)session(C("USER_AUTH_KEY")));
+            $User = $this->getLocalAdminUser((int) session(C("USER_AUTH_KEY")));
             if ($User && md5($User['password'] . $User['verify']) == session("adminverify")) {
                 $User['userid'] = $User['id'];
                 unset($User['id']);
@@ -63,7 +63,7 @@ class PassportAdminService {
         //设置用户名
         session("username", $user['username']);
         //标记为后台登陆
-        session("ShuipFanAdmin", true);
+        session("isadmin", true);
         //角色
         session("roleid", $user['role_id']);
         //验证码
@@ -94,7 +94,7 @@ class PassportAdminService {
         //设置用户名
         session("username", NULL);
         //标记为后台登陆
-        session("ShuipFanAdmin", NULL);
+        session("isadmin", NULL);
         //角色
         session("roleid", NULL);
         //特权。创始人

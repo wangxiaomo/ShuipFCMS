@@ -142,7 +142,7 @@ function preview(id, name, filepath) {
 //缩图管理
 function showthumb(id, name) {
     Wind.use('artDialog', 'iframeTools', function () {
-        art.dialog.open(GV.DIMAUB + 'index.php?a=pullic_showthumbs&m=Attachments&g=Attachment&aid=' + id, {
+        art.dialog.open(GV.DIMAUB + 'index.php?a=pullic_showthumbs&m=Admin&g=Attachment&aid=' + id, {
             title: '管理缩略图--' + name,
             padding: 0,
             width: '500px',
