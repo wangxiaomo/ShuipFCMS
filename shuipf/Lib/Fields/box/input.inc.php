@@ -1,13 +1,14 @@
 <?php
 
 function box($field, $value) {
-    if ($this->fields[$field]['boxtype'] == 'checkbox') {
+    $setting = unserialize($this->fields[$field]['setting']);
+    if ($setting['boxtype'] == 'checkbox') {
         if (!is_array($value) || empty($value))
             return false;
         array_shift($value);
         $value = ',' . implode(',', $value) . ',';
         return $value;
-    } elseif ($this->fields[$field]['boxtype'] == 'multiple') {
+    } elseif ($setting['boxtype'] == 'multiple') {
         if (is_array($value) && count($value) > 0) {
             $value = ',' . implode(',', $value) . ',';
             return $value;
