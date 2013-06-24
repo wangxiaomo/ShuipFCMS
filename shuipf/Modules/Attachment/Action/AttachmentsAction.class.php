@@ -14,7 +14,7 @@ class AttachmentsAction extends BaseAction {
     //会员组
     public $groupid = 0;
     //是否后台
-    private $isadmin = 0;
+    public $isadmin = 0;
     //上传模块
     public $module = "Contents";
 

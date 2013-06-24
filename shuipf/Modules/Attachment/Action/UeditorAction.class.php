@@ -6,7 +6,6 @@
  */
 class UeditorAction extends AttachmentsAction {
 
-    public $isadmin;
     public $maxSize;
     public $allowExts;
     public $Attachment;
@@ -57,7 +56,7 @@ class UeditorAction extends AttachmentsAction {
             if (!$this->isadmin) {
                 $Member_group = F("Member_group");
                 if ((int) $Member_group[$this->groupid]['allowattachment'] < 1) {
-                    echo "{'url':'图片地址','state':'没有上传权限！','title':'标题'}";
+                    echo "{'url':'图片地址','state':'没有上传权限！".$this->isadmin."','title':'标题'}";
                     exit;
                 }
             }
