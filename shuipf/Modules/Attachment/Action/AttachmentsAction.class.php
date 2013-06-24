@@ -227,6 +227,36 @@ class AttachmentsAction extends BaseAction {
         }
         return $att;
     }
+    
+    /**
+     * 用于图片附件上传加水印回调方法
+     * @param type $_this
+     * @param type $fileInfo
+     * @param type $params 
+     */
+    public static function water($_this, $fileInfo, $params) {
+        import("Image");
+        //水印文件
+        $water = SITE_PATH . CONFIG_WATERMARKIMG;
+        //水印位置
+        $waterPos = (int) CONFIG_WATERMARKPOS;
+        //水印透明度
+        $alpha = (int) CONFIG_WATERMARKPCT;
+        //jpg图片质量
+        $quality = (int) CONFIG_WATERMARKQUALITY;
+
+        foreach ($fileInfo as $file) {
+            //原图文件
+            $source = $file['savepath'] . $file['savename'];
+            //图像信息
+            $sInfo = Image::getImageInfo($source);
+            //如果图片小于系统设置，不进行水印添加
+            if ($sInfo["width"] < (int) CONFIG_WATERMARKMINWIDTH || $sInfo['height'] < (int) CONFIG_WATERMARKMINHEIGHT) {
+                continue;
+            }
+            Image::water($source, $water, $source, $alpha, $waterPos, $quality);
+        }
+    }
 
 }
 
