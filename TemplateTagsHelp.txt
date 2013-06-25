@@ -149,6 +149,7 @@
 参数说明：
 	@catid			栏目ID，可以使用$catid
 	@space			分隔符 &gt;
+	@blank			是否新窗口打开
 	
 标签：<pre/>
 作用：上一篇

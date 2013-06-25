@@ -69,16 +69,16 @@ class TagLibShuipf extends TagLib {
         $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
         //是否新窗口打开
         $target = !empty($tag['blank']) ? ' target=\"_blank\" ' : '';
-        if(!$tag['catid']){
+        if (!$tag['catid']) {
             $tag['catid'] = '$catid';
         }
-        if(!$tag['id']){
+        if (!$tag['id']) {
             $tag['id'] = '$id';
         }
-        
+
         $parsestr = '<?php ';
-        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys['.$tag['catid'].'][\'modelid\']][\'tablename\']))->where(array("catid"=>'.$tag['catid'].',"status"=>99,"id"=>array("LT",'.$tag['id'].')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
-        $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" '.$target.'>".$_pre_r["title"]."</a>":"'.str_replace('"','\"',$msg).'";';
+        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys[' . $tag['catid'] . '][\'modelid\']][\'tablename\']))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("LT",' . $tag['id'] . ')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
+        $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" ' . $target . '>".$_pre_r["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
         $parsestr .= ' ?> ';
         $_preParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
@@ -98,7 +98,7 @@ class TagLibShuipf extends TagLib {
      * @return type
      */
     public function _next($attr, $content) {
-         static $_nextParseCache = array();
+        static $_nextParseCache = array();
         $cacheIterateId = md5($attr . $content);
         if (isset($_nextParseCache[$cacheIterateId])) {
             return $_nextParseCache[$cacheIterateId];
@@ -108,16 +108,16 @@ class TagLibShuipf extends TagLib {
         $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
         //是否新窗口打开
         $target = !empty($tag['blank']) ? ' target=\"_blank\" ' : '';
-        if(!$tag['catid']){
+        if (!$tag['catid']) {
             $tag['catid'] = '$catid';
         }
-        if(!$tag['id']){
+        if (!$tag['id']) {
             $tag['id'] = '$id';
         }
-        
+
         $parsestr = '<?php ';
-        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys['.$tag['catid'].'][\'modelid\']][\'tablename\']))->where(array("catid"=>'.$tag['catid'].',"status"=>99,"id"=>array("GT",'.$tag['id'].')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
-        $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" '.$target.'>".$_pre_r["title"]."</a>":"'.str_replace('"','\"',$msg).'";';
+        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys[' . $tag['catid'] . '][\'modelid\']][\'tablename\']))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("GT",' . $tag['id'] . ')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
+        $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" ' . $target . '>".$_pre_r["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
         $parsestr .= ' ?> ';
         $_nextParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
@@ -130,6 +130,7 @@ class TagLibShuipf extends TagLib {
      * 参数说明：
      *          @catid		栏目id，可以传入数字，也可以传递变量 $catid
      *          @space		分隔符，支持html代码
+     *          @blank		是否新窗口打开
      *          @cache          缓存时间
      * @staticvar array $_navigateCache
      * @param type $attr 标签属性
@@ -138,10 +139,11 @@ class TagLibShuipf extends TagLib {
      */
     public function _navigate($attr, $content) {
         static $_navigateCache = array();
-        $key = md5($attr.$content);
+        $key = md5($attr . $content);
         if (isset($_navigateCache[$key])) {
             return $_navigateCache[$key];
         }
+        $tag = $this->parseXmlAttr($attr, 'navigate');
         $cache = (int) $tag['cache'];
         if ($cache) {
             $_navigateCache[$key] = $data = S($key);
@@ -149,9 +151,10 @@ class TagLibShuipf extends TagLib {
                 return $data;
             }
         }
-        $tag = $this->parseXmlAttr($attr, 'navigate');
         //分隔符，支持html代码
         $space = !empty($tag['space']) ? $tag['space'] : '&gt;';
+        //是否新窗口打开
+        $target = !empty($tag['blank']) ? ' target="_blank" ' : '';
         $catid = $tag['catid'];
         $parsestr = '';
         //如果传入的是纯数字
@@ -168,7 +171,7 @@ class TagLibShuipf extends TagLib {
             //获取当前栏目的 父栏目列表
             $arrparentid = array_filter(explode(',', $Categorys[$catid]['arrparentid'] . ',' . $catid));
             foreach ($arrparentid as $cid) {
-                $parsestr[] = '<a href="' . $Categorys[$cid]['url'] . '">' . $Categorys[$cid]['catname'] . '</a>';
+                $parsestr[] = '<a href="' . $Categorys[$cid]['url'] . '" ' . $target . '>' . $Categorys[$cid]['catname'] . '</a>';
             }
             unset($Categorys);
             $parsestr = implode($space, $parsestr);
@@ -177,7 +180,7 @@ class TagLibShuipf extends TagLib {
             $parsestr .= '<?php';
             $parsestr .= '  $arrparentid = array_filter(explode(\',\', $Categorys[$catid][\'arrparentid\'] . \',\' . $catid)); ';
             $parsestr .= '  foreach ($arrparentid as $cid) {';
-            $parsestr .= '      $parsestr[] = \'<a href="\' . $Categorys[$cid][\'url\'] . \'">\' . $Categorys[$cid][\'catname\'] . \'</a>\';';
+            $parsestr .= '      $parsestr[] = \'<a href="\' . $Categorys[$cid][\'url\'] . \'" ' . $target . '>\' . $Categorys[$cid][\'catname\'] . \'</a>\';';
             $parsestr .= '  }';
             $parsestr .= '  echo  implode("' . $space . '", $parsestr);';
             $parsestr .= '?>';
@@ -364,7 +367,7 @@ class TagLibShuipf extends TagLib {
     public function _content($attr, $content) {
         static $content_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr.$content);
+        $cacheIterateId = md5($attr . $content);
         if (isset($content_iterateParseCache[$cacheIterateId])) {
             return $content_iterateParseCache[$cacheIterateId];
         }
@@ -454,7 +457,7 @@ class TagLibShuipf extends TagLib {
     public function _comment($attr, $content) {
         static $_comment_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr.$content);
+        $cacheIterateId = md5($attr . $content);
         if (isset($_comment_iterateParseCache[$cacheIterateId])) {
             return $_comment_iterateParseCache[$cacheIterateId];
         }
@@ -508,7 +511,7 @@ class TagLibShuipf extends TagLib {
     public function _tags($attr, $content) {
         static $_tags_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr.$content);
+        $cacheIterateId = md5($attr . $content);
         if (isset($_tags_iterateParseCache[$cacheIterateId])) {
             return $_tags_iterateParseCache[$cacheIterateId];
         }
@@ -628,7 +631,7 @@ class TagLibShuipf extends TagLib {
     public function _position($attr, $content) {
         static $_position_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr.$content);
+        $cacheIterateId = md5($attr . $content);
         if (isset($_position_iterateParseCache[$cacheIterateId])) {
             return $_position_iterateParseCache[$cacheIterateId];
         }
@@ -668,7 +671,7 @@ class TagLibShuipf extends TagLib {
     public function _get($attr, $content) {
         static $_get_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr.$content);
+        $cacheIterateId = md5($attr . $content);
         if (isset($_get_iterateParseCache[$cacheIterateId])) {
             return $_get_iterateParseCache[$cacheIterateId];
         }
@@ -806,13 +809,13 @@ class TagLibShuipf extends TagLib {
         }
         return false;
     }
-    
+
     /**
      * 检查是否变量
      * @param type $variable
      * @return type
      */
-    private function variable($variable){
+    private function variable($variable) {
         return substr(trim($variable), 0, 1) == '$';
     }
 
