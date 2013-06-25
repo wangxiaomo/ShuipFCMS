@@ -45,7 +45,7 @@ class Form {
                 'Paragraph', '|','RowSpacingTop', 'RowSpacingBottom','LineHeight', '|','FontFamily', 'FontSize', '|',
                 'DirectionalityLtr', 'DirectionalityRtl', '|', '', 'Indent', '|',
                 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyJustify', '|',
-                'Link', 'Unlink', 'Anchor', '|', 'ImageNone', 'ImageLeft', 'ImageRight', 'ImageCenter', '|', 'InsertImage', 'Emotion', 'InsertVideo', 'Music',".($allowupload && $allowbrowser?"'Attachments',":"")." 'Map', 'GMap', 'InsertFrame', 'PageBreak', 'HighlightCode', 'Webapp','Template','Background','|',
+                'Link', 'Unlink', 'Anchor', '|', 'ImageNone', 'ImageLeft', 'ImageRight', 'ImageCenter', '|', 'InsertImage', 'Emotion', 'InsertVideo', 'Music',".($allowupload && $allowbrowser?"'Attachments',":"")." 'Map', 'GMap', 'InsertFrame', 'PageBreak', 'insertcode', 'Webapp','Template','Background','|',
                 'Horizontal', 'Date', 'Time', 'Spechars', 'WordImage', '|',
                 'InsertTable', 'DeleteTable', 'InsertParagraphBeforeTable', 'InsertRow', 'DeleteRow', 'InsertCol', 'DeleteCol', 'MergeCells', 'MergeRight', 'MergeDown', 'SplittoCells', 'SplittoRows', 'SplittoCols', '|',
                  'Print', 'Preview', 'SearchReplace','Help']";
