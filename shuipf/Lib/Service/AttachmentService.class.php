@@ -262,7 +262,7 @@ class AttachmentService {
      * @param type $catid 栏目ID，当为0的时候，直接使用模块目录
      */
     public function FilePath() {
-        $this->FilePath = $this->path . $this->module . "/" . date($this->dateFormat, $this->time);
+        $this->FilePath = $this->path . $this->module . '/'. date($this->dateFormat, $this->time).'/';
         //检测目录是否存在，不存在创建
         if (!is_dir($this->FilePath)) {
             if (!mkdir($this->FilePath, 0777,true)) {
