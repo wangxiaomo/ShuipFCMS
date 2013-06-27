@@ -42,7 +42,7 @@ class EmotionModel extends CommonModel {
         }
         //表情存放路径
         if (empty($emotionPath)) {
-            $emotionPath = CONFIG_SITEURL_MODEL . 'statics/images/emotion/';
+            $emotionPath = CONFIG_SITEURL . 'statics/images/emotion/';
         }
         //需要替换的标签
         $replace = array();
