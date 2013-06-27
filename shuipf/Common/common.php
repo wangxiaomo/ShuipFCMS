@@ -6,27 +6,6 @@
  * Contact email:admin@abc3210.com
  */
 
-// 调用接口服务
-function X($name, $params = array(), $domain = 'Service') {
-    //创建一个静态变量，用于缓存实例化的对象
-    static $_service = array();
-    $app = C('DEFAULT_APP');
-    //如果已经实例化过，则返回缓存实例化对象
-    if (isset($_service[$domain . '_' . $app . '_' . $name]))
-        return $_service[$domain . '_' . $app . '_' . $name];
-    //载入文件
-    $class = $name . $domain;
-    import("{$domain}.{$name}{$domain}", APP_PATH . 'Lib');
-    //服务不可用时 记录日志 或 抛出异常
-    if (class_exists($class)) {
-        $obj = new $class($params);
-        $_service[$domain . '_' . $app . '_' . $name] = $obj;
-        return $obj;
-    } else {
-        return false;
-    }
-}
-
 // 实例化服务
 function service($name, $params = array()) {
     if (strtolower($name) == 'passport') {
@@ -35,12 +14,25 @@ function service($name, $params = array()) {
             $name = "Passport";
         }
     }
-    return X($name, $params, 'Service');
+    $class = $name . 'Service';
+    import("Service.{$class}", LIB_PATH);
+    switch ($name) {
+        case 'Attachment'://附件
+            $params = empty($params)?$params:array($params);
+            return get_instance_of($class, 'connect', $params);
+            break;
+        default:
+            return get_instance_of($class, '', $params);
+            break;
+    }
+    return false;
 }
 
 //调用TagLib类
 function TagLib($name, $params = array()) {
-    return X($name, $params = array(), 'TagLib');
+    $class = $name . 'TagLib';
+    import("TagLib.{$class}", LIB_PATH);
+    return get_instance_of($class, '', $params);
 }
 
 //Cookie 设置、获取、删除 
@@ -386,7 +378,7 @@ function str_cut($string, $length, $dot = '...') {
  * @param $isadmin 是否为管理员模式
  */
 function initupload($module, $catid, $args, $userid, $groupid = 8, $isadmin = false) {
-    if(empty($module)){
+    if (empty($module)) {
         return false;
     }
     //检查用户是否有上传权限
@@ -394,7 +386,7 @@ function initupload($module, $catid, $args, $userid, $groupid = 8, $isadmin = fa
         //后台用户
         //上传大小
         $file_size_limit = intval(CONFIG_UPLOADMAXSIZE);
-         //上传处理地址
+        //上传处理地址
         $upload_url = U('Attachment/Admin/swfupload');
     } else {
         //前台用户
@@ -438,12 +430,12 @@ function initupload($module, $catid, $args, $userid, $groupid = 8, $isadmin = fa
     //上传个数
     $file_upload_limit = (int) $args[0] ? (int) $args[0] : 8;
     //swfupload flash 地址
-    $flash_url = CONFIG_SITEURL_MODEL.'statics/js/swfupload/swfupload.swf';
+    $flash_url = CONFIG_SITEURL_MODEL . 'statics/js/swfupload/swfupload.swf';
 
-    $init = 'var swfu_'.$module.' = \'\';
+    $init = 'var swfu_' . $module . ' = \'\';
 	$(document).ready(function(){
 		Wind.use("swfupload",GV.DIMAUB+"statics/js/swfupload/handlers.js",function(){
-		      swfu_'.$module.' = new SWFUpload({
+		      swfu_' . $module . ' = new SWFUpload({
 			flash_url:"' . $flash_url . '?"+Math.random(),
 			upload_url:"' . $upload_url . '",
 			file_post_name : "Filedata",

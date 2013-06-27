@@ -6,7 +6,7 @@
  * Contact email:admin@abc3210.com
  */
 class AtadminAction extends AdminbaseAction {
-    
+
     //附件存在物理地址
     public $path = "";
 
@@ -22,18 +22,18 @@ class AtadminAction extends AdminbaseAction {
     public function index() {
         $db = M("Attachment");
         $where = array();
-        $filename = $this->_get('filename');
+        $filename = I('get.filename','','trim');
         empty($filename) ? "" : $where['filename'] = array('like', '%' . $filename . '%');
         //时间范围搜索
-        $start_uploadtime = $this->_get('start_uploadtime');
-        $end_uploadtime = $this->_get('end_uploadtime');
+        $start_uploadtime = I('get.start_uploadtime');
+        $end_uploadtime = I('get.end_uploadtime');
         if (!empty($start_uploadtime)) {
             $where['_string'] = 'uploadtime >= ' . strtotime($start_uploadtime) . ' AND uploadtime <= ' . strtotime($end_uploadtime) . '';
         }
-        $fileext = $this->_get('fileext');
+        $fileext = I('get.fileext');
         empty($fileext) ? "" : $where['fileext'] = array('eq', $fileext);
         //附件使用状态
-        $status = $this->_get('status');
+        $status = I('get.status');
         $status == "" ? "" : $where['status'] = array('eq', $status);
 
         $count = $db->where($where)->count();
@@ -53,7 +53,7 @@ class AtadminAction extends AdminbaseAction {
         $this->assign("fileext", $fileext);
         $this->assign("data", $data);
         $this->assign("Page", $page->show('Admin'));
-        $this->assign("show_header",true);
+        $this->assign("show_header", true);
         $this->display();
     }
 
@@ -65,9 +65,10 @@ class AtadminAction extends AdminbaseAction {
         if (IS_POST) {
             $aid = $_POST['aid'];
             foreach ($aid as $k => $v) {
-                $Attachment->del($v);
-                //删除附件关系
-                M("AttachmentIndex")->where(array("aid"=>$v))->delete();
+                if ($Attachment->delFile((int) $v)) {
+                    //删除附件关系
+                    M("AttachmentIndex")->where(array("aid" => $v))->delete();
+                }
             }
             $status = true;
         } else {
@@ -75,21 +76,17 @@ class AtadminAction extends AdminbaseAction {
             if (empty($aid)) {
                 $this->error("缺少参数！");
             }
-            $status = $Attachment->del($aid);
-            M("AttachmentIndex")->where(array("aid"=>$aid))->delete();
+            if ($Attachment->delFile((int) $aid)) {
+                M("AttachmentIndex")->where(array("aid" => $aid))->delete();
+                $status = true;
+            } else {
+                $status = false;
+            }
         }
-        if (IS_AJAX) {
-            if ($status) {
-                $this->ajaxReturn("", "删除附件成功！", true);
-            } else {
-                $this->ajaxReturn("", "删除附件失败！", false);
-            }
+        if ($status) {
+            $this->success("删除附件成功！");
         } else {
-            if ($status) {
-                $this->success("删除附件成功！");
-            } else {
-                $this->error("删除附件失败！");
-            }
+            $this->error("删除附件失败！");
         }
     }
 

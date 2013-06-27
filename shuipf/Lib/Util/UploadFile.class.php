@@ -51,11 +51,6 @@ class UploadFile {//类定义开始
     private $error = '';
     // 上传成功的文件信息
     private $uploadFileInfo;
-    //网站配置信息
-    public $Config;
-    //FTP上传
-    public $Ftpstatus = 0;
-    public $Ftp;
 
     public function __get($name) {
         if (isset($this->config[$name])) {
@@ -82,15 +77,6 @@ class UploadFile {//类定义开始
     public function __construct($config = array()) {
         if (is_array($config)) {
             $this->config = array_merge($this->config, $config);
-        }
-        if (defined("CONFIG_FTPSTATUS") && CONFIG_FTPSTATUS) {
-            import('Ftp');
-            $this->Ftp = new Ftp();
-            $this->Ftpstatus = 1;
-            $ftpsta = $this->Ftp->connect(CONFIG_FTPHOST, CONFIG_FTPUSER, CONFIG_FTPPASSWORD, CONFIG_FTPPORT, CONFIG_FTPPASV, CONFIG_FTPSSL, CONFIG_FTPTIMEOUT);
-            if ($ftpsta == false) {
-                $this->error = 'FTP链接失败' . CONFIG_FTPHOST;
-            }
         }
     }
 
@@ -161,26 +147,6 @@ class UploadFile {//类定义开始
     }
 
     /**
-     *  把一个文件上传到FTP附件服务器上
-     * @param type $upfile 本地存放地址，需要上传的文件
-     * @param type $file 远程存放地址
-     * @return string 
-     */
-    public function FTPuplode($upfile, $file) {
-        if ($this->Ftpstatus) {
-            // 远程存放地址
-            $remote = CONFIG_FTPUPPAT . str_replace(SITE_PATH . "/", "", $file);
-            //FTP上传
-            if ($this->Ftp->put($remote, $upfile) == false) {
-                $this->error = '远程附件上传失败！' . $this->Ftp->get_error();
-                $this->Ftp->close();
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * 上传所有文件
      * @access public
      * @param string $savePath  上传文件保存路径
@@ -235,7 +201,7 @@ class UploadFile {//类定义开始
                     return false;
                 if (function_exists($this->hashType)) {
                     $fun = $this->hashType;
-                    $file['hash'] = $fun($this->autoCharset($file['savepath'] . $file['savename'], 'utf-8', 'gbk'));
+                    $file['hash'] = $fun($this->autoCharset(str_replace(C("UPLOADFILEPATH"), "", $file['savepath'] . $file['savename']), 'utf-8', 'gbk'));
                 }
                 //上传成功后保存文件信息，供其他地方调用
                 unset($file['tmp_name'], $file['error']);
@@ -248,21 +214,6 @@ class UploadFile {//类定义开始
             //回调
             if ($Callback) {
                 call_user_func_array($Callback[0], array($this, $this->uploadFileInfo, $Callback[1]));
-            }
-            //FTP
-            if ($this->Ftpstatus) {
-                foreach ($this->uploadFileInfo as $file) {
-                    //文件地址
-                    $filename = $file['savepath'] . $file['savename'];
-                    // 远程存放地址
-                    $remote = str_replace(SITE_PATH . "/", "", $filename);
-                    if ($this->FTPuplode($filename, $remote)) {
-                        //上传成功删除原图
-                        unlink($filename);
-                    } else {
-                        return false;
-                    }
-                }
             }
             return true;
         } else {
@@ -324,7 +275,7 @@ class UploadFile {//类定义开始
                     return false;
                 if (function_exists($this->hashType)) {
                     $fun = $this->hashType;
-                    $file['hash'] = $fun($this->autoCharset($file['savepath'] . $file['savename'], 'utf-8', 'gbk'));
+                    $file['hash'] = $fun($this->autoCharset(str_replace(C("UPLOADFILEPATH"), "", $file['savepath'] . $file['savename']), 'utf-8', 'gbk'));
                 }
                 unset($file['tmp_name'], $file['error']);
                 $info[] = $file;
@@ -402,7 +353,7 @@ class UploadFile {//类定义开始
      * @param string $filename 数据
      * @return string
      */
-    private function getSaveName($filename) {
+    public function getSaveName($filename) {
         $rule = $this->saveRule;
         if (empty($rule)) {//没有定义命名规则，则保持文件名不变
             $saveName = $filename['name'];

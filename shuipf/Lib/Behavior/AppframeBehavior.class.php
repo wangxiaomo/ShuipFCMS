@@ -56,8 +56,12 @@ class AppframeBehavior extends Behavior {
             if (require_cache(LIB_PATH . "/TagLib/{$class}.class.php")) {
                 return;
             }
-        } elseif (substr($class, 0, 6) == 'TagLib') {//加载 TagLib
+        } elseif (substr($class, 0, 6) == 'TagLib') {//加载 TagLib 开头的标签
             if (require_cache(LIB_PATH . "/TagLib/{$class}.class.php")) {
+                return;
+            }
+        } elseif (substr($class, 0, 10) == 'Attachment') { // 加载附件方案
+            if (require_cache(LIB_PATH . "/Driver/Attachment/{$class}.class.php")) {
                 return;
             }
         } else {//加载 Util下 自定义类

@@ -32,10 +32,11 @@ class UeditorAction extends AttachmentsAction {
      */
     public function imageUp() {
         if (IS_POST) {
-            //如果是非后台用户，进行权限判断
-            if ($this->isadmin ) {
+            //是否后台
+            if ($this->isadmin) {
                 
             } else {
+                //如果是非后台用户，进行权限判断
                 $Member_group = F("Member_group");
                 if ((int) $Member_group[$this->groupid]['allowattachment'] < 1) {
                     echo "{'url':'图片地址','state':'没有上传权限！','title':'标题'}";
@@ -44,14 +45,11 @@ class UeditorAction extends AttachmentsAction {
             }
             //描述
             $pictitle = I('post.pictitle');
-            $upload = new UploadFile();
             $catid = $this->_post("catid") ? $this->_post("catid") : 0;
             $module = strtolower("contents");
-            $Attachment = service("Attachment", array("module" => $module, "catid" => $catid, "isadmin" => $this->isadmin ? 1 : 0));
-            //上传目录
-            $this->filepath = $upload->savePath = $Attachment->FilePath();
+            $Attachment = service("Attachment", array('module' => $module, 'catid' => $catid, 'userid' => $this->upuserid, 'isadmin' => $this->isadmin ? 1 : 0));
             //设置上传类型，强制为图片类型
-            $upload->allowExts = $this->allowExts = array("jpg", "png", "gif", "jpeg");
+            $Attachment->uploadallowext = array("jpg", "png", "gif", "jpeg");
             //回调函数
             $Callback = false;
             //是否添加水印 
@@ -61,36 +59,20 @@ class UeditorAction extends AttachmentsAction {
                 );
             }
             //开始上传
-            if ($upload->upload($Callback)) {
-                //上传成功
-                $info = $upload->getUploadFileInfo();
-                //保存目录路径 例如 /home/wwwroot/ecms.abc3210.com/e/home/d/album/1970/01
-                $savepath = $info[0]['savepath'];
-                //保存文件名
-                $savename = $info[0]['savename'];
-                //文件路径
-                $upfilepath = $savepath . $savename;
-                //附件表信息写入
-                $status = $Attachment->FileData($info[0]);
+            $info = $Attachment->upload($Callback);
+            if ($info) {
                 $in = array(
                     "url" => "",
                     "state" => "",
                     "title" => ""
                 );
-                if ($status) {
-                    // 设置附件cookie
-                    $Attachment->upload_json($status, $Attachment->filehttp, str_replace(array("\\", "/"), "", $info[0]['name']));
-                    $in['url'] = $Attachment->filehttp;
-                    $in['title'] = str_replace(array("\\", "/"), "", $pictitle ? $pictitle : $info[0]['name']);
-                    $in['state'] = "SUCCESS";
-                    echo json_encode($in);
-                    exit;
-                } else {
-                    //删除已经上传的图片，这里逻辑还要优化
-                    @unlink($upfilepath);
-                    echo "{'url':'图片地址','state':'上传失败！','title':'标题'}";
-                    exit;
-                }
+                // 设置附件cookie
+                $Attachment->upload_json($info[0]['aid'], $info[0]['url'], str_replace(array("\\", "/"), "", $info[0]['name']));
+                $in['url'] = $info[0]['url'];
+                $in['title'] = str_replace(array("\\", "/"), "", $pictitle ? $pictitle : $info[0]['name']);
+                $in['state'] = "SUCCESS";
+                echo json_encode($in);
+                exit;
             }
         }
         echo "{'url':'图片地址','state':'上传失败！','title':'标题'}";

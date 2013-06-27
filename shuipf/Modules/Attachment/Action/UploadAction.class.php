@@ -48,26 +48,18 @@ class UploadAction extends BaseAction {
             //上传处理类
             $upload = new UploadFile();
             //获取附件服务
-            $Attachment = service("Attachment", array("module" => $module, "catid" => $catid, "isadmin" => self::isadmin));
-            //设置上传用户
-            $Attachment->set_userid($upuserid);
-            //允许上传的文件类型，直接使用网站配置的
-            $allowExts = CONFIG_QTUPLOADALLOWEXT;
-            //设置上传类型
-            $upload->allowExts = explode("|", $allowExts);
-            //设置上传大小
-            $upload->maxSize = (int) CONFIG_QTUPLOADMAXSIZE * 1024; //单位字节
+            $Attachment = service("Attachment", array('module' => $module, 'catid' => $catid, 'isadmin' => self::isadmin, 'userid' => $upuserid));
             //缩略图宽度
             $thumb_width = I('post.thumb_width', 0, 'intval');
             $thumb_height = I('post.thumb_height', 0, 'intval');
             //图片裁减相关设置，如果开启，将不保留原图
             if ($thumb_width && $thumb_height) {
-                $upload->thumb = true;
-                $upload->thumbRemoveOrigin = true;
+                $Attachment->thumb = true;
+                $Attachment->thumbRemoveOrigin = true;
                 //设置缩略图最大宽度
-                $upload->thumbMaxWidth = $thumb_width;
+                $Attachment->thumbMaxWidth = $thumb_width;
                 //设置缩略图最大高度
-                $upload->thumbMaxHeight = $thumb_height;
+                $Attachment->thumbMaxHeight = $thumb_height;
             }
             //是否添加水印  post:watermark_enable 等于1也需要加水印
             if (I('post.watermark_enable', 0, 'intval')) {
@@ -76,46 +68,34 @@ class UploadAction extends BaseAction {
                 );
             }
 
-            //上传目录 可以单独写个方法，根据栏目ID生成相对于栏目目录附件
-            $this->filepath = $upload->savePath = $Attachment->FilePath();
-
             //开始上传
-            if ($upload->upload($Callback)) {
-                //上传成功
-                $info = $upload->getUploadFileInfo();
-                //写入附件数据库信息
-                $status = $Attachment->FileData($info[0]);
-                if ($status) {
-                    if (in_array($info[0]['extension'], array("jpg", "png", "jpeg", "gif"))) {
-                        // 附件ID 附件网站地址 图标(图片时为1) 文件名
-                        echo "$status," . $Attachment->filehttp . ",1," . str_replace(array("\\", "/"), "", $info[0]['name']);
-                        exit;
-                    } else {
-                        $fileext = $info[0]['extension'];
-                        if ($fileext == 'zip' || $fileext == 'rar')
-                            $fileext = 'rar';
-                        elseif ($fileext == 'doc' || $fileext == 'docx')
-                            $fileext = 'doc';
-                        elseif ($fileext == 'xls' || $fileext == 'xlsx')
-                            $fileext = 'xls';
-                        elseif ($fileext == 'ppt' || $fileext == 'pptx')
-                            $fileext = 'ppt';
-                        elseif ($fileext == 'flv' || $fileext == 'swf' || $fileext == 'rm' || $fileext == 'rmvb')
-                            $fileext = 'flv';
-                        else
-                            $fileext = 'do';
-
-                        echo "$status," . $Attachment->filehttp . "," . $fileext . "," . str_replace(array("\\", "/"), "", $info[0]['name']);
-                        exit;
-                    }
+            $info = $Attachment->upload($Callback);
+            if ($info) {
+                if (in_array($info[0]['extension'], array("jpg", "png", "jpeg", "gif"))) {
+                    // 附件ID 附件网站地址 图标(图片时为1) 文件名
+                    echo "{$info[0]['aid']}," . $info[0]['url'] . ",1," . str_replace(array("\\", "/"), "", $info[0]['name']);
+                    exit;
                 } else {
-                    //删除已经上传的图片，这里逻辑还要优化
-                    @unlink($info[0]['savepath'] . $info[0]['savename']);
-                    exit("0,上传成功，但写库失败！");
+                    $fileext = $info[0]['extension'];
+                    if ($fileext == 'zip' || $fileext == 'rar')
+                        $fileext = 'rar';
+                    elseif ($fileext == 'doc' || $fileext == 'docx')
+                        $fileext = 'doc';
+                    elseif ($fileext == 'xls' || $fileext == 'xlsx')
+                        $fileext = 'xls';
+                    elseif ($fileext == 'ppt' || $fileext == 'pptx')
+                        $fileext = 'ppt';
+                    elseif ($fileext == 'flv' || $fileext == 'swf' || $fileext == 'rm' || $fileext == 'rmvb')
+                        $fileext = 'flv';
+                    else
+                        $fileext = 'do';
+
+                    echo "{$info[0]['aid']}," . $info[0]['url'] . "," . $fileext . "," . str_replace(array("\\", "/"), "", $info[0]['name']);
+                    exit;
                 }
             } else {
                 //上传失败，返回错误
-                exit("0," . $upload->getErrorMsg());
+                exit("0," . $Attachment->getErrorMsg());
             }
         } else {
             exit("0,上传失败！");
