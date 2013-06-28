@@ -616,9 +616,15 @@ class ContentAction extends AdminbaseAction {
      * 图片裁减 
      */
     public function public_imagescrop() {
-        $picurl = $this->_get("picurl");
-        $catid = $this->_get("catid");
-        $module = $this->_get("module");
+        $picurl = I('get.picurl');
+        $catid = I('get.catid',0,'intval');
+        if(!$catid){
+            $this->error('栏目不存在！');
+        }
+        $module = I('get.module');
+        if(!$module){
+            $module =  GROUP_NAME;
+        }
         $this->assign("picurl", $picurl);
         $this->assign("catid", $catid);
         $this->assign("module", $module);

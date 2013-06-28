@@ -154,8 +154,9 @@ class AdminAction extends AdminbaseAction {
                 }
                 $new_file = $Prefix . $width . '_' . $height . '_' . $basename;
                 //栏目ID
-                $catid = intval($_GET['catid']);array2file($_GET, SITE_PATH.'/post.txt');
-                $Attachment = service("Attachment", array("module" => $this->module, "catid" => $catid));
+                $catid = I('get.catid',0,'intval');
+                $module = I('get.module');
+                $Attachment = service("Attachment", array("module" => $module, "catid" => $catid));
                 //附件存放路径
                 $file_path = $Attachment->savePath;
                 //附件原始名称
