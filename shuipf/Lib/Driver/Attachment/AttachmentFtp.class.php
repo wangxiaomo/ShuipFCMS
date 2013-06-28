@@ -50,6 +50,8 @@ class AttachmentFtp extends AttachmentService {
         $this->options['uploadallowext'] = $this->options['isadmin'] ? explode("|", $this->config['uploadallowext']) : explode("|", $this->config['qtuploadallowext']);
         //上传目录
         $this->options['savePath'] = D('Attachment')->getFilePath($this->options['module'], $this->options['dateFormat'], $this->options['time']);
+        //如果生成缩略图是否移除原图
+        $this->options['thumbRemoveOrigin'] = false;
         //FTP上传地址
         $this->options['ftphost'] = $this->config['ftphost'];
         //FTP端口
@@ -133,12 +135,17 @@ class AttachmentFtp extends AttachmentService {
             if ($this->options['thumb_width'] && $this->options['thumb_height']) {
                 //开启生成缩略图
                 $this->handlerLocal->thumb = true;
-                //是否移除原图
-                $this->handlerLocal->thumbRemoveOrigin = $this->options['thumbRemoveOrigin'] ? true : false;
+                //如果生成缩图，且缩图扩展名为空，不允许设置删除原图
+                if ($this->handlerLocal->thumb && empty($this->handlerLocal->thumbPrefix)) {
+                    $this->handlerLocal->thumbRemoveOrigin = false;
+                } else {
+                    //是否移除原图
+                    $this->handlerLocal->thumbRemoveOrigin = $this->options['thumbRemoveOrigin'] ? true : false;
+                }
                 //设置缩略图最大宽度
-                $this->handlerLocal->thumbMaxWidth = $this->options['thumb_width'];
+                $this->handlerLocal->thumbMaxWidth = $this->options['thumbMaxWidth'];
                 //设置缩略图最大高度
-                $this->handlerLocal->thumbMaxHeight = $this->options['thumb_height'];
+                $this->handlerLocal->thumbMaxHeight = $this->options['thumbMaxHeight'];
             }
         }
 
@@ -147,6 +154,10 @@ class AttachmentFtp extends AttachmentService {
             $info = $this->handlerLocal->getUploadFileInfo();
             //写入附件数据库信息
             foreach ($info as $i => $value) {
+                 //如果需要生成缩图，但也要删除原图时，文件名换成生成后的缩图文件名
+                if ($this->handlerLocal->thumb && $this->handlerLocal->thumbRemoveOrigin) {
+                    $info[$i]['savename'] = $value['savename'] = $this->handlerLocal->thumbPrefix.$value['savename'];
+                }
                 $aid = D('Attachment')->fileInfoAdd($value, $this->options['module'], $this->options['catid'], $this->options['thumb'], $this->options['isadmin'], $this->options['userid'], $this->options['time']);
                 if ($aid) {
                     $filePath = $value['savepath'] . $value['savename'];

@@ -46,9 +46,11 @@ class AttachmentLocal extends AttachmentService {
         $this->options['uploadallowext'] = $this->options['isadmin'] ? explode("|", $this->config['uploadallowext']) : explode("|", $this->config['qtuploadallowext']);
         //上传目录
         $this->options['savePath'] = D('Attachment')->getFilePath($this->options['module'], $this->options['dateFormat'], $this->options['time']);
+        //如果生成缩略图是否移除原图
+        $this->options['thumbRemoveOrigin'] = false;
+
         import('UploadFile');
         $this->handler = get_instance_of('UploadFile');
-        
         //设置上传类型
         $this->handler->allowExts = $this->options['uploadallowext'];
         //设置上传大小
@@ -65,29 +67,37 @@ class AttachmentLocal extends AttachmentService {
     public function upload($Callback = false) {
         //是否生成缩略图
         if ($this->options['thumb']) {
-            if ($this->options['thumb_width'] && $this->options['thumb_height']) {
+            if ($this->options['thumbMaxWidth'] && $this->options['thumbMaxHeight']) {
                 //开启生成缩略图
                 $this->handler->thumb = true;
-                //是否移除原图
-                $this->handler->thumbRemoveOrigin = $this->options['thumbRemoveOrigin'] ? true : false;
+                //如果生成缩图，且缩图扩展名为空，不允许设置删除原图
+                if ($this->handler->thumb && empty($this->handler->thumbPrefix)) {
+                    $this->handler->thumbRemoveOrigin = false;
+                } else {
+                    //是否移除原图
+                    $this->handler->thumbRemoveOrigin = $this->options['thumbRemoveOrigin'] ? true : false;
+                }
                 //设置缩略图最大宽度
-                $this->handler->thumbMaxWidth = $this->options['thumb_width'];
+                $this->handler->thumbMaxWidth = $this->options['thumbMaxWidth'];
                 //设置缩略图最大高度
-                $this->handler->thumbMaxHeight = $this->options['thumb_height'];
+                $this->handler->thumbMaxHeight = $this->options['thumbMaxHeight'];
             }
         }
-
         if ($this->handler->upload($Callback)) {
             //获取上传后的文件信息
             $info = $this->handler->getUploadFileInfo();
             //写入附件数据库信息
             foreach ($info as $i => $value) {
+                //如果需要生成缩图，但也要删除原图时，文件名换成生成后的缩图文件名
+                if ($this->handler->thumb && $this->handler->thumbRemoveOrigin) {
+                    $info[$i]['savename'] = $value['savename'] = $this->handler->thumbPrefix.$value['savename'];
+                }
                 $aid = D('Attachment')->fileInfoAdd($value, $this->options['module'], $this->options['catid'], $this->options['thumb'], $this->options['isadmin'], $this->options['userid'], $this->options['time']);
                 if ($aid) {
                     $filePath = $value['savepath'] . $value['savename'];
                     $info[$i]['aid'] = $aid;
                     //附件完整访问地址
-                    $info[$i]['url'] = $this->options['sitefileurl'] . str_replace(array($this->options['uploadfilepath'],'//', '\\'), array('','/', '\/'), $filePath);
+                    $info[$i]['url'] = $this->options['sitefileurl'] . str_replace(array($this->options['uploadfilepath'], '//', '\\'), array('', '/', '\/'), $filePath);
                 } else {
                     //入库信息写入失败，删除上传好的文件！
                     try {

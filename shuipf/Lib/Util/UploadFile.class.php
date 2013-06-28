@@ -25,7 +25,7 @@ class UploadFile {//类定义开始
         'allowExts' => array(), // 允许上传的文件后缀 留空不作后缀检查
         'allowTypes' => array(), // 允许上传的文件类型 留空不做检查
         'thumb' => false, // 使用对上传图片进行缩略图处理
-        'imageClassPath' => 'ORG.Util.Image', // 图库类包路径
+        'imageClassPath' => 'Image', // 图库类包路径
         'thumbMaxWidth' => '', // 缩略图最大宽度
         'thumbMaxHeight' => '', // 缩略图最大高度
         'thumbPrefix' => 'thumb_', // 缩略图前缀
@@ -34,7 +34,7 @@ class UploadFile {//类定义开始
         'thumbFile' => '', // 缩略图文件名
         'thumbExt' => '', // 缩略图扩展名        
         'thumbRemoveOrigin' => false, // 是否移除原图
-        'thumbType' => 1, // 缩略图生成方式 1 按设置大小截取 0 按原图等比例缩略
+        'thumbType' => 2, // 缩略图生成方式 1 按设置大小截取 0 按原图等比例缩略
         'zipImages' => false, // 压缩图片文件上传
         'autoSub' => false, // 启用子目录保存文件
         'subType' => 'hash', // 子目录创建方式 可以使用hash date custom
@@ -115,8 +115,7 @@ class UploadFile {//类定义开始
                 $thumbPrefix = explode(',', $this->thumbPrefix);
                 $thumbSuffix = explode(',', $this->thumbSuffix);
                 $thumbFile = explode(',', $this->thumbFile);
-                //20120318 修改默认缩图保存到和原图一个目录下
-                $thumbPath = $this->thumbPath ? $this->thumbPath : $file['savepath'] . $this->getSubName($file) . "/";
+                $thumbPath = $this->thumbPath ? $this->thumbPath : $file['savepath'];
                 $thumbExt = $this->thumbExt ? $this->thumbExt : $file['extension']; //自定义缩略图扩展名
                 // 生成图像缩略图
                 import($this->imageClassPath);

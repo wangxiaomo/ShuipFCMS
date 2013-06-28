@@ -73,7 +73,7 @@ class Image {
      * @throws ThinkExecption
       +----------------------------------------------------------
      */
-    static public function water($source, $water, $savename = null, $alpha = 80 ,$waterPos = 9, $quality = 90) {
+    static public function water($source, $water, $savename = null, $alpha = 80, $waterPos = 9, $quality = 90) {
         //检查文件是否存在
         if (!file_exists($source) || !file_exists($water))
             return false;
@@ -81,9 +81,9 @@ class Image {
         //图片信息
         $sInfo = self::getImageInfo($source);
         $wInfo = self::getImageInfo($water);
-		
-		//修复当bmp图片时，报undefined function imagecreatefrombmp()错误 水平凡
-		$sInfo['type']=($sInfo['type']=='bmp') ? 'wbmp' : $sInfo['type'];
+
+        //修复当bmp图片时，报undefined function imagecreatefrombmp()错误 水平凡
+        $sInfo['type'] = ($sInfo['type'] == 'bmp') ? 'wbmp' : $sInfo['type'];
 
         //如果图片小于水印图片，不生成图片
         if ($sInfo["width"] < $wInfo["width"] || $sInfo['height'] < $wInfo['height'])
@@ -148,9 +148,9 @@ class Image {
         }
 
         //生成混合图像
-        if( $wInfo['type'] == "png" ){
+        if ($wInfo['type'] == "png") {
             imagecopy($sImage, $wImage, $posX, $posY, 0, 0, $wInfo['width'], $wInfo['height']);
-        }else{
+        } else {
             imagecopymerge($sImage, $wImage, $posX, $posY, 0, 0, $wInfo['width'], $wInfo['height'], $alpha);
         }
 
@@ -164,7 +164,7 @@ class Image {
         //保存图像
         if ($sInfo['type'] == "jpg" || $sInfo['type'] == "jpeg") {
             imagejpeg($sImage, $savename, $quality);
-        }else{
+        } else {
             $ImageFun($sImage, $savename);
         }
         imagedestroy($sImage);
@@ -290,6 +290,80 @@ class Image {
 
             //$gray=ImageColorAllocate($thumbImg,255,0,0);
             //ImageString($thumbImg,2,5,5,"ThinkPHP",$gray);
+            // 生成图片
+            $imageFun = 'image' . ($type == 'jpg' ? 'jpeg' : $type);
+            $imageFun($thumbImg, $thumbname);
+            imagedestroy($thumbImg);
+            imagedestroy($srcImg);
+            return $thumbname;
+        }
+        return false;
+    }
+
+    /**
+     * 生成特定尺寸缩略图 解决原版缩略图不能满足特定尺寸的问题 PS：会裁掉图片不符合缩略图比例的部分
+     * @static
+     * @access public
+     * @param string $image  原图
+     * @param string $type 图像格式
+     * @param string $thumbname 缩略图文件名
+     * @param string $maxWidth  宽度
+     * @param string $maxHeight  高度
+     * @param boolean $interlace 启用隔行扫描
+     * @return void
+     */
+    static function thumb2($image, $thumbname, $type = '', $maxWidth = 200, $maxHeight = 50, $interlace = true) {
+        // 获取原图信息
+        $info = Image::getImageInfo($image);
+        if ($info !== false) {
+            $srcWidth = $info['width'];
+            $srcHeight = $info['height'];
+            $type = empty($type) ? $info['type'] : $type;
+            $type = strtolower($type);
+            $interlace = $interlace ? 1 : 0;
+            unset($info);
+            $scale = max($maxWidth / $srcWidth, $maxHeight / $srcHeight); // 计算缩放比例
+            //判断原图和缩略图比例 如原图宽于缩略图则裁掉两边 反之..
+            if ($maxWidth / $srcWidth > $maxHeight / $srcHeight) {
+                //高于
+                $srcX = 0;
+                $srcY = ($srcHeight - $maxHeight / $scale) / 2;
+                $cutWidth = $srcWidth;
+                $cutHeight = $maxHeight / $scale;
+            } else {
+                //宽于
+                $srcX = ($srcWidth - $maxWidth / $scale) / 2;
+                $srcY = 0;
+                $cutWidth = $maxWidth / $scale;
+                $cutHeight = $srcHeight;
+            }
+
+            // 载入原图
+            $createFun = 'ImageCreateFrom' . ($type == 'jpg' ? 'jpeg' : $type);
+            $srcImg = $createFun($image);
+
+            //创建缩略图
+            if ($type != 'gif' && function_exists('imagecreatetruecolor'))
+                $thumbImg = imagecreatetruecolor($maxWidth, $maxHeight);
+            else
+                $thumbImg = imagecreate($maxWidth, $maxHeight);
+
+            // 复制图片
+            if (function_exists("ImageCopyResampled"))
+                imagecopyresampled($thumbImg, $srcImg, 0, 0, $srcX, $srcY, $maxWidth, $maxHeight, $cutWidth, $cutHeight);
+            else
+                imagecopyresized($thumbImg, $srcImg, 0, 0, $srcX, $srcY, $maxWidth, $maxHeight, $cutWidth, $cutHeight);
+            if ('gif' == $type || 'png' == $type) {
+                //imagealphablending($thumbImg, false);//取消默认的混色模式
+                //imagesavealpha($thumbImg,true);//设定保存完整的 alpha 通道信息
+                $background_color = imagecolorallocate($thumbImg, 0, 255, 0);  //  指派一个绿色
+                imagecolortransparent($thumbImg, $background_color);  //  设置为透明色，若注释掉该行则输出绿色的图
+            }
+
+            // 对jpeg图形设置隔行扫描
+            if ('jpg' == $type || 'jpeg' == $type)
+                imageinterlace($thumbImg, $interlace);
+
             // 生成图片
             $imageFun = 'image' . ($type == 'jpg' ? 'jpeg' : $type);
             $imageFun($thumbImg, $thumbname);
