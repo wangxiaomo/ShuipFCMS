@@ -41,12 +41,17 @@ class AttachmentService {
      * @return object
      */
     public static function connect($options = array()) {
-        //网站配置
-        $config = F("Config");
-        if ((int) $config['ftpstatus']) {
-            $type = 'Ftp';
+        if (isset($options['type']) && $options['type']) {
+            $type = $options['type'];
+            unset($options['type']);
         } else {
-            $type = 'Local';
+            //网站配置
+            $config = F("Config");
+            if ((int) $config['ftpstatus']) {
+                $type = 'Ftp';
+            } else {
+                $type = 'Local';
+            }
         }
         //附件存储方案
         $type = trim($type);
@@ -104,9 +109,9 @@ class AttachmentService {
     public function delDir($dirPath) {
         import("Dir");
         $Dir = new Dir();
-        if($Dir->delDir($dirPath)){
+        if ($Dir->delDir($dirPath)) {
             return true;
-        }else{
+        } else {
             $this->error = $Dir->error;
             return false;
         }
