@@ -154,51 +154,33 @@ class AdminAction extends AdminbaseAction {
                 }
                 $new_file = $Prefix . $width . '_' . $height . '_' . $basename;
                 //栏目ID
-                $catid = intval($_GET['catid']);
+                $catid = intval($_GET['catid']);array2file($_GET, SITE_PATH.'/post.txt');
                 $Attachment = service("Attachment", array("module" => $this->module, "catid" => $catid));
                 //附件存放路径
-                $file_path = $Attachment->savePath();
-                //附件访问目录地址，支持http开头
-                $filepath = $this->Config['sitefileurl'];
-                //存放地址，不包含附件目录
-                $servaname = str_replace($this->path, "", $file_path);
-                //附件HTTP地址
-                $filehttp = $filepath . $this->module . "/" . $servaname;
+                $file_path = $Attachment->savePath;
                 //附件原始名称
                 $filename = basename($_GET['file']);
-                //附件保存后的名称
-                $filesavename = str_replace(array("\\", "/"), "", $new_file);
                 //上传文件的后缀类型
                 $fileextension = fileext($_GET['file']);
                 //保存图片
-                file_put_contents($file_path . "/" . $new_file, $pic);
-                //FTP远程附件
-                if ((int) $this->Config['ftpstatus']) {
-                    $imgpth = $file_path . "/" . $new_file;
-                    import('Ftp');
-                    $this->Ftp = new Ftp();
-                    $this->Ftp->connect($this->Config['ftphost'], $this->Config['ftpuser'], $this->Config['ftppassword'], $this->Config['ftpport'], $this->Config['ftppasv'], $this->Config['ftpssl'], $this->Config['ftptimeout']);
-                    $remote = $this->Config['ftpuppat'] . str_replace(SITE_PATH . "/", "", $imgpth);
-                    $this->Ftp->put($remote, $imgpth);
-                    unlink($imgpth);
-                    $this->Ftp->close();
-                }
+                file_put_contents($file_path . $new_file, $pic);
                 //图片信息
-                $infos = array(
-                    "filepath" => $filepath,
-                    "servaname" => $servaname,
-                    "filehttp" => $filehttp,
-                    "filename" => $filename,
-                    "filesize" => filesize($file_path . "/" . $new_file),
-                    "fileextension" => $fileextension,
-                    "filesavename" => $filesavename,
-                    "filehash" => md5($file_path . "/" . $new_file)
+                $info = array(
+                    "name" => $filename,
+                    "type" => "",
+                    "size" => filesize($file_path . $new_file),
+                    "key" => "",
+                    "extension" => $fileextension,
+                    "savepath" => $file_path,
+                    "savename" => $new_file,
+                    "hash" => md5(str_replace($Attachment->uploadfilepath, "", $file_path . $new_file)),
                 );
+                $info['url'] = $Attachment->sitefileurl . str_replace($Attachment->uploadfilepath, '', $info['savepath'] . $info['savename']);
+                $Attachment->movingFiles($info['savepath'] . $info['savename'], $info['savepath'] . $info['savename']);
             } else {
-
                 return false;
             }
-            echo $filepath . $servaname . "/" . $filesavename;
+            echo $info['url'];
             exit;
         }
     }
