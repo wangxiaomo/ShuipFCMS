@@ -39,9 +39,6 @@ return array(
     'TOKEN_NAME' => '__hash__', // 令牌验证的表单隐藏字段名称
     'TOKEN_TYPE' => 'md5', //令牌哈希验证规则 默认为MD5
     
-    
-    /* Interface 接口定义  */
-    "INTERFACE_PASSPORT" => "Passport", //通行证服务
     /* 分页配置 */
     "PAGE_LISTROWS" => 20, //分页数
     "VAR_PAGE" => "page", //当前分页变量 page=2 page=3

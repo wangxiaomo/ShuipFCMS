@@ -90,7 +90,6 @@ class ConfigAction extends AdminbaseAction {
             }
             //默认值
             $_POST['DEFAULT_GROUP'] = $_POST['DEFAULT_GROUP']?$_POST['DEFAULT_GROUP']:"Contents";
-            $_POST['INTERFACE_PASSPORT'] = $_POST['INTERFACE_PASSPORT']?$_POST['INTERFACE_PASSPORT']:"Passport";
             $_POST['TOKEN_ON'] = (int)$_POST['TOKEN_ON']?true:false;
             $_POST['URL_MODEL'] = isset($_POST['URL_MODEL'])?(int)$_POST['URL_MODEL']:0;
             $_POST['DEFAULT_TIMEZONE'] = $_POST['DEFAULT_TIMEZONE']?$_POST['DEFAULT_TIMEZONE']:"PRC";

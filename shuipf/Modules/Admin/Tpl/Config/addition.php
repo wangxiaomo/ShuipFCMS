@@ -147,11 +147,6 @@
           <td><input name="DATA_CACHE_SUBDIR" type="radio" value="1" <if condition=" $addition['DATA_CACHE_SUBDIR'] ">checked</if>> 是 <input name="SESSION_AUTO_START" type="radio" value="0" <if condition=" !$addition['DATA_CACHE_SUBDIR'] ">checked</if>> 否
             <span class="gray">使用子目录缓存 (自动根据缓存标识的哈希创建子目录)</span></td>
         </tr>
-        <tr>
-          <th width="140">通行证接口:</th>
-          <td><input type="text" class="input"  name="INTERFACE_PASSPORT" value="{$addition.INTERFACE_PASSPORT}" size="40">
-            <span class="gray">通行证服务，默认是 “Passport”建议不做修改</span></td>
-        </tr>
       </table>
       <div class="btn_wrap">
         <div class="btn_wrap_pd">
