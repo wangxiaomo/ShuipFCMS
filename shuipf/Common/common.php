@@ -945,4 +945,61 @@ function getTagsUrl($tagid, $tag) {
     return $url;
 }
 
+/**
+ * 生成缩略图
+ * @param type $imgurl 图片地址
+ * @param type $width 缩略图宽度
+ * @param type $height 缩略图高度
+ * @param type $thumbType 缩略图生成方式 1 按设置大小截取 0 按原图等比例缩略
+ * @param type $smallpic 图片不存在时显示默认图片
+ * @return type
+ */
+function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic = 'nopic.gif') {
+    if (empty($imgurl)) {
+        return $smallpic;
+    }
+    if (!$width || !$height) {
+        return $smallpic;
+    }
+    //附件访问地址
+    $uploadUrl = CONFIG_SITEFILEURL;
+    //附件上传路径
+    $uploadPath = C('UPLOADFILEPATH');
+    //图片地址处理
+    $imgurlReplace = str_replace($uploadUrl, '', $imgurl);
+    //经过前面的处理，应该已经是本地路径，非http://开头的路径
+    if (strpos($imgurlReplace, '://')) {
+        return $imgurl;
+    }
+    //检查文件是否存在，如果是开启远程附件的，估计就通过不了，以后在考虑完善！
+    if (!file_exists($uploadPath . $imgurlReplace)) {
+        return $imgurl;
+    }
+    //取得图片相关信息
+    list($width_t, $height_t, $type, $attr) = getimagesize($uploadPath . $imgurlReplace);
+    //判断生成的缩略图大小是否正常
+    if ($width >= $width_t || $height >= $height_t) {
+        return $imgurl;
+    }
+    //取得文件名
+    $basename = basename($imgurlReplace);
+    //取得文件存放目录
+    $imgPathDir = str_replace($basename, '', $imgurlReplace);
+    //生成的缩略图文件名
+    $newFileName = "thumb_{$width}_{$height}_" . $basename;
+    //检查是否已经生成过
+    if (file_exists($uploadPath . $newFileName)) {
+        return $uploadPath . $newFileName;
+    }
+    //生成缩略图
+    import('Image');
+    if (1 == $thumbType) {
+        Image::thumb2($uploadPath . $imgurlReplace, $uploadPath . $imgPathDir . $newFileName, '', $width, $height, true);
+    } else {
+        Image::thumb($uploadPath . $imgurlReplace, $uploadPath . $imgPathDir . $newFileName, '', $width, $height, true);
+    }
+
+    return $uploadUrl . $imgPathDir . $newFileName;
+}
+
 ?>
