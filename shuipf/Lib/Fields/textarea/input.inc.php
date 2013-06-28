@@ -1,8 +1,11 @@
 <?php
 
+//多好文本框
 function textarea($field, $value) {
-    if (!$this->fields[$field]['enablehtml'])
+    $setting = unserialize($this->fields[$field]['setting']);
+    if (!$setting['enablehtml']) {
         $value = strip_tags($value);
+    }
     return $value;
 }
 
