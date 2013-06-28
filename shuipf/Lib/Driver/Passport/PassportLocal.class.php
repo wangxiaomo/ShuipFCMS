@@ -134,21 +134,12 @@ class PassportLocal extends PassportService {
      */
     public function user_deleteavatar($uid) {
         $dr = C("UPLOADFILEPATH") . "avatar/" . $uid . '/';
-        if (defined("CONFIG_FTPSTATUS") && CONFIG_FTPSTATUS) {
-            $Attachment = service("Attachment");
-            // 远程存放地址
-            $remote = CONFIG_FTPUPPAT . str_replace(SITE_PATH . "/", "", $dr);
-            $Attachment->FTPrmdir($remote, true);
+        if (service("Attachment")->delDir($dr)) {
+            M("Member")->where(array("userid" => $uid))->save(array("userpic" => ""));
+            return 1;
         } else {
-            if (is_dir($dr) == false) {
-                return 0;
-            }
-            import("Dir");
-            $Dir = new Dir();
-            $Dir->delDir($dr);
+            return 0;
         }
-        M("Member")->where(array("userid" => $uid))->save(array("userpic" => ""));
-        return 1;
     }
 
     /**

@@ -123,8 +123,7 @@ class AttachmentLocal extends AttachmentService {
                     return false;
                 }
                 try {
-                    unlink($filepath);
-                    return true;
+                    return unlink($filepath);
                 } catch (Exception $exc) {
                     $this->error = '文件[' . $filepath . ']删除失败！';
                     Log::write($this->error);
@@ -144,8 +143,7 @@ class AttachmentLocal extends AttachmentService {
             if ($info) {
                 if (D('Attachment')->where(array("authcode" => $authcode))->delete()) {
                     try {
-                        unlink($this->options['uploadfilepath'] . $newFile);
-                        return true;
+                        return unlink($this->options['uploadfilepath'] . $newFile);
                     } catch (Exception $exc) {
                         $this->error = '文件[' . $this->options['uploadfilepath'] . $newFile . ']删除失败！';
                         Log::write($this->error);
@@ -158,8 +156,7 @@ class AttachmentLocal extends AttachmentService {
             } else {
                 //附件表没有记录相应信息，也进行删除操作
                 try {
-                    unlink($this->options['uploadfilepath'] . $newFile);
-                    return true;
+                    return unlink($this->options['uploadfilepath'] . $newFile);
                 } catch (Exception $exc) {
                     $this->error = '文件[' . $this->options['uploadfilepath'] . $newFile . ']删除失败！';
                     Log::write($this->error);

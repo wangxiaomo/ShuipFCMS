@@ -95,12 +95,6 @@ class IndexAction extends MemberbaseAction {
         }
         //判断文件安全，删除压缩包和非jpg图片
         $avatararr = array('180x180.jpg', '30x30.jpg', '45x45.jpg', '90x90.jpg');
-        if (defined("CONFIG_FTPSTATUS") && CONFIG_FTPSTATUS) {
-            import("UploadFile");
-            import("Dir");
-            $Dir = new Dir();
-            $UploadFile = new UploadFile();
-        }
         if ($handle = opendir($dir)) {
             while (false !== ($file = readdir($handle))) {
                 if ($file !== '.' && $file !== '..') {
@@ -112,21 +106,11 @@ class IndexAction extends MemberbaseAction {
                             @unlink($dir . $file);
                         }
                     }
-                    if (defined("CONFIG_FTPSTATUS") && CONFIG_FTPSTATUS) {
-                        //如果有开启FTP，则上传到FTP上
-                        $UploadFile->FTPuplode($dir . $file, $dir . $file);
-                    }
+                    service('Attachment')->movingFiles($dir . $file, $dir . $file);
                 }
             }
             closedir($handle);
         }
-        //如果是上传FTP，删除
-        if (defined("CONFIG_FTPSTATUS") && CONFIG_FTPSTATUS) {
-            $Dir->delDir($dir);
-        }
-        //保存头像地址到数据库，默认保存90x90.jpg
-        //20121214 废除，userpic用于保存非本地头像，例如QQ登陆后的第三方头像。
-        //M("Member")->where(array("userid" => AppframeAction::$Cache['uid']))->save(array("userpic" => "avatar/" . AppframeAction::$Cache['uid'] . '/90x90.jpg'));
         exit('1');
     }
 

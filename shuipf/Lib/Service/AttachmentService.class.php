@@ -67,6 +67,27 @@ class AttachmentService {
     }
 
     /**
+     * 把一个文件移动到另外一个位置
+     * @param type $originalFilesPath 原文件地址
+     * @param type $movingFilesPath 移动目标地址 SITE_PATH
+     * @return boolean
+     */
+    public function movingFiles($originalFilesPath, $movingFilesPath) {
+        $originalFilesPath = str_replace(SITE_PATH, '', $originalFilesPath);
+        $movingFilesPath = str_replace(SITE_PATH, '', $movingFilesPath);
+        if ($originalFilesPath == $movingFilesPath) {
+            return true;
+        }
+        if (copy(SITE_PATH . $originalFilesPath, SITE_PATH . $movingFilesPath)) {
+            unlink(SITE_PATH . $originalFilesPath);
+            return true;
+        } else {
+            $this->error = '文件移动失败！';
+            return false;
+        }
+    }
+
+    /**
      * 删除文件
      * @param type $file 如果为数字，表示根据aid删除，其他为文件路径
      * @return boolean
@@ -76,11 +97,27 @@ class AttachmentService {
     }
 
     /**
+     * 删除文件夹（包括下面的文件）
+     * @param type $file 如果为数字，表示根据aid删除，其他为文件路径
+     * @return boolean
+     */
+    public function delDir($dirPath) {
+        import("Dir");
+        $Dir = new Dir();
+        if($Dir->delDir($dirPath)){
+            return true;
+        }else{
+            $this->error = $Dir->error;
+            return false;
+        }
+    }
+
+    /**
      * 获取上传错误信息
      * @return type
      */
     public function getErrorMsg() {
-        
+        return $this->error;
     }
 
     /**
@@ -128,8 +165,8 @@ class AttachmentService {
     public function download($value, $watermark = null, $ext = 'gif|jpg|jpeg|bmp|png') {
         return $value;
     }
-    
-     /**
+
+    /**
      * 生成文件
      * @param type $file 需要写入的文件或者二进制流
      * @param type $filename 需要生成的文件名的绝对路径

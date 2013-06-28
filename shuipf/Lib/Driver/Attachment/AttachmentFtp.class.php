@@ -85,16 +85,33 @@ class AttachmentFtp extends AttachmentService {
      */
     public function FTPuplode($upfile, $file) {
         if (!$upfile) {
+            $this->error = '没有指定需要删除的文件！';
             return false;
         }
         // 远程存放地址
-        $remote = $this->options['ftpuppat'] . str_replace(SITE_PATH, '', $file);
+        $remote = str_replace(SITE_PATH, $this->options['ftpuppat'], $file);
         //FTP上传
         if ($this->handler->put($remote, $upfile) == false) {
             $this->error = '远程附件上传失败！' . $this->handler->get_error();
             return false;
         }
         return true;
+    }
+
+    /**
+     * 删除文件夹
+     * @param type $dirname 文件夹地址
+     * @param type $enforce 是否强制删除
+     * @return boolean
+     */
+    public function FTPrmdir($dirname, $enforce = false) {
+        if (!$dirname) {
+            $this->error = '没有指定需要删除的文件夹！';
+            return false;
+        }
+        // 远程存放地址
+        $ftpDirName = str_replace(SITE_PATH, $this->options['ftpuppat'], $dirname);
+        return $this->handler->rmdir($ftpDirName, $enforce);
     }
 
     /**
@@ -174,6 +191,21 @@ class AttachmentFtp extends AttachmentService {
     }
 
     /**
+     * 把一个文件移动到另外一个位置
+     * @param type $originalFilesPath 原文件地址
+     * @param type $movingFilesPath 移动目标地址 SITE_PATH
+     * @return boolean
+     */
+    public function movingFiles($originalFilesPath, $movingFilesPath) {
+        if ($this->FTPuplode($originalFilesPath, $movingFilesPath)) {
+            unlink(SITE_PATH . $originalFilesPath);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 删除文件
      * @param type $file 如果为数字，表示根据aid删除，其他为文件路径
      * @return boolean
@@ -228,7 +260,7 @@ class AttachmentFtp extends AttachmentService {
                 //附件表没有记录相应信息，也进行删除操作
                 try {
                     //FTP删除
-                    return true;
+                    return $this->handler->f_delete($this->options['ftpuppat'] . $uploadfilepath);
                 } catch (Exception $exc) {
                     $this->error = '文件[' . $this->options['uploadfilepath'] . $newFile . ']删除失败！';
                     Log::write($this->error);
@@ -237,6 +269,19 @@ class AttachmentFtp extends AttachmentService {
             }
         }
         return true;
+    }
+
+    /**
+     * 删除文件夹（包括下面的文件）
+     * @param type $file 如果为数字，表示根据aid删除，其他为文件路径
+     * @return boolean
+     */
+    public function delDir($dirPath) {
+        if ($this->FTPrmdir($dirPath, true)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
