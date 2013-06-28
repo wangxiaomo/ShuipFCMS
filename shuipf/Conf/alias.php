@@ -32,8 +32,6 @@ return array(
     "Content" => LIB_PATH.'Util/Content.class.php',
     //模块安装
     "Module" => LIB_PATH.'Util/Module.class.php',
-    //附件
-    "Attachment" => LIB_PATH.'Util/Attachment.class.php',
     //Ftp
     "Ftp" => LIB_PATH.'Util/Ftp.class.php',
     //Cacheapi 缓存
