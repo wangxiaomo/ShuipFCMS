@@ -30,7 +30,7 @@ class AttachmentService {
      * @param type $name
      * @param type $value
      */
-    public function _set($name, $value) {
+    public function __set($name, $value) {
         $this->options[$name] = $value;
     }
 
