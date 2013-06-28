@@ -38,6 +38,10 @@
       <div class="h_a">基本属性</div>
       <table width="100%" class="table_form">
         <tr>
+          <th width="200">通行证设置</th>
+          <td> <?php echo Form::select($Interface,$setting['interface'],'name="setting[interface]"'); ?> </td>
+        </tr>
+		<tr>
           <th width="200">允许新会员注册</th>
           <td> 是<input type="radio" name="setting[allowregister]"  class="input-radio" 
             <if condition=" $setting['allowregister'] eq '1' ">checked</if>
@@ -135,14 +139,6 @@
       <div class="h_a">如果开启UCenter接口，以下所有项均为必填项。</div>
       <table width="100%" cellspacing="0" class="table_form">
         <tbody>
-          <tr>
-            <th width="140">是否启用：</th>
-            <td><input type="radio" name="setting[ucuse]" value="1" 
-              <if condition=" $setting['ucuse'] eq '1' ">checked</if>
-              /> 是 <input type="radio" name="setting[ucuse]" value="0" 
-              <if condition=" $setting['ucuse'] eq '0' ">checked</if>
-              /> 否</td>
-          </tr>
           <tr>
             <th width="140">Ucenter链接方式：</th>
             <td><input type="radio" name="setting[uc_connect]" value="mysql" 

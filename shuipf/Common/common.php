@@ -8,17 +8,15 @@
 
 // 实例化服务
 function service($name, $params = array()) {
-    if (strtolower($name) == 'passport') {
-        $name = C("INTERFACE_PASSPORT");
-        if (!$name) {
-            $name = "Passport";
-        }
-    }
     $class = $name . 'Service';
     import("Service.{$class}", LIB_PATH);
     switch ($name) {
         case 'Attachment'://附件
-            $params = empty($params)?$params:array($params);
+            $params = empty($params) ? $params : array($params);
+            return get_instance_of($class, 'connect', $params);
+            break;
+        case 'Passport'://通行证
+            $params = empty($params) ? $params : array($params);
             return get_instance_of($class, 'connect', $params);
             break;
         default:

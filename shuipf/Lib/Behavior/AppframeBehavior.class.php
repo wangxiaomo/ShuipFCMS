@@ -64,7 +64,11 @@ class AppframeBehavior extends Behavior {
             if (require_cache(LIB_PATH . "/Driver/Attachment/{$class}.class.php")) {
                 return;
             }
-        } else {//加载 Util下 自定义类
+        } elseif (substr($class, 0, 8) == 'Passport') { // 加载通行证
+            if (require_cache(LIB_PATH . "/Driver/Passport/{$class}.class.php")) {
+                return;
+            }
+        }else {//加载 Util下 自定义类
             if (require_cache(LIB_PATH . "/Util/{$class}.class.php")) {
                 return;
             }

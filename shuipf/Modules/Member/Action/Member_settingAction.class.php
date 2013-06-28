@@ -46,9 +46,22 @@ class Member_settingAction extends AdminbaseAction {
                 $this->error($Module->getError());
             }
         } else {
+            //取得会员接口信息
+            $Dir = new Dir(LIB_PATH.'Driver/Passport/');
+            $Interface = array(
+                '' => '请选择帐号通行证接口（默认本地）'
+            );
+            $lan = array(
+                'Local' => '本地用户通行证',
+                'Ucenter' => 'Ucenter用户通行证'
+            );
+            foreach($Dir->toArray() as $r){
+                $neme = str_replace(array('Passport','.class.php'),'',$r['filename']);
+                $Interface[$neme] = $lan[$neme]?$lan[$neme]:$neme;
+            }
             $setting = M("Module")->where(array("module" => "Member"))->getField("setting");
             $this->assign("setting", unserialize($setting));
-            $this->assign("show_header",false);
+            $this->assign("Interface",$Interface);
             $this->display();
         }
     }

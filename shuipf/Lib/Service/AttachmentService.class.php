@@ -51,6 +51,7 @@ class AttachmentService {
         //附件存储方案
         $type = trim($type);
         $class = 'Attachment' . ucwords($type);
+        import("Driver.Attachment.{$class}", LIB_PATH);
         if (class_exists($class))
             $Atta = new $class($options);
         else
