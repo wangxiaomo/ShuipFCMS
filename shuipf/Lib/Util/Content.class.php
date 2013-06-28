@@ -41,6 +41,8 @@ class Content {
             RUNTIME_PATH . 'content_update.class.php'
         ));
         $content_input = new content_input($this->modelid);
+        //读取缩略图配置信息
+        $thumbsetting=unserialize($content_input->fields["thumb"]["setting"]);
         $inputinfo = $content_input->get($data);
 
         if (is_bool($inputinfo) && $inputinfo == false) {
@@ -128,6 +130,17 @@ class Content {
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
                 $systeminfo['thumb'] = $matches[3][$auto_thumb_no];
             }
+            //如果用户在模型定义中对缩略图进行了定义则自动缩略图
+            if($systeminfo["thumb"]!=""&&($thumbsetting["images_width"]!=""||$thumbsetting["images_height"]!="")){
+                $tpath=SITE_PATH.$systeminfo["thumb"];
+                $twidth=$thumbsetting["images_width"];//定义的宽度
+                $theight=$thumbsetting["images_height"];//定义的高度
+                $oldname=(basename($tpath));//原始文件名
+                $newname="thumb_".$twidth."_".$theight."_".$oldname;//新文件名
+                $thumbpath=str_replace($oldname,$newname,$tpath);
+                img2thumb($tpath,$thumbpath,$twidth,$theight);//生成缩略图
+                $systeminfo["thumb"]=str_replace($oldname,$newname,$systeminfo["thumb"]); //更新缩略图路径信息
+             }
         }
 
         //主表操作开始
