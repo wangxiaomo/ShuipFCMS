@@ -22,7 +22,7 @@ class AttachmentModel extends CommonModel {
      * @return string 成功返回网站路径，失败反驳false
      */
     public function getFilePath($module, $dateFormat = '', $time = 0) {
-        $filePath = C("UPLOADFILEPATH") . strtolower($module) . '/' . date($dateFormat ? $dateFormat : $this->dateFormat, $time ? $time : $this->time) . '/';
+        $filePath = C("UPLOADFILEPATH") . strtolower(trim($module)) . '/' . date($dateFormat ? $dateFormat : $this->dateFormat, $time ? $time : $this->time) . '/';
         //检测目录是否存在，不存在创建
         if (!is_dir($filePath)) {
             if (!mkdir($filePath, 0777, true)) {
