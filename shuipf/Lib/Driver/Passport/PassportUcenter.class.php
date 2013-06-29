@@ -10,7 +10,7 @@ class PassportUcenter extends PassportService {
 
     function __construct() {
         $this->config = F("Member_Config");
-        if (!$this->config['uc_api'] || $this->config['uc_api'] || $this->config['uc_appid']) {
+        if (!$this->config['uc_api'] || !$this->config['uc_key'] || !$this->config['uc_appid']) {
             throw_exception('请检查UC通行证配置是否完整！');
         }
         //连接 UCenter 的方式
