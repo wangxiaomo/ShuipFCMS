@@ -37,11 +37,11 @@ class IndexAction extends BaseAction {
                 exit;
             }
             //时间范围
-            $time = $this->_get("time");
+            $time = I('get.time');
             //模型
-            $mid = (int) $this->_get("modelid");
+            $mid = I('get.modelid',0,'intval');
             //栏目
-            $catid = (int) $this->_get("catid");
+            $catid = I('get.catid',0,'intval');
             //排序
             $order = array("adddate" => "DESC", "searchid" => "DESC");
             //搜索历史记录
@@ -156,7 +156,6 @@ class IndexAction extends BaseAction {
                     $words[] = $k;
                 }
                 $page = page($count, $pagesize);
-                $page->SetPager('default', $TP, array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => ""));
                 $this->assign("Page", $page->show('default'));
             } else {
                 import("Segment", APP_PATH . C("APP_GROUP_PATH") . '/Search/Class/');
@@ -182,7 +181,6 @@ class IndexAction extends BaseAction {
                     $page = page($count, $pagesize);
                     $result = M("Search")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order($order)->select();
                 }
-                $page->SetPager('default', $TP, array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => ""));
                 $this->assign("Page", $page->show('default'));
             }
 
