@@ -64,7 +64,7 @@ class UploadAction extends BaseAction {
             //是否添加水印  post:watermark_enable 等于1也需要加水印
             if (I('post.watermark_enable', 0, 'intval')) {
                 $Callback = array(
-                    array("UploadAction", "water"),
+                    array("AttachmentsAction", "water"),
                 );
             }
 
