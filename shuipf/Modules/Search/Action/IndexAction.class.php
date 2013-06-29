@@ -125,11 +125,11 @@ class IndexAction extends BaseAction {
                 }
                 if ($mid && in_array($mid, $this->config['modelid'])) {
                     //过滤模型
-                    $cl->SetFilter('modelid', array((int)$mid));
+                    $cl->SetFilter('modelid', array((int) $mid));
                 }
                 if ($catid) {
                     //过滤栏目
-                    $cl->SetFilter('catid', array((int)$catid));
+                    $cl->SetFilter('catid', array((int) $catid));
                 }
                 //执行搜索 api http://docs.php.net/manual/zh/sphinxclient.query.php
                 $res = $cl->Query($q, "*");
@@ -179,7 +179,7 @@ class IndexAction extends BaseAction {
                     $result = M("Search")->cache(true, $cachetime)->where($where)->limit($page->firstRow . ',' . $page->listRows)->order($order)->select();
                 } else {
                     $count = M("Search")->where($where)->count();
-                    $page = $this->page($count, $pagesize);
+                    $page = page($count, $pagesize);
                     $result = M("Search")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order($order)->select();
                 }
                 $page->SetPager('default', $TP, array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => ""));
