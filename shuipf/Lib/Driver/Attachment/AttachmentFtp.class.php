@@ -132,7 +132,7 @@ class AttachmentFtp extends AttachmentService {
         $this->handlerLocal->savePath = $this->options['savePath'];
         //是否生成缩略图
         if ($this->options['thumb']) {
-            if ($this->options['thumb_width'] && $this->options['thumb_height']) {
+            if ($this->options['thumbMaxWidth'] && $this->options['thumbMaxWidth']) {
                 //开启生成缩略图
                 $this->handlerLocal->thumb = true;
                 //如果生成缩图，且缩图扩展名为空，不允许设置删除原图
