@@ -18,6 +18,131 @@
  */
 
 /**
+ * 错误输出
+ * @param mixed $error 错误
+ * @return void
+ */
+function halt($error) {
+    $e = array();
+    if (APP_DEBUG) {
+        //调试模式下输出错误信息
+        if (!is_array($error)) {
+            $trace = debug_backtrace();
+            $e['message'] = $error;
+            $e['file'] = $trace[0]['file'];
+            $e['line'] = $trace[0]['line'];
+            ob_start();
+            debug_print_backtrace();
+            $e['trace'] = ob_get_clean();
+        } else {
+            $e = $error;
+        }
+    } else {
+        //否则定向到错误页面
+        $error_page = C('ERROR_PAGE');
+        if (!empty($error_page)) {
+            redirect($error_page);
+        } else {
+            if (C('SHOW_ERROR_MSG'))
+                $e['message'] = is_array($error) ? $error['message'] : $error;
+            else
+                $e['message'] = C('ERROR_MESSAGE');
+        }
+    }
+    // 包含异常页面模板
+    include C('TMPL_EXCEPTION_FILE');
+    exit;
+}
+
+/**
+ * 自定义异常处理
+ * @param string $msg 异常消息
+ * @param string $type 异常类型 默认为ThinkException
+ * @param integer $code 异常代码 默认为0
+ * @return void
+ */
+function throw_exception($msg, $type = 'ThinkException', $code = 0) {
+    if (class_exists($type, false))
+        throw new $type($msg, $code);
+    else
+        halt($msg);        // 异常类型不存在则输出错误信息字串
+}
+
+/**
+ * 浏览器友好的变量输出
+ * @param mixed $var 变量
+ * @param boolean $echo 是否输出 默认为True 如果为false 则返回输出字符串
+ * @param string $label 标签 默认为空
+ * @param boolean $strict 是否严谨 默认为true
+ * @return void|string
+ */
+function dump($var, $echo = true, $label = null, $strict = true) {
+    $label = ($label === null) ? '' : rtrim($label) . ' ';
+    if (!$strict) {
+        if (ini_get('html_errors')) {
+            $output = print_r($var, true);
+            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+        } else {
+            $output = $label . print_r($var, true);
+        }
+    } else {
+        ob_start();
+        var_dump($var);
+        $output = ob_get_clean();
+        if (!extension_loaded('xdebug')) {
+            $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
+            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+        }
+    }
+    if ($echo) {
+        echo($output);
+        return null;
+    }
+    else
+        return $output;
+}
+
+/**
+ * 404处理 
+ * 调试模式会抛异常 
+ * 部署模式下面传入url参数可以指定跳转页面，否则发送404信息
+ * @param string $msg 提示信息
+ * @param string $url 跳转URL地址
+ * @return void
+ */
+function _404($msg = '', $url = '') {
+    APP_DEBUG && throw_exception($msg);
+    if ($msg && C('LOG_EXCEPTION_RECORD'))
+        Log::write($msg);
+    if (empty($url) && C('URL_404_REDIRECT')) {
+        $url = C('URL_404_REDIRECT');
+    }
+    if ($url) {
+        redirect($url);
+    } else {
+        send_http_status(404);
+        exit;
+    }
+}
+
+/**
+ * 设置当前页面的布局
+ * @param string|false $layout 布局名称 为false的时候表示关闭布局
+ * @return void
+ */
+function layout($layout) {
+    if (false !== $layout) {
+        // 开启布局
+        C('LAYOUT_ON', true);
+        if (is_string($layout)) { // 设置新的布局模板
+            C('LAYOUT_NAME', $layout);
+        }
+    } else {// 临时关闭布局
+        C('LAYOUT_ON', false);
+    }
+}
+
+/**
  * URL组装 支持不同URL模式
  * @param string $url URL表达式，格式：'[分组/模块/操作#锚点@域名]?参数1=值1&参数2=值2...'
  * @param string|array $vars 传入的参数，支持数组和字符串
@@ -157,9 +282,9 @@ function U($url = '', $vars = '', $suffix = true, $redirect = false, $domain = t
             }
             if ($var[C('VAR_GROUP')] == C("DEFAULT_GROUP")) {
                 //如果是后台绑定域名强制使用后台域名访问时，非Admin项目，都要带上g参数
-                if(isset($admin_domain) && $var[C('VAR_GROUP')] != 'Admin'){
+                if (isset($admin_domain) && $var[C('VAR_GROUP')] != 'Admin') {
                     
-                }else{
+                } else {
                     unset($var[C('VAR_GROUP')]);
                 }
             }
@@ -226,134 +351,9 @@ function U($url = '', $vars = '', $suffix = true, $redirect = false, $domain = t
 }
 
 /**
- * 错误输出
- * @param mixed $error 错误
- * @return void
- */
-function halt($error) {
-    $e = array();
-    if (APP_DEBUG) {
-        //调试模式下输出错误信息
-        if (!is_array($error)) {
-            $trace = debug_backtrace();
-            $e['message'] = $error;
-            $e['file'] = $trace[0]['file'];
-            $e['line'] = $trace[0]['line'];
-            ob_start();
-            debug_print_backtrace();
-            $e['trace'] = ob_get_clean();
-        } else {
-            $e = $error;
-        }
-    } else {
-        //否则定向到错误页面
-        $error_page = C('ERROR_PAGE');
-        if (!empty($error_page)) {
-            redirect($error_page);
-        } else {
-            if (C('SHOW_ERROR_MSG'))
-                $e['message'] = is_array($error) ? $error['message'] : $error;
-            else
-                $e['message'] = C('ERROR_MESSAGE');
-        }
-    }
-    // 包含异常页面模板
-    include C('TMPL_EXCEPTION_FILE');
-    exit;
-}
-
-/**
- * 自定义异常处理
- * @param string $msg 异常消息
- * @param string $type 异常类型 默认为ThinkException
- * @param integer $code 异常代码 默认为0
- * @return void
- */
-function throw_exception($msg, $type = 'ThinkException', $code = 0) {
-    if (class_exists($type, false))
-        throw new $type($msg, $code);
-    else
-        halt($msg);        // 异常类型不存在则输出错误信息字串
-}
-
-/**
- * 浏览器友好的变量输出
- * @param mixed $var 变量
- * @param boolean $echo 是否输出 默认为True 如果为false 则返回输出字符串
- * @param string $label 标签 默认为空
- * @param boolean $strict 是否严谨 默认为true
- * @return void|string
- */
-function dump($var, $echo = true, $label = null, $strict = true) {
-    $label = ($label === null) ? '' : rtrim($label) . ' ';
-    if (!$strict) {
-        if (ini_get('html_errors')) {
-            $output = print_r($var, true);
-            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
-        } else {
-            $output = $label . print_r($var, true);
-        }
-    } else {
-        ob_start();
-        var_dump($var);
-        $output = ob_get_clean();
-        if (!extension_loaded('xdebug')) {
-            $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
-            $output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
-        }
-    }
-    if ($echo) {
-        echo($output);
-        return null;
-    }
-    else
-        return $output;
-}
-
-/**
- * 404处理 
- * 调试模式会抛异常 
- * 部署模式下面传入url参数可以指定跳转页面，否则发送404信息
- * @param string $msg 提示信息
- * @param string $url 跳转URL地址
- * @return void
- */
-function _404($msg = '', $url = '') {
-    APP_DEBUG && throw_exception($msg);
-    if ($msg && C('LOG_EXCEPTION_RECORD'))
-        Log::write($msg);
-    if (empty($url) && C('URL_404_REDIRECT')) {
-        $url = C('URL_404_REDIRECT');
-    }
-    if ($url) {
-        redirect($url);
-    } else {
-        send_http_status(404);
-        exit;
-    }
-}
-
-/**
- * 设置当前页面的布局
- * @param string|false $layout 布局名称 为false的时候表示关闭布局
- * @return void
- */
-function layout($layout) {
-    if (false !== $layout) {
-        // 开启布局
-        C('LAYOUT_ON', true);
-        if (is_string($layout)) { // 设置新的布局模板
-            C('LAYOUT_NAME', $layout);
-        }
-    } else {// 临时关闭布局
-        C('LAYOUT_ON', false);
-    }
-}
-
-/**
  * 渲染输出Widget
  * @param string $name Widget名称
- * @param array $data 传人的参数
+ * @param array $data 传入的参数
  * @param boolean $return 是否返回内容 
  * @param string $path Widget所在路径
  * @return void
@@ -436,7 +436,7 @@ function redirect($url, $time = 0, $msg = '') {
  */
 function S($name, $value = '', $options = null) {
     static $cache = '';
-    if (is_array($options)) {
+    if (is_array($options) && empty($cache)) {
         // 缓存操作的同时初始化
         $type = isset($options['type']) ? $options['type'] : '';
         $cache = Cache::getInstance($type, $options);
@@ -659,10 +659,11 @@ function session($name, $value = '') {
             }
         } elseif (0 === strpos($name, '?')) { // 检查session
             $name = substr($name, 1);
-            if ($prefix) {
-                return isset($_SESSION[$prefix][$name]);
+            if (strpos($name, '.')) { // 支持数组
+                list($name1, $name2) = explode('.', $name);
+                return $prefix ? isset($_SESSION[$prefix][$name1][$name2]) : isset($_SESSION[$name1][$name2]);
             } else {
-                return isset($_SESSION[$name]);
+                return $prefix ? isset($_SESSION[$prefix][$name]) : isset($_SESSION[$name]);
             }
         } elseif (is_null($name)) { // 清空session
             if ($prefix) {
@@ -671,9 +672,19 @@ function session($name, $value = '') {
                 $_SESSION = array();
             }
         } elseif ($prefix) { // 获取session
-            return isset($_SESSION[$prefix][$name]) ? $_SESSION[$prefix][$name] : null;
+            if (strpos($name, '.')) {
+                list($name1, $name2) = explode('.', $name);
+                return isset($_SESSION[$prefix][$name1][$name2]) ? $_SESSION[$prefix][$name1][$name2] : null;
+            } else {
+                return isset($_SESSION[$prefix][$name]) ? $_SESSION[$prefix][$name] : null;
+            }
         } else {
-            return isset($_SESSION[$name]) ? $_SESSION[$name] : null;
+            if (strpos($name, '.')) {
+                list($name1, $name2) = explode('.', $name);
+                return isset($_SESSION[$name1][$name2]) ? $_SESSION[$name1][$name2] : null;
+            } else {
+                return isset($_SESSION[$name]) ? $_SESSION[$name] : null;
+            }
         }
     } elseif (is_null($value)) { // 删除session
         if ($prefix) {
@@ -823,18 +834,53 @@ function get_client_ip($type = 0) {
  */
 function send_http_status($code) {
     static $_status = array(
-// Success 2xx
+// Informational 1xx
+100 => 'Continue',
+ 101 => 'Switching Protocols',
+ // Success 2xx
 200 => 'OK',
+ 201 => 'Created',
+ 202 => 'Accepted',
+ 203 => 'Non-Authoritative Information',
+ 204 => 'No Content',
+ 205 => 'Reset Content',
+ 206 => 'Partial Content',
  // Redirection 3xx
-301 => 'Moved Permanently',
+300 => 'Multiple Choices',
+ 301 => 'Moved Permanently',
  302 => 'Moved Temporarily ', // 1.1
-// Client Error 4xx
+303 => 'See Other',
+ 304 => 'Not Modified',
+ 305 => 'Use Proxy',
+ // 306 is deprecated but reserved
+307 => 'Temporary Redirect',
+ // Client Error 4xx
 400 => 'Bad Request',
+ 401 => 'Unauthorized',
+ 402 => 'Payment Required',
  403 => 'Forbidden',
  404 => 'Not Found',
+ 405 => 'Method Not Allowed',
+ 406 => 'Not Acceptable',
+ 407 => 'Proxy Authentication Required',
+ 408 => 'Request Timeout',
+ 409 => 'Conflict',
+ 410 => 'Gone',
+ 411 => 'Length Required',
+ 412 => 'Precondition Failed',
+ 413 => 'Request Entity Too Large',
+ 414 => 'Request-URI Too Long',
+ 415 => 'Unsupported Media Type',
+ 416 => 'Requested Range Not Satisfiable',
+ 417 => 'Expectation Failed',
  // Server Error 5xx
 500 => 'Internal Server Error',
+ 501 => 'Not Implemented',
+ 502 => 'Bad Gateway',
  503 => 'Service Unavailable',
+ 504 => 'Gateway Timeout',
+ 505 => 'HTTP Version Not Supported',
+ 509 => 'Bandwidth Limit Exceeded'
     );
     if (isset($_status[$code])) {
         header('HTTP/1.1 ' . $code . ' ' . $_status[$code]);
