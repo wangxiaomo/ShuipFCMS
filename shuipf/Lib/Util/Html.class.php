@@ -162,6 +162,8 @@ class Html extends BaseAction {
                 return true;
             }
         }
+        //对pages进行赋值null，解决由于上一篇有分页下一篇无分页的时候，会把上一篇的分页带到下一篇！
+        $this->assign("pages", null);
         $this->assign("content", $output_data['content']);
         //当没有启用内容页分页时候（如果内容字段有启用分页，不会执行到此步骤），判断其他支持分页的标签进行分页处理
         $page = 1;
