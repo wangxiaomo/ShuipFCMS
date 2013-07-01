@@ -613,7 +613,7 @@ function seo($catid = '', $title = '', $description = '', $keyword = '') {
 }
 
 /**
- *  用于前台模板检测 
+ * 获取模版文件 格式 项目://分组@主题/模块/操作
  * @param type $templateFile
  * @return boolean|string 
  */
@@ -621,13 +621,11 @@ function parseTemplateFile($templateFile = '') {
     static $TemplateFileCache = array();
     //模板路径
     $TemplatePath = TEMPLATE_PATH;
-    //默认主题风格
-    $ThemeDefault = "Default";
-    //主题风格
-    $Theme = empty(AppframeAction::$Cache["Config"]['theme']) ? $ThemeDefault : AppframeAction::$Cache["Config"]['theme'];
+    //模板主题
+    $Theme = empty(AppframeAction::$Cache["Config"]['theme']) ? 'Default' : AppframeAction::$Cache["Config"]['theme'];
     //如果有指定 GROUP_MODULE 则模块名直接是GROUP_MODULE，否则使用 GROUP_NAME，这样做的目的是防止其他模块需要生成
     $group = defined('GROUP_MODULE') ? GROUP_MODULE . '/' : GROUP_NAME . '/';
-    C('TEMPLATE_NAME', $TemplatePath . $Theme . "/" . $group . (THEME_NAME ? THEME_NAME . '/' : ''));
+    C('TEMPLATE_NAME', $TemplatePath . $Theme . "/" . $group);
     //模板标识
     if ('' == $templateFile) {
         $templateFile = C('TEMPLATE_NAME') . MODULE_NAME . (defined('GROUP_NAME') ? C('TMPL_FILE_DEPR') : '/') . ACTION_NAME . C('TMPL_TEMPLATE_SUFFIX');
@@ -641,23 +639,21 @@ function parseTemplateFile($templateFile = '') {
         $path = explode(':', $templateFile);
         $action = array_pop($path);
         $module = !empty($path) ? array_pop($path) : MODULE_NAME;
-
         if (!empty($path)) {// 设置模板主题
             $path = TEMPLATE_PATH . array_pop($path) . '/';
         } else {
             $path = C("TEMPLATE_NAME");
         }
         $depr = defined('GROUP_NAME') ? C('TMPL_FILE_DEPR') : '/';
-
         $templateFile = $path . $module . $depr . $action . C('TMPL_TEMPLATE_SUFFIX');
     }
+    //区分大小写的文件判断，如果不存在，尝试一次使用默认主题
     if (!file_exists_case($templateFile)) {
         //记录日志
-        if (APP_DEBUG) {
-            Log::write('模板:[' . $templateFile . ']不存在！');
-        }
+        Log::write('模板:[' . $templateFile . ']不存在！');
         //启用默认主题模板
         $templateFile = str_replace(C("TEMPLATE_NAME"), TEMPLATE_PATH . 'Default/' . $group, $templateFile);
+        //判断默认主题是否存在，不存在直接报错提示
         if (!file_exists_case($templateFile)) {
             $TemplateFileCache[$key] = false;
             return false;
