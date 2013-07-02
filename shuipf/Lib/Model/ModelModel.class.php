@@ -7,15 +7,22 @@
  */
 class ModelModel extends CommonModel {
 
-    private $sql_path;
+    private $libPath = ''; //当前模块路径
+
+    const mainTableSql = 'Sql/shuipfcms_zhubiao.sql'; //模型主表SQL模板文件
+    const sideTablesSql = 'Sql/shuipfcms_zhubiao_data.sql'; //模型副表SQL模板文件
+    const modelTablesInsert = 'Sql/shuipfcms_insert.sql'; //可用默认模型字段
+    const membershipModelSql = 'Sql/shuipfcms_member.sql'; //会员模型
+
     //array(验证字段,验证规则,错误提示,[验证条件,附加规则,验证时间])
+
     protected $_validate = array(
         array('name', 'require', '模型名称不能为空！'),
         array('tablename', 'require', '表名不能为空！'),
         array('name', '', '该模型名称已经存在！', 0, 'unique', 1),
         array('tablename', '', '该表名已经存在！', 0, 'unique', 3),
         array('tablename', 'checkTablesql', '创建模型所需要的SQL文件丢失，创建失败！', 1, 'callback', 3),
-        array('tablename', 'checkTablename', '该表名是系统保留或者已经存在，不允许创建！', 0, 'callback', 3),
+        array('tablename', 'checkTablename', '该表名是系统保留或者已经存在，不允许创建！', 0, 'callback', 1),
     );
     //array(填充字段,填充内容,[填充条件,附加规则])
     protected $_auto = array(
@@ -24,7 +31,16 @@ class ModelModel extends CommonModel {
         array('addtime', 'time', 1, 'function'),
     );
 
-    //检查需要创建的表名是否为系统保留名称
+    protected function _initialize() {
+        parent::_initialize();
+        $this->libPath = APP_PATH . C('APP_GROUP_PATH') . '/Models/';
+    }
+
+    /**
+     * 检查需要创建的表名是否为系统保留名称
+     * @param type $tablename 表名，不带表前缀
+     * @return boolean 存在返回false，不存在返回true
+     */
     public function checkTablename($tablename) {
         if (!$tablename) {
             return false;
@@ -42,20 +58,18 @@ class ModelModel extends CommonModel {
     }
 
     //检查SQL文件是否存在！
-    public function checkTablesql($tablename = "") {
-        //目录
-        $this->sql_path = APP_PATH . C("APP_GROUP_PATH") . "/Models/Sql/";
+    public function checkTablesql() {
         //检查主表结构sql文件是否存在
-        if (!is_file($this->sql_path . "shuipfcms_zhubiao.sql")) {
+        if (!is_file($this->libPath . self::mainTableSql)) {
             return false;
         }
-        if (!is_file($this->sql_path . "shuipfcms_zhubiao_data.sql")) {
+        if (!is_file($this->libPath . self::sideTablesSql)) {
             return false;
         }
-        if (!is_file($this->sql_path . "shuipfcms_insert.sql")) {
+        if (!is_file($this->libPath . self::modelTablesInsert)) {
             return false;
         }
-        if (!is_file($this->sql_path . "shuipfcms_member.sql")) {
+        if (!is_file($this->libPath . self::membershipModelSql)) {
             return false;
         }
         return true;
@@ -63,113 +77,162 @@ class ModelModel extends CommonModel {
 
     /**
      * 创建会员模型
-     * @param type $TableName 表名
-     * @param type $modelid 所属模型id
+     * @param type $tableName 模型主表名称（不包含表前缀）
+     * @param type $modelId 所属模型id
      * @return boolean
      */
-    public function AddModelMember($TableName, $modelid) {
-        if (empty($TableName)) {
+    public function AddModelMember($tableName, $modelId) {
+        if (empty($tableName)) {
             return false;
         }
         //表前缀
-        $TableQianzui = C("DB_PREFIX");
-
-        $Zsql = file_get_contents($this->sql_path . "shuipfcms_member.sql");
-        if (!$Zsql) {
-            return false;
-        }
-        $status = $this->sql_execute($Zsql, $TableQianzui, $TableName, $modelid);
-        if ($status == false && is_bool($status)) {
-            return false;
-        }
-        return true;
+        $dbPrefix = C("DB_PREFIX");
+        //读取会员模型SQL模板
+        $membershipModelSql = file_get_contents($this->libPath . self::membershipModelSql);
+        //表前缀，表名，模型id替换
+        $sqlSplit = str_replace(array('@shuipfcms@', '@zhubiao@', '@modelid@'), array($dbPrefix, $tableName, $modelId), $membershipModelSql);
+        return $this->sql_execute($sqlSplit);
     }
 
     /**
-     * 创建主表和副表
-     * @param type $TableName 表名
-     * @param type $modelid 所属模型id
+     * 创建模型
+     * @param type $data 提交数据
      * @return boolean
      */
-    public function AddModelTable($TableName, $modelid) {
-        if (empty($TableName)) {
+    public function addModel($data) {
+        if (empty($data)) {
             return false;
         }
-        //表前缀
-        $TableQianzui = C("DB_PREFIX");
-
-        $Zsql = file_get_contents($this->sql_path . "shuipfcms_zhubiao.sql");
-        if (!$Zsql) {
-            return false;
-        }
-        $status = $this->sql_execute($Zsql, $TableQianzui, $TableName, $modelid);
-        if ($status == false && is_bool($status)) {
-            return false;
-        }
-
-        $Fsql = file_get_contents($this->sql_path . "shuipfcms_zhubiao_data.sql");
-        if (!$Fsql) {
-            return false;
-        }
-        $status = $this->sql_execute($Fsql, $TableQianzui, $TableName, $modelid);
-        if ($status == false && is_bool($status)) {
-            return false;
-        }
-
-        $Fidel = file_get_contents($this->sql_path . "shuipfcms_insert.sql");
-        $FidelArr = explode("\n", $Fidel);
-        foreach ($FidelArr as $v) {
-            if ($v) {
-                $this->sql_execute($v, $TableQianzui, $TableName, $modelid);
+        //数据验证
+        $data = $this->create($data, 1);
+        if ($data) {
+            //添加模型记录
+            $modelid = $this->add($data);
+            if ($modelid) {
+                //创建数据表
+                if ($this->createModel($data['tablename'], $modelid)) {
+                    return $modelid;
+                } else {
+                    //表创建失败
+                    $this->where(array("modelid" => $modelid))->delete();
+                    $this->error = '数据表创建失败！';
+                    return false;
+                }
+            } else {
+                return false;
             }
+        } else {
+            return false;
         }
-        return true;
     }
 
     /**
-     * 执行SQL
-     * @param type $sql
-     * @param type $prefix 表前缀
-     * @param type $modelid 模型id
-     * @return type
+     * 编辑模型
+     * @param type $data 提交数据
+     * @return boolean
      */
-    private function sql_execute($sql, $prefix, $TableName, $modelid) {
-        if (!$sql) {
+    public function editModel($data, $modelid = 0) {
+        if (empty($data)) {
             return false;
         }
-        $sql = str_replace(array(
-            "@shuipfcms@",
-            "@zhubiao@",
-            "@modelid@",
-            "\r\n"
-                ), array(
-            $prefix,
-            $TableName,
-            $modelid,
-            ""
-                ), $sql);
-        return $this->execute($sql);
+        //模型ID
+        $modelid = $modelid ? $modelid : (int) $data['modelid'];
+        if (!$modelid) {
+            $this->error = '模型ID不能为空！';
+            return false;
+        }
+        //查询模型数据
+        $info = $this->where(array("modelid" => $modelid))->find();
+        if (empty($info)) {
+            $this->error = '该模型不存在！';
+            return false;
+        }
+        $data['modelid'] = $modelid;
+        //数据验证
+        $data = $this->create($data, 2);
+        if ($data) {
+            //是否更改表名
+            if ($info['tablename'] != $data['tablename'] && !empty($data['tablename'])) {
+                //检查新表名是否存在
+                if ($this->table_exists($data['tablename']) || $this->table_exists($data['tablename'] . '_data')) {
+                    $this->error = '该表名已经存在！';
+                    return false;
+                }
+                if (false !== $this->where(array("modelid" => $modelid))->save($data)) {
+                    //表前缀
+                    $dbPrefix = C("DB_PREFIX");
+                    //表名更改
+                    if (!$this->sql_execute("RENAME TABLE  `{$dbPrefix}{$info['tablename']}` TO  `{$dbPrefix}{$data['tablename']}` ;")) {
+                        $this->error = '数据库修改表名失败！';
+                        return false;
+                    }
+                    //修改副表
+                    if (!$this->sql_execute("RENAME TABLE  `{$dbPrefix}{$info['tablename']}_data` TO  `{$dbPrefix}{$data['tablename']}_data` ;")) {
+                        //主表已经修改，进行回滚
+                        $this->sql_execute("RENAME TABLE  `{$dbPrefix}{$data['tablename']}` TO  `{$dbPrefix}{$info['tablename']}` ;");
+                        $this->error = '数据库修改副表表名失败！';
+                        return false;
+                    }
+                    return true;
+                } else {
+                    $this->error = '模型更新失败！';
+                    return false;
+                }
+            } else {
+                if (false !== $this->where(array("modelid" => $modelid))->save($data)) {
+                    return true;
+                } else {
+                    $this->error = '模型更新失败！';
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 创建内容模型
+     * @param type $tableName 模型主表名称（不包含表前缀）
+     * @param type $modelId 模型id
+     * @return boolean
+     */
+    protected function createModel($tableName, $modelId) {
+        if (empty($tableName) || $modelId < 1) {
+            return false;
+        }
+        //表前缀
+        $dbPrefix = C("DB_PREFIX");
+        //读取模型主表SQL模板
+        $mainTableSqll = file_get_contents($this->libPath . self::mainTableSql);
+        //副表
+        $sideTablesSql = file_get_contents($this->libPath . self::sideTablesSql);
+        //字段数据
+        $modelTablesInsert = file_get_contents($this->libPath . self::modelTablesInsert);
+        //表前缀，表名，模型id替换
+        $sqlSplit = str_replace(array('@shuipfcms@', '@zhubiao@', '@modelid@'), array($dbPrefix, $tableName, $modelId), $mainTableSqll . "\n" . $sideTablesSql . "\n" . $modelTablesInsert);
+
+        return $this->sql_execute($sqlSplit);
     }
 
     /**
      * 删除表
      * $table 不带表前缀
      */
-    public function DeleteTable($table) {
-        $status = $this->table_exists($table);
-        if ($status) {
+    public function deleteTable($table) {
+        if ($this->table_exists($table)) {
             $this->drop_table($table);
         }
         return true;
     }
 
     /**
-     * 删除模型
+     * 根据模型ID删除模型
      * @param type $modelid 模型id
      * @return boolean
      */
-    public function delete_model($modelid) {
-        if ((int) $modelid <= 0) {
+    public function deleteModel($modelid) {
+        if (empty($modelid)) {
             return false;
         }
         //这里可以根据缓存获取表名
@@ -182,14 +245,69 @@ class ModelModel extends CommonModel {
         //删除模型数据
         $this->where(array("modelid" => $modelid))->delete();
         //删除所有和这个模型相关的字段
-        D("Model_field")->where(array("modelid" => $modelid))->delete();
+        D("ModelField")->where(array("modelid" => $modelid))->delete();
         //删除主表
-        $this->DeleteTable($model_table);
+        $this->deleteTable($model_table);
         if ((int) $modeldata['type'] != 2) {
             //删除副表
             $this->DeleteTable($model_table . "_data");
         }
         return true;
+    }
+
+    //兼容方法...
+    public function delete_model($modelid) {
+        return $this->deleteModel($modelid);
+    }
+
+    /**
+     * 执行SQL
+     * @param type $sqls SQL语句
+     * @return boolean
+     */
+    private function sql_execute($sqls) {
+        $sqls = $this->sql_split($sqls);
+        if (is_array($sqls)) {
+            foreach ($sqls as $sql) {
+                if (trim($sql) != '') {
+                    $this->execute($sql, true);
+                }
+            }
+        } else {
+            $this->execute($sqls, true);
+        }
+        return true;
+    }
+
+    /**
+     * SQL语句预处理
+     * @param type $sql
+     * @return type
+     */
+    public function sql_split($sql) {
+        if (mysql_get_server_info() > '4.1' && C('DB_CHARSET')) {
+            $sql = preg_replace("/TYPE=(InnoDB|MyISAM|MEMORY)( DEFAULT CHARSET=[^; ]+)?/", "ENGINE=\\1 DEFAULT CHARSET=" . C('DB_CHARSET'), $sql);
+        }
+        if (C("DB_PREFIX") != "shuipfcms_") {
+            $sql = str_replace("shuipfcms_", C("DB_PREFIX"), $sql);
+        }
+        $sql = str_replace("\r", "\n", $sql);
+        $ret = array();
+        $num = 0;
+        $queriesarray = explode(";\n", trim($sql));
+        unset($sql);
+        foreach ($queriesarray as $query) {
+            $ret[$num] = '';
+            $queries = explode("\n", trim($query));
+            $queries = array_filter($queries);
+            foreach ($queries as $query) {
+                $str1 = substr($query, 0, 1);
+                if ($str1 != '#' && $str1 != '-')
+                    $ret[$num] .= $query;
+            }
+            $num++;
+        }
+        return $ret;
     }
 
     /**
