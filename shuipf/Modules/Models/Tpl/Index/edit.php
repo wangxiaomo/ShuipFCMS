@@ -13,7 +13,7 @@
         </tr>
         <tr>
           <th>模型表键名：</th>
-          <td class="y-bg"><input type="text" class="input" name="tablename" id="tablename" size="30" value="{$data.tablename}"  disabled="disabled"/></td>
+          <td class="y-bg"><input type="text" class="input" name="tablename" id="tablename" size="30" value="{$data.tablename}" /></td>
         </tr>
         <tr>
           <th>描述：</th>

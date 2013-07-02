@@ -66,7 +66,7 @@
         <td>最小值：
           <input type="text" name="minlength" id="field_minlength" value="0" size="5" class="input">
           最大值：
-          <input type="text" name="maxlength" id="field_maxlength" value="" size="5" class="input"></td>
+          <input type="text" name="maxlength" id="field_maxlength" value="0" size="5" class="input"></td>
       </tr>
       <tr>
         <th><strong>数据校验正则</strong><br />

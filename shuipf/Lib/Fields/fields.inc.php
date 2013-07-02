@@ -29,14 +29,4 @@ $fields = array('text' => '单行文本',
     'map' => '地图字段',
     'omnipotent' => '万能字段',
 );
-//不允许删除的字段，这些字段讲不会在字段添加处显示
-$not_allow_fields = array('catid','typeid','title','keyword','template','username','tags');
-//允许添加但必须唯一的字段
-$unique_fields = array('pages','readpoint','author','copyfrom','islink','posid');
-//禁止被禁用的字段列表
-$forbid_fields = array('catid','title','updatetime','inputtime','url','listorder','status','template','username','allow_comment','tags');
-//禁止被删除的字段列表
-$forbid_delete = array('catid','typeid','title','thumb','keywords','updatetime','inputtime','posid','url','listorder','status','template','username','allow_comment','tags');
-//可以追加 JS和CSS 的字段
-$att_css_js = array('text','textarea','box','number','keyword','typeid');
 ?>

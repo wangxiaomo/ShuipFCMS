@@ -17,12 +17,16 @@
         <th width="250"><strong>字段类型</strong><br /></th>
         <td>
           <input name="formtype" value="{$data.formtype}" type="hidden" />
-          <select name="" id="formtype" onChange="javascript:field_setting(this.value);" disabled>
+		  <if condition="$isEditField ">
+          <select name="" id="formtype" onChange="javascript:field_setting(this.value);" >
             <option value='' >请选择字段类型</option>
             <volist name="all_field" id="vo">
             <option value="{$key}" <if condition="$data['formtype'] eq $key"> selected</if>>{$vo}</option>
             </volist>
-          </select></td>
+          </select>
+		  <else/>
+		  该字段类型不允许修改
+		  </if></td>
       </tr>
       <tr>
         <th><strong>作为主表字段</strong></th>
@@ -35,7 +39,7 @@
       <tr>
         <th width="25%"><font color="red">*</font> <strong>字段名</strong><br />
           只能由英文字母、数字和下划线组成，并且仅能字母开头，不以下划线结尾 </th>
-        <td><input type="text" name="field" id="field" size="20" class="input" value="{$data.field}" <if condition=" in_array($data['field'],$forbid_delete) "> disabled</if>></td>
+        <td><input type="text" name="field" id="field" size="20" class="input" value="{$data.field}" <if condition=" !$isEditField "> disabled</if>></td>
       </tr>
       <tr>
         <th><font color="red">*</font> <strong>字段别名</strong><br />
