@@ -1,10 +1,10 @@
 <?php
 
-/* * 字段管理
+/**
+ * 字段管理
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class Sitemodel_fieldAction extends AdminbaseAction {
 
     private $modelfield, $fields;

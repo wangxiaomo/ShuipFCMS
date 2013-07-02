@@ -153,59 +153,58 @@
 </div>
 <script src="{$config_siteurl}statics/js/common.js?v"></script>
 <script type="text/javascript">
-
 function field_setting(fieldtype) {
-	$('#formattribute').css('display','none');
-	$('#css').css('display','none');
-	if(fieldtype == ""){
-	    return  false;
-	}
-	$.each( ['text','textarea','box','number','keyword','typeid'], function(i, n){
-		if(fieldtype==n) {
-			$('#formattribute').css('display','');
-			$('#css').css('display','');
-		}
-	});  
+    $('#formattribute').css('display', 'none');
+    $('#css').css('display', 'none');
+    if (fieldtype == "") {
+        return false;
+    }
+    $.each(['text', 'textarea', 'box', 'number', 'keyword', 'typeid'], function (i, n) {
+        if (fieldtype == n) {
+            $('#formattribute').css('display', '');
+            $('#css').css('display', '');
+        }
+    });
 
-		$.getJSON(GV.DIMAUB+"index.php?g=Models&m=Sitemodel_field&a=public_field_setting&fieldtype="+fieldtype, function(data){
-			if(data.field_basic_table=='1') {
-				$('#field_basic_table0').attr("disabled",false);
-				$('#field_basic_table1').attr("disabled",false);
-			} else {
-				$('#field_basic_table0').attr("checked",true);
-				$('#field_basic_table0').attr("disabled",true);
-				$('#field_basic_table1').attr("disabled",true);
-			}
-			if(data.field_allow_search=='1') {
-				$('#field_allow_search0').attr("disabled",false);
-				$('#field_allow_search1').attr("disabled",false);
-			} else {
-				$('#field_allow_search0').attr("checked",true);
-				$('#field_allow_search0').attr("disabled",true);
-				$('#field_allow_search1').attr("disabled",true);
-			}
-			if(data.field_allow_fulltext=='1') {
-				$('#field_allow_fulltext0').attr("disabled",false);
-				$('#field_allow_fulltext1').attr("disabled",false);
-			} else {
-				$('#field_allow_fulltext0').attr("checked",true);
-				$('#field_allow_fulltext0').attr("disabled",true);
-				$('#field_allow_fulltext1').attr("disabled",true);
-			}
-			if(data.field_allow_isunique=='1') {
-				$('#field_allow_isunique0').attr("disabled",false);
-				$('#field_allow_isunique1').attr("disabled",false);
-			} else {
-				$('#field_allow_isunique0').attr("checked",true);
-				$('#field_allow_isunique0').attr("disabled",true);
-				$('#field_allow_isunique1').attr("disabled",true);
-			}
-			$('#field_minlength').val(data.field_minlength);
-			$('#field_maxlength').val(data.field_maxlength);
-			$('#setting').html(data.setting);
-	
-		});
-	}
+    $.getJSON(GV.DIMAUB + "index.php?g=Models&m=Sitemodel_field&a=public_field_setting&fieldtype=" + fieldtype, function (data) {
+        if (data.field_basic_table == '1') {
+            $('#field_basic_table0').attr("disabled", false);
+            $('#field_basic_table1').attr("disabled", false);
+        } else {
+            $('#field_basic_table0').attr("checked", true);
+            $('#field_basic_table0').attr("disabled", true);
+            $('#field_basic_table1').attr("disabled", true);
+        }
+        if (data.field_allow_search == '1') {
+            $('#field_allow_search0').attr("disabled", false);
+            $('#field_allow_search1').attr("disabled", false);
+        } else {
+            $('#field_allow_search0').attr("checked", true);
+            $('#field_allow_search0').attr("disabled", true);
+            $('#field_allow_search1').attr("disabled", true);
+        }
+        if (data.field_allow_fulltext == '1') {
+            $('#field_allow_fulltext0').attr("disabled", false);
+            $('#field_allow_fulltext1').attr("disabled", false);
+        } else {
+            $('#field_allow_fulltext0').attr("checked", true);
+            $('#field_allow_fulltext0').attr("disabled", true);
+            $('#field_allow_fulltext1').attr("disabled", true);
+        }
+        if (data.field_allow_isunique == '1') {
+            $('#field_allow_isunique0').attr("disabled", false);
+            $('#field_allow_isunique1').attr("disabled", false);
+        } else {
+            $('#field_allow_isunique0').attr("checked", true);
+            $('#field_allow_isunique0').attr("disabled", true);
+            $('#field_allow_isunique1').attr("disabled", true);
+        }
+        $('#field_minlength').val(data.field_minlength);
+        $('#field_maxlength').val(data.field_maxlength);
+        $('#setting').html(data.setting);
+
+    });
+}
 </script>
 </body>
 </html>

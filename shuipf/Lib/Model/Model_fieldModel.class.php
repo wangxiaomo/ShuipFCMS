@@ -261,10 +261,6 @@ class Model_fieldModel extends CommonModel {
         //进行数据验证
         $data = $this->create($data, 2);
         if ($data) {
-            //去除不允许修改的
-            if (isset($data['formtype'])) {
-                unset($data['formtype']);
-            }
             if (false !== $this->where(array("fieldid" => $fieldid))->save($data)) {
                 //如果字段名变更
                 if ($data['field'] && $info['field']) {
