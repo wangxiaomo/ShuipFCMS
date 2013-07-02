@@ -7,6 +7,7 @@
  */
 class Model_fieldModel extends CommonModel {
 
+    protected $tableName = 'model_field';
     //不显示的字段类型（字段类型）
     public $not_allow_fields = array('catid', 'typeid', 'title', 'keyword', 'template', 'username', 'tags');
     //允许添加但必须唯一的字段（字段名）
@@ -14,7 +15,7 @@ class Model_fieldModel extends CommonModel {
     //禁止被禁用的字段列表（字段名）
     public $forbid_fields = array('catid', 'title', 'updatetime', 'inputtime', 'url', 'listorder', 'status', 'template', 'username', 'allow_comment', 'tags');
     //禁止被删除的字段列表（字段名）
-    public $forbid_delete = array('catid', 'typeid', 'title', 'thumb', 'keyword','keywords', 'updatetime', 'tags', 'inputtime', 'posid', 'url', 'listorder', 'status', 'template', 'username', 'allow_comment');
+    public $forbid_delete = array('catid', 'typeid', 'title', 'thumb', 'keyword', 'keywords', 'updatetime', 'tags', 'inputtime', 'posid', 'url', 'listorder', 'status', 'template', 'username', 'allow_comment');
     //可以追加 JS和CSS 的字段（字段名）
     public $att_css_js = array('text', 'textarea', 'box', 'number', 'keyword', 'typeid');
     //array(验证字段,验证规则,错误提示,[验证条件,附加规则,验证时间])
@@ -105,6 +106,22 @@ class Model_fieldModel extends CommonModel {
         }
         return true;
     }
+    
+    /**
+     * 根据模型ID，返回表名
+     * @param type $modelid
+     * @param type $modelid
+     * @return string
+     */
+    protected function getModelTableName($modelid, $issystem) {
+        //读取模型配置 以后优化缓存形式
+        $model_cache = F("Model");
+        //表名获取
+        $model_table = $model_cache[$modelid]['tablename'];
+        //完整表名获取 判断主表 还是副表
+        $tablename = $issystem ? $model_table : $model_table . "_data";
+        return $tablename;
+    }
 
     /**
      * 添加字段
@@ -120,12 +137,8 @@ class Model_fieldModel extends CommonModel {
         $data['setting'] = serialize($setting);
         //模型id
         $modelid = $data['modelid'];
-        //读取模型配置 以后优化缓存形式
-        $model_cache = F("Model");
-        //表名获取
-        $model_table = $model_cache[$modelid]['tablename'];
         //完整表名获取 判断主表 还是副表
-        $tablename = $data['issystem'] ? $model_table : $model_table . "_data";
+        $tablename = $this->getModelTableName($modelid, $data['issystem']);
         if (!$this->table_exists($tablename)) {
             $this->error = '数据表不存在！';
             return false;
@@ -217,12 +230,8 @@ class Model_fieldModel extends CommonModel {
         }
         //模型id
         $modelid = $info['modelid'];
-        //读取模型配置 以后优化缓存形式
-        $model_cache = F("Model");
-        //表名获取
-        $model_table = $model_cache[$modelid]['tablename'];
         //完整表名获取 判断主表 还是副表
-        $tablename = $info['issystem'] ? $model_table : $model_table . "_data";
+        $tablename = $this->getModelTableName($modelid, $info['issystem']);
         if (!$this->table_exists($tablename)) {
             $this->error = '数据表不存在！';
             return false;
@@ -312,12 +321,8 @@ class Model_fieldModel extends CommonModel {
         }
         //模型id
         $modelid = $info['modelid'];
-        //读取模型配置 以后优化缓存形式
-        $model_cache = F("Model");
-        //表名获取
-        $model_table = $model_cache[$modelid]['tablename'];
         //完整表名获取 判断主表 还是副表
-        $tablename = $info['issystem'] ? $model_table : $model_table . "_data";
+        $tablename = $this->getModelTableName($modelid, $info['issystem']);
         if (!$this->table_exists($tablename)) {
             $this->error = '数据表不存在！';
             return false;

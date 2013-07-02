@@ -15,8 +15,7 @@
       <tr>
         <th width="300"><strong>字段类型</strong><br /></th>
         <td>
-          <input name="formtype" value="{$data.formtype}" type="hidden" />
-          <select name="" id="formtype" onChange="javascript:field_setting(this.value);" disabled>
+          <select name="formtype" id="formtype" onChange="javascript:field_setting(this.value);">
             <option value='' >请选择字段类型</option>
             <volist name="all_field" id="vo">
             <option value="{$key}" <if condition="$data['formtype'] eq $key"> selected</if>>{$vo}</option>
@@ -41,7 +40,7 @@
       <tr>
         <th><strong>相关参数</strong><br />
           设置表单相关属性</th>
-        <td>{$form_data}</td>
+        <td><div id="setting">{$form_data}</div></td>
       </tr>
       <tr>
         <th><strong>字符长度取值范围</strong><br />
@@ -111,5 +110,59 @@
   </form>
 </div>
 <script src="{$config_siteurl}statics/js/common.js?v"></script>
+<script type="text/javascript">
+function field_setting(fieldtype) {
+    $('#formattribute').css('display', 'none');
+    $('#css').css('display', 'none');
+	if(fieldtype == ""){
+	    return false;
+	}
+    $.each(['text', 'textarea', 'box', 'number', 'keyword', 'typeid'], function (i, n) {
+        if (fieldtype == n) {
+            $('#formattribute').css('display', '');
+            $('#css').css('display', '');
+        }
+    });
+
+    $.getJSON("?g=Formguide&m=Field&a=public_field_setting&fieldtype=" + fieldtype, function (data) {
+        if (data.field_basic_table == '1') {
+            $('#field_basic_table0').attr("disabled", false);
+            $('#field_basic_table1').attr("disabled", false);
+        } else {
+            $('#field_basic_table0').attr("checked", true);
+            $('#field_basic_table0').attr("disabled", true);
+            $('#field_basic_table1').attr("disabled", true);
+        }
+        if (data.field_allow_search == '1') {
+            $('#field_allow_search0').attr("disabled", false);
+            $('#field_allow_search1').attr("disabled", false);
+        } else {
+            $('#field_allow_search0').attr("checked", true);
+            $('#field_allow_search0').attr("disabled", true);
+            $('#field_allow_search1').attr("disabled", true);
+        }
+        if (data.field_allow_fulltext == '1') {
+            $('#field_allow_fulltext0').attr("disabled", false);
+            $('#field_allow_fulltext1').attr("disabled", false);
+        } else {
+            $('#field_allow_fulltext0').attr("checked", true);
+            $('#field_allow_fulltext0').attr("disabled", true);
+            $('#field_allow_fulltext1').attr("disabled", true);
+        }
+        if (data.field_allow_isunique == '1') {
+            $('#field_allow_isunique0').attr("disabled", false);
+            $('#field_allow_isunique1').attr("disabled", false);
+        } else {
+            $('#field_allow_isunique0').attr("checked", true);
+            $('#field_allow_isunique0').attr("disabled", true);
+            $('#field_allow_isunique1').attr("disabled", true);
+        }
+        $('#field_minlength').val(data.field_minlength);
+        $('#field_maxlength').val(data.field_maxlength);
+        $('#setting').html(data.setting);
+
+    });
+}
+</script>
 </body>
 </html>

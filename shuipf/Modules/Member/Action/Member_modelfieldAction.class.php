@@ -7,15 +7,15 @@
  */
 class Member_modelfieldAction extends AdminbaseAction {
 
-    private $modelfield, $fields ,$banfie;
+    private $modelfield, $fields, $banfie;
 
     function _initialize() {
         parent::_initialize();
-        $this->modelfield = D("Model_field");
+        $this->modelfield = D("MemberField");
         //字段类型存放目录
         $this->fields = C("SHUIPF_FIELDS_PATH");
         //允许使用的字段列表
-        $this->banfie = array("text","textarea","box","number","datetime","map","omnipotent");
+        $this->banfie = array("text", "textarea", "box", "number", "datetime", "map", "omnipotent");
     }
 
     /*
@@ -23,27 +23,26 @@ class Member_modelfieldAction extends AdminbaseAction {
      */
 
     public function index() {
-        $modelid = $this->_get("modelid");
+        $modelid = I('get.modelid', 0, 'intval');
         //载入字段配置文件
         require $this->fields . "fields.inc.php";
         $model = M("Model")->where(array("modelid" => $modelid))->find();
         //根据模型读取字段列表
-        $data = $this->modelfield->Modelfield($modelid);
+        $data = $this->modelfield->getModelField($modelid);
 
         //不允许删除的字段，这些字段讲不会在字段添加处显示
-        $this->assign("not_allow_fields", $not_allow_fields);
+        $this->assign("not_allow_fields", $this->modelfield->not_allow_fields);
         //允许添加但必须唯一的字段
-        $this->assign("unique_fields", $unique_fields);
+        $this->assign("unique_fields", $this->modelfield->unique_fields);
         //禁止被禁用的字段列表
-        $this->assign("forbid_fields", $forbid_fields);
+        $this->assign("forbid_fields", $this->modelfield->forbid_fields);
         //禁止被删除的字段列表
-        $this->assign("forbid_delete", $forbid_delete);
+        $this->assign("forbid_delete", $this->modelfield->forbid_delete);
         //可以追加 JS和CSS 的字段
-        $this->assign("att_css_js", $att_css_js);
+        $this->assign("att_css_js", $this->modelfield->att_css_js);
         $this->assign("modelinfo", $model);
         $this->assign("modelid", $modelid);
         $this->assign("data", $data);
-        $this->assign("show_header",false);
         $this->display();
     }
 
@@ -52,90 +51,43 @@ class Member_modelfieldAction extends AdminbaseAction {
      */
 
     public function edit() {
+        //模型ID
+        $modelid = I('request.modelid', 0, 'intval');
+        //字段ID
+        $fieldid = I('request.fieldid', 0, 'intval');
+        if (empty($modelid)) {
+            $this->error('模型ID不能为空！');
+        }
+        if (empty($fieldid)) {
+            $this->error('字段ID不能为空！');
+        }
         if (IS_POST) {
-            //读取模型配置 以后优化缓存形式
-            $model_cache = F("Model_Member");
-            //模型ID
-            $modelid = (int) $this->_post("modelid");
-            //字段ID
-            $fieldid = (int) $this->_post("fieldid");
-            //表名获取
-            $model_table = $model_cache[$modelid]['tablename'];
-            //完整表名获取 判断主表 还是副表
-            $tablename = C("DB_PREFIX") . $model_table;
-            if (!$this->modelfield->table_exists($model_table)) {
-                $this->error("数据表不存在！");
+            $post = I('post.', '', '');
+            if (empty($post)) {
+                $this->error('数据不能为空！');
             }
-            //所编辑的字段名
-            $field = $_POST['field'];
-            //字符长度取值范围
-            $minlength = $_POST['minlength'] ? $_POST['minlength'] : 0;
-            $maxlength = $_POST['maxlength'] ? $_POST['maxlength'] : 0;
-
-            //旧字段名
-            $oldfield = $_POST['oldfield'];
-            $field_type = $_POST['formtype'];
-
-            //载入对应字段配置信息
-            $fiepath = $this->fields . $field_type . DIRECTORY_SEPARATOR;
-            require($fiepath . "config.inc.php");
-            //字段类型
-            if (isset($_POST['setting']['fieldtype'])) {
-                $field_type = $_POST['setting']['fieldtype'];
-            }
-
-            //更改字段
-            require $this->fields . 'edit.sql.php';
-
-            $data['issystem'] = 0;
-            $data['fieldid'] = $fieldid;
-            $data['field'] = $field; //字段名
-            $data['name'] = $_POST['name']; //字段别名
-            $data['tips'] = $_POST['tips']; //字段提示
-            $data['formattribute'] = $_POST['formattribute']; //表单附加属性
-            $data['css'] = $_POST['css']; //表单样式名
-            $data['minlength'] = $minlength; //最小值
-            $data['maxlength'] = $maxlength; //最大值
-            $data['pattern'] = $_POST['pattern']; //数据校验正则
-            $data['errortips'] = $_POST['errortips']; //数据校验未通过的提示信息
-            $data['isbase'] = 1; //作为基本信息
-            $data['isadd'] = $_POST['isadd']?1:0; //在前台投稿中显示
-            //附加属性值
-            $data['setting'] = serialize($_POST['setting']);
-            $data['unsetgroupids'] = isset($_POST['unsetgroupids']) ? implode(',', $_POST['unsetgroupids']) : '';
-            $data['unsetroleids'] = isset($_POST['unsetroleids']) ? implode(',', $_POST['unsetroleids']) : '';
-            //表单令牌
-            $data[C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
-            //var_dump($data);exit;
-            $editdata = $this->modelfield->create($data);
-            if ($editdata) {
-                //20120719 防止反斜杠丢失。
-                $editdata['pattern'] = $_POST['pattern']; //数据校验正则
-                if ($this->modelfield->save($editdata) !== false) {
-                    $this->assign("jumpUrl", U("Member_modelfield/index", array("modelid" => $modelid)));
-                    $this->success("更新成功！");
-                } else {
-                    $this->error("更新失败！");
-                }
+            if ($this->modelfield->editField($post, $fieldid)) {
+                $this->success("更新成功！", U("Member_modelfield/index", array("modelid" => $modelid)));
             } else {
-                $this->error($this->modelfield->getError());
+                $error = $this->modelfield->getError();
+                $this->error($error ? $error : '更新失败！');
             }
         } else {
-            //模型ID
-            $modelid = (int) $_GET['modelid'];
-            //字段ID
-            $fieldid = (int) $_GET['fieldid'];
             //模型信息
-            $modedata = D("Model")->where(array("modelid" => $modelid))->find();
+            $modedata = M("Model")->where(array("modelid" => $modelid))->find();
+            if (empty($modedata)) {
+                $this->error('该模型不存在！');
+            }
             //字段信息
-            $fielddata = $this->modelfield->where(array("fieldid" => $fieldid, "modelid" => $modelid))->find();
-
-            extract($fielddata);
-            //载入对应字段配置
-            $fiepath = $this->fields . $formtype . "/";
-            require($fiepath . "config.inc.php");
-            //将序列化的转换为数组
-            $setting = unserialize($setting);
+            $fieldData = $this->modelfield->where(array("fieldid" => $fieldid, "modelid" => $modelid))->find();
+            if (empty($fieldData)) {
+                $this->error('该字段信息不存在！');
+            }
+            //字段路径
+            $fiepath = $this->fields . $fieldData['formtype'] . "/";
+            extract($fieldData);
+            //字段扩展配置
+            $setting = unserialize($fieldData['setting']);
             //打开缓冲区
             ob_start();
             include $fiepath . 'field_edit_form.inc.php';
@@ -146,21 +98,16 @@ class Member_modelfieldAction extends AdminbaseAction {
             require $this->fields . "fields.inc.php";
             //字段类型过滤
             foreach ($fields as $_k => $_v) {
-//                if (in_array($_k, $not_allow_fields) || in_array($_k, $exists_field) && in_array($_k, $unique_fields))
-//                    continue;
+                if (!in_array($_k, $this->banfie))
+                    continue;
                 $all_field[$_k] = $_v;
             }
-            //var_dump($all_field);exit;
             $this->assign("all_field", $all_field);
-            //附加属性
-            $this->assign("form_data", $form_data);
+            $this->assign("modelinfo", D("Model")->where(array("modelid" => $modelid))->find());
             $this->assign("modelid", $modelid);
+            $this->assign("data", $fieldData);
+            $this->assign("form_data", $form_data);
             $this->assign("fieldid", $fieldid);
-            $this->assign("setting", $setting);
-            //字段信息分配到模板
-            $this->assign("data", $fielddata);
-            $this->assign("modelinfo", $modedata);
-            $this->assign("show_header",false);
             $this->display();
         }
     }
@@ -170,105 +117,33 @@ class Member_modelfieldAction extends AdminbaseAction {
      */
     public function add() {
         if (IS_POST) {
-            //读取模型配置 以后优化缓存形式
-            $model_cache = F("Model_Member");
             //模型ID
-            $modelid = $this->_post("modelid");
-            //表名获取
-            $model_table = $model_cache[$modelid]['tablename'];
-            //完整表名获取
-            $tablename = C("DB_PREFIX") . $model_table ;
-            //所增加的字段名
-            $field = $_POST['field'];
-            //字符长度取值范围
-            $minlength = $_POST['minlength'] ? $_POST['minlength'] : 0;
-            $maxlength = $_POST['maxlength'] ? $_POST['maxlength'] : 0;
-            //字段类型
-            $fieldtype = $_POST['formtype'];
-            if (empty($fieldtype)) {
-                $this->error("请选择字段类型！");
+            $modelid = I('post.modelid', 0, 'intval');
+            $post = I('post.', '', '');
+            if (empty($post)) {
+                $this->error('数据不能为空！');
             }
-            //载入对应字段配置信息
-            $fiepath = $this->fields . $fieldtype . "/";
-            require($fiepath . "config.inc.php");
-
-            //根据字段设置临时更改字段类型，否则使用字段配置文件配置的类型
-            if (isset($_POST['setting']['fieldtype'])) {
-                $field_type = $_POST['setting']['fieldtype'];
-            }
-
-            //增加字段所需配置信息
-            $fieldarray = array(
-                "tablename" => $tablename,
-                "fieldname" => $field,
-                "maxlength" => $maxlength,
-                "minlength" => $minlength
-            );
-
-            $data['formtype'] = $fieldtype; //字段类型
-            $data['issystem'] = 0; //作为主表字段
-            $data['field'] = $field; //字段名
-            $data['name'] = $_POST['name']; //字段别名
-            $data['tips'] = $_POST['tips']; //字段提示
-            $data['formattribute'] = $_POST['formattribute']; //表单附加属性
-            $data['css'] = $_POST['css']; //表单样式名
-            $data['minlength'] = $minlength; //最小值
-            $data['maxlength'] = $maxlength; //最大值
-            $data['pattern'] = $_POST['pattern']; //数据校验正则
-            $data['errortips'] = $_POST['errortips']; //数据校验未通过的提示信息
-            $data['isunique'] = $_POST['isunique']?1:0; //值唯一
-            $data['isbase'] = 1; //作为基本信息
-            $data['issearch'] = 0; //作为搜索条件
-            $data['isadd'] = $_POST['isadd']?1:0; //在前台投稿中显示
-            $data['isfulltext'] = $_POST['isfulltext']?1:0; //作为全站搜索信息
-            $data['isomnipotent'] = $_POST['isomnipotent']?1:0; //作为万能字段的附属字段 1 是
-            $data['isposition'] = $_POST['isposition']?1:0; //是否入库到推荐位 1 是
-            $data['modelid'] = $modelid; //模型id
-            //附加属性值
-            $data['setting'] = serialize($_POST['setting']);
-            $data['unsetgroupids'] = isset($_POST['unsetgroupids']) ? implode(',', $_POST['unsetgroupids']) : '';
-            $data['unsetroleids'] = isset($_POST['unsetroleids']) ? implode(',', $_POST['unsetroleids']) : '';
-            //表单令牌
-            $data[C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
-            $cda = $this->modelfield->create($data);
-            if ($cda) {
-                //20120719 防止反斜杠丢失。
-                $cda['pattern'] = $_POST['pattern']; //数据校验正则
-                $addfieldstatus = $this->modelfield->addfield($field_type, $fieldarray);
-                if ($addfieldstatus) {
-                    if (!$this->modelfield->add($cda)) {
-                        $this->error("字段增加失败！");
-                    }
-                    $this->assign("jumpUrl", U("Member_modelfield/index", array("modelid" => $_POST['modelid'])));
-                    $this->success("添加字段成功！");
-                } else {
-                    $this->error("添加字段失败！");
-                }
+            if ($this->modelfield->addField($post)) {
+                $this->success("添加成功！", U("Member_modelfield/index", array("modelid" => $modelid)));
             } else {
-                $this->error($this->modelfield->getError());
+                $error = $this->modelfield->getError();
+                $this->error($error ? $error : '添加失败！');
             }
         } else {
             require $this->fields . "fields.inc.php";
-            $modelid = $this->_get("modelid");
-            if(!$modelid){
+            $modelid = I('get.modelid', 0, 'intval');
+            if (!$modelid) {
                 $this->error("请选择需要添加字段的模型！");
-            }
-            $f_datas = $this->modelfield->where(array("modelid" => $modelid))->getField("field,field,name");
-            foreach ($f_datas as $_k => $_v) {
-                $exists_field[] = $_v['field'];
             }
             //字段类型过滤
             foreach ($fields as $_k => $_v) {
-                if (in_array($_k, $not_allow_fields) || in_array($_k, $exists_field) && in_array($_k, $unique_fields) || !in_array($_k, $this->banfie))
+                if (!in_array($_k, $this->banfie))
                     continue;
                 $all_field[$_k] = $_v;
             }
             $this->assign("all_field", $all_field);
-            $modelid = $this->_get("modelid");
-            $model = D("Model")->where(array("modelid" => $modelid))->find();
-            $this->assign("modelinfo", $model);
+            $this->assign("modelinfo", D("Model")->where(array("modelid" => $modelid))->find());
             $this->assign("modelid", $modelid);
-            $this->assign("show_header",false);
             $this->display();
         }
     }
@@ -277,32 +152,16 @@ class Member_modelfieldAction extends AdminbaseAction {
      * 删除字段
      */
     public function delete() {
-        //载入字段配置文件
-        require $this->fields . "fields.inc.php";
-        $fieldid = $this->_get("fieldid");
-        $modelid = $this->_get("modelid");
-        $field = $this->modelfield->where(array("fieldid" => $fieldid, "modelid" => $modelid))->find();
-        if (empty($field)) {
-            $this->error("需要删除的字段不存在！");
+        //字段ID
+        $fieldid = I('get.fieldid', 0, 'intval');
+        if (empty($fieldid)) {
+            $this->error('字段ID不能为空！');
         }
-        //检查是否允许被删除
-        if (in_array($field['field'], $forbid_delete)) {
-            $this->error("该字段不允许被删除！");
-        }
-
-        $model = F("Model_Member");
-        $tbname = $model[$field['modelid']]['tablename'];
-        if(!$tbname){
-            $this->error("出现错误！请尝试更新缓存！");
-        }
-        //删除字段信息
-        $status = $this->modelfield->where(array("fieldid" => $fieldid, "modelid" => $modelid))->delete();
-        if ($status) {
-            //删除表中字段
-            $this->modelfield->drop_field($tbname, $field['field']);
+        if ($this->modelfield->deleteField($fieldid)) {
             $this->success("字段删除成功！");
         } else {
-            $this->error("删除字段失败！");
+            $error = $this->modelfield->getError();
+            $this->error($error ? $error : "删除字段失败！");
         }
     }
 
