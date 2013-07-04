@@ -30,6 +30,7 @@ include(SITEDIR . "/shuipf/Lib/Util/Dir.class.php");
 $Dir = new Dir(SITEDIR);
 //数据库
 $sqlFile = 'shuipfblog.sql';
+$sqlFileDemo = 'shuipfblog_demo.sql';
 $configFile = 'config.php';
 if (!file_exists(SITEDIR . 'install/' . $sqlFile) || !file_exists(SITEDIR . 'install/' . $configFile)) {
     echo '缺少必要的安装文件!';
@@ -156,6 +157,8 @@ switch ($step) {
             $seo_description = trim($_POST['siteinfo']);
             //关键词
             $seo_keywords = trim($_POST['keywords']);
+			//测试数据
+			$testdata = (int)$_POST['testdata'];
 
             $conn = @ mysql_connect($dbHost, $dbUser, $dbPwd);
             if (!$conn) {
@@ -189,6 +192,16 @@ switch ($step) {
 
             //读取数据文件
             $sqldata = file_get_contents(SITEDIR . 'install/' . $sqlFile);
+			//读取测试数据
+			if($testdata){
+				$sqldataDemo = file_get_contents(SITEDIR . 'install/' . $sqlFileDemo);
+				$sqldata = $sqldata."\r\n".$sqldataDemo;
+			}else{
+				//不加测试数据的时候，删除d目录的文件
+				try {
+					$Dir->delDir(SITEDIR . 'd/file/contents/');
+				} catch (Exception $exc) {}
+			}
             $sqlFormat = sql_split($sqldata, $dbPrefix);
 
 
@@ -256,7 +269,6 @@ switch ($step) {
             echo json_encode($arr);
             exit;
         }
-
         include_once ("./templates/s4.php");
         exit();
 

@@ -109,6 +109,11 @@
             <td><input type="text" name="manager_email" class="input" value=""></td>
             <td><div id="J_install_tip_manager_email"></div></td>
           </tr>
+		  <tr>
+            <td class="tar">测试数据：</td>
+            <td><input name="testdata" type="checkbox" value="1" checked/><span class="gray">默认测试数据，了解ShuipFCMS！</span></td>
+            <td><div id="J_install_tip_manager_email"></div></td>
+          </tr>
         </table>
         <div id="J_response_tips" style="display:none;"></div>
       </div>
