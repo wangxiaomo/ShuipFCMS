@@ -342,7 +342,7 @@ function dir_create($path) {
         return false;
     }
     if (is_dir($path)) {
-        $Dir->listFile($path, '/');
+        $Dir->listFile($path);
         $dir = $Dir->toArray();
         $dir = $dir[0];
     } else {
