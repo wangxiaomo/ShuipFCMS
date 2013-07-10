@@ -315,8 +315,12 @@ class ModelModel extends CommonModel {
      * @param type $type
      * @return type
      */
-    public function Cache($type) {
-        $data = $this->where(array("type" => $type, "disabled" => 0))->select();
+    public function Cache($type = null) {
+        $where = array("disabled" => 0);
+        if(!is_null($type)){
+            $where['type'] = $type;
+        }
+        $data = $this->where($where)->select();
         $Cache = array();
         foreach ($data as $v) {
             $Cache[$v['modelid']] = $v;
@@ -329,7 +333,7 @@ class ModelModel extends CommonModel {
      * @return boolean
      */
     public function model_cache() {
-        F("Model", $this->Cache(0));
+        F("Model", $this->Cache());
         D("Model_field")->model_field_cache();
         return true;
     }

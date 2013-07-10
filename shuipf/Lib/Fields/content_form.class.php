@@ -1,25 +1,46 @@
 <?php
 
 /**
- * 字段显示输入表单类
+ * 处理信息录入表单
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
 class content_form {
 
-    public $modelid, $fields, $id, $categorys, $catid, $formValidateRules, $formValidateMessages, $formJavascript;
+    //validate表单验证
+    public $formValidateRules, $formValidateMessages, $formJavascript;
+    //栏目ID
+    protected $catid = 0;
+    //栏目缓存
+    protected $categorys = array();
+    //模型ID
+    protected $modelid = 0;
+    //字段信息
+    protected $fields = array();
+    //模型缓存
+    protected $model = array();
+    //数据
+    protected $data = array();
+    //最近错误信息
+    protected $error = '';
+    // 数据表名（不包含表前缀）
+    protected $tablename = '';
 
     /**
      * 构造函数
      * @param type $modelid 模型ID
-     * @param type $catid 栏目ID
-     * @param type $categorys 栏目数据
+     * @param type $catid 栏目id
      */
-    function __construct($modelid, $catid = 0, $categorys = array()) {
+    function __construct($modelid,$catid) {
+        $this->model = F("Model");
         $this->modelid = $modelid;
+        if (empty($this->model[$this->modelid])) {
+            return false;
+        }
         $this->catid = $catid;
-        $this->categorys = $categorys;
-        $this->fields = F("Model_field_" . $modelid);
+        $this->categorys = F('Category');
+        $this->fields = F("Model_field_" . $this->modelid);
+        $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
 
     /**
@@ -28,48 +49,53 @@ class content_form {
      * @return type 
      */
     function get($data = array()) {
-        //信息ID
-        if (isset($data['id'])) {
-            $this->id = $data['id'];
-        }
         $this->data = $data;
         $info = array();
-
-        foreach ($this->fields as $field => $v) {
+        foreach ($this->fields as $field => $fieldInfo) {
             //判断是否后台
             if (defined('IN_ADMIN') && IN_ADMIN) {
                 //判断是否内部字段，如果是，跳过
-                if ($v['iscore']) {
+                if ($fieldInfo['iscore']) {
                     continue;
                 }
             } else {
                 //判断是否内部字段或者，是否禁止前台投稿字段
-                if ($v['iscore']) {
+                if ($fieldInfo['iscore']) {
                     continue;
                 }
-                if (!$v['isadd']) {
+                //是否在前台投稿中显示
+                if (!$fieldInfo['isadd']) {
                     continue;
                 }
             }
-            $func = $v['formtype'];
+            //字段类型
+            $func = $fieldInfo['formtype'];
+            //判断对应方法是否存在，不存在跳出本次循环
+            if (!method_exists($this, $func)) {
+                continue;
+            }
             $value = isset($data[$field]) ? Input::getVar($data[$field]) : '';
+            //如果是分页类型字段
             if ($func == 'pages' && isset($data['maxcharperpage'])) {
                 $value = $data['paginationtype'] . '|' . $data['maxcharperpage'];
             }
-            //判断对应方法是否存在，不存在跳出本次循环
-            if (!method_exists($this, $func)){
-                continue;
-            }
-            //传入参数 字段名 字段值 字段信息
-            $form = $this->$func($field, $value, $v);
+            //取得表单HTML代码 传入参数 字段名 字段值 字段信息
+            $form = $this->$func($field, $value, $fieldInfo);
             if ($form !== false) {
+                $star = $fieldInfo['minlength'] || $fieldInfo['pattern'] ? 1 : 0;
+                $fieldConfg = array(
+                    'name' => $fieldInfo['name'],
+                    'tips' => $fieldInfo['tips'],
+                    'form' => $form,
+                    'star' => $star,
+                    'isomnipotent' => $fieldInfo['isomnipotent'],
+                    'formtype' => $fieldInfo['formtype']
+                );
                 //作为基本信息
-                if ($v['isbase']) {
-                    $star = $v['minlength'] || $v['pattern'] ? 1 : 0;
-                    $info['base'][$field] = array('name' => $v['name'], 'tips' => $v['tips'], 'form' => $form, 'star' => $star, 'isomnipotent' => $v['isomnipotent'], 'formtype' => $v['formtype']);
+                if ($fieldInfo['isbase']) {
+                    $info['base'][$field] = $fieldConfg;
                 } else {
-                    $star = $v['minlength'] || $v['pattern'] ? 1 : 0;
-                    $info['senior'][$field] = array('name' => $v['name'], 'tips' => $v['tips'], 'form' => $form, 'star' => $star, 'isomnipotent' => $v['isomnipotent'], 'formtype' => $v['formtype']);
+                    $info['senior'][$field] = $fieldConfg;
                 }
             }
         }
@@ -77,6 +103,7 @@ class content_form {
         //配合 validate 插件，生成对应的js验证规则
         $this->formValidateRules = $this->ValidateRulesJson($this->formValidateRules);
         $this->formValidateMessages = $this->ValidateRulesJson($this->formValidateMessages, true);
+
         return $info;
     }
 
@@ -104,5 +131,5 @@ class content_form {
         return $formValidateRules;
     }
 
-
-}?>
+    ##{字段处理函数}##
+}

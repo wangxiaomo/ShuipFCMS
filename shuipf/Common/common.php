@@ -998,4 +998,24 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
     return $uploadUrl . $imgPathDir . $newFileName;
 }
 
+/**
+ * 检测一个数据长度是否超过最小值
+ * @param type $value 数据
+ * @param type $length 最小长度
+ * @return type 
+ */
+function isMin($value, $length) {
+    return mb_strlen($value, 'utf-8') >= (int) $length ? true : false;
+}
+
+/**
+ * 检测一个数据长度是否超过最大值
+ * @param type $value 数据
+ * @param type $length 最大长度
+ * @return type 
+ */
+function isMax($value, $length) {
+    return mb_strlen($value, 'utf-8') <= (int) $length ? true : false;
+}
+
 ?>

@@ -7,7 +7,14 @@
  */
 class ContentAction extends AdminbaseAction {
 
-    public $categorys, $Content, $table_name, $fbtable_name, $Model;
+    //栏目缓存
+    protected $categorys = array();
+    //模型缓存
+    protected $model = array();
+    //当前栏目ID
+    protected $catid = 0;
+    //内容数据模型
+    private $contentModel = null;
 
     function _initialize() {
         parent::_initialize();
@@ -15,116 +22,98 @@ class ContentAction extends AdminbaseAction {
         C('HTML_FILE_SUFFIX', "");
         //跳转时间
         $this->assign("waitSecond", 2000);
-
         $this->categorys = F("Category");
-        $this->Model = F("Model");
-        $catid = $this->_get("catid");
-        if (empty($catid)) {
-            $catid = $this->_post("catid");
-        }
+        $this->model = F("Model");
+        //栏目ID
+        $this->catid = I('request.catid', 0, 'intval');
         //所有的权限 都分为 add(添加) edit(编辑) delete(删除) index(默认操作) listorder(排序) remove(移动文章) push(推送)
         //权限判断  如果方法是以 public_开头的，也不验证权限
         $ADMIN_AUTH_KEY = session(C("ADMIN_AUTH_KEY"));
         //非超级管理员需要进行权限控制
-        if ($ADMIN_AUTH_KEY == "" || empty($ADMIN_AUTH_KEY) || $ADMIN_AUTH_KEY == false) {
+        if (empty($ADMIN_AUTH_KEY) || $ADMIN_AUTH_KEY == false) {
+            //如果是public_开头的方法通过验证
             if (strpos(ACTION_NAME, 'public_') === false && ACTION_NAME != "index") {
                 //操作
-                $action = $this->categorys[$catid]['type'] == 0 ? ACTION_NAME : 'init';
+                $action = $this->categorys[$this->catid]['type'] == 0 ? ACTION_NAME : 'init';
                 if ($action == "classlist") {
                     $action = "init";
                 }
-                $priv_datas = M("Category_priv")->where(array('catid' => $catid, 'is_admin' => 1, 'roleid' => session('roleid'), 'action' => $action))->select();
+                $priv_datas = M("Category_priv")->where(array('catid' => $this->catid, 'is_admin' => 1, 'roleid' => session('roleid'), 'action' => $action))->select();
                 if (!$priv_datas) {
-                    //载入标签类
                     $this->error("您没有操作该项的权限！");
                 }
             }
         }
         import('Form');
-        if (isset($_GET['catid']) && intval($_GET['catid']) && empty($this->Model[$this->categorys[$catid]['modelid']])) {
+        if (isset($_GET['catid']) && empty($this->model[$this->categorys[$this->catid]['modelid']])) {
             $this->error("模型或者栏目不存在！！");
         }
     }
 
+    //显示内容管理首页
     public function index() {
         $this->display();
     }
 
-    /**
-     * 显示对应栏目信息列表 
-     */
+    //显示对应栏目信息列表 
     public function classlist() {
-        $catid = $this->_get("catid");
-        $Categorys = $this->categorys[$catid];
-        $this->assign("Categorys", $Categorys);
+        $catInfo = $this->categorys[$this->catid];
         //是否搜索
         $search = $this->_get("search");
         $where = array();
-        $where["catid"] = array("EQ", $catid);
-        $Model = F("Model");
-        if (!empty($Categorys)) {
-            //取得主表名
-            $tablename = $Model[$Categorys['modelid']]['tablename'];
-            if (empty($tablename)) {
-                $this->error("模型不存在！");
-            }
+        $where["catid"] = array("EQ", $this->catid);
+        if (!empty($catInfo)) {
             //检查模型是否被禁用
-            if ($Model[$Categorys['modelid']]['disabled'] == 1) {
+            if ($this->model[$catInfo['modelid']]['disabled'] == 1) {
                 $this->error("模型被禁用！");
             }
-            $this->Content = new ContentModel(ucwords($tablename));
-            //检查表是否存在
-            if (!$this->Content->table_exists($tablename)) {
-                $this->error("数据表不存在！");
-            }
+            $this->contentModel = ContentModel::getInstance($catInfo['modelid']);
             //搜索相关开始
             if (!empty($search)) {
                 //添加开始时间
-                $start_time = $this->_get("start_time");
+                $start_time = I('get.start_time');
                 if (!empty($start_time)) {
                     $start_time = strtotime($start_time);
                     $where["inputtime"] = array("EGT", $start_time);
                 }
                 //添加结束时间
-                $end_time = $this->_get("end_time");
+                $end_time = I('get.end_time');
                 if (!empty($end_time)) {
                     $end_time = strtotime($end_time);
                     $where["inputtime"] = array("ELT", $end_time);
                 }
-
                 if ($end_time > 0 && $start_time > 0) {
                     $where['inputtime'] = array(array('EGT', $start_time), array('ELT', $end_time));
                 }
-
                 //推荐
-                $posids = $this->_get("posids");
+                $posids = I('get.posids', 0, 'intval');
                 if (!empty($posids)) {
                     $where["posid"] = array("EQ", $posids);
                 }
                 //搜索字段
-                $searchtype = (int) $this->_get("searchtype");
+                $searchtype = I('get.searchtype', null, 'intval');
                 //搜索关键字
-                $keyword = Input::getVar($this->_get("keyword"));
+                $keyword = Input::getVar(I('get.keyword'));
                 if (!empty($keyword)) {
                     $type_array = array('title', 'description', 'username');
                     if ($searchtype < 3) {
                         $searchtype = $type_array[$searchtype];
-                        $where[$searchtype] = array("LIKE", "%" . $keyword . "%");
+                        $where[$searchtype] = array("LIKE", "%{$keyword}%");
                     } elseif ($searchtype == 3) {
                         $where["id"] = array("EQ", (int) $keyword);
                     }
                 }
                 //状态
-                $status = (int) $this->_get('status');
+                $status = I('get.status', 0, 'intval');
                 if ($status > 0) {
                     $where['status'] = array("EQ", $status);
                 }
             }
 
             //信息总数
-            $count = $this->Content->where($where)->count();
+            $count = $this->contentModel->where($where)->count();
             $page = $this->page($count, 20);
-            $Content = $this->Content->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "DESC"))->select();
+            $data = $this->contentModel->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "DESC"))->select();
         } else {
             $this->error("该栏目不存在！");
         }
@@ -135,18 +124,15 @@ class ContentAction extends AdminbaseAction {
         $this->assign("posids", $posids);
         $this->assign("searchtype", $searchtype);
         $this->assign("keyword", $keyword);
-
-        $this->assign($Categorys);
+        $this->assign($catInfo);
         $this->assign("count", $count);
-        $this->assign("catid", $catid);
-        $this->assign("Content", $Content);
+        $this->assign("catid", $this->catid);
+        $this->assign("Content", $data);
         $this->assign("Page", $page->show('Admin'));
         $this->display();
     }
 
-    /**
-     * 添加信息 
-     */
+    //添加信息 
     public function add() {
         if (IS_POST) {
             //栏目ID
@@ -162,15 +148,15 @@ class ContentAction extends AdminbaseAction {
             //栏目类型为0
             if ($category['type'] == 0) {
                 //模型ID
-                $this->modelid = $modelid = $this->categorys[$catid]['modelid'];
+                $this->modelid = $this->categorys[$catid]['modelid'];
                 //检查模型是否被禁用
-                if ($this->Model[$modelid]['disabled'] == 1) {
+                if ($this->model[$this->modelid]['disabled'] == 1) {
                     $this->error("模型被禁用！");
                 }
                 //setting 配置
                 $setting = unserialize($category['setting']);
                 import('Content');
-                $Content = new Content();
+                $Content = get_instance_of('Content');
                 $status = $Content->add($_POST['info']);
                 if ($status) {
                     $this->success("添加成功！");
@@ -181,11 +167,10 @@ class ContentAction extends AdminbaseAction {
                 $this->error("该栏目类型无法发布！");
             }
         } else {
-            $catid = $this->_get("catid");
             //取得对应模型
-            $category = $this->categorys[$catid];
+            $category = $this->categorys[$this->catid];
             if (empty($category)) {
-                $this->error("参数错误！");
+                $this->error("该栏目不存在！");
             }
             //判断是否终极栏目
             if ($category['child']) {
@@ -194,13 +179,13 @@ class ContentAction extends AdminbaseAction {
             //模型ID
             $modelid = $category['modelid'];
             //检查模型是否被禁用
-            if ($this->Model[$modelid]['disabled'] == 1) {
-                $this->error("模型被禁用！");
+            if ($this->model[$modelid]['disabled'] == 1) {
+                $this->error("该模型已被禁用！");
             }
             //取模型ID，依模型ID来生成对应的表单
             require_cache(RUNTIME_PATH . 'content_form.class.php');
             //实例化表单类 传入 模型ID 栏目ID 栏目数组
-            $content_form = new content_form($modelid, $catid, $this->categorys);
+            $content_form = new content_form($modelid, $this->catid);
             //生成对应字段的输入表单
             $forminfos = $content_form->get();
             //生成对应的JS验证规则
@@ -211,13 +196,8 @@ class ContentAction extends AdminbaseAction {
             $formJavascript = $content_form->formJavascript;
             //取得当前栏目setting配置信息
             $setting = unserialize($category['setting']);
-
-            $workflowid = $setting['workflowid'];
-
-            //当前登陆用户名
-            $admin_username = AppframeAction::$Cache["username"];
             //var_dump($category);exit;
-            $this->assign("catid", $catid);
+            $this->assign("catid", $this->catid);
             $this->assign("uploadurl", CONFIG_SITEFILEURL);
             $this->assign("content_form", $content_form);
             $this->assign("forminfos", $forminfos);
@@ -225,64 +205,47 @@ class ContentAction extends AdminbaseAction {
             $this->assign("formValidateMessages", $formValidateMessages);
             $this->assign("formJavascript", $formJavascript);
             $this->assign("setting", $setting);
-            $this->assign("admin_username", $admin_username);
             $this->assign("category", $category);
-            $this->assign("workflowid", $workflowid);
             $this->display();
         }
     }
 
-    /**
-     * 编辑信息 
-     */
+    //编辑信息 
     public function edit() {
-        $catid = $this->_get("catid");
-        $catid = empty($catid) ? (int) $_POST['info']['catid'] : $catid;
-        $id = $this->_get("id");
-        $id = empty($id) ? $this->_post("id") : $id;
-
-        if (empty($catid) || empty($id)) {
-            $this->error("参数不完整！");
-        }
-        $Categorys = $this->categorys[$catid];
+        $this->catid = empty($this->catid) ? (int) $_POST['info']['catid'] : $this->catid;
+        //信息ID
+        $id = I('request.id', 0, 'intval');
+        $Categorys = $this->categorys[$this->catid];
         if (empty($Categorys)) {
             $this->error("该栏目不存在！");
         }
         //栏目setting配置
         $cat_setting = unserialize($Categorys['setting']);
-
-        //检查是否锁定
-        $this->locking($catid, $id);
-
-        $this->modelid = $modelid = $Categorys['modelid'];
-        //取得表名
-        $this->table_name = ucwords($this->Model[$Categorys['modelid']]['tablename']);
-        $this->fbtable_name = $this->table_name . "_data";
-        if (empty($this->table_name)) {
-            $this->error("模型不存在！");
-        }
+        //模型ID
+        $modelid = $Categorys['modelid'];
         //检查模型是否被禁用
-        if ($this->Model[$Categorys['modelid']]['disabled'] == 1) {
+        if ($this->model[$Categorys['modelid']]['disabled'] == 1) {
             $this->error("模型被禁用！");
+        }
+        $this->contentModel = ContentModel::getInstance($modelid);
+        //检查是否锁定
+        if (false === $this->contentModel->locking($this->catid, $id)) {
+            $this->error($this->contentModel->getError());
         }
 
         if (IS_POST) {
             if (trim($_POST['info']['title']) == '') {
                 $this->error("标题不能为空！");
             }
-
             import('Content');
-            $Content = new Content();
-
+            $Content = get_instance_of('Content');
             //取得原有文章信息
-            $data = M($this->table_name)->where(array("catid" => $catid, "id" => $id))->find();
-
+            $data = $this->contentModel->where(array("id" => $id))->find();
             //如果有自定义文件名，需要删除原来生成的静态文件
             if ($_POST['info']['prefix'] != $data['prefix'] && $cat_setting['content_ishtml']) {
                 //删除原来的生成的静态页面
-                $Content->deleteHtml($catid, $id, $data['inputtime'], $data['prefix']);
+                $Content->deleteHtml($this->catid, $id, $data['inputtime'], $data['prefix']);
             }
-
             $status = $Content->edit($_POST['info'], $id);
             if ($status) {
                 //解除信息锁定
@@ -292,30 +255,23 @@ class ContentAction extends AdminbaseAction {
                 $this->error($Content->getError());
             }
         } else {
-            $this->Content = new ContentModel($this->table_name);
             //取得数据，这里使用关联查询
-            $data = $this->Content->relation(true)->where(array("id" => $id))->find();
-            if (!$data) {
+            $data = $this->contentModel->relation(true)->where(array("id" => $id))->find();
+            if (empty($data)) {
                 $this->error("该信息不存在！");
             }
-
+            $this->contentModel->dataMerger($data);
             //锁定信息
             M("Locking")->add(array(
                 "userid" => AppframeAction::$Cache["uid"],
                 "username" => AppframeAction::$Cache["username"],
-                "catid" => $catid,
+                "catid" => $this->catid,
                 "id" => $id,
                 "locktime" => time()
             ));
-
-            //数据处理，把关联查询的结果集合并
-            $datafb = $data[$this->fbtable_name];
-            unset($data[$this->fbtable_name]);
-            $data = array_merge($data, $datafb);
-
             //引入输入表单处理类
             require_cache(RUNTIME_PATH . 'content_form.class.php');
-            $content_form = new content_form($modelid, $catid, $this->categorys);
+            $content_form = new content_form($modelid, $this->catid);
             //字段内容
             $forminfos = $content_form->get($data);
             //生成对应的JS验证规则
@@ -324,10 +280,9 @@ class ContentAction extends AdminbaseAction {
             $formValidateMessages = $content_form->formValidateMessages;
             //js
             $formJavascript = $content_form->formJavascript;
-
             $this->assign("category", $Categorys);
             $this->assign("data", $data);
-            $this->assign("catid", $catid);
+            $this->assign("catid", $this->catid);
             $this->assign("id", $id);
             $this->assign("uploadurl", CONFIG_SITEFILEURL);
             $this->assign("content_form", $content_form);
@@ -339,37 +294,47 @@ class ContentAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 删除 
-     */
+    //删除
     public function delete() {
         if (IS_POST) {
-            $catid = (int) $this->_get("catid");
-            if (!$catid) {
-                $this->error("缺少栏目ID！");
+            $this->catid = I('get.catid', 0, 'intval');
+            $Categorys = $this->categorys[$this->catid];
+            if (empty($Categorys)) {
+                $this->error("该栏目不存在！");
             }
+            //模型ID
+            $modelid = $Categorys['modelid'];
             if (empty($_POST['ids'])) {
                 $this->error("没有信息被选中！");
             }
+            $this->contentModel = ContentModel::getInstance($modelid);
             import('Content');
-            $Content = new Content();
+            $Content = get_instance_of('Content');
             foreach ($_POST['ids'] as $id) {
-                $Content->delete($id, $catid);
+                //检查是否锁定
+                if (false === $this->contentModel->locking($this->catid, $id)) {
+                    $this->error($this->contentModel->getError());
+                }
+                $Content->delete($id, $this->catid);
             }
             $this->success("删除成功！");
         } else {
-            $catid = (int) $this->_get("catid");
-            $id = (int) $this->_get("id");
-            if (!$catid) {
-                $this->error("缺少栏目ID！");
+            $this->catid = I('get.catid', 0, 'intval');
+            $id = I('get.id', 0, 'intval');
+            $Categorys = $this->categorys[$this->catid];
+            if (empty($Categorys)) {
+                $this->error("该栏目不存在！");
             }
-
+            //模型ID
+            $modelid = $Categorys['modelid'];
+            $this->contentModel = ContentModel::getInstance($modelid);
             //检查是否锁定
-            $this->locking($catid, $id);
-
+            if (false === $this->contentModel->locking($this->catid, $id)) {
+                $this->error($this->contentModel->getError());
+            }
             import('Content');
-            $Content = new Content();
-            if ($Content->delete($id, $catid)) {
+            $Content = get_instance_of('Content');
+            if ($Content->delete($id, $this->catid)) {
                 $this->success("删除成功！");
             } else {
                 $this->error("删除失败！");
@@ -377,28 +342,25 @@ class ContentAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 文章审核 
-     */
+    //文章审核
     public function public_check() {
-        $catid = $this->_get("catid");
         import('Content');
-        $Content = new Content();
+        $Content = get_instance_of('Content');
         if (IS_POST) {
             $ids = $_POST['ids'];
             if (!$ids) {
                 $this->error("没有信息被选中！");
             }
             foreach ($ids as $id) {
-                $Content->check($catid, $id, 99);
+                $Content->check($this->catid, $id, 99);
             }
             $this->success("审核成功！");
         } else {
-            $id = $this->_get("id");
+            $id = I('get.id', 0, 'intval');
             if (!$id) {
                 $this->error("没有信息被选中！");
             }
-            if ($Content->check($catid, $id, 99)) {
+            if ($Content->check($this->catid, $id, 99)) {
                 $this->success("审核成功！");
             } else {
                 $this->error("审核失败！");
@@ -406,28 +368,25 @@ class ContentAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 取消审核 
-     */
+    //取消审核
     public function public_nocheck() {
-        $catid = $this->_get("catid");
         import('Content');
-        $Content = new Content();
+        $Content = get_instance_of('Content');
         if (IS_POST) {
             $ids = $_POST['ids'];
             if (!$ids) {
                 $this->error("没有信息被选中！");
             }
             foreach ($ids as $id) {
-                $Content->check($catid, $id, 1);
+                $Content->check($this->catid, $id, 1);
             }
             $this->success("取消审核成功！");
         } else {
-            $id = $this->_get("id");
+            $id = I('get.id', 0, 'intval');
             if (!$id) {
                 $this->error("没有信息被选中！");
             }
-            if ($Content->check($catid, $id, 1)) {
+            if ($Content->check($this->catid, $id, 1)) {
                 $this->success("取消审核成功！");
             } else {
                 $this->error("取消审核失败！");
@@ -444,7 +403,7 @@ class ContentAction extends AdminbaseAction {
         if (is_array($listorders)) {
             $category = $this->categorys[$catid];
             $modelid = $category['modelid'];
-            $table_name = ucwords($this->Model[$modelid]['tablename']);
+            $table_name = ucwords($this->model[$modelid]['tablename']);
             $db = M($table_name);
             foreach ($listorders as $id => $v) {
                 $db->where(array("id" => $id))->save(array("listorder" => $v));
@@ -559,12 +518,12 @@ class ContentAction extends AdminbaseAction {
      */
 
     public function public_relationlist() {
-        $this->Model = F("Model");
+        $this->model = F("Model");
         if (!isset($_GET['modelid'])) {
             $this->error("缺少参数！");
         } else {
             $modelid = intval($_GET['modelid']);
-            $this->table_name = ucwords($this->Model[$modelid]['tablename']);
+            $this->table_name = ucwords($this->model[$modelid]['tablename']);
             $this->Content = M($this->table_name);
             $where = array();
             $catid = intval($_GET['catid']);
@@ -617,13 +576,13 @@ class ContentAction extends AdminbaseAction {
      */
     public function public_imagescrop() {
         $picurl = I('get.picurl');
-        $catid = I('get.catid',0,'intval');
-        if(!$catid){
+        $catid = I('get.catid', 0, 'intval');
+        if (!$catid) {
             $this->error('栏目不存在！');
         }
         $module = I('get.module');
-        if(!$module){
-            $module =  GROUP_NAME;
+        if (!$module) {
+            $module = GROUP_NAME;
         }
         $this->assign("picurl", $picurl);
         $this->assign("catid", $catid);
@@ -681,8 +640,8 @@ class ContentAction extends AdminbaseAction {
     public function public_getjson_ids() {
         $this->modelid = $this->_get("modelid");
         $id = $this->_get("id");
-        $this->Model = F("Model");
-        $this->table_name = $this->Model[$this->modelid]['tablename'];
+        $this->model = F("Model");
+        $this->table_name = $this->model[$this->modelid]['tablename'];
         if (empty($this->table_name)) {
             $this->ajaxReturn("", "", false);
             exit;
@@ -738,7 +697,7 @@ class ContentAction extends AdminbaseAction {
                             $this->error("该模型不存在！");
                         }
                         //表名
-                        $tablename = ucwords($this->Model[$modelid]['tablename']);
+                        $tablename = ucwords($this->model[$modelid]['tablename']);
                         $where = array();
                         if (!$ids) {
                             $this->error("请选择需要移动信息！");
@@ -771,7 +730,7 @@ class ContentAction extends AdminbaseAction {
                     if (!$modelid) {
                         $this->error("该模型不存在！");
                     }
-                    $tablename = ucwords($this->Model[$modelid]['tablename']);
+                    $tablename = ucwords($this->model[$modelid]['tablename']);
                     //进行栏目id更改
                     if (M($tablename)->where($where)->save(array("catid" => $tocatid))) {
                         //点击表
@@ -851,7 +810,7 @@ class ContentAction extends AdminbaseAction {
                     if ($posid && is_array($posid)) {
                         $position_data_db = D('Position');
                         $fields = F("Model_field_" . $modelid);
-                        $tablename = ucwords($this->Model[$modelid]['tablename']);
+                        $tablename = ucwords($this->model[$modelid]['tablename']);
                         if (!$tablename) {
                             $this->error("模型不能为空！");
                         }
@@ -906,7 +865,7 @@ class ContentAction extends AdminbaseAction {
                         if (count($relation) < 1) {
                             $this->error("请选择需要推送的栏目！");
                         }
-                        $tablename = ucwords($this->Model[$modelid]['tablename']);
+                        $tablename = ucwords($this->model[$modelid]['tablename']);
                         if (!$tablename) {
                             $this->error("模型不能为空！");
                         }
@@ -981,37 +940,6 @@ class ContentAction extends AdminbaseAction {
             $this->assign("catid", $catid);
         }
         $this->display();
-    }
-
-    /**
-     * 信息锁定
-     * @param type $catid 栏目ID
-     * @param type $id 信息ID
-     * @param type $userid 用户名ID
-     * @param type $username 用户名
-     * @return type
-     */
-    protected function locking($catid, $id, $userid = 0) {
-        $db = M("Locking");
-        $time = time();
-        //锁定有效时间
-        $Lock_the_effective_time = 300;
-        if ($userid == 0) {
-            $userid = AppframeAction::$Cache["uid"];
-        }
-        $where = array();
-        $where['catid'] = array("EQ", $catid);
-        $where['id'] = array("EQ", $id);
-        $where['locktime'] = array("EGT", $time - $Lock_the_effective_time);
-        $info = $db->where($where)->find();
-        if ($info && $info['userid'] != AppframeAction::$Cache["uid"]) {
-            $this->error("o(︶︿︶)o 唉，该信息已经被用户【<font color=\"red\">" . $info['username'] . "</font>】锁定~请稍后在修改！");
-        }
-        //删除失效的
-        $where = array();
-        $where['locktime'] = array("LT", $time - $Lock_the_effective_time);
-        $db->where($where)->delete();
-        return true;
     }
 
     /**

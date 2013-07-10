@@ -16,7 +16,7 @@ class Html extends BaseAction {
         import('Url');
         //栏目缓存
         $this->categorys = F("Category");
-        $this->url = new Url();
+        $this->url = get_instance_of('Url');
         $this->Model = F("Model");
         define('HTML', true);
         C('HTML_FILE_SUFFIX', "");
@@ -24,7 +24,6 @@ class Html extends BaseAction {
 
     /**
      * 生成内容页
-     * @param  $file 文件地址
      * @param  $data 数据
      * @param  $array_merge 是否合并
      * @param  $action 方法
@@ -35,8 +34,6 @@ class Html extends BaseAction {
         }
         //取得信息ID
         $id = $data['id'];
-        //通过rs获取原始值
-        $rs = $data;
         //栏目ID
         $catid = $data['catid'];
         //获取当前栏目数据
@@ -45,13 +42,6 @@ class Html extends BaseAction {
         $category['setting'] = unserialize($category['setting']);
         //模型ID
         $this->modelid = $category['modelid'];
-        //获取主表名
-        $this->table_name = $this->Model[$this->modelid]['tablename'];
-        //处理由于通过关联模型获取数据，会把副表字段内容归入下标为 表名_data ，重新组合
-        if (isset($data[ucwords($this->table_name) . "_data"]) && $array_merge == 0) {
-            $data = array_merge($data, $data[ucwords($this->table_name) . "_data"]);
-            unset($data[ucwords($this->table_name) . "_data"]);
-        }
         //分页方式
         if (isset($data['paginationtype'])) {
             //分页方式 
@@ -68,7 +58,7 @@ class Html extends BaseAction {
             $this->error("请更新缓存后再操作！");
         }
         require_cache(RUNTIME_PATH . 'content_output.class.php');
-        $content_output = new content_output($this->modelid, $catid, $this->categorys);
+        $content_output = new content_output($this->modelid);
         //获取字段类型处理以后的数据
         $output_data = $content_output->get($data);
         $output_data['id'] = $id;

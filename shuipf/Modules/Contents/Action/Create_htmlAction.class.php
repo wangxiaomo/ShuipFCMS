@@ -183,7 +183,7 @@ class Create_htmlAction extends AdminbaseAction {
         if (isset($_POST['dosubmit'])) {
             import('Html');
             extract($_POST, EXTR_SKIP);
-            $this->html = new Html();
+            $this->html = get_instance_of('Html');
             //模型ID
             $modelid = intval($_POST['modelid']);
             if ($modelid) {
@@ -415,7 +415,7 @@ class Create_htmlAction extends AdminbaseAction {
                 if (empty($table_name)) {
                     $this->error("模型不存在！");
                 }
-                $this->db = new ContentModel($table_name);
+                $this->db = ContentModel::getInstance($modelid);
 
                 //更新最新发布的X条信息
                 if ($type == 'lastinput') {
@@ -502,17 +502,13 @@ class Create_htmlAction extends AdminbaseAction {
                 }
 
                 $data = $this->db->relation(true)->where($where)->order(array("id" => $order))->limit($offset . "," . $pagesize)->select();
-                //副表名称
-                $tablename = $table_name . '_data';
 
                 foreach ($data as $r) {
                     //转向地址信息无需生成
                     if ($r['islink']) {
                         continue;
                     }
-                    $r2 = $r[$tablename];
-                    unset($r[$tablename]);
-                    $r = array_merge($r, $r2);
+                    $this->db->dataMerger($r);
                     $this->html->show($r, 1, 'edit');
                 }
 
@@ -574,7 +570,7 @@ class Create_htmlAction extends AdminbaseAction {
                 if (empty($table_name)) {
                     $this->error("模型不存在！");
                 }
-                $this->db = new ContentModel($table_name);
+                $this->db = ContentModel::getInstance($modelid);
 
                 $page = max(intval($page), 1);
                 $offset = $pagesize * ($page - 1);
@@ -599,9 +595,7 @@ class Create_htmlAction extends AdminbaseAction {
                 foreach ($data as $r) {
                     if ($r['islink'])
                         continue;
-                    $r2 = $r[$tablename];
-                    unset($r[$tablename]);
-                    $r = array_merge($r, $r2);
+                    $this->db->dataMerger($r);
                     $this->html->show($r, 1, 'edit');
                 }
 
@@ -673,12 +667,12 @@ class Create_htmlAction extends AdminbaseAction {
                 if (empty($table_name)) {
                     $this->error("模型不存在！");
                 }
-                $this->db = new ContentModel($table_name);
+                $this->db = ContentModel::getInstance($modelid);
                 if (empty($_POST['ids'])) {
                     $this->error("您没有勾选信息！");
                 }
                 import('Html');
-                $this->html = new Html();
+                $this->html = get_instance_of('Html');
                 $ids = implode(',', $_POST['ids']);
                 $where = array();
                 $where['catid'] = array("EQ", $catid);
@@ -686,6 +680,7 @@ class Create_htmlAction extends AdminbaseAction {
                 $where['status'] = array("EQ", 99);
                 $rs = $this->db->relation(true)->where($where)->select();
                 foreach ($rs as $r) {
+                    $this->db->dataMerger($r);
                     if ($r['islink'])
                         continue;
                     if ($r['status'] != 99)
@@ -710,18 +705,20 @@ class Create_htmlAction extends AdminbaseAction {
                 if (empty($table_name)) {
                     $this->error("模型不存在！");
                 }
-                $this->db = new ContentModel($table_name);
+                $this->db = ContentModel::getInstance($modelid);
                 if (empty($_GET['ids'])) {
                     $this->error("您没有勾选信息！");
                 }
                 import('Html');
-                $this->html = new Html();
+                $this->html = get_instance_of('Html');
                 $ids = (int) $_GET['ids'];
                 $where = array();
                 $where['catid'] = array("EQ", $catid);
                 $where['id'] = array("EQ", $ids);
                 $where['status'] = array("EQ", 99);
                 $r = $this->db->relation(true)->where($where)->find();
+                //数据处理，把关联查询的结果集合并
+                $this->db->dataMerger($r);
                 if ($r['status'] != 99) {
                     $this->error("该信息未审核！无需生成");
                 }

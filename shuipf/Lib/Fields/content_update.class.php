@@ -8,15 +8,32 @@
 
 class content_update {
 
-    public $modelid, $fields, $data, $id, $catid;
-    //错误提示
-    public $error;
+    //信息ID
+    protected $id = 0;
+    //栏目ID
+    protected $catid = 0;
+    //模型ID
+    protected $modelid = 0;
+    //字段信息
+    protected $fields = array();
+    //模型缓存
+    protected $model = array();
+    //数据
+    protected $data = array();
+    //最近错误信息
+    protected $error = '';
+    // 数据表名（不包含表前缀）
+    protected $tablename = '';
 
-    function __construct($modelid, $id) {
+    function __construct($modelid) {
+        $this->model = F("Model");
         $this->modelid = $modelid;
-        $this->fields = F("Model_field_" . $modelid);
-        $this->id = $id;
-        load("@.treatfun");
+        if (empty($this->model[$this->modelid])) {
+            $this->error('该模型不存在！');
+            return false;
+        }
+        $this->fields = F("Model_field_" . $this->modelid);
+        $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
 
     /**
@@ -26,19 +43,24 @@ class content_update {
     function update($data) {
         $info = array();
         $this->data = $data;
-        $catid = $this->catid = (int) $data['catid'];
-        foreach ($data as $field => $value) {
-            if (!isset($this->fields[$field])) {
+        $this->id = (int) $data['id'];
+        $this->catid = (int) $data['catid'];
+        foreach ($this->fields as $field => $fieldInfo) {
+            if (empty($fieldInfo)) {
                 continue;
             }
-            $func = $this->fields[$field]['formtype'];
+            if(!isset($data[$field])){
+                continue;
+            }
+            //字段类型
+            $func = $fieldInfo['formtype'];
             //配置
-            $setting = unserialize($this->fields[$field]['setting']);
-
-            $value = method_exists($this, $func) ? $this->$func($field, $value) : $value;
-
+            $setting = unserialize($fieldInfo['setting']);
+            //字段值
+            $value = method_exists($this, $func) ? $this->$func($field, $data[$field]) : $data[$field];
             //字段扩展，可以对字段内容进行再次处理，类似ECMS字段处理函数
             if ($setting['backstagefun'] || $setting['frontfun']) {
+                load("@.treatfun");
                 $backstagefun = explode("###", $setting['backstagefun']);
                 $usfun = $backstagefun[0];
                 $usparam = $backstagefun[1];
@@ -82,10 +104,8 @@ class content_update {
                     }
                 }
             }
-
             $info[$field] = $value;
         }
-        
         return $info;
     }
 
@@ -106,4 +126,5 @@ class content_update {
         return $this->error;
     }
 
-}?>
+    ##{字段处理函数}##
+}

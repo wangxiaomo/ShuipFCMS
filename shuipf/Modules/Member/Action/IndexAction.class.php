@@ -130,9 +130,9 @@ class IndexAction extends MemberbaseAction {
                     $Member->where(array("userid" => AppframeAction::$Cache['uid']))->save(array("nickname" => $data['nickname']));
                 }
                 $modelid = AppframeAction::$Cache['User']['modelid'];
-                require RUNTIME_PATH . 'content_input.class.php';
-                $content_input = new content_input($modelid, $this);
-                $inputinfo = $content_input->get($_POST['info']);
+                require_cache(RUNTIME_PATH . 'content_input.class.php');
+                $content_input = new content_input($modelid);
+                $inputinfo = $content_input->get($_POST['info']);print_r(ContentModel::getInstance($modelid)->where(array('userid'=>1))->find());exit;
                 //取得模型内容
                 $modedata = $inputinfo['model'];
                 $Model_Member = F("Model_Member");
