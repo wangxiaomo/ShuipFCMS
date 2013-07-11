@@ -139,6 +139,8 @@ class Content {
         $oldata['url'] = $data['url'] = $urls['url'];
         //更新url
         $this->contentModel->token(false)->where(array('id' => $id))->save(array('url' => $data['url']));
+        //字段合并
+        $this->contentModel->dataMerger($data);
         //添加点击统计
         $this->hits_db = M("Hits");
         $hitsid = 'c-' . $data['catid'] . '-' . $id;
@@ -343,6 +345,8 @@ class Content {
             $this->contentModel->tokenRecovery($data);
             return false;
         }
+        //字段合并
+        $this->contentModel->dataMerger($data);
         $oldata['inputtime'] = $data['inputtime'] = $inputtime;
         //调用 update
         require_cache(RUNTIME_PATH . 'content_update.class.php');
