@@ -130,18 +130,20 @@ class IndexAction extends MemberbaseAction {
                     $Member->where(array("userid" => AppframeAction::$Cache['uid']))->save(array("nickname" => $data['nickname']));
                 }
                 $modelid = AppframeAction::$Cache['User']['modelid'];
+                $info = I('post.info');
                 require_cache(RUNTIME_PATH . 'content_input.class.php');
                 $content_input = new content_input($modelid);
-                $inputinfo = $content_input->get($_POST['info']);print_r(ContentModel::getInstance($modelid)->where(array('userid'=>1))->find());exit;
-                //取得模型内容
-                $modedata = $inputinfo['model'];
-                $Model_Member = F("Model_Member");
-                $tablename = $Model_Member[$modelid]['tablename'];
-                $modedata = array_merge($modedata, array(
-                    "userid" => AppframeAction::$Cache['uid']
-                        ));
-                M(ucwords($tablename))->save($modedata);
-                $this->success("更新成功！", U("Index/account_manage_info"));
+                $info = $content_input->get($info,2);
+                $info = ContentModel::getInstance($modelid)->relation(false)->create($info, 2);
+                if(false == $info){
+                    $this->error(ContentModel::getInstance($modelid)->getError());
+                }
+                $status = ContentModel::getInstance($modelid)->where(array("userid" => AppframeAction::$Cache['uid']))->save($info);
+                if(false !== $status){
+                    $this->success("更新成功！", U("Index/account_manage_info"));
+                }else{
+                    $this->error('更新失败！');
+                }
             } else {
                 $this->error($Member->getError());
             }
@@ -250,18 +252,18 @@ class IndexAction extends MemberbaseAction {
             $data = $Member->create();
             if ($data) {
                 //模型选择,如果是关闭模型选择，直接赋值默认模型
-                if( (int)$this->Member_config['choosemodel'] ){
-                    if(!isset($data['modelid']) || empty($data['modelid'])){
-                        $data['modelid'] = (int)$this->Member_config['defaultmodelid'];
-                    }else{
+                if ((int) $this->Member_config['choosemodel']) {
+                    if (!isset($data['modelid']) || empty($data['modelid'])) {
+                        $data['modelid'] = (int) $this->Member_config['defaultmodelid'];
+                    } else {
                         //检查模型id是否合法
                         $Model_Member = F("Model_Member");
-                        if(!isset($Model_Member[$data['modelid']])){
-                            $data['modelid'] = (int)$this->Member_config['defaultmodelid'];
+                        if (!isset($Model_Member[$data['modelid']])) {
+                            $data['modelid'] = (int) $this->Member_config['defaultmodelid'];
                         }
                     }
-                }else{
-                    $data['modelid'] = (int)$this->Member_config['defaultmodelid'];
+                } else {
+                    $data['modelid'] = (int) $this->Member_config['defaultmodelid'];
                 }
                 //新会员注册需要邮件验证
                 if ($this->Member_config['enablemailcheck']) {
@@ -275,7 +277,19 @@ class IndexAction extends MemberbaseAction {
                         $data['checked'] = 1;
                     }
                 }
-                $data = array_merge($_POST, $data);
+                $info = I('post.info');
+                $modelid = I('post.modelid',0,'intval');
+                if(empty($modelid)){
+                    $this->error('请选择会员模型！');
+                }
+                require_cache(RUNTIME_PATH . 'content_input.class.php');
+                $content_input = new content_input($modelid);
+                $info = $content_input->get($info);
+                $info = ContentModel::getInstance($modelid)->relation(false)->create($info, 1);
+                if(false == $info){
+                    $this->error(ContentModel::getInstance($modelid)->getError());
+                }
+                $data = array_merge($data, array('info' => $info));
                 $status = $this->registeradd($username, $password, $email, $data);
                 if ($status > 0) {
                     if ($this->Member_config['enablemailcheck']) {
@@ -598,11 +612,11 @@ class IndexAction extends MemberbaseAction {
         if (!$username || !$password) {
             $this->error("请填写用户名或者密码！");
         }
-        
+
         //登陆是否开启验证码验证 0为关闭 1为开启
-        $openverification = (int)$this->Member_config['openverification'];
-        
-        if ($openverification && !$this->verify($code,"userlogin")) {
+        $openverification = (int) $this->Member_config['openverification'];
+
+        if ($openverification && !$this->verify($code, "userlogin")) {
             $this->error("验证码错误，请重新输入！");
         }
         $Member = M("Member");
@@ -615,7 +629,7 @@ class IndexAction extends MemberbaseAction {
                 $this->error("该帐号还未审核通过，暂无法登陆！");
             }
             $forward = $_REQUEST['forward'] ? $_REQUEST['forward'] : cookie("forward");
-            cookie("forward",null);
+            cookie("forward", null);
             $this->success("登陆成功！", $forward ? $forward : U("Member/Index/index"));
         } else {
             $this->error("用户名或者密码错误，登陆失败！", U("Index/login"));

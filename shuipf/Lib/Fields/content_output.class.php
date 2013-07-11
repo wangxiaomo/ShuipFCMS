@@ -33,14 +33,14 @@ class content_output {
         $this->fields = F("Model_field_" . $this->modelid);
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
-    
+
     /**
      * 魔术方法，获取配置
      * @param type $name
      * @return type
      */
     public function __get($name) {
-        return isset($this->data[$name]) ? $this->data[$name] : NULL;
+        return isset($this->data[$name]) ? $this->data[$name] : (isset($this->$name) ? $this->$name : NULL);
     }
 
     /**
@@ -63,13 +63,13 @@ class content_output {
         $this->id = $data['id'];
         $info = array();
         foreach ($this->fields as $field => $fieldInfo) {
-            if (!isset($data[$field])) {
+            if (!isset($this->data[$field])) {
                 continue;
             }
             //字段类型
             $func = $fieldInfo['formtype'];
             //字段内容
-            $value = $data[$field];
+            $value = $this->data[$field];
             $result = method_exists($this, $func) ? $this->$func($field, $value) : $value;
             if ($result !== false) {
                 $info[$field] = $result;

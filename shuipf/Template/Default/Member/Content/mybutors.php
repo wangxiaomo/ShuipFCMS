@@ -77,6 +77,7 @@
 	</div>
   <div class="clear"></div>
 </div>
+<script src="{$config_siteurl}statics/js/common.js"></script>
 <script type="text/javascript"> 
 function confirmurl(url,message) {
 	if(confirm(message)) redirect(url);

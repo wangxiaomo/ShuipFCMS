@@ -44,7 +44,7 @@ class content_input {
      * @return type
      */
     public function __get($name) {
-        return isset($this->data[$name]) ? $this->data[$name] : NULL;
+        return isset($this->data[$name]) ? $this->data[$name] : (isset($this->$name) ? $this->$name : NULL);
     }
 
     /**
@@ -73,12 +73,12 @@ class content_input {
         foreach ($this->fields as $field => $fieldInfo) {
             //如果是更新状态下，没有数据的，跳过
             if ($type == 2) {
-                if (!isset($data[$field])) {
+                if (!isset($this->data[$field])) {
                     continue;
                 }
             }
             //字段内容
-            $value = $data[$field];
+            $value = $this->data[$field];
             //字段别名
             $name = $fieldInfo['name'];
             //最小值

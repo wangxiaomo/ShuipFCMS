@@ -78,7 +78,7 @@ class IndexAction extends BaseAction {
         $content_form = new content_form($modelid);
         //生成对应字段的输入表单
         $forminfos = $content_form->get();
-        $forminfos = $forminfos['base'];
+        $forminfos = $forminfos['senior'];
         //生成对应的JS提示等
         $formValidator = $content_form->formValidator;
 
@@ -110,11 +110,7 @@ class IndexAction extends BaseAction {
             if (!$moinfo) {
                 $this->error("该表单不存在或者已经关闭！");
             }
-
-            $tablename = M('Model')->where(array("modelid" => $formid))->getField("tablename");
-            $tablename = ucwords($tablename);
-            $db = M($tablename);
-
+            $db = ContentModel::getInstance($modelid)->relation(false);
             $setting = unserialize($moinfo['setting']);
             $time = time();
             //时间判断
@@ -147,22 +143,21 @@ class IndexAction extends BaseAction {
             }
 
             $info = array_merge($_POST['info'], array(C("TOKEN_NAME") => $_POST[C("TOKEN_NAME")]));
-            //关闭表单验证
-            C('TOKEN_ON', false);
-            $data = $db->create($info);
+            require_cache(RUNTIME_PATH . 'content_input.class.php');
+            require_cache(RUNTIME_PATH . 'content_update.class.php');
+            $content_input = new content_input($modelid);
+            $inputinfo = $content_input->get($info);
+            if(false == $inputinfo){
+                $this->error($content_input->getError());
+            }
+            $inputinfo = $db->create($inputinfo,1);
+            if(false == $inputinfo){
+                $this->error($db->getError());
+            }
 
-            if ($data) {
-                require_cache(RUNTIME_PATH . 'content_input.class.php');
-                require_cache(RUNTIME_PATH . 'content_update.class.php');
-                $content_input = new content_input($modelid);
-                $inputinfo = $content_input->get($data);
-                //检查数据是否有问题！
-                if (is_bool($inputinfo) && $inputinfo == false) {
-                    $this->error($content_input->error);
-                }
-
+            if ($inputinfo) {
                 //主表字段内容
-                $systeminfo = $inputinfo['system'];
+                $systeminfo = $inputinfo;
                 //增加一些系统必要字段
                 $uid = AppframeAction::$Cache['uid'];
                 $username = AppframeAction::$Cache['username'];

@@ -18,10 +18,7 @@ class Member_modelfieldAction extends AdminbaseAction {
         $this->banfie = array("text", "textarea", "box", "number", "datetime", "map", "omnipotent");
     }
 
-    /*
-     * 显示字段列表
-     */
-
+    //显示字段列表
     public function index() {
         $modelid = I('get.modelid', 0, 'intval');
         //载入字段配置文件
@@ -46,10 +43,7 @@ class Member_modelfieldAction extends AdminbaseAction {
         $this->display();
     }
 
-    /*
-     * 编辑字段
-     */
-
+    //编辑字段
     public function edit() {
         //模型ID
         $modelid = I('request.modelid', 0, 'intval');
@@ -66,6 +60,7 @@ class Member_modelfieldAction extends AdminbaseAction {
             if (empty($post)) {
                 $this->error('数据不能为空！');
             }
+            $post['issystem'] = 1;
             if ($this->modelfield->editField($post, $fieldid)) {
                 $this->success("更新成功！", U("Member_modelfield/index", array("modelid" => $modelid)));
             } else {
@@ -123,6 +118,7 @@ class Member_modelfieldAction extends AdminbaseAction {
             if (empty($post)) {
                 $this->error('数据不能为空！');
             }
+            $post['issystem'] = 1;
             if ($this->modelfield->addField($post)) {
                 $this->success("添加成功！", U("Member_modelfield/index", array("modelid" => $modelid)));
             } else {

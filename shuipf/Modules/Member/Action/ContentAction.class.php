@@ -207,21 +207,16 @@ class ContentAction extends MemberbaseAction {
                 $this->error($Content->getError());
             }
         } else {
-            $this->table_name = ucwords($this->Model[$Categorys['modelid']]['tablename']);
-            $this->fbtable_name = $this->table_name . "_data";
-            $this->Content = new ContentModel($this->table_name);
+            $this->Content = ContentModel::getInstance($modelid);
             //取得数据，这里使用关联查询
             $data = $this->Content->relation(true)->where(array("id" => $id))->find();
             if (!$data) {
                 $this->error("该信息不存在！");
             }
-            //数据处理，把关联查询的结果集合并
-            $datafb = $data[$this->fbtable_name];
-            unset($data[$this->fbtable_name]);
-            $data = array_merge($data, $datafb);
+            $this->Content->dataMerger($data);
             //引入输入表单处理类
             require_cache(RUNTIME_PATH . 'content_form.class.php');
-            $content_form = new content_form($modelid, $catid, $this->categorys);
+            $content_form = new content_form($modelid, $catid);
             //字段内容
             $forminfos = $content_form->get($data);
             $forminfos = array_merge($forminfos['base'], $forminfos['senior']);

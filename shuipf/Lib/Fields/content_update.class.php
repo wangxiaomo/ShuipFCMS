@@ -42,7 +42,7 @@ class content_update {
      * @return type
      */
     public function __get($name) {
-        return isset($this->data[$name]) ? $this->data[$name] : NULL;
+        return isset($this->data[$name]) ? $this->data[$name] : (isset($this->$name) ? $this->$name : NULL);
     }
 
     /**
@@ -67,7 +67,7 @@ class content_update {
             if (empty($fieldInfo)) {
                 continue;
             }
-            if(!isset($data[$field])){
+            if(!isset($this->data[$field])){
                 continue;
             }
             //字段类型
@@ -75,7 +75,7 @@ class content_update {
             //配置
             $setting = unserialize($fieldInfo['setting']);
             //字段值
-            $value = method_exists($this, $func) ? $this->$func($field, $data[$field]) : $data[$field];
+            $value = method_exists($this, $func) ? $this->$func($field, $this->data[$field]) : $this->data[$field];
             //字段扩展，可以对字段内容进行再次处理，类似ECMS字段处理函数
             if ($setting['backstagefun'] || $setting['frontfun']) {
                 load("@.treatfun");

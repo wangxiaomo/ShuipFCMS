@@ -49,7 +49,7 @@ class content_form {
      * @return type
      */
     public function __get($name) {
-        return isset($this->data[$name]) ? $this->data[$name] : NULL;
+        return isset($this->data[$name]) ? $this->data[$name] : (isset($this->$name) ? $this->$name : NULL);
     }
 
     /**
@@ -92,10 +92,10 @@ class content_form {
             if (!method_exists($this, $func)) {
                 continue;
             }
-            $value = isset($data[$field]) ? Input::getVar($data[$field]) : '';
+            $value = isset($this->data[$field]) ? Input::getVar($this->data[$field]) : '';
             //如果是分页类型字段
-            if ($func == 'pages' && isset($data['maxcharperpage'])) {
-                $value = $data['paginationtype'] . '|' . $data['maxcharperpage'];
+            if ($func == 'pages' && isset($this->data['maxcharperpage'])) {
+                $value = $this->data['paginationtype'] . '|' . $this->data['maxcharperpage'];
             }
             //取得表单HTML代码 传入参数 字段名 字段值 字段信息
             $form = $this->$func($field, $value, $fieldInfo);

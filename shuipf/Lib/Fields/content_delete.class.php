@@ -40,7 +40,7 @@ class content_delete {
      * @return type
      */
     public function __get($name) {
-        return isset($this->data[$name]) ? $this->data[$name] : NULL;
+        return isset($this->data[$name]) ? $this->data[$name] : (isset($this->$name) ? $this->$name : NULL);
     }
 
     /**
@@ -64,11 +64,11 @@ class content_delete {
         foreach ($this->fields as $field => $fieldInfo) {
             //字段类型
             $func = $fieldInfo['formtype'];
-            if (!$func || !isset($data[$field])) {
+            if (!$func || !isset($this->data[$field])) {
                 continue;
             }
             //字段内容
-            $value = $data[$field];
+            $value = $this->data[$field];
             if (method_exists($this, $func)) {
                 $this->$func($field, $value);
             }

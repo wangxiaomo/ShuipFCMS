@@ -129,14 +129,7 @@ class MemberbaseAction extends BaseAction {
         if (!$modelid || !$Model_Member[$modelid]) {
             return -7;
         }
-        require_cache(RUNTIME_PATH . 'content_input.class.php');
-        $content_input = new content_input($modelid, $this);
-        $inputinfo = $content_input->get($_data['info']);
-        //取得模型内容
-        $modedata = $inputinfo['model'];
-        if (!$modedata) {
-            $modedata = array();
-        }
+        $inputinfo = $_data['info'];
         //新注册用户积分
         $_data['point'] = $this->Member_config['defualtpoint'] ? $this->Member_config['defualtpoint'] : 0;
         //新会员注册默认赠送资金
@@ -147,14 +140,9 @@ class MemberbaseAction extends BaseAction {
         $userid = service("Passport")->user_register($username, $password, $email, $_data);
 
         if ($userid > 0) {
-            //添加到相应模型
-            $Model_Member = F("Model_Member");
-            $tablename = $Model_Member[$modelid]['tablename'];
-            $modedata = array_merge($modedata, array(
-                "userid" => $userid
-            ));
+            $inputinfo['userid'] = $userid;
             //补充相应模型资料
-            $status = M(ucwords($tablename))->add($modedata);
+            $status = ContentModel::getInstance($modelid)->relation(false)->add($inputinfo);
             if ($status) {
                 return $userid;
             } else {
