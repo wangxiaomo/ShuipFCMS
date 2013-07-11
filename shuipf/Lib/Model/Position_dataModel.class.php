@@ -21,27 +21,15 @@ class Position_dataModel extends CommonModel {
         if (!is_array($data)) {
             return false;
         }
-        if(!$data['posid'] || !$data['modelid'] || !$data['id']){
+        if (!$data['posid'] || !$data['modelid'] || !$data['id']) {
             return false;
         }
         //载入数据处理类
-        if (require_cache(RUNTIME_PATH . 'content_input.class.php') == false) {
-            return false;
-        }
-
+        require_cache(RUNTIME_PATH . 'content_input.class.php');
         $content_input = new content_input($data['modelid']);
-        //数据处理
-        foreach ($data['data'] as $field => $value) {
-            //字段类型
-            $func = $content_input->fields[$field]['formtype'];
-            if (method_exists($content_input, $func)){
-                $data['data'][$field] = $content_input->$func($field, $value);
-            }else{
-                $data['data'][$field] = $value;
-            }
-        }
+        $data['data'] = $content_input->get($data['data'], 2);
         $data['data'] = serialize($data['data']);
-        if($this->save($data) !== false){
+        if ($this->save($data) !== false) {
             service("Attachment")->api_update('', 'position-' . $data['modelid'] . '-' . $data['id'], 1);
             return true;
         }
@@ -61,7 +49,7 @@ class Position_dataModel extends CommonModel {
         $sql['id'] = $id;
         $sql['modelid'] = $modelid;
         $sql['posid'] = intval($posid);
-        if($this->where($sql)->delete() !== false){
+        if ($this->where($sql)->delete() !== false) {
             $this->content_pos($id, $modelid);
         }
         //删除相关联的附件
@@ -81,18 +69,18 @@ class Position_dataModel extends CommonModel {
         $tablename = ucwords($MODEL[$modelid]['tablename']);
         $db = M($tablename);
         $info = $this->where(array('id' => $id, 'modelid' => $modelid))->find();
-        if($info){
+        if ($info) {
             $posids = 1;
-        }else{
+        } else {
             $posids = 0;
         }
         //更改文章推荐位状态
         $status = $db->where(array('id' => $id))->save(array('posid' => $posids));
-        if( false !== $status && $status > 0){
+        if (false !== $status && $status > 0) {
             return true;
-        }else{
+        } else {
             //有可能副表
-            return M($tablename."_data")->where(array('id' => $id))->save(array('posid' => $posids));
+            return M($tablename . "_data")->where(array('id' => $id))->save(array('posid' => $posids));
         }
     }
 

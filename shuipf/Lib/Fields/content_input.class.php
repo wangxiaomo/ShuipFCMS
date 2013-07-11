@@ -37,6 +37,24 @@ class content_input {
         $this->fields = F("Model_field_" . $this->modelid);
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
+    
+    /**
+     * 魔术方法，获取配置
+     * @param type $name
+     * @return type
+     */
+    public function __get($name) {
+        return isset($this->data[$name]) ? $this->data[$name] : NULL;
+    }
+
+    /**
+     *  魔术方法，设置options参数
+     * @param type $name
+     * @param type $value
+     */
+    public function __set($name, $value) {
+        $this->data[$name] = $value;
+    }
 
     /**
      * 数据入库前处理

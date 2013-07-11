@@ -24,7 +24,6 @@ class PositionAction extends AdminbaseAction {
      * 信息管理 
      */
     public function public_item() {
-
         if (IS_POST) {
             $items = count($_POST['items']) > 0 ? $_POST['items'] : $this->error("没有信息被选择！");
             $db = D("Position_data");

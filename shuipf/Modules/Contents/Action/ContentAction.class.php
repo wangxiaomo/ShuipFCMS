@@ -244,7 +244,7 @@ class ContentAction extends AdminbaseAction {
             //如果有自定义文件名，需要删除原来生成的静态文件
             if ($_POST['info']['prefix'] != $data['prefix'] && $cat_setting['content_ishtml']) {
                 //删除原来的生成的静态页面
-                $Content->deleteHtml($this->catid, $id, $data['inputtime'], $data['prefix']);
+                $Content->deleteHtml($this->catid, $id, $data['inputtime'], $data['prefix'], $data);
             }
             $status = $Content->edit($_POST['info'], $id);
             if ($status) {
@@ -394,51 +394,24 @@ class ContentAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 排序 
-     */
+    //排序
     public function listorder() {
         $listorders = $_POST['listorders'];
-        $catid = $this->_get("catid");
         if (is_array($listorders)) {
-            $category = $this->categorys[$catid];
+            $category = $this->categorys[$this->catid];
             $modelid = $category['modelid'];
             $table_name = ucwords($this->model[$modelid]['tablename']);
             $db = M($table_name);
             foreach ($listorders as $id => $v) {
                 $db->where(array("id" => $id))->save(array("listorder" => $v));
             }
-            $this->success("更新成功！", U("Contents/Content/classlist", "catid=$catid"));
+            $this->success("更新成功！", U("Contents/Content/classlist", array('catid' => $this->catid)));
         } else {
             $this->error("参数错误！");
         }
     }
 
-    /**
-     * 快速进入搜索
-     */
-    public function public_ajax_search() {
-        if ($_GET['catname']) {
-            if (preg_match('/([a-z]+)/i', $_GET['catname'])) {
-                $field = 'letter';
-                $catname = strtolower(trim($_GET['catname']));
-            } else {
-                $field = 'catname';
-                $catname = trim($_GET['catname']);
-            }
-            $where = array();
-            $where[$field] = array("LIKE", $catname . "%");
-            $where['child'] = array("EQ", 0);
-            $Category = M("Category");
-            $data = $Category->where($where)->limit(10)->getField("catid,catid,type,catname,letter");
-
-            echo json_encode($data);
-        }
-    }
-
-    /**
-     * 显示栏目菜单列表 
-     */
+    //显示栏目菜单列表 
     public function public_categorys() {
         //管理员uid
         $uid = AppframeAction::$Cache['uid'];
@@ -492,19 +465,19 @@ class ContentAction extends AdminbaseAction {
     }
 
     /**
-     * 检测标题是否存在 
+     * 检测标题是否存在
+     * @param type $title 标题
+     * @param type $catid 栏目
+     * @return boolean
      */
     public function public_check_title($title = "", $catid = "") {
-        $title = $title == "" ? $this->_get('data') : $title;
-        $catid = $catid == "" ? $this->_get('catid') : $catid;
+        $title = empty($title) ? I('get.data') : $title;
+        $catid = empty($catid) ? $this->catid : $catid;
         if (empty($title)) {
             $this->ajaxReturn("", "标题没有重复！", true);
-            exit;
+            return false;
         }
-        $Cat = F("Category");
-        $Model = F("Model");
-        $tablename = ucwords($Model[$Cat[$catid]['modelid']]['tablename']);
-        unset($Cat, $Model);
+        $tablename = ucwords($this->model[$this->categorys[$catid]['modelid']]['tablename']);
         $count = M($tablename)->where(array("title" => $title))->count();
         if ($count > 0) {
             $this->ajaxReturn("", "标题有重复！", false);
@@ -513,26 +486,20 @@ class ContentAction extends AdminbaseAction {
         }
     }
 
-    /*
-     *  相关文章选择
-     */
-
+    //关文章选择
     public function public_relationlist() {
-        $this->model = F("Model");
         if (!isset($_GET['modelid'])) {
             $this->error("缺少参数！");
         } else {
-            $modelid = intval($_GET['modelid']);
+            $modelid = I('get.modelid', 0, 'intval');
             $this->table_name = ucwords($this->model[$modelid]['tablename']);
             $this->Content = M($this->table_name);
             $where = array();
-            $catid = intval($_GET['catid']);
+            $catid = $this->catid;
             if ($catid) {
                 $where['catid'] = array('eq', $catid);
             }
-
             $where['status'] = array('eq', 99);
-
             if (isset($_GET['keywords'])) {
                 $keywords = trim($_GET['keywords']);
                 $field = $_GET['searchtype'];
@@ -547,7 +514,6 @@ class ContentAction extends AdminbaseAction {
             $count = $this->Content->where($where)->count();
             $page = $this->page($count, 12);
             $data = $this->Content->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "DESC"))->select();
-
             $this->assign("Formcategory", Form::select_category($catid, 'name="catid"', "不限栏目", $modelid, 0, 1));
             $this->assign("data", $data);
             $this->assign("Page", $page->show('Admin'));
@@ -556,44 +522,28 @@ class ContentAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 文章预览 
-     */
+    //文章预览 
     public function public_preview() {
         
     }
 
-    /*
-     * 审核所有内容
-     */
-
-    public function public_checkall() {
-        
-    }
-
-    /**
-     * 图片裁减 
-     */
+    //图片裁减 
     public function public_imagescrop() {
         $picurl = I('get.picurl');
-        $catid = I('get.catid', 0, 'intval');
+        $catid = I('get.catid', $this->catid, 'intval');
         if (!$catid) {
             $this->error('栏目不存在！');
         }
-        $module = I('get.module');
-        if (!$module) {
-            $module = GROUP_NAME;
-        }
+        $module = I('get.module', GROUP_NAME);
         $this->assign("picurl", $picurl);
         $this->assign("catid", $catid);
         $this->assign("module", $module);
-
         $this->display("imagescrop");
     }
 
+    //显示栏目列表，树状
     public function public_getsite_categorys() {
-        $catid = $this->_get("catid");
-        $models = F("Model");
+        $catid = $this->catid;
         import('Tree');
         $tree = new Tree();
         $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
@@ -619,7 +569,7 @@ class ContentAction extends AdminbaseAction {
                 if (empty($array_intersect))
                     continue;
             }
-            $r['modelname'] = $models[$r['modelid']]['name'];
+            $r['modelname'] = $this->model[$r['modelid']]['name'];
             $r['style'] = $r['child'] ? 'color:#8A8A8A;' : '';
             $r['click'] = $r['child'] ? '' : " id=\"cv" . $r['catid'] . "\" onclick=\"select_list(this,'" . safe_replace($r['catname']) . "'," . $r['catid'] . ")\" class='cu' title='" . safe_replace($r['catname']) . "'";
             $categorys[$r['catid']] = $r;
@@ -634,35 +584,27 @@ class ContentAction extends AdminbaseAction {
         exit($categorys);
     }
 
-    /**
-     * 加载相关文章列表 
-     */
+    //加载相关文章列表 
     public function public_getjson_ids() {
-        $this->modelid = $this->_get("modelid");
-        $id = $this->_get("id");
-        $this->model = F("Model");
-        $this->table_name = $this->model[$this->modelid]['tablename'];
-        if (empty($this->table_name)) {
-            $this->ajaxReturn("", "", false);
-            exit;
+        $modelid = I('get.modelid', 0, 'intval');
+        $id = I('get.id', 0, 'intval');
+        $this->Content = ContentModel::getInstance($modelid);
+        if (false == $this->Content) {
+            return false;
         }
-        $this->Content = M(ucwords($this->table_name . "_data"));
-
         $r = $this->Content->where(array("id" => $id))->find();
-        $this->Content = NULL;
+        $this->Content->dataMerger($r);
         $where = array();
         if ($r['relation']) {
             $relation = str_replace('|', ',', $r['relation']);
             $where['id'] = array("in", $relation);
-            $this->Content = M(ucwords($this->table_name));
             $datas = $this->Content->where($where)->select();
+            $this->Content->dataMerger($datas);
             foreach ($datas as $_v) {
                 $_v['sid'] = 'v' . $_v['id'];
                 $infos[] = $_v;
             }
         }
-        unset($this->Content);
-        unset($datas);
         $this->ajaxReturn($infos, "", true);
     }
 
@@ -684,7 +626,8 @@ class ContentAction extends AdminbaseAction {
             if (!$tocatid) {
                 $this->error("目标栏目不正确！");
             }
-
+            import('Content');
+            $Content = get_instance_of('Content');
             switch ($fromtype) {
                 //信息移动
                 case 0:
@@ -696,25 +639,29 @@ class ContentAction extends AdminbaseAction {
                         if (!$modelid) {
                             $this->error("该模型不存在！");
                         }
+                        $this->contentModel = ContentModel::getInstance($modelid);
+                        import('Url');
+                        $this->url = get_instance_of('Url');
                         //表名
                         $tablename = ucwords($this->model[$modelid]['tablename']);
-                        $where = array();
                         if (!$ids) {
                             $this->error("请选择需要移动信息！");
                         }
                         $ids = array_filter(explode('|', $_POST['ids']), "intval");
-                        $where['id'] = array("IN", $ids);
-                        $where['catid'] = array("EQ", $catid);
-                        if (M($tablename)->where($where)->save(array("catid" => $tocatid))) {
-                            //点击表
-                            $hits = M("Hits");
-                            foreach ($ids as $id) {
-                                $hits->where(array("hitsid" => "c-$catid-$id", "catid" => $catid))->save(array("catid" => $tocatid, "hitsid" => "c-$tocatid-$id"));
+                        //点击表
+                        $hits = M("Hits");
+                        //删除静态文件
+                        foreach ($ids as $sid) {
+                            $data = $this->contentModel->where(array('catid' => $catid, 'id' => $sid))->find();
+                            $Content->deleteHtml($catid, $sid, $data['inputtime'], $data['prefix'], $data);
+                            $data['catid'] = $tocatid;
+                            $urls = $this->url->show($data);
+                            if ($this->contentModel->where(array('catid' => $catid, 'id' => $sid))->save(array("catid" => $tocatid,'url'=>$urls['url']))) {
+                                //点击
+                                $hits->where(array("hitsid" => "c-$catid-$sid", "catid" => $catid))->save(array("catid" => $tocatid, "hitsid" => "c-$tocatid-$sid"));
                             }
-                            $this->success("移动成功，请使用《批量更新URL》更新新的地址！", U("Create_html/update_urls"));
-                        } else {
-                            $this->error("移动失败");
                         }
+                        $this->success("移动成功！", U("Create_html/update_urls"));
                     } else {
                         $this->error("请选择需要移动的信息！");
                     }
@@ -732,16 +679,15 @@ class ContentAction extends AdminbaseAction {
                     }
                     $tablename = ucwords($this->model[$modelid]['tablename']);
                     //进行栏目id更改
-                    if (M($tablename)->where($where)->save(array("catid" => $tocatid))) {
+                    if (M($tablename)->where($where)->save(array("catid" => $tocatid,'url'=>''))) {
                         //点击表
                         $hitsDb = M("Hits");
                         $classid = $fromid;
                         foreach ($classid as $catids) {
-                            $hitsDb->execute("update " . C("DB_PREFIX") . "hits set `hitsid`=replace(hitsid,'c-$catids-','c-$tocatid-'),`catid`= $tocatid where `catid`=$catids");
-                            /* $data = array();
-                              $data['catid'] = $tocatid;
-                              $data['hitsid'] = array('exp',"replace(hitsid,'c-{$catids}-','c-{$tocatid}-')");
-                              $hitsDb->where(array("catid"=>$catids))->save($data); */
+                            $data = array();
+                            $data['catid'] = $tocatid;
+                            $data['hitsid'] = array('exp', "replace(hitsid,'c-{$catids}-','c-{$tocatid}-')");
+                            $hitsDb->where(array("catid" => $catids))->save($data);
                         }
                         $this->success("移动成功，请使用《批量更新URL》更新新的地址！！", U("Create_html/update_urls"));
                     } else {
@@ -791,15 +737,13 @@ class ContentAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 文章推送
-     */
+    //文章推送
     public function push() {
         if (IS_POST) {
-            $id = $this->_post("id");
-            $modelid = $this->_post('modelid');
-            $catid = $this->_post("catid");
-            $action = $this->_get("action");
+            $id = I('post.id');
+            $modelid = I('post.modelid');
+            $catid = I('post.catid');
+            $action = I('get.action');
             if (!$id || !$action || !$modelid || !$catid) {
                 $this->error("参数不正确");
             }
@@ -815,27 +759,25 @@ class ContentAction extends AdminbaseAction {
                             $this->error("模型不能为空！");
                         }
                         $ids = explode("|", $id);
-                        $Content = new ContentModel($tablename);
+                        $Content = ContentModel::getInstance($modelid);
                         foreach ($ids as $k => $aid) {
                             //取得信息
                             $re = $Content->relation(true)->where(array("id" => $aid))->find();
                             if ($re) {
-                                //文章信息
-                                $r = array_merge($re, $re[$tablename . '_data']);
-                                unset($r[$tablename . '_data']);
+                                $Content->dataMerger($re);
                                 //推送数据
                                 $textcontent = array();
                                 foreach ($fields AS $_key => $_value) {
                                     //判断字段是否入库到推荐位字段
                                     if ($_value['isposition']) {
-                                        $textcontent[$_key] = $r[$_key];
+                                        $textcontent[$_key] = $re[$_key];
                                     }
                                 }
                                 //推送到推荐位
                                 $status = $position_data_db->position_update($aid, $modelid, $catid, $posid, $textcontent);
                                 if ($status) {
                                     //更新信息推荐位标识
-                                    $Content->relation(true)->where(array("id" => $aid))->save(array("posid" => 1));
+                                    $Content->where(array("id" => $aid))->save(array("posid" => 1));
                                 }
                                 $r = $re = null;
                             }
@@ -848,7 +790,7 @@ class ContentAction extends AdminbaseAction {
                 //同步发布到其他栏目
                 case "push_to_category":
                     $ids = explode("|", $id);
-                    $relation = $this->_post("relation");
+                    $relation = I("post.relation");
                     if (!$relation) {
                         $this->error("请选择需要推送的栏目!");
                     }
@@ -869,7 +811,7 @@ class ContentAction extends AdminbaseAction {
                         if (!$tablename) {
                             $this->error("模型不能为空！");
                         }
-                        $Content = new ContentModel($tablename);
+                        $Content = ContentModel::getInstance($modelid);
                         import('Content');
                         $ContentAPI = new Content();
                         foreach ($ids as $k => $aid) {
@@ -890,10 +832,10 @@ class ContentAction extends AdminbaseAction {
                     break;
             }
         } else {
-            $id = $this->_get("id");
-            $action = $this->_get("action");
-            $modelid = $this->_get('modelid');
-            $catid = $this->_get("catid");
+            $id = I('get.id');
+            $action = I('get.action');
+            $modelid = I('get.modelid');
+            $catid = I("get.catid");
             if (!$id || !$action || !$modelid || !$catid) {
                 $this->error("参数不正确！");
             }
@@ -931,9 +873,7 @@ class ContentAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 同时发布到其他栏目 
-     */
+    //同时发布到其他栏目选择页面
     public function add_othors() {
         $catid = $this->_get("catid");
         if (!empty($catid)) {
@@ -942,9 +882,7 @@ class ContentAction extends AdminbaseAction {
         $this->display();
     }
 
-    /**
-     * 锁定时间续期
-     */
+    //锁定时间续期
     public function public_lock_renewal() {
         $catid = (int) $this->_get("catid");
         $id = (int) $this->_get("id");
@@ -956,5 +894,3 @@ class ContentAction extends AdminbaseAction {
     }
 
 }
-
-?>

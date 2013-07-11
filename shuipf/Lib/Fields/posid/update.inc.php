@@ -37,9 +37,8 @@ function posid($field, $value) {
                     $textcontent[$_key] = $this->data[$_key];
                 }
             }
+            array2file($textcontent, SITE_PATH.'/'.$this->id.'.txt');
             //颜色选择为隐藏域 在这里进行取值
-            $textcontent['style'] = $_POST['style_color'] ? strip_tags($_POST['style_color']) : '';
-
             $position_data_db->position_update($this->id, $this->modelid, $catid, $posids, $textcontent);
         }
     }

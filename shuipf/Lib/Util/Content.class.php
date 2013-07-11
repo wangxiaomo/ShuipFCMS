@@ -104,10 +104,28 @@ class Content {
         }
         //数据模型对象
         $this->contentModel = ContentModel::getInstance($this->modelid);
+        require_cache(RUNTIME_PATH . 'content_input.class.php');
+        $content_input = new content_input($this->modelid);
+        //保存一份旧数据
+        $oldata = $data;
+        $data = $content_input->get($data, 1);
+        if ($data) {
+            $data = $this->contentModel->create($data, 1);
+            if (false == $data) {
+                $this->error = $this->contentModel->getError();
+                $this->contentModel->tokenRecovery($data);
+                return false;
+            }
+        } else {
+            $this->error = $content_input->getError();
+            $this->contentModel->tokenRecovery($data);
+            return false;
+        }
         //插入成功返回ID
-        $id = $data['id'] = $this->contentModel->relation(true)->add($data);
+        $id = $data['id'] = $oldata['id'] = $this->contentModel->relation(true)->add($data);
         if (false == $id) {
             $this->error = $this->contentModel->getError();
+            $this->contentModel->tokenRecovery($data);
             return false;
         }
         //转向地址
@@ -118,7 +136,7 @@ class Content {
             //生成该篇地址
             $urls = $this->url->show($data);
         }
-        $data['url'] = $urls['url'];
+        $oldata['url'] = $data['url'] = $urls['url'];
         //更新url
         $this->contentModel->token(false)->where(array('id' => $id))->save(array('url' => $data['url']));
         //添加点击统计
@@ -133,7 +151,7 @@ class Content {
         //调用 update
         require_cache(RUNTIME_PATH . 'content_update.class.php');
         $content_update = new content_update($this->modelid);
-        $updateStatus = $content_update->update($data);
+        $updateStatus = $content_update->update($oldata);
         if (false == $updateStatus) {
             $this->error = $content_update->getError();
             return false;
@@ -301,17 +319,35 @@ class Content {
         if (isset($data['inputtime'])) {
             unset($data['inputtime']);
         }
+        require_cache(RUNTIME_PATH . 'content_input.class.php');
+        $content_input = new content_input($this->modelid);
+        //保存一份旧数据
+        $oldata = $data;
+        $data = $content_input->get($data, 2);
+        if ($data) {
+            //数据验证
+            $data = $this->contentModel->create($data, 2);
+            if (false == $data) {
+                $this->error = $this->contentModel->getError();
+                $this->contentModel->tokenRecovery($data);
+                return false;
+            }
+        } else {
+            $this->error = $content_input->getError();
+            return false;
+        }
         //数据修改，这里使用关联操作
         $status = $this->contentModel->relation(true)->where(array('id' => $id))->save($data);
         if (false === $status) {
             $this->error = $this->contentModel->getError();
+            $this->contentModel->tokenRecovery($data);
             return false;
         }
-        $data['inputtime'] = $inputtime;
+        $oldata['inputtime'] = $data['inputtime'] = $inputtime;
         //调用 update
         require_cache(RUNTIME_PATH . 'content_update.class.php');
         $content_update = new content_update($this->modelid);
-        $updateStatus = $content_update->update($data);
+        $updateStatus = $content_update->update($oldata);
         if (false == $updateStatus) {
             $this->error = $content_update->getError();
             return false;
@@ -419,7 +455,7 @@ class Content {
         $this->catid = (int) $catid;
         //模型ID
         $this->modelid = $this->categorys[$this->catid]['modelid'];
-        if(empty($this->categorys[$this->catid])){
+        if (empty($this->categorys[$this->catid])) {
             $this->error = '获取不到栏目信息！';
             return false;
         }
