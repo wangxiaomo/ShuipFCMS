@@ -116,7 +116,7 @@ class TagLibShuipf extends TagLib {
         }
 
         $parsestr = '<?php ';
-        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys[' . $tag['catid'] . '][\'modelid\']][\'tablename\']))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("GT",' . $tag['id'] . ')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
+        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys[' . $tag['catid'] . '][\'modelid\']][\'tablename\']))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("GT",' . $tag['id'] . ')))->order(array("id" => "ASC"))->field("id,title,url")->find(); ';
         $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" ' . $target . '>".$_pre_r["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
         $parsestr .= ' ?> ';
         $_nextParseCache[$cacheIterateId] = $parsestr;
