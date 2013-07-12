@@ -293,7 +293,7 @@ class PassportUcenter extends PassportService {
             $map['username'] = $identifier;
             $isuid = 0;
         }
-        $UserMode = D(C("USER_AUTH_MODEL"));
+        $UserMode = M('Member');
         $user = $UserMode->where($map)->find();
         if (!$user) {
             return false;
@@ -304,10 +304,6 @@ class PassportUcenter extends PassportService {
                 return false;
             }
         }
-
-        //去除敏感信息
-        unset($user['password']);
-        unset($user['verify']);
         return $user;
     }
 
