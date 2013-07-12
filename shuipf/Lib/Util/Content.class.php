@@ -685,10 +685,10 @@ class Content {
         $where['catid'] = $catid;
         $where['status'] = array("EQ", "99");
         $where['id'] = array("LT", $id);
-        $data[] = $db->where($where)->order(array("id" => "DESC"))->find();
+        $data[] = $db->relation(true)->where($where)->order(array("id" => "DESC"))->find();
         if ($action == "edit") {
             $where['id'] = array("GT", $id);
-            $data[] = $db->where($where)->find();
+            $data[] = $db->relation(true)->where($where)->find();
         }
         import('Html');
         $html = get_instance_of('Html');
