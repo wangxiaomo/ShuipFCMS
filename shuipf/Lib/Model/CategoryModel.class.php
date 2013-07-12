@@ -73,7 +73,7 @@ class CategoryModel extends CommonModel {
         } else {
             $catinfo = $Category[$catid];
             $tbname = ucwords($Model[$catInfo['modelid']]['tablename']);
-            if (!$tbname) {
+            if (!$tbname && $catinfo['type'] == 0) {
                 return false;
             }
             if ($tbname && $catinfo['type'] == 0 && M($tbname)->where(array("catid" => $catid))->count()) {
