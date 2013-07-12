@@ -337,7 +337,7 @@ class ModelModel extends CommonModel {
         $modelType = array();
         //对模型进行分类
         foreach($modelData as $mid=>$info){
-            $modelType[$info['type']][] = $info;
+            $modelType[$info['type']][$info['modelid']] = $info;
         }
         F("Model", $modelData);
         D("Model_field")->model_field_cache();
