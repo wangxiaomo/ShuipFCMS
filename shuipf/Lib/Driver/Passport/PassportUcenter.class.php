@@ -47,7 +47,6 @@ class PassportUcenter extends PassportService {
      * @param type $username 用户名
      * @param type $password 明文密码
      * @param type $email
-     * @param type $_data 附加数据
      * @return int 大于 0:返回用户 ID，表示用户注册成功
      *                              -1:用户名不合法
      *                              -2:包含不允许注册的词语
@@ -56,7 +55,7 @@ class PassportUcenter extends PassportService {
      *                              -5:Email 不允许注册
      *                              -6:该 Email 已经被注册
      */
-    public function user_register($username, $password, $email, $_data = array()) {
+    public function user_register($username, $password, $email) {
         //检查用户名
         $ckname = $this->user_checkname($username);
         if ($ckname < 1) {
@@ -80,7 +79,6 @@ class PassportUcenter extends PassportService {
                 "email" => $email,
                 "encrypt" => $encrypt,
             );
-            $data = array_merge($_data, $data);
             $Member->add($data);
             return $userid;
         }
@@ -94,7 +92,6 @@ class PassportUcenter extends PassportService {
      * @param type $newpw 新密码，如不修改为空
      * @param type $email Email，如不修改为空
      * @param type $ignoreoldpw 是否忽略旧密码
-     * @param type $_data 附加数据
      * @return int 1:更新成功
      *                      0:没有做任何修改
      *                     -1:旧密码不正确
@@ -104,11 +101,9 @@ class PassportUcenter extends PassportService {
      *                     -7:没有做任何修改
      *                     -8:该用户受保护无权限更改
      */
-    public function user_edit($username, $oldpw, $newpw, $email, $ignoreoldpw = 0, $_data = array()) {
+    public function user_edit($username, $oldpw, $newpw, $email, $ignoreoldpw = 0) {
         $Member = D("Member");
         $data = array();
-        $data = array_merge($_data, $data);
-        unset($data['username']);
         $status = uc_user_edit($username, $oldpw, $newpw, $email, $ignoreoldpw);
         if ($status < 0) {
             return $status;
@@ -138,7 +133,7 @@ class PassportUcenter extends PassportService {
         } else {
             unset($data['email']);
         }
-        if ($Member->where(array("username" => $username))->save($data)) {
+        if (false !== $Member->where(array("username" => $username))->save($data)) {
             return 1;
         } else {
             return 0;
@@ -287,7 +282,7 @@ class PassportUcenter extends PassportService {
 
         $map = array();
         if (is_numeric($identifier) && gettype($identifier) == "integer") {
-            $map['id'] = $identifier;
+            $map['userid'] = $identifier;
             $isuid = 1;
         } else {
             $map['username'] = $identifier;
@@ -398,5 +393,3 @@ class PassportUcenter extends PassportService {
     }
 
 }
-
-?>
