@@ -57,7 +57,7 @@ class content_output {
      * @param type $data
      * @return type
      */
-    function get($data) {
+    public function get($data) {
         $this->data = $data;
         $this->catid = $data['catid'];
         $this->id = $data['id'];

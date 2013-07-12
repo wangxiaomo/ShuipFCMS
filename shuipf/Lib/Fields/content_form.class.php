@@ -31,7 +31,7 @@ class content_form {
      * @param type $modelid 模型ID
      * @param type $catid 栏目id
      */
-    function __construct($modelid,$catid) {
+    function __construct($modelid, $catid) {
         $this->model = F("Model");
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {
@@ -42,7 +42,7 @@ class content_form {
         $this->fields = F("Model_field_" . $this->modelid);
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
-    
+
     /**
      * 魔术方法，获取配置
      * @param type $name
@@ -66,7 +66,7 @@ class content_form {
      * @param type $data
      * @return type 
      */
-    function get($data = array()) {
+    public function get($data = array()) {
         $this->data = $data;
         $info = array();
         foreach ($this->fields as $field => $fieldInfo) {

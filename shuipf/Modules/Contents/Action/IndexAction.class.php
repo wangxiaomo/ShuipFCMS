@@ -109,8 +109,8 @@ class IndexAction extends BaseAction {
      * 内容页 
      */
     public function shows() {
-        $catid = $this->_get("catid");
-        $id = $this->_get("id");
+        $catid = I('get.catid',0,'intval');
+        $id = I('get.id',0,'intval');
         $page = intval($_GET[C("VAR_PAGE")]);
         $page = max($page, 1);
         if (!$id || !$catid) {
@@ -123,16 +123,12 @@ class IndexAction extends BaseAction {
         $category['setting'] = unserialize($category['setting']);
         //模型ID
         $this->modelid = $category['modelid'];
-        //获取主表名
-        $this->table_name = $this->Model[$this->modelid]['tablename'];
-
-        $this->db = new ContentModel($this->table_name);
+        $this->db = ContentModel::getInstance($this->modelid);
         $data = $this->db->relation(true)->where(array("id" => $id, 'status' => 99))->find();
         if (empty($data)) {
             $this->error("该信息不存在！");
         }
-        $data = array_merge($data, $data[$this->table_name . "_data"]);
-        unset($data[$this->table_name . "_data"]);
+        $this->db->dataMerger($data);
         //分页方式
         if (isset($data['paginationtype'])) {
             //分页方式 
@@ -143,13 +139,12 @@ class IndexAction extends BaseAction {
             //默认不分页
             $paginationtype = 0;
         }
-
         //载入字段数据处理类
         if (!file_exists(RUNTIME_PATH . 'content_output.class.php')) {
             $this->error("请更新缓存后再操作！");
         }
         require_cache(RUNTIME_PATH . 'content_output.class.php');
-        $content_output = new content_output($this->modelid, $catid, $this->categorys);
+        $content_output = new content_output($this->modelid);
         //获取字段类型处理以后的数据
         $output_data = $content_output->get($data);
         $output_data['id'] = $id;

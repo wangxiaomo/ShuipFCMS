@@ -35,7 +35,7 @@ class content_update {
         $this->fields = F("Model_field_" . $this->modelid);
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
-    
+
     /**
      * 魔术方法，获取配置
      * @param type $name
@@ -58,7 +58,7 @@ class content_update {
      * 执行更新操作
      * @param type $data
      */
-    function update($data) {
+    public function update($data) {
         $info = array();
         $this->data = $data;
         $this->id = (int) $data['id'];
@@ -67,7 +67,7 @@ class content_update {
             if (empty($fieldInfo)) {
                 continue;
             }
-            if(!isset($this->data[$field])){
+            if (!isset($this->data[$field])) {
                 continue;
             }
             //字段类型

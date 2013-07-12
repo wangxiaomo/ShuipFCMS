@@ -52,7 +52,7 @@ class content_delete {
         $this->data[$name] = $value;
     }
 
-    function get($data) {
+    public function get($data) {
         if (empty($data)) {
             $this->error = '数据不能为空！';
             return false;
