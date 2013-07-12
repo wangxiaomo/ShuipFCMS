@@ -1,10 +1,10 @@
 <?php
 
-/* * 栏目管理
+/**
+ * 栏目管理
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class CategoryAction extends AdminbaseAction {
 
     protected $categorys;
@@ -21,19 +21,22 @@ class CategoryAction extends AdminbaseAction {
 
     function _initialize() {
         parent::_initialize();
+        //取得当前内容模型模板存放目录
         $this->filepath = TEMPLATE_PATH . (empty(AppframeAction::$Cache["Config"]['theme']) ? "Default" : AppframeAction::$Cache["Config"]['theme']) . DIRECTORY_SEPARATOR . "Contents" . DIRECTORY_SEPARATOR; //
+        //取得栏目频道模板列表
         $this->tp_category = str_replace($this->filepath . "Category" . DIRECTORY_SEPARATOR, "", glob($this->filepath . "Category" . DIRECTORY_SEPARATOR . 'category*'));
+        //取得栏目列表模板列表
         $this->tp_list = str_replace($this->filepath . "List" . DIRECTORY_SEPARATOR, "", glob($this->filepath . "List" . DIRECTORY_SEPARATOR . 'list*'));
+        //取得内容页模板列表
         $this->tp_show = str_replace($this->filepath . "Show" . DIRECTORY_SEPARATOR, "", glob($this->filepath . "Show" . DIRECTORY_SEPARATOR . 'show*'));
+        //取得评论模板列表
         $this->tp_comment = str_replace($this->filepath . "Comment" . DIRECTORY_SEPARATOR, "", glob($this->filepath . "Comment" . DIRECTORY_SEPARATOR . 'comment*'));
         import('Url');
-        $this->Url = new Url();
+        $this->Url = get_instance_of('Url');
         load("@.iconvfunc");
     }
 
-    /**
-     * 显示栏目列表 
-     */
+    //显示栏目列表 
     public function index() {
         import('Tree');
         $tree = new Tree();
@@ -44,7 +47,6 @@ class CategoryAction extends AdminbaseAction {
         //栏目数据，可以设置为缓存的方式
         $result = F('Category');
         $siteurl = parse_url(CONFIG_SITEURL);
-
         $types = array(0 => '内部栏目', 1 => 'font color="blue">单网页</font>', 2 => '<font color="red">外部链接</font>');
         if (!empty($result)) {
             foreach ($result as $r) {
@@ -92,9 +94,7 @@ class CategoryAction extends AdminbaseAction {
         $this->display();
     }
 
-    /**
-     * 添加栏目 
-     */
+    //添加栏目 
     public function add() {
         if (IS_POST) {
             $Category = D("Category");
@@ -232,16 +232,12 @@ class CategoryAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 添加外部链接栏目 
-     */
+    //添加外部链接栏目 
     public function wadd() {
         $this->add();
     }
 
-    /**
-     * 编辑栏目 
-     */
+    //编辑栏目 
     public function edit() {
         if (IS_POST) {
             $_POST['info'][C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
@@ -309,29 +305,6 @@ class CategoryAction extends AdminbaseAction {
                     $arrchildid = $Category->where(array('catid' => $catid))->getField('arrchildid');
                     //当前栏目目录路径
                     $catdir = $this->get_parentdir($catid) . $data['catdir'] . "/";
-
-                    //绑定域名应用到子栏目
-//                    if (isset($_POST['domain_childid'])) {
-//                        $domain = $data['domain'];
-//                        $childid_arr = explode(',', $arrchildid);
-//                        //去除自身
-//                        unset($childid_arr[0]);
-//                        if ($domain) {
-//                            foreach ($childid_arr as $chil_catid) {
-//                                //取得目录
-//                                $chil_catdir = $Category->where(array('catid' => $chil_catid))->getField('catdir');
-//                                //取得父栏目路径
-//                                $chil_parent_pat = $this->get_parentdir($chil_catid);
-//                                //完整栏目路径
-//                                $chil_pat = $chil_parent_pat . $chil_catdir . "/";
-//                                $Category->where(array('catid' => $chil_catid, "sethtml" => 1))->save(array("domain" => str_replace(array($catdir), array($domain), $chil_pat)));
-//                            }
-//                        } else {
-//                            foreach ($childid_arr as $chil_catid) {
-//                                $Category->where(array('catid' => $chil_catid, "sethtml" => 1))->save(array("domain" => ""));
-//                            }
-//                        }
-//                    }
                     //应用权限设置到子栏目
                     if ($_POST['priv_child']) {
                         $arrchildid_arr = explode(',', $arrchildid);
@@ -406,9 +379,7 @@ class CategoryAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 删除栏目 
-     */
+    //删除栏目 
     public function delete() {
         $catid = I("get.catid", "", "intval");
         if (!$catid) {
@@ -420,25 +391,19 @@ class CategoryAction extends AdminbaseAction {
         $this->success("栏目删除成功！", U("Category/public_cache"));
     }
 
-    /**
-     * 更新栏目缓存并修复 
-     */
+    //更新栏目缓存并修复
     public function public_cache() {
         $this->repair();
         $this->cache();
         $this->success("缓存更新成功！", U("Category/index"));
     }
 
-    /**
-     * 更新栏目缓存 
-     */
+    //更新栏目缓存
     protected function cache() {
         D("Category")->category_cache();
     }
 
-    /**
-     * 修复栏目数据 
-     */
+    //修复栏目数据
     protected function repair() {
         $this->categorys = $categorys = array();
         //栏目数据
@@ -511,15 +476,19 @@ class CategoryAction extends AdminbaseAction {
 
     /**
      * 检查目录是否存在 
+     * @param type $return_method 显示方式，1 ajax返回
+     * @param type $catdir 栏目目录
+     * @param type $catid 栏目id
+     * @return boolean
      */
     public function public_check_catdir($return_method = 1, $catdir = '', $catid = 0) {
-        $catid = $catid ? $catid : $this->_get('catid');
+        $catid = $catid ? $catid : I('get.catid',0,'intval');
         //需要添加的目录
-        $catdir = $catdir ? $catdir : $this->_get('catdir');
+        $catdir = $catdir ? $catdir : I('get.catdir');
         //父ID
-        $parentid = intval($this->_get('parentid'));
+        $parentid = I('get.parentid',0,'intval');
         //旧目录
-        $old_catdir = $this->_get('old_catdir');
+        $old_catdir = I('get.old_catdir');
         $status = D("Category")->checkCatdir($catdir, $catid, $parentid, $old_catdir);
         if ($status == false) {
             //当有信息且时表示目录存在
@@ -537,13 +506,15 @@ class CategoryAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 栏目属性转换  child 字段的转换
-     */
+    //栏目属性转换  child 字段的转换
     public function categoryshux() {
-        $catid = $this->_get("catid");
+        $catid = I('get.catid',0,'intval');
         $r = M("Category")->where(array("catid" => $catid))->find();
         if ($r) {
+            //栏目类型非0，不允许使用属性转换
+            if($r['type']){
+                $this->error("该栏目类型不允许进行属性转换！",U('Category/index'));
+            }
             $count = M("Category")->where(array("parentid" => $catid))->count();
             if ($count > 0) {
                 $this->error("该栏目下已经存在栏目，无法转换！");
@@ -569,9 +540,7 @@ class CategoryAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 栏目排序 
-     */
+    //栏目排序 
     public function listorder() {
         if (IS_POST) {
             $Category = M("Category");
@@ -607,5 +576,3 @@ class CategoryAction extends AdminbaseAction {
     }
 
 }
-
-?>
