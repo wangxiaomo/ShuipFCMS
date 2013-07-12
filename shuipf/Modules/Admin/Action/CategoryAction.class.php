@@ -42,7 +42,7 @@ class CategoryAction extends AdminbaseAction {
         $tree = new Tree();
         $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
         $tree->nbsp = '&nbsp;&nbsp;&nbsp;';
-        $models = F("Model");
+        $models = F("ModelType_0");
         $categorys = array();
         //栏目数据，可以设置为缓存的方式
         $result = F('Category');
@@ -182,7 +182,7 @@ class CategoryAction extends AdminbaseAction {
             }
 
             //输出可用模型
-            $modelsdata = F("Model");
+            $modelsdata = F("ModelType_0");
             $models = array();
             foreach ($modelsdata as $v) {
                 if ($v['disabled'] == 0) {
@@ -345,7 +345,7 @@ class CategoryAction extends AdminbaseAction {
             }
             $data = $array[$catid];
             $setting = $data['setting'] = unserialize($data['setting']);
-            $models = F("Model");
+            $models = F("ModelType_0");
             $tree->init($array);
             $categorydata = $tree->get_tree(0, $str, $data['parentid']);
 
@@ -519,7 +519,7 @@ class CategoryAction extends AdminbaseAction {
             if ($count > 0) {
                 $this->error("该栏目下已经存在栏目，无法转换！");
             } else {
-                $Model = F("Model");
+                $Model = F("ModelType_0");
                 $Category = F("Category");
                 $count = M(ucwords($Model[$Category[$catid]['modelid']]['tablename']))->where(array("catid" => $catid))->count();
                 if ($count > 0) {

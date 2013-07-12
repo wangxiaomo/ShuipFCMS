@@ -14,9 +14,9 @@ class Create_htmlAction extends AdminbaseAction {
     function _initialize() {
         parent::_initialize();
         $this->categorys = F("Category");
-        $this->model = F("Model");
+        $this->model = F("ModelType_0");
         import('Url');
-        $this->url = new Url();
+        $this->url = get_instance_of('Url');
         //合并get到post
         foreach ($_GET as $k => $v) {
             $_POST[$k] = $v;
@@ -33,7 +33,7 @@ class Create_htmlAction extends AdminbaseAction {
             import('Html');
             import('Form');
             extract($_POST, EXTR_SKIP);
-            $this->html = new Html();
+            $this->html = get_instance_of('Html');
             //存在 进行url编码
             $referer = isset($referer) ? urlencode($referer) : '';
             //模型id

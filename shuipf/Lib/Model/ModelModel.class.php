@@ -333,8 +333,18 @@ class ModelModel extends CommonModel {
      * @return boolean
      */
     public function model_cache() {
-        F("Model", $this->Cache());
+        $modelData = $this->Cache();
+        $modelType = array();
+        //对模型进行分类
+        foreach($modelData as $mid=>$info){
+            $modelType[$info['type']][] = $info;
+        }
+        F("Model", $modelData);
         D("Model_field")->model_field_cache();
+        //按模型类型生成模型缓存
+        foreach($modelType as $type=>$model){
+            F("ModelType_{$type}", $model);
+        }
         return true;
     }
 
