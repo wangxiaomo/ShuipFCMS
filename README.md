@@ -4,7 +4,7 @@
 
 ----
 #ShuipFCMS简介 
-* ShuipFCMS 基于[ThinlPHP](http://www.thinlphp.cn)框架开发，采用独立分组的方式开发的内容管理系统。；
+* ShuipFCMS 基于[ThinkPHP](http://www.thinkphp.cn)框架开发，采用独立分组的方式开发的内容管理系统。；
 * 支持模块安装/卸载，模型自定义，整合UCenter通行证等。
 
 ##根据安装程序安装好后，进入后台需要进行如下操作：

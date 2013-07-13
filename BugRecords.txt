@@ -5,6 +5,8 @@
 4、UPDATE `shuipfcms_menu` SET `model` = 'Setting' WHERE `model` = 'Member_setting';
 5、UPDATE `shuipfcms_menu` SET `model` = 'Field' WHERE `model` = 'Member_modelfield';
 6、UPDATE `shuipfcms_menu` SET `model` = 'Field' WHERE `model` = 'Sitemodel_field';
+7、ALTER TABLE `shuipfcms_member` ADD COLUMN `vip`  tinyint(1) NOT NULL COMMENT 'vip等级' AFTER `islock`;
+8、ALTER TABLE `shuipfcms_member` ADD COLUMN `overduedate`  int(10) NOT NULL COMMENT 'vip过期时间' AFTER `vip`;
 
 版本：1.0.0
 流水：20130624

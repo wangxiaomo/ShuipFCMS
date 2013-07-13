@@ -491,6 +491,8 @@ CREATE TABLE `shuipfcms_member` (
   `modelid` smallint(5) unsigned NOT NULL default '0' COMMENT '模型id',
   `message` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否有短消息',
   `islock` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否锁定',
+  `vip` tinyint(1) NOT NULL COMMENT 'vip等级',
+  `overduedate` int(10) NOT NULL COMMENT 'vip过期时间',
   PRIMARY KEY  (`userid`),
   UNIQUE KEY `username` (`username`),
   KEY `email` (`email`(20))
