@@ -3,12 +3,13 @@
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
   <div class="nav">
+  	<div class="return"><a href="{:U('Model/index','menuid=93')}">返回模型管理</a></div>
     <ul class="cc">
-      <li class="current"><a href="{:U('Member_modelfield/index',array('modelid'=>$modelid)  )}">管理模型字段</a></li>
-      <li ><a href="{:U('Member_modelfield/add',array('modelid'=>$modelid)  )}">添加字段</a></li>
+      <li class="current"><a href="{:U('Field/index',array('modelid'=>$modelid)  )}">管理模型字段</a></li>
+      <li ><a href="{:U('Field/add',array('modelid'=>$modelid)  )}">添加字段</a></li>
     </ul>
   </div>
-  <form name="myform" action="{:U("Member_modelfield/listorder")}" method="post" class="J_ajaxForm">
+  <form name="myform" action="{:U("Field/listorder")}" method="post" class="J_ajaxForm">
   <div class="table_list">
   <table width="100%" cellspacing="0" >
         <thead>
@@ -34,20 +35,20 @@
             <td width="50" align='center'><font color="red"><if condition="$vo['issearch'] eq 1">√<else /> ╳</if></font></td>
             <td width="50" align='center'><font color="blue"><if condition="$vo['isorder'] eq 1">√<else /> ╳</if></font></td>
             <td align='center'>
-            <a href="{:U("Member_modelfield/edit",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid']))}">修改</a> | 
+            <a href="{:U("Field/edit",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid']))}">修改</a> | 
             <if condition=" in_array($vo['field'],$forbid_fields) ">
             <font color="#BEBEBE"> 禁用 </font>|
             <else />
                  <if condition=" $vo['disabled'] eq 0 ">
-                 <a href="{:U("Member_modelfield/disabled",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid'],"disabled"=>0))}">禁用</a> |
+                 <a href="{:U("Field/disabled",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid'],"disabled"=>0))}">禁用</a> |
                  <else />
-                 <a href="{:U("Member_modelfield/disabled",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid'],"disabled"=>1))}"><font color="#FF0000">启用</font></a> |
+                 <a href="{:U("Field/disabled",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid'],"disabled"=>1))}"><font color="#FF0000">启用</font></a> |
                  </if>
             </if>
             <if condition=" in_array($vo['field'],$forbid_delete) ">
             <font color="#BEBEBE"> 删除</font>
             <else />
-            <a href="javascript:confirmurl('{:U("Member_modelfield/delete",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid']))}','确认要删除 『 {$vo.name} 』 吗？')">删除</a>
+            <a href="javascript:confirmurl('{:U("Field/delete",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid']))}','确认要删除 『 {$vo.name} 』 吗？')">删除</a>
             </if>
             </td>
           </tr>

@@ -24,38 +24,44 @@
 		</tr>
 		<tr>
 			<th>密码</th> 
-			<td><input type="password" name="password" id="password" class="input"></input></td>
+			<td><input type="password" name="password" id="password" class="input"/></td>
 		</tr>
 		<tr>
 			<th>确认密码</th> 
-			<td><input type="password" name="pwdconfirm" id="pwdconfirm" class="input"></input></td>
+			<td><input type="password" name="pwdconfirm" id="pwdconfirm" class="input"/></td>
 		</tr>
 		<tr>
 			<th>昵称</th> 
-			<td><input type="text" name="nickname" id="nickname" value="{$data.nickname}" class="input"></input></td>
+			<td><input type="text" name="nickname" id="nickname" value="{$data.nickname}" class="input"/></td>
 		</tr>
 		<tr>
 			<th>邮箱</th>
 			<td>
-			<input type="text" name="email" value="{$data.email}" class="input" id="email" size="30"></input>
+			<input type="text" name="email" value="{$data.email}" class="input" id="email" size="30"/>
 			</td>
 		</tr>
 		<tr>
 			<th>会员组</th>
-			<td><?php echo Form::select($Member_group, $data['groupid'], 'name="groupid"'); ?>注意：会员组和积分相挂钩！</td>
+			<td><?php echo Form::select($groupCache, $data['groupid'], 'name="groupid"'); ?> 非vip会员用户组与积分绑定，如只修改会员组请设置该会员为vip</td>
 		</tr>
 		<tr>
 			<th>积分点数</th>
 			<td>
-			<input type="text" name="point" value="{$data.point}" class="input" id="point" size="10"></input>
+			<input type="text" name="point" value="{$data.point}" class="input" id="point" size="10"/> 请输入积分点数，积分点数将影响会员用户组
+			</td>
+		</tr>
+        <tr>
+			<th>vip会员</th>
+			<td>
+			是否为vip会员 <input name="vip" type="checkbox" class="input" value="1" <if condition=" $data['vip'] ">checked</if> /> 过期时间 <input type="text" class="input length_3 J_datetime" name="overduedate" id="overduedate" value="{$data.overduedate|date='Y-m-d H:i',###}" size="21" class="date"/>
 			</td>
 		</tr>
 		<tr>
 			<th>会员模型</th>
-			<td><?php echo Form::select($Model_Member, $data['modelid'], 'name="modelid" onchange="changemodel($(this).val())"'); ?></td>
+			<td><?php echo Form::select($groupsModel, $data['modelid'], 'name="modelid" onchange="changemodel($(this).val())"'); ?></td>
 		</tr>
 	</table>
-    <div class="h_a">模型信息</div>
+    <div class="h_a">详细信息</div>
     <table width="100%" class="table_form">
 	<?php foreach($forminfos['base'] as $k=>$v) {?>
 		<tr>

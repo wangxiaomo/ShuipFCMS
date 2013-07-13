@@ -20,7 +20,7 @@
           <option value='1' >锁定</option>
           <option value='2' >正常</option>
         </select>
-        <?php echo Form::select($Member_group, (int)$_GET['groupid'], 'name="groupid"', '会员组') ?> <?php echo Form::select($Model_Member, (int)$_GET['modelid'], 'name="modelid"', '会员模型'); ?>
+        <?php echo Form::select($groupCache, (int)$_GET['groupid'], 'name="groupid"', '会员组') ?> <?php echo Form::select($groupsModel, (int)$_GET['modelid'], 'name="modelid"', '会员模型'); ?>
         <select name="type">
           <option value='1' >用户名</option>
           <option value='2' >用户ID</option>
@@ -62,7 +62,7 @@
               <td align="left"><img src="{:getavatar($vo['userid'])}" height=18 width=18 onerror="this.src='{$config_siteurl}statics/images/member/nophoto.gif'">{$vo.username}<a href="javascript:member_infomation({$vo.userid}, '{$vo.modelid}', '')"><img src="{$config_siteurl}statics/images/icon/detail.png"></a></td>
               <td align="left">{$vo.nickname}</td>
               <td align="left">{$vo.email}</td>
-              <td align="left">{$Model_Member[$vo['modelid']]}</td>
+              <td align="left">{$groupsModel[$vo['modelid']]}</td>
               <td align="left">{$vo.regip}</td>
               <td align="left"><if condition=" $vo['lastdate'] eq 0 ">还没有登录过
                   <else />

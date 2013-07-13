@@ -4,69 +4,74 @@
 <div class="wrap J_check_wrap">
   <div class="nav">
     <ul class="cc">
-      <li><a href="{:U("Sitemodel_field/index",array("modelid"=>$modelid))}">管理模型字段</a></li>
-      <li ><a href="{:U("Sitemodel_field/add",array("modelid"=>$modelid))}">添加字段</a></li>
-      <li ><a href="{:U("Sitemodel_field/priview",array("modelid"=>$modelid))}"  target="_blank">预览模型</a></li>
+      <li><a href="{:U("Field/index",array("modelid"=>$modelid))}">管理模型字段</a></li>
+      <li  class="current"><a href="{:U("Field/add",array("modelid"=>$modelid))}">添加字段</a></li>
+      <li ><a href="{:U("Field/priview",array("modelid"=>$modelid))}"  target="_blank">预览模型</a></li>
     </ul>
   </div>
   <div class="h_a">字段属性</div>
-  <form name="myform" class="J_ajaxForm" action="{:U("Sitemodel_field/edit")}" method="post">
+  <form name="myform" class="J_ajaxForm" action="{:U("Field/add")}" method="post">
   <div class="table_full">
-  <table width="100%" class="table_form">
+  <table width="100%" class="table_form contentWrap">
       <tr>
         <th width="250"><strong>字段类型</strong><br /></th>
-        <td>
-		  <if condition="$isEditField ">
-          <select name="formtype" id="formtype" onChange="javascript:field_setting(this.value);" >
-            <option value='' >请选择字段类型</option>
+        <td><select name="formtype" id="formtype" onChange="javascript:field_setting(this.value);">
+            <option value='' selected>请选择字段类型</option>
             <volist name="all_field" id="vo">
-            <option value="{$key}" <if condition="$data['formtype'] eq $key"> selected</if>>{$vo}</option>
+            <option value="{$key}" >{$vo}</option>
             </volist>
-          </select>
-		  <else/>
-		  该字段类型不允许修改
-		  </if></td>
+          </select></td>
       </tr>
       <tr>
         <th><strong>作为主表字段</strong></th>
-        <td><input type="hidden" name="issystem" id="issystem" value="{$data['issystem']}">
-          <input type="radio" name="issystem" id="field_basic_table1" value="1" <if condition="$data['issystem'] eq '1'"> checked</if> disabled>
+        <td>
+          <input type="radio" name="issystem" id="field_basic_table1" value="1">
           是
-          <input type="radio" id="field_basic_table0" name="issystem" value="0" <if condition="$data['issystem'] eq '0'"> checked</if> disabled>
+          <input type="radio" id="field_basic_table0" name="issystem" value="0" checked>
           否</td>
       </tr>
       <tr>
         <th width="25%"><font color="red">*</font> <strong>字段名</strong><br />
           只能由英文字母、数字和下划线组成，并且仅能字母开头，不以下划线结尾 </th>
-        <td><input type="text" name="field" id="field" size="20" class="input" value="{$data.field}" <if condition=" !$isEditField "> disabled</if>></td>
+        <td><input type="text" name="field" id="field" size="20" class="input"></td>
       </tr>
       <tr>
         <th><font color="red">*</font> <strong>字段别名</strong><br />
           例如：文章标题</th>
-        <td><input type="text" name="name" id="name" size="30" class="input" value="{$data.name}"></td>
+        <td><input type="text" name="name" id="name" size="30" class="input"></td>
       </tr>
       <tr>
         <th><strong>字段提示</strong><br />
           显示在字段别名下方作为表单输入提示</th>
-        <td><textarea name="tips" rows="2" cols="20" id="tips" style="height:40px; width:80%">{$data.tips}</textarea></td>
+        <td><textarea name="tips" rows="2" cols="20" id="tips" style="height:40px; width:80%"></textarea></td>
       </tr>
       <tr>
         <th><strong>相关参数</strong><br />
           设置表单相关属性</th>
-        <td><div id="setting">{$form_data}</div></td>
+        <td><div id="setting"></div></td>
+      </tr>
+      <tr id="formattribute">
+        <th><strong>表单附加属性</strong><br />
+          可以通过此处加入javascript事件</th>
+        <td><input type="text" name="formattribute" value="" size="50" class="input"></td>
+      </tr>
+      <tr id="css">
+        <th><strong>表单样式名</strong><br />
+          定义表单的CSS样式名</th>
+        <td><input type="text" name="css" value="" size="10" class="input"></td>
       </tr>
       <tr>
         <th><strong>字符长度取值范围</strong><br />
           系统将在表单提交时检测数据长度范围是否符合要求，如果不想限制长度请留空</th>
         <td>最小值：
-          <input type="text" name="minlength" id="field_minlength" value="{$data.minlength}" size="5" class="input">
+          <input type="text" name="minlength" id="field_minlength" value="0" size="5" class="input">
           最大值：
-          <input type="text" name="maxlength" id="field_maxlength" value="{$data.maxlength}" size="5" class="input"></td>
+          <input type="text" name="maxlength" id="field_maxlength" value="0" size="5" class="input"></td>
       </tr>
       <tr>
         <th><strong>数据校验正则</strong><br />
           系统将通过此正则校验表单提交的数据合法性，如果不想校验数据请留空</th>
-        <td><input type="text" name="pattern" id="pattern" value="{$data.pattern}" size="40" class="input">
+        <td><input type="text" name="pattern" id="pattern" value="" size="40" class="input">
           <select name="pattern_select" onChange="javascript:$('#pattern').val(this.value)">
             <option value="">常用正则</option>
             <option value="/^[0-9.-]+$/">数字</option>
@@ -82,74 +87,66 @@
       </tr>
       <tr>
         <th><strong>数据校验未通过的提示信息</strong></th>
-        <td><input type="text" name="errortips" value="{$data.errortips}" size="50" class="input"></td>
+        <td><input type="text" name="errortips" value="" size="50" class="input"></td>
       </tr>
       <tr>
         <th><strong>后台信息处理函数</strong><br />用法：直接填写函数名称，如果有附带参数可以在函数名后面加###参数1,参数2.完整例子：usfun###a1,a2</th>
-        <td><input type="text" name="setting[backstagefun]" value="{$setting.backstagefun}" size="50" class="input"> 
-        <input name="setting[backstagefun_type]" type="radio" value="1" <if condition="$setting['backstagefun_type'] eq '1'"> checked</if> >入库前 
-        <input type="radio" name="setting[backstagefun_type]" value="2"  <if condition="$setting['backstagefun_type'] eq '2'"> checked</if>>入库后 
-        <input type="radio" name="setting[backstagefun_type]" value="3" <if condition="$setting['backstagefun_type'] eq '3'"> checked</if>>入库前后</td>
+        <td><input type="text" name="setting[backstagefun]" value="" size="50" class="input"> <input name="setting[backstagefun_type]" type="radio" value="1" checked="checked" >入库前 <input type="radio" name="setting[backstagefun_type]" value="2" >入库后 <input type="radio" name="setting[backstagefun_type]" value="3" >入库前后</td>
       </tr>
       <tr>
         <th><strong>前台信息处理函数</strong><br />用法：直接填写函数名称，如果有附带参数可以在函数名后面加###参数1,参数2.完整例子：usfun###a1,a2</th>
-        <td><input type="text" name="setting[frontfun]" value="{$setting.frontfun}" size="50" class="input"> 
-        <input name="setting[frontfun_type]" type="radio" value="1" <if condition="$setting['frontfun_type'] eq '1'"> checked</if> >入库前 
-        <input type="radio" name="setting[frontfun_type]" value="2" <if condition="$setting['frontfun_type'] eq '2'"> checked</if>>入库后 
-        <input type="radio" name="setting[frontfun_type]" value="3" <if condition="$setting['frontfun_type'] eq '3'"> checked</if>>入库前后</td>
+        <td><input type="text" name="setting[frontfun]" value="" size="50" class="input"> <input name="setting[frontfun_type]" type="radio" value="1" checked="checked" >入库前 <input type="radio" name="setting[frontfun_type]" value="2" >入库后 <input type="radio" name="setting[frontfun_type]" value="3" >入库前后</td>
       </tr>
       <tr>
         <th><strong>值唯一</strong></th>
-        <td><input type="radio" name="isunique" value="1" id="field_allow_isunique1" <if condition="$data['isunique'] eq '1'"> checked</if> disabled>
+        <td><input type="radio" name="isunique" value="1" id="field_allow_isunique1">
           是
-          <input type="radio" name="isunique" value="0" id="field_allow_isunique0" <if condition="$data['isunique'] eq '0'"> checked</if> disabled>
+          <input type="radio" name="isunique" value="0" id="field_allow_isunique0" checked>
           否</td>
       </tr>
       <tr>
         <th><strong>作为基本信息</strong><br />
           基本信息将在添加页面左侧显示</th>
-        <td><input type="radio" name="isbase" value="1"  <if condition="$data['isbase'] eq '1'"> checked</if>/>
+        <td><input type="radio" name="isbase" value="1"  checked>
           是
-          <input type="radio" name="isbase" value="0" <if condition="$data['isbase'] eq '0'"> checked</if>/>
+          <input type="radio" name="isbase" value="0">
           否 </td>
       </tr>
       <tr>
         <th><strong>作为搜索条件</strong></th>
-        <td><input type="radio" name="issearch" value="1" id="field_allow_search1" <if condition="$data['issearch'] eq '1'"> checked</if> disabled>
+        <td><input type="radio" name="issearch" value="1" id="field_allow_search1">
           是
-          <input type="radio" name="issearch" value="0" id="field_allow_search0" <if condition="$data['issearch'] eq '0'"> checked</if> disabled>
+          <input type="radio" name="issearch" value="0" id="field_allow_search0" checked>
           否</td>
       </tr>
       <tr>
         <th><strong>在前台投稿中显示</strong></th>
-        <td><input type="radio" name="isadd" value="1"  <if condition="$data['isadd'] eq '1'"> checked</if>/>
+        <td><input type="radio" name="isadd" value="1" checked />
           是
-          <input type="radio" name="isadd" value="0" <if condition="$data['isadd'] eq '0'"> checked</if>/>
+          <input type="radio" name="isadd" value="0" />
           否</td>
       </tr>
       <tr>
         <th><strong>作为全站搜索信息</strong></th>
-        <td><input type="radio" name="isfulltext" value="1" id="field_allow_fulltext1" <if condition="$data['isfulltext'] eq '1'"> checked</if>  disabled/>
+        <td><input type="radio" name="isfulltext" value="1" id="field_allow_fulltext1" checked/>
           是
-          <input type="radio" name="isfulltext" value="0" id="field_allow_fulltext0" <if condition="$data['isfulltext'] eq '0'"> checked</if> disabled/>
+          <input type="radio" name="isfulltext" value="0" id="field_allow_fulltext0" />
           否</td>
       </tr>
       <tr> 
          <th><strong>作为万能字段的附属字段</strong><br>必须与万能字段结合起来使用，否则内容添加的时候不会正常显示，使用时直接在使用“{当前字段名}”例如{keywords}</th>
-         <td><input type="radio" name="isomnipotent" value="1" <if condition="$data['isomnipotent'] eq '1'"> checked</if> <?php  if(in_array($data['field'],$forbid_fields)) echo 'disabled'; ?>/> 是 <input type="radio" name="isomnipotent" value="0"  <if condition="$data['isomnipotent'] eq '0'"> checked</if>/> 否</td>
+         <td><input type="radio" name="isomnipotent" value="1" /> 是 <input type="radio" name="isomnipotent" value="0"  checked/> 否</td>
       </tr>
       <tr> 
         <th><strong>在推荐位标签中调用</strong></th>
-        <td><input type="radio" name="isposition" value="1" <if condition="$data['isposition'] eq '1'"> checked</if>/> 是 <input type="radio" name="isposition" value="0" <if condition="$data['isposition'] eq '0'"> checked</if>/> 否</td>
+        <td><input type="radio" name="isposition" value="1" /> 是 <input type="radio" name="isposition" value="0" checked/> 否</td>
       </tr>
     </table>
   </div>
   <div class="btn_wrap">
       <div class="btn_wrap_pd">             
-        <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">修改</button>
-        <input name="modelid" type="hidden" value="{$modelid}">
-        <input name="fieldid" type="hidden" value="{$fieldid}">
-         <input name="oldfield" type="hidden" value="{$data.field}">
+        <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">添加</button>
+        <input name="modelid" type="hidden" value="{$modelid}" />
       </div>
     </div>
   </form>
@@ -169,7 +166,7 @@ function field_setting(fieldtype) {
         }
     });
 
-    $.getJSON(GV.DIMAUB + "index.php?g=Models&m=Sitemodel_field&a=public_field_setting&fieldtype=" + fieldtype, function (data) {
+    $.getJSON(GV.DIMAUB + "index.php?g=Models&m=Field&a=public_field_setting&fieldtype=" + fieldtype, function (data) {
         if (data.field_basic_table == '1') {
             $('#field_basic_table0').attr("disabled", false);
             $('#field_basic_table1').attr("disabled", false);

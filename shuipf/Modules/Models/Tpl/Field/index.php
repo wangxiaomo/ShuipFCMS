@@ -4,12 +4,12 @@
 <div class="wrap J_check_wrap">
   <div class="nav">
     <ul class="cc">
-      <li class="current"><a href="{:U("Sitemodel_field/index",array("modelid"=>$modelid))}">管理模型字段</a></li>
-      <li ><a href="{:U("Sitemodel_field/add",array("modelid"=>$modelid))}">添加字段</a></li>
-      <li ><a href="{:U("Sitemodel_field/priview",array("modelid"=>$modelid))}"  target="_blank">预览模型</a></li>
+      <li class="current"><a href="{:U("Field/index",array("modelid"=>$modelid))}">管理模型字段</a></li>
+      <li ><a href="{:U("Field/add",array("modelid"=>$modelid))}">添加字段</a></li>
+      <li ><a href="{:U("Field/priview",array("modelid"=>$modelid))}"  target="_blank">预览模型</a></li>
     </ul>
   </div>
-  <form class="J_ajaxForm" action="{:U("Sitemodel_field/listorder")}" method="post">
+  <form class="J_ajaxForm" action="{:U("Field/listorder")}" method="post">
   <div class="table_list">
   <table width="100%" cellspacing="0" >
         <thead>
@@ -39,20 +39,20 @@
             <td align='center'><if condition="$vo['isorder'] eq 1"><font color="blue">√</font><else /> <font color="red">╳</font></if></td>
             <td align='center'><if condition="$vo['isadd'] eq 1"><font color="blue">√</font><else /> <font color="red">╳</font></if></td>
             <td align='center'>
-            <a href="{:U("Sitemodel_field/edit",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid']))}">修改</a> | 
+            <a href="{:U("Field/edit",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid']))}">修改</a> | 
             <if condition=" in_array($vo['field'],$forbid_fields) || in_array($vo['field'], $forbid_delete) ">
             <font color="#BEBEBE"> 禁用 </font>|
             <else />
                  <if condition=" $vo['disabled'] eq 0 ">
-                 <a href="{:U("Sitemodel_field/disabled",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid'],"disabled"=>0))}">禁用</a> |
+                 <a href="{:U("Field/disabled",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid'],"disabled"=>0))}">禁用</a> |
                  <else />
-                 <a href="{:U("Sitemodel_field/disabled",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid'],"disabled"=>1))}"><font color="#FF0000">启用</font></a> |
+                 <a href="{:U("Field/disabled",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid'],"disabled"=>1))}"><font color="#FF0000">启用</font></a> |
                  </if>
             </if>
             <if condition=" in_array($vo['field'],$forbid_delete) ">
             <font color="#BEBEBE"> 删除</font>
             <else />
-            <a class="J_ajax_del" href="{:U("Sitemodel_field/delete",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid']))}">删除</a>
+            <a class="J_ajax_del" href="{:U("Field/delete",array("fieldid"=>$vo['fieldid'],"modelid"=>$vo['modelid']))}">删除</a>
             </if>
             </td>
           </tr>

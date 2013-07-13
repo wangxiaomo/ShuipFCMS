@@ -15,7 +15,7 @@
           <td align="left">模型描述</td>
           <td align="left">数据表名</td>
           <td align="center">状态</td>
-          <td>操作</td>
+          <td align="center">操作</td>
         </tr>
       </thead>
       <tbody>
@@ -30,7 +30,7 @@
                 <else />
                 √</if>
               </font></td>
-            <td align="center"><a href="{:U('Member_modelfield/index' , array("modelid"=>$vo['modelid']) )}">字段管理</a> | <a href="{:U('Member_model/edit' , array("modelid"=>$vo['modelid']) )}">修改</a> | <a href="{:U('Member_model/move' , array("modelid"=>$vo['modelid']) )}">移动</a> | <a href="javascript:;" onClick="model_delete(this,'{$vo.modelid}','确认要删除 『 {$vo.name} 』 吗？删除后，数据表将同时被删除！',0)">删除</a></td>
+            <td align="center"><a href="{:U('Field/index' , array("modelid"=>$vo['modelid']) )}">字段管理</a> | <a href="{:U('Model/edit' , array("modelid"=>$vo['modelid']) )}">修改</a> | <a href="{:U('Model/move' , array("modelid"=>$vo['modelid']) )}">移动</a> | <a href="javascript:;" onClick="model_delete(this,'{$vo.modelid}','确认要删除 『 {$vo.name} 』 吗？删除后，数据表将同时被删除！',0)">删除</a></td>
           </tr>
         </volist>
       </tbody>
@@ -52,7 +52,7 @@ function model_delete(obj, id, name, items) {
             style: 'confirm',
             id: 'model_delete'
         }, function () {
-            $.get(GV.DIMAUB + 'index.php?g=Member&m=Member_model&a=delete&modelid=' + id + '', function (data) {
+            $.get(GV.DIMAUB + 'index.php?g=Member&m=Model&a=delete&modelid=' + id + '', function (data) {
                 if (data.status) {
                     $(obj).parent().parent().fadeOut("slow");
                 } else {

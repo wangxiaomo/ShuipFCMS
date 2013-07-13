@@ -3,7 +3,7 @@
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
-  <form name="myform" class="J_ajaxForm" action="{:U('Member_group/delete')}" method="post">
+  <form name="myform" class="J_ajaxForm" action="{:U('Group/delete')}" method="post">
   <div class="table_list">
   <table width="100%" cellspacing="0">
 	<thead>
@@ -42,7 +42,7 @@
 		<td align="center"><if condition=" $vo['allowsearch'] eq '0' "><font color="blue">×</font><else /><font color="red">√</font></if></td>
 		<td align="center"><if condition=" $vo['allowupgrade'] eq '0' "><font color="blue">×</font><else /><font color="red">√</font></if></td>
 		<td align="center"><if condition=" $vo['allowsendmessage'] eq '0' "><font color="blue">×</font><else /><font color="red">√</font></if></td>
-		<td align="center"><a href="{:U('Member_group/edit', array('groupid'=>$vo['groupid']) )}">[修改]</a></td>
+		<td align="center"><a href="{:U('Group/edit', array('groupid'=>$vo['groupid']) )}">[修改]</a></td>
     </tr>
 </volist>
 </tbody>
@@ -50,7 +50,7 @@
   </div>
   <div class="">
       <div class="btn_wrap_pd">             
-        <button class="btn btn_submit mr10 J_ajax_submit_btn" data-action="{:U('Member_group/sort')}" type="submit">排序</button>
+        <button class="btn btn_submit mr10 J_ajax_submit_btn" data-action="{:U('Group/sort')}" type="submit">排序</button>
         <button class="btn  mr10 J_ajax_submit_btn" type="submit">删除</button>
       </div>
     </div>

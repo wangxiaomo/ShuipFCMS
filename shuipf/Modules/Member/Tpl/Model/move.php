@@ -5,7 +5,7 @@
   <Admintemplate file="Common/Nav"/>
   <div class="h_a">温馨提示</div>
   <div class="prompt_text"> 移动模型会员，将会把原有模型里的会员信息删除，不能修复。</div>
-  <form name="myform" action="" method="post" id="myform">
+  <form name="myform" action="{:U('Model/move')}" method="post" id="myform">
   <input type="hidden" name="modelid" value="{$modelid}">
   <div class="table_full">
   <div class="h_a">模型移动</div>

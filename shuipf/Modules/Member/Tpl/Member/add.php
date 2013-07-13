@@ -9,7 +9,7 @@
   <table width="100%" class="table_form">
 		<tr>
 			<th width="80">用户名</th> 
-			<td><input type="text" name="username"  class="input" id="username"></input></td>
+			<td><input type="text" name="username"  class="input" id="username"/></td>
 		</tr>
 		<tr>
 			<th>是否审核</th> 
@@ -17,35 +17,41 @@
 		</tr>
 		<tr>
 			<th>密码</th> 
-			<td><input type="password" name="password" class="input" id="password" value=""></input></td>
+			<td><input type="password" name="password" class="input" id="password" value=""/></td>
 		</tr>
 		<tr>
 			<th>确认密码</th> 
-			<td><input type="password" name="pwdconfirm" class="input" id="pwdconfirm" value=""></input></td>
+			<td><input type="password" name="pwdconfirm" class="input" id="pwdconfirm" value=""/></td>
 		</tr>
 		<tr>
 			<th>昵称</th> 
-			<td><input type="text" name="nickname" id="nickname" value="" class="input"></input></td>
+			<td><input type="text" name="nickname" id="nickname" value="" class="input"/></td>
 		</tr>
 		<tr>
 			<th>邮箱</th>
 			<td>
-			<input type="text" name="email" value="" class="input" id="email" size="30"></input>
+			<input type="text" name="email" value="" class="input" id="email" size="30"/>
 			</td>
 		</tr>
 		<tr>
 			<th>会员组</th>
-			<td><?php echo Form::select($Member_group, (int)$_GET['groupid'], 'name="groupid"', '') ?></td>
+			<td><?php echo Form::select($groupCache, I('get.groupid',0,'intval'), 'name="groupid"', '') ?> 非vip会员用户组与积分绑定，如只修改会员组请设置该会员为vip</td>
 		</tr>
 		<tr>
 			<th>积分点数</th>
 			<td>
-			<input type="text" name="point" value="" class="input" id="point" size="10"></input>
+			<input type="text" name="point" value="0" class="input" id="point" size="10"/> 请输入积分点数，积分点数将影响会员用户组
+			</td>
+		</tr>
+        <tr>
+			<th>vip会员</th>
+			<td>
+			是否为vip会员 <input type="checkbox" name="vip" class="input" value="1" /> 过期时间 <input type="text" class="input length_3 J_datetime" name="overduedate" id="overduedate" value="<?php echo date("Y-m-d H:i"); ?>" size="21" class="date"/>
 			</td>
 		</tr>
 		<tr>
 			<th>会员模型</th>
-			<td><?php echo Form::select($Model_Member, 0, 'name="modelid"', ''); ?></td>
+			<td><?php echo Form::select($groupsModel, 0, 'name="modelid"', ''); ?></td>
 		</tr>
 	</table>
   </div>

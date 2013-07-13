@@ -11,10 +11,10 @@
   <div class="mb10">
 		<a href="javascript:void(0)" onClick="javascript:openwinx('{:U("Content/add",array("catid"=>$catid))}','')" class="btn" title="添加内容"><span class="add"></span>添加内容</a>
          栏目列表生成：<select class="select_2" onChange="window.location.href=''+this.value+''">
-       <option value="{:U('Contents/Create_html/categoryhtml',array('catid'=>$catid))}" >列表生成</option>
-       <option value="{:U('Contents/Create_html/categoryhtml',array('catid'=>$catid))}">生成当前栏目列表</option>
+       <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$catid))}" >列表生成</option>
+       <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$catid))}">生成当前栏目列表</option>
        <if condition=" $Categorys['parentid'] "> 
-       <option value="{:U('Contents/Create_html/categoryhtml',array('catid'=>$Categorys['parentid']))}">生成父栏目列表</option>
+       <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$Categorys['parentid']))}">生成父栏目列表</option>
        </if>
     </select>
   </div>
@@ -77,7 +77,7 @@
           <tr>
             <td><input type="checkbox" class="J_check" data-yid="J_check_y" data-xid="J_check_x" name="ids[]" value="{$vo.id}"></td>
             <td><input name='listorders[{$vo.id}]' class="input mr5"  type='text' size='3' value='{$vo.listorder}'></td>
-            <td><a href="{:U("Contents/Create_html/batch_show", array("catid"=>$vo['catid'] ,"steps"=>"0" ,"ids"=>$vo['id'])  )}" title="点击生成">{$vo.id}</a></td>
+            <td><a href="{:U("Contents/Createhtml/batch_show", array("catid"=>$vo['catid'] ,"steps"=>"0" ,"ids"=>$vo['id'])  )}" title="点击生成">{$vo.id}</a></td>
             <td><a href="{$vo.url}" target="_blank"><span style="" >
               <if condition=" $vo['status']==99 ">{$vo.title}
                 <else/>
@@ -107,7 +107,7 @@
         <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Contents/Content/delete',array('catid'=>$catid))}">删除</button>
         <button class="btn" type="button" onClick="pushs()">推送</button>
         <button class="btn" type="button" id="J_Content_remove">批量移动</button>
-        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Contents/Create_html/batch_show',array('catid'=>$catid,'steps'=>0))}">批量生成HTML</button>
+        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Contents/Createhtml/batch_show',array('catid'=>$catid,'steps'=>0))}">批量生成HTML</button>
       </div>
     </div>
   </form>

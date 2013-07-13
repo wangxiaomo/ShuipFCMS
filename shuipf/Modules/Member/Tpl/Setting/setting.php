@@ -61,7 +61,7 @@
         </tr>
         <tr>
           <th width="200">默认注册模型</th>
-          <td><?php echo Form::select($Model_Member, $setting['defaultmodelid'], 'name="setting[defaultmodelid]"'); ?></td>
+          <td><?php echo Form::select($groupsModel, $setting['defaultmodelid'], 'name="setting[defaultmodelid]"'); ?></td>
         </tr>
         <tr>
           <th width="200">新会员注册需要邮件验证</th>

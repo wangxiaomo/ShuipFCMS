@@ -1,3 +1,11 @@
+[数据库调整]
+1、UPDATE `shuipfcms_menu` SET `model` = 'Createhtml' WHERE `model` = 'Create_html';
+2、UPDATE `shuipfcms_menu` SET `model` = 'Group' WHERE `model` = 'Member_group';
+3、UPDATE `shuipfcms_menu` SET `model` = 'Model' WHERE `model` = 'Member_model';
+4、UPDATE `shuipfcms_menu` SET `model` = 'Setting' WHERE `model` = 'Member_setting';
+5、UPDATE `shuipfcms_menu` SET `model` = 'Field' WHERE `model` = 'Member_modelfield';
+6、UPDATE `shuipfcms_menu` SET `model` = 'Field' WHERE `model` = 'Sitemodel_field';
+
 版本：1.0.0
 流水：20130624
 [优化]

@@ -133,17 +133,19 @@ class IndexAction extends MemberbaseAction {
                 $info = I('post.info');
                 require_cache(RUNTIME_PATH . 'content_input.class.php');
                 $content_input = new content_input($modelid);
-                $info = $content_input->get($info,2);
+                $info = $content_input->get($info, 2);
                 $info = ContentModel::getInstance($modelid)->relation(false)->create($info, 2);
-                if(false == $info){
+                if (false == $info) {
                     $this->error(ContentModel::getInstance($modelid)->getError());
                 }
-                $status = ContentModel::getInstance($modelid)->where(array("userid" => AppframeAction::$Cache['uid']))->save($info);
-                if(false !== $status){
-                    $this->success("更新成功！", U("Index/account_manage_info"));
-                }else{
-                    $this->error('更新失败！');
+                //检查详细信息是否已经添加过
+                if (ContentModel::getInstance($modelid)->where(array("userid" => AppframeAction::$Cache['uid']))->find()) {
+                    ContentModel::getInstance($modelid)->where(array("userid" => AppframeAction::$Cache['uid']))->save($info);
+                } else {
+                    $info['userid'] = AppframeAction::$Cache['uid'];
+                    ContentModel::getInstance($modelid)->add($info);
                 }
+                $this->success("更新成功！", U("Index/account_manage_info"));
             } else {
                 $this->error($Member->getError());
             }
@@ -241,15 +243,12 @@ class IndexAction extends MemberbaseAction {
         }
         if (IS_POST) {
             $code = $this->_post("code");
-            $username = $this->_post("username");
-            $password = $this->_post("password");
-            $email = $this->_post("email");
             //验证码开始验证
             if (!$this->verify($code)) {
-                $this->error("验证码错误，请重新输入！");
+                //$this->error("验证码错误，请重新输入！");
             }
             $Member = D("Member");
-            $data = $Member->create();
+            $data = $Member->token(false)->create();
             if ($data) {
                 //模型选择,如果是关闭模型选择，直接赋值默认模型
                 if ((int) $this->Member_config['choosemodel']) {
@@ -278,70 +277,47 @@ class IndexAction extends MemberbaseAction {
                     }
                 }
                 $info = I('post.info');
-                $modelid = I('post.modelid',0,'intval');
-                if(empty($modelid)){
+                $modelid = I('post.modelid', 0, 'intval');
+                if (empty($modelid)) {
                     $this->error('请选择会员模型！');
                 }
-                require_cache(RUNTIME_PATH . 'content_input.class.php');
-                $content_input = new content_input($modelid);
-                $info = $content_input->get($info);
-                $info = ContentModel::getInstance($modelid)->relation(false)->create($info, 1);
-                if(false == $info){
-                    $this->error(ContentModel::getInstance($modelid)->getError());
-                }
-                $data = array_merge($data, array('info' => $info));
-                $status = $this->registeradd($username, $password, $email, $data);
-                if ($status > 0) {
-                    if ($this->Member_config['enablemailcheck']) {
-                        //发送邮件
-                        $code = urlencode(authcode($status, ''));
-                        $url = CONFIG_SITEURL . "index.php?g=member&c=index&a=public_verifyemail&code=$code";
-                        $message = $this->Member_config['registerverifymessage'];
-                        $message = str_replace(array('{$click}', '{$url}'), array('<a href="' . $url . '">请点击</a>', $url), $message);
-                        SendMail($data['email'], "注册会员验证邮件", $message);
-                        $this->success("邮件已经发送到你注册邮箱，根据邮件内容完成验证操作！", CONFIG_SITEURL);
+                $userid = $this->registeradd($data['username'], $data['password'], $data['email']);
+                if ($userid > 0) {
+                    $memberinfo = service("Passport")->getLocalUser((int) $userid);
+                    $data['username'] = $memberinfo['username'];
+                    $data['password'] = $memberinfo['password'];
+                    $data['email'] = $memberinfo['email'];
+                    //新注册用户积分
+                    $data['point'] = $this->Member_config['defualtpoint'] ? $this->Member_config['defualtpoint'] : 0;
+                    //新会员注册默认赠送资金
+                    $data['amount'] = $this->Member_config['defualtamount'] ? $this->Member_config['defualtamount'] : 0;
+                    //计算用户组
+                    $data['groupid'] = $Member->get_usergroup_bypoint($data['point']);
+                    if (false !== $Member->where(array('userid' => $memberinfo['userid']))->save($data)) {
+                        if ($this->Member_config['enablemailcheck']) {
+                            //发送邮件
+                            $code = urlencode(authcode($status, ''));
+                            $url = CONFIG_SITEURL . "index.php?g=member&c=index&a=public_verifyemail&code=$code";
+                            $message = $this->Member_config['registerverifymessage'];
+                            $message = str_replace(array('{$click}', '{$url}'), array('<a href="' . $url . '">请点击</a>', $url), $message);
+                            SendMail($data['email'], "注册会员验证邮件", $message);
+                            $this->success("邮件已经发送到你注册邮箱，根据邮件内容完成验证操作！", CONFIG_SITEURL);
+                            exit;
+                        } else {
+                            if (!$data['checked']) {
+                                $this->success("会员注册成功，但需要管理员审核通过！", CONFIG_SITEURL);
+                                exit;
+                            }
+                        }
+                        $this->success("会员注册成功！", U("Index/login"));
                         exit;
                     } else {
-                        if (!$data['checked']) {
-                            $this->success("会员注册成功，但需要管理员审核通过！", CONFIG_SITEURL);
-                            exit;
-                        }
+                        service("Passport")->user_delete($memberinfo['userid']);
+                        $this->error("添加会员失败！");
                     }
-                    $this->success("会员注册成功！", U("Index/login"));
-                    exit;
                 } else {
-                    if ($status == -8) {
-                        $error = '用户注册成功，但附加资料写入失败，你可以登陆进行资料补填！';
-                        $this->error($error, U("Index/login"));
-                    }
-                    switch ($status) {
-                        case -1:
-                            $error = '用户名不合法！';
-                            break;
-                        case -2:
-                            $error = '包含不允许注册的词语！';
-                            break;
-                        case -3:
-                            $error = '用户名已经存在！';
-                            break;
-                        case -4:
-                            $error = 'Email 格式有误！';
-                            break;
-                        case -5:
-                            $error = 'Email 不允许注册！';
-                            break;
-                        case -6:
-                            $error = '该 Email 已经被注册！';
-                            break;
-                        case -7:
-                            $error = '模型ID为空！';
-                            break;
-                        default:
-                            $error = '注册会员失败！';
-                            break;
-                    }
+                    $this->error($Member->getErrorMesg($userid));
                 }
-                $this->error($error);
             } else {
                 $this->error($Member->getError());
             }
@@ -363,18 +339,9 @@ class IndexAction extends MemberbaseAction {
             if (!$Model_Member[$modelid]) {
                 $this->error("该会员模型不存在！");
             }
-            require_cache(RUNTIME_PATH . 'content_form.class.php');
-            //实例化表单类 传入 模型ID 栏目ID 栏目数组
-            $content_form = new content_form($modelid);
-            //生成对应字段的输入表单
-            $forminfos = $content_form->get();
-            //生成对应的JS提示等
-            $formValidator = $content_form->formValidator;
 
             $this->assign('showregprotocol', $showregprotocol);
             $this->assign("protocol", $this->Member_config['regprotocol']);
-            $this->assign("forminfos", $forminfos);
-            $this->assign("formValidator", $formValidator);
             $this->assign("choosemodel", $this->Member_config['choosemodel']);
             $this->assign("modelid", $modelid);
             $this->assign("Model_Member", $Model_Member);

@@ -3,7 +3,7 @@
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
-  <form name="myform" action="{:U('Member_group/edit')}" method="post" class="J_ajaxForm">
+  <form name="myform" action="{:U('Group/edit')}" method="post" class="J_ajaxForm">
   <div class="table_full">
   <div class="h_a">基本信息</div>
   <table width="100%" class="table_form">

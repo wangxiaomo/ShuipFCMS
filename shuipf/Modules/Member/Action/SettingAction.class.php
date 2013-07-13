@@ -5,24 +5,21 @@
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-class Member_settingAction extends AdminbaseAction {
+class SettingAction extends AdminbaseAction {
     
-    public $Member_group, $Model_Member;
+    //会员用户组缓存
+    protected $groupCache = array();
+    //会员模型
+    protected $groupsModel = array();
+    //会员数据模型
+    protected $member = NULL;
     
     function _initialize() {
         parent::_initialize();
         import('Form');
-        $group = F("Member_group");
-        foreach ($group as $k => $v) {
-            $this->Member_group[$v['groupid']] = $v['name'];
-        }
-        $Model_Member = F("Model_Member");
-        foreach ($Model_Member as $k => $v) {
-            $this->Model_Member[$v['modelid']] = $v['name'];
-        }
-
-        $this->assign("Member_group", $this->Member_group);
-        $this->assign("Model_Member", $this->Model_Member);
+        $this->groupCache = F("Member_group");
+        $this->groupsModel = F("Model_Member");
+        $this->member = D('Member');
     }
 
     /**
@@ -60,6 +57,17 @@ class Member_settingAction extends AdminbaseAction {
                 $Interface[$neme] = $lan[$neme]?$lan[$neme]:$neme;
             }
             $setting = M("Module")->where(array("module" => "Member"))->getField("setting");
+             foreach($this->groupCache as $g){
+                if(in_array($g['groupid'],array(8,1,7))){
+                    continue;
+                }
+                $groupCache[$g['groupid']] = $g['name'];
+            }
+            foreach($this->groupsModel as $m){
+                $groupsModel[$m['modelid']] = $m['name'];
+            }
+            $this->assign('groupCache', $groupCache);
+            $this->assign('groupsModel', $groupsModel);
             $this->assign("setting", unserialize($setting));
             $this->assign("Interface",$Interface);
             $this->display();

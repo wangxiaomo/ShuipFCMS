@@ -27,18 +27,22 @@
 		</tr>
 		<tr>
 			<th>会员组</th>
-			<td><?php echo $Member_group[$groupid];?></td>
+			<td><?php echo $groupCache[$groupid];?></td>
 		</tr>
 		<tr>
 			<th>积分点数</th>
 			<td>{$point}</td>
 		</tr>
+        <tr>
+			<th>钱金总额</th>
+			<td>{$amount}</td>
+		</tr>
 		<tr>
 			<th>会员模型</th>
-			<td><?php echo $Model_Member[$modelid];?></td>
+			<td><?php echo $groupsModel[$modelid];?></td>
 		</tr>
 	</table>
-    <div class="h_a">模型信息</div>
+    <div class="h_a"> 详细信息</div>
     <table width="100%" class="table_form">
 	<?php foreach($Model_field as $k=>$v) {?>
 		<tr>
