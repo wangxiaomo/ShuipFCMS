@@ -25,7 +25,7 @@
           <td align="center">{$vo['description']}</td>
           <td align="center">{$vo['addtime']|date="Y-m-d H:i:s",###}</td>
           <td align="center">
-          <a href="{:U('Info/index',array('menuid'=>$_GET['menuid'],'formid'=>$vo['modelid']))}">信息列表</a> | <a href="{:U('Field/add',array('menuid'=>$_GET['menuid'],'formid'=>$vo['modelid']))}">添加字段</a> | <a href="{:U('Field/index',array('menuid'=>$_GET['menuid'],'formid'=>$vo['modelid']))}">管理字段</a> | <a href="{:U('Formguide/edit',array('menuid'=>$_GET['menuid'],'formid'=>$vo['modelid']))}">修改</a> | 
+          <a href="{:U('Info/index',array('menuid'=>$_GET['menuid'],'formid'=>$vo['modelid']))}" target="_blank">信息列表</a> | <a href="{:U('Field/add',array('menuid'=>$_GET['menuid'],'formid'=>$vo['modelid']))}"  target="_blank">添加字段</a> | <a href="{:U('Field/index',array('menuid'=>$_GET['menuid'],'formid'=>$vo['modelid']))}"  target="_blank">管理字段</a> | <a href="{:U('Formguide/edit',array('menuid'=>$_GET['menuid'],'formid'=>$vo['modelid']))}">修改</a> | 
           <if condition=" $vo['disabled'] eq 0 ">
           <a href="{:U('Formguide/status',array('disabled'=>0,'menuid'=>$_GET['menuid'],'formid'=>$vo['modelid']))}">禁用</a> | 
           <else />

@@ -9,6 +9,7 @@
       <thead>
         <tr>
           <td width="35" align="center"><input type="checkbox" class="J_check_all" data-direction="y" data-checklist="J_check_y"></td>
+          <td width="40" align="center">id</td>
           <td align="left">用户名</td>
           <td width='250' align="center">用户ip</td>
           <td width='250' align="center">时间</td>
@@ -18,11 +19,12 @@
       <tbody>
         <volist name="data" id="vo">
         <tr>
-          <td align="center"><input type="checkbox" class="J_check" data-yid="J_check_y" data-xid="J_check_x" name="did[]" value="{$vo.dataid}"></td>
-          <td>{$vo.username}</td>
+          <td align="center"><input type="checkbox" class="J_check" data-yid="J_check_y" data-xid="J_check_x" name="dataid[]" value="{$vo.dataid}"></td>
+          <td align="center">{$vo.dataid}</td>
+          <td align="left">{$vo.username}</td>
           <td align="center"><font color=blue>{$vo.ip}</font></td>
           <td align="center">{$vo.datetime|date="Y-m-d H:i:s",###}</td>
-          <td align="center"><a href="javascript:check('{$formid}', '{$vo.dataid}', '{$vo.username}');">查看</a> | <a href="javascript:confirmurl('{:U('Info/delete',array('formid'=>$formid,'did'=>$vo['dataid']))}','确认要删除 『 删除 』 吗？');">删除</a></td>
+          <td align="center"><a href="javascript:check('{$formid}', '{$vo.dataid}', '{$vo.username}');">查看</a> | <a href="{:U('Info/delete',array('formid'=>$formid,'dataid'=>$vo['dataid']))};" class="J_ajax_del">删除</a></td>
         </tr>
        </volist>
       </tbody>

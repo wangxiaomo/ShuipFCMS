@@ -19,9 +19,7 @@ class FieldAction extends AdminbaseAction {
         $this->modelfield = D("FormaguideField");
     }
 
-    /**
-     * 管理字段
-     */
+    //管理字段
     public function index() {
         if (IS_POST) {
             foreach ($_POST['listorders'] as $id => $listorder) {
@@ -29,11 +27,11 @@ class FieldAction extends AdminbaseAction {
             }
             $this->success("排序更新成功！");
         } else {
-            if (!$this->formid) {
+            if (empty($this->formid)) {
                 $this->error("缺少参数！");
             }
             $model = M("Model")->where(array("modelid" => $this->formid))->find();
-            if (!$model) {
+            if (empty($model)) {
                 $this->error("该表单不存在！");
             }
 
@@ -55,9 +53,7 @@ class FieldAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 添加字段
-     */
+    //添加字段
     public function add() {
         if (IS_POST) {
             //模型ID
@@ -92,9 +88,7 @@ class FieldAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 编辑字段
-     */
+    //编辑字段
     public function edit() {
         if (IS_POST) {
             //模型ID
@@ -167,9 +161,7 @@ class FieldAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 删除字段
-     */
+    //删除字段
     public function delete() {
         //字段ID
         $fieldid = I('get.fieldid', 0, 'intval');
@@ -184,19 +176,17 @@ class FieldAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 验证字段是否重复 AJAX
-     */
+    //验证字段是否重复 AJAX
     public function public_checkfield() {
         //新字段名称
-        $field = $this->_get("field");
+        $field = I('get.field');
         //原来字段名
-        $oldfield = $this->_get("oldfield");
+        $oldfield = I('get.oldfield');
         if ($field == $oldfield) {
             $this->ajaxReturn($field, "字段没有重复！", true);
         }
         //模型ID
-        $modelid = $this->_get("modelid");
+        $modelid = I('get.modelid');
 
         $status = $this->modelfield->where(array("field" => $field, "modelid" => $modelid))->count();
         if ($status == 0) {
@@ -206,12 +196,10 @@ class FieldAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 字段属性配置
-     */
+    //字段属性配置
     public function public_field_setting() {
         //字段类型
-        $fieldtype = $this->_get("fieldtype");
+        $fieldtype = I('get.fieldtype');
         $fiepath = $this->fields . $fieldtype . "/";
         //载入对应字段配置文件 config.inc.php 
         require($fiepath . "config.inc.php");
@@ -224,9 +212,7 @@ class FieldAction extends AdminbaseAction {
         return true;
     }
 
-    /**
-     * 字段的启用与禁用 
-     */
+    //字段的启用与禁用 
     public function disabled() {
         $fieldid = intval($_GET['fieldid']);
         $disabled = $_GET['disabled'] ? 0 : 1;
@@ -239,5 +225,3 @@ class FieldAction extends AdminbaseAction {
     }
 
 }
-
-?>

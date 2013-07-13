@@ -26,11 +26,11 @@
 	</tr>
 	<tr id="time_start" style="display:none;">
   		<th><strong>开始时间：</strong></th>
-        <td><input type="text" name="setting[starttime]" id="starttime" value="2012-08-14" size="10" class="date input" readonly=""></td>
+        <td><input type="text" name="setting[starttime]" id="starttime" value="2012-08-14" size="10" class="date input" readonly></td>
 	</tr>
 	<tr id="time_end" style="display:none;">
 		<th><strong>结束时间：</strong></th>
-		<td><input type="text" name="setting[endtime]" id="endtime" value="" size="10" class="date input" readonly=""></td>
+		<td><input type="text" name="setting[endtime]" id="endtime" value="" size="10" class="date input" readonly></td>
 	</tr>
 	<tr>
 		<th><strong>允许发送邮件：</strong></th>

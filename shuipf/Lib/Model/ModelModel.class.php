@@ -248,7 +248,7 @@ class ModelModel extends CommonModel {
         D("ModelField")->where(array("modelid" => $modelid))->delete();
         //删除主表
         $this->deleteTable($model_table);
-        if ((int) $modeldata['type'] != 2) {
+        if ((int) $modeldata['type'] == 0) {
             //删除副表
             $this->DeleteTable($model_table . "_data");
         }
@@ -265,7 +265,7 @@ class ModelModel extends CommonModel {
      * @param type $sqls SQL语句
      * @return boolean
      */
-    private function sql_execute($sqls) {
+    protected function sql_execute($sqls) {
         $sqls = $this->sql_split($sqls);
         if (is_array($sqls)) {
             foreach ($sqls as $sql) {
@@ -317,7 +317,7 @@ class ModelModel extends CommonModel {
      */
     public function Cache($type = null) {
         $where = array("disabled" => 0);
-        if(!is_null($type)){
+        if (!is_null($type)) {
             $where['type'] = $type;
         }
         $data = $this->where($where)->select();
@@ -336,13 +336,13 @@ class ModelModel extends CommonModel {
         $modelData = $this->Cache();
         $modelType = array();
         //对模型进行分类
-        foreach($modelData as $mid=>$info){
+        foreach ($modelData as $mid => $info) {
             $modelType[$info['type']][$info['modelid']] = $info;
         }
         F("Model", $modelData);
         D("Model_field")->model_field_cache();
         //按模型类型生成模型缓存
-        foreach($modelType as $type=>$model){
+        foreach ($modelType as $type => $model) {
             F("ModelType_{$type}", $model);
         }
         return true;

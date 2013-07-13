@@ -125,7 +125,7 @@ class FieldAction extends AdminbaseAction {
                 $this->error('数据不能为空！');
             }
             if ($this->modelfield->addField($post)) {
-                $this->success("添加成功！", U("Sitemodel_field/index", array("modelid" => $modelid)));
+                $this->success("添加成功！", U("Field/index", array("modelid" => $modelid)));
             } else {
                 $error = $this->modelfield->getError();
                 $this->error($error ? $error : '添加失败！');

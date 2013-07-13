@@ -7,66 +7,47 @@
  */
 class IndexAction extends BaseAction {
 
+    //表单模型缓存
     public $Model_form;
+    protected $db = NULL, $formguide;
+    public $formid;
 
     function _initialize() {
         parent::_initialize();
-        $this->db = D("Formguide");
+        $this->formguide = D("Formguide");
         $this->Model_form = F("Model_form");
         if (!$this->Model_form) {
             //生成缓存
             $this->Model_form = D("Model")->Cache(3);
         }
+        $formid = I('request.formid', 0, 'intval');
+        $this->formid = $formid;
+        if (!empty($this->formid)) {
+            $this->db = ContentModel::getInstance($this->formid)->relation(false);
+            ;
+        }
+        $this->assign('formid', $this->formid);
     }
 
+    //显示表单
     public function index() {
-        $formid = $modelid = (int) $this->_get("formid");
         //判断是否JS显示
-        $action = $this->_get("action");
-        if (!$formid) {
+        $action = I('get.action');
+        if (empty($this->formid)) {
             $action == "js" ? exit : $this->error("该表单不存在！");
         }
-        $r = $this->db->where(array("modelid" => $formid))->find();
-        if (!$r) {
+        $r = $this->formguide->where(array("modelid" => $this->formid))->find();
+        if (empty($r)) {
             $this->error("该表单不存在！");
         }
-        //模型
-        $moinfo = $this->Model_form[$formid];
-        if (!$moinfo) {
+        //验证权限
+        $this->competence();
+         //模型
+        $moinfo = $this->Model_form[$this->formid];
+        if (empty($moinfo)) {
             $action == "js" ? exit : $this->error("该表单不存在或者已经关闭！");
         }
         $setting = unserialize($moinfo['setting']);
-        $setting['show_template'] = $r['show_template'];
-        $time = time();
-        //时间判断
-        if ($setting['starttime']) {
-            if ($time < (int) $setting['starttime']) {
-                $action == "js" ? exit : $this->error("还没开始！");
-            }
-        }
-        if ($setting['endtime']) {
-            if ($time > (int) $setting['endtime']) {
-                $action == "js" ? exit : $this->error("已经结束！");
-            }
-        }
-
-        //是否允许游客提交
-        if ((int) $setting['allowunreg'] == 0) {
-            //判断是否登陆
-            if (!AppframeAction::$Cache['uid']) {
-                $action == "js" ? exit : $this->error("请先登陆！");
-            }
-        }
-        //是否允许同一IP多次提交
-        if ((int) $setting['allowmultisubmit'] == 0) {
-            $tablename = M('Model')->where(array("modelid" => $formid))->getField("tablename");
-            $tablename = ucwords($tablename);
-            $ip = get_client_ip();
-            $count = M($tablename)->where(array("ip" => $ip))->count();
-            if ($count) {
-                $action == "js" ? exit : $this->error("你已经提交过了！");
-            }
-        }
         //模板
         $show_template = $setting['show_template'] ? $setting['show_template'] : "show";
         //js模板
@@ -75,7 +56,7 @@ class IndexAction extends BaseAction {
         //引入输入表单处理类
         require_cache(RUNTIME_PATH . 'content_form.class.php');
         //实例化表单类 传入 模型ID 栏目ID 栏目数组
-        $content_form = new content_form($modelid);
+        $content_form = new content_form($this->formid);
         //生成对应字段的输入表单
         $forminfos = $content_form->get();
         $forminfos = $forminfos['senior'];
@@ -85,8 +66,8 @@ class IndexAction extends BaseAction {
         $this->assign("forminfos", $forminfos);
         $this->assign("formValidator", $formValidator);
         $this->assign($moinfo);
-        $this->assign("modelid", $modelid);
-        $this->assign("formid", $modelid);
+        $this->assign("modelid", $this->formid);
+        $this->assign("formid", $this->formid);
         if ($action == 'js') {
             //获取模板路径
             $filepath = TEMPLATE_PATH . (empty(AppframeAction::$Cache["Config"]['theme']) ? "Default" : AppframeAction::$Cache["Config"]['theme']) . "/Formguide/";
@@ -97,62 +78,24 @@ class IndexAction extends BaseAction {
         $this->display("Show:" . ($action == "js" ? $show_js_template : $show_template));
     }
 
-    /**
-     * 信息提交
-     */
+    //表单提交
     public function post() {
         if (IS_POST) {
             //表单ID
-            $modelid = $formid = (int) $this->_post("formid");
-
-            //模型
-            $moinfo = $this->Model_form[$formid];
-            if (!$moinfo) {
-                $this->error("该表单不存在或者已经关闭！");
-            }
-            $db = ContentModel::getInstance($modelid)->relation(false);
-            $setting = unserialize($moinfo['setting']);
-            $time = time();
-            //时间判断
-            if ($setting['starttime']) {
-                if ($time < (int) $setting['starttime']) {
-                    $this->error("还没开始！");
-                }
-            }
-            if ($setting['endtime']) {
-                if ($time > (int) $setting['endtime']) {
-                    $this->error("已经结束！");
-                }
-            }
-
-            //是否允许游客提交
-            if ((int) $setting['allowunreg'] == 0) {
-                //判断是否登陆
-                if (!AppframeAction::$Cache['uid']) {
-                    $this->error("请先登陆！");
-                }
-            }
-
-            //是否允许同一IP多次提交
-            if ((int) $setting['allowmultisubmit'] == 0) {
-                $ip = get_client_ip();
-                $count = $db->where(array("ip" => $ip))->count();
-                if ($count) {
-                    $this->error("你已经提交过了！");
-                }
-            }
-
+            $modelid = $formid = $this->formid;
+            //验证权限
+            $this->competence();
             $info = array_merge($_POST['info'], array(C("TOKEN_NAME") => $_POST[C("TOKEN_NAME")]));
             require_cache(RUNTIME_PATH . 'content_input.class.php');
             require_cache(RUNTIME_PATH . 'content_update.class.php');
             $content_input = new content_input($modelid);
             $inputinfo = $content_input->get($info);
-            if(false == $inputinfo){
+            if (false == $inputinfo) {
                 $this->error($content_input->getError());
             }
-            $inputinfo = $db->create($inputinfo,1);
-            if(false == $inputinfo){
-                $this->error($db->getError());
+            $inputinfo = $this->db->create($inputinfo, 1);
+            if (false == $inputinfo) {
+                $this->error($this->db->getError());
             }
 
             if ($inputinfo) {
@@ -165,11 +108,11 @@ class IndexAction extends BaseAction {
                 $systeminfo['username'] = $username ? $username : "游客";
                 $systeminfo['datetime'] = time();
                 $systeminfo['ip'] = get_client_ip();
-                if (!$db->autoCheckToken($info)) {
+                if (!$this->db->autoCheckToken($info)) {
                     $this->error("表单令牌错误！");
                 }
                 //写入数据
-                $id = $db->data($systeminfo)->add();
+                $id = $this->db->data($systeminfo)->add();
                 if ($id) {
                     //信息量+1
                     M("Model")->where(array("modelid" => $modelid))->setInc("items");
@@ -203,6 +146,45 @@ class IndexAction extends BaseAction {
     protected function format_js($string, $isjs = 1) {
         $string = addslashes(str_replace(array("\r", "\n"), array('', ''), $string));
         return $isjs ? 'document.write("' . $string . '");' : $string;
+    }
+
+    //验证提交权限
+    protected function competence() {
+        //判断是否JS显示
+        $action = I('get.action');
+        //模型
+        $moinfo = $this->Model_form[$this->formid];
+        if (empty($moinfo)) {
+            $action == "js" ? exit : $this->error("该表单不存在或者已经关闭！");
+        }
+        $setting = unserialize($moinfo['setting']);
+        $time = time();
+        //时间判断
+        if ($setting['starttime']) {
+            if ($time < (int) $setting['starttime']) {
+                $action == "js" ? exit : $this->error("还没开始！");
+            }
+        }
+        if ($setting['endtime']) {
+            if ($time > (int) $setting['endtime']) {
+                $action == "js" ? exit : $this->error("已经结束！");
+            }
+        }
+        //是否允许游客提交
+        if ((int) $setting['allowunreg'] == 0) {
+            //判断是否登陆
+            if (!AppframeAction::$Cache['uid']) {
+                $action == "js" ? exit : $this->error("该表单不允许游客提交，请登陆后操作！", U('Member/Index/login'));
+            }
+        }
+        //是否允许同一IP多次提交
+        if ((int) $setting['allowmultisubmit'] == 0) {
+            $ip = get_client_ip();
+            $count = $this->db->where(array("ip" => $ip))->count();
+            if ($count) {
+                $action == "js" ? exit : $this->error("你已经提交过了！");
+            }
+        }
     }
 
 }

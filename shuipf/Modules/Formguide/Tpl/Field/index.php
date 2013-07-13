@@ -25,8 +25,8 @@
         <volist name="data" id="vo">
           <tr>
             <td align='center' width='70'><input name='listorders[{$vo.fieldid}]' type='text' size='3' value='{$vo.listorder}' class='input'></td>
-            <td width='90'>{$vo.field}</td>
-            <td width="100">{$vo.name}</td>
+            <td width='90' align='center'>{$vo.field}</td>
+            <td width="100" align='center'>{$vo.name}</td>
             <td width="100" align='center'>{$vo.formtype}</td>
             <td width="50" align='center'><font color="red"><if condition="$vo['minlength'] eq 1">√<else /> ╳</if></font></td>
             <td align='center'>
