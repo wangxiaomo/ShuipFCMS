@@ -106,6 +106,8 @@ class FieldAction extends AdminbaseAction {
                 $this->error('数据不能为空！');
             }
             $post['issystem'] = 1;
+            //是否作为基本字段
+            $post['isbase'] = 0;
             if ($this->modelfield->editField($post, $fieldid)) {
                 $this->success("更新成功！", U("Field/index", array("formid" => $modelid)));
             } else {

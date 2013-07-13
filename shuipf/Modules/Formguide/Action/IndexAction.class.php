@@ -24,7 +24,6 @@ class IndexAction extends BaseAction {
         $this->formid = $formid;
         if (!empty($this->formid)) {
             $this->db = ContentModel::getInstance($this->formid)->relation(false);
-            ;
         }
         $this->assign('formid', $this->formid);
     }
@@ -42,7 +41,7 @@ class IndexAction extends BaseAction {
         }
         //验证权限
         $this->competence();
-         //模型
+        //模型
         $moinfo = $this->Model_form[$this->formid];
         if (empty($moinfo)) {
             $action == "js" ? exit : $this->error("该表单不存在或者已经关闭！");
