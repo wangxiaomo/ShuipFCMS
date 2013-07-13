@@ -23,7 +23,7 @@
         <td align='center'>{$vo.tablename}</td>
         <td align='center'>{$vo.description}</td>
         <td align='center'><font color="red"><if condition="$vo['disabled'] eq '1' ">╳<else />√</if></font></td>
-        <td align='center'><a href="{:U('Models/Sitemodel_field/index',array('modelid'=>$vo['modelid']))}">字段管理</a> | <a href="{:U("Index/edit",array("modelid"=>$vo['modelid']))}">修改</a> | 
+        <td align='center'><a href="{:U('Models/Field/index',array('modelid'=>$vo['modelid']))}">字段管理</a> | <a href="{:U("Index/edit",array("modelid"=>$vo['modelid']))}">修改</a> | 
         <if condition=" $vo['disabled'] eq 0 ">
         <a href="{:U("Index/disabled",array("modelid"=>$vo['modelid'],"disabled"=>0))}">禁用</a> | 
         <else />
