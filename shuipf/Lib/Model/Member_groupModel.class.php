@@ -8,11 +8,13 @@ class Member_groupModel extends CommonModel {
         array('name', 'require', '会员组名称不能为空！'),
         array('name', '', '该会员组已经存在！', 0, 'unique', 3),
         array('point', 'require', '积分不能为空！'),
+        array('point', 'number', '积分只能是数字！'),
         array('starnum', 'require', '星星数不能为空！'),
+         array('starnum', 'number', '星星数只能是数字！'),
     );
 
     //编辑会员组
-    public function group_edit($data) {
+    public function groupEdit($data) {
         if (!is_array($data)) {
             return false;
         }
@@ -36,7 +38,7 @@ class Member_groupModel extends CommonModel {
     }
 
     //添加会员组
-    public function group_add($data) {
+    public function groupAdd($data) {
         if (!is_array($data)) {
             return false;
         }

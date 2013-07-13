@@ -245,7 +245,7 @@ class IndexAction extends MemberbaseAction {
             $code = $this->_post("code");
             //验证码开始验证
             if (!$this->verify($code)) {
-                //$this->error("验证码错误，请重新输入！");
+                $this->error("验证码错误，请重新输入！");
             }
             $Member = D("Member");
             $data = $Member->token(false)->create();

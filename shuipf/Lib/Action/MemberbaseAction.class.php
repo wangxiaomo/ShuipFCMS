@@ -111,7 +111,6 @@ class MemberbaseAction extends BaseAction {
      * @param type $username 用户名
      * @param type $password 密码
      * @param type $email 邮箱
-     * @param type $_data post
      * @return int 大于 0:返回用户 ID，表示用户注册成功
      *                              -1:用户名不合法
      *                              -2:包含不允许注册的词语
@@ -122,35 +121,8 @@ class MemberbaseAction extends BaseAction {
      *                              -7模型ID为空
      *                              -8用户注册成功，但添加模型资料失败
      */
-    protected function registeradd($username, $password, $email, $_data) {
-        $Model_Member = F("Model_Member");
-        //模型ID
-        $modelid = $_data['modelid'];
-        if (!$modelid || !$Model_Member[$modelid]) {
-            return -7;
-        }
-        $inputinfo = $_data['info'];
-        //新注册用户积分
-        $_data['point'] = $this->Member_config['defualtpoint'] ? $this->Member_config['defualtpoint'] : 0;
-        //新会员注册默认赠送资金
-        $_data['amount'] = $this->Member_config['defualtamount'] ? $this->Member_config['defualtamount'] : 0;
-        //计算用户组
-        $_data['groupid'] = $_data['groupid'] ? $_data['groupid'] : D("Member")->get_usergroup_bypoint($_data['point']);
-
-        $userid = service("Passport")->user_register($username, $password, $email, $_data);
-
-        if ($userid > 0) {
-            $inputinfo['userid'] = $userid;
-            //补充相应模型资料
-            $status = ContentModel::getInstance($modelid)->relation(false)->add($inputinfo);
-            if ($status) {
-                return $userid;
-            } else {
-                return -8;
-            }
-        } else {
-            return $userid;
-        }
+    protected function registeradd($username, $password, $email) {
+        return service("Passport")->user_register($username, $password, $email);
     }
 
     /**

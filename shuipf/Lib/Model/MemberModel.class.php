@@ -1,6 +1,10 @@
 <?php
 
-// 用户模型
+/**
+ * 会员模型
+ * Some rights reserved：abc3210.com
+ * Contact email:admin@abc3210.com
+ */
 class MemberModel extends CommonModel {
 
     //array(验证字段,验证规则,错误提示,[验证条件,附加规则,验证时间])
@@ -12,7 +16,7 @@ class MemberModel extends CommonModel {
         array('nickname', '', '该昵称已经存在！', 0, 'unique', 1),
         array('pwdconfirm', 'password', '两次输入的密码不一样！', 0, 'confirm'),
         //callback
-        array('username', 'checkName', '用户名已经存在或不合法！', 0, 'callback',1),
+        array('username', 'checkName', '用户名已经存在或不合法！', 0, 'callback', 1),
         array('email', 'checkEmail', '邮箱已经存在或者不合法！', 0, 'callback', 1),
         array('groupid', 'checkGroupid', '该会员组不存在！', 0, 'callback'),
         array('modelid', 'checkModelid', '该会员模型不存在！', 0, 'callback'),
@@ -22,6 +26,39 @@ class MemberModel extends CommonModel {
         array('regdate', 'time', 1, 'function'),
         array('regip', 'get_client_ip', 1, 'function'),
     );
+
+    /**
+     * 根据错误代码返回错误提示
+     * @param type $errorCodes 错误代码
+     * @return type
+     */
+    public function getErrorMesg($errorCodes) {
+        switch ($errorCodes) {
+            case -1:
+                $error = '用户名不合法';
+                break;
+            case -2:
+                $error = '包含不允许注册的词语';
+                break;
+            case -3:
+                $error = '用户名已经存在';
+                break;
+            case -4:
+                $error = 'Email 格式有误';
+                break;
+            case -5:
+                $error = 'Email 不允许注册';
+                break;
+            case -6:
+                $error = '该 Email 已经被注册';
+                break;
+            default:
+                $error = '操作出现错误';
+                break;
+        }
+
+        return $error;
+    }
 
     //检查用户名
     public function checkName($name) {
@@ -39,7 +76,7 @@ class MemberModel extends CommonModel {
         return false;
     }
 
-    //检查会有组
+    //检查会员组
     public function checkGroupid($groupid) {
         $Member_group = F("Member_group");
         if (!$Member_group[$groupid]) {
@@ -137,5 +174,3 @@ class MemberModel extends CommonModel {
     }
 
 }
-
-?>
