@@ -69,20 +69,17 @@ class BaseAction extends AppframeAction {
      * @return boolean|string 
      */
     private function parseTemplateFile($templateFile = '') {
-        $status = parseTemplateFile($templateFile);
-        if (false === $status) {
+        $templateFile = parseTemplateFile($templateFile);
+        if (false === $templateFile) {
             if (APP_DEBUG) {
                 // 模块不存在 抛出异常
-                throw_exception("模板[{$templateFile}]不存在！");
+                throw_exception("当前页面模板不存在（详细信息已经记录到网站日志）！");
             } else {
-                if (C('LOG_RECORD')) {
-                    Log::write("模板[{$templateFile}]不存在！");
-                }
                 send_http_status(404);
                 exit;
             }
         }
-        return $status;
+        return $templateFile;
     }
 
      /**
