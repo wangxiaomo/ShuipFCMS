@@ -35,9 +35,9 @@ class SettingAction extends AdminbaseAction {
                     import('Cacheapi');
                     $Cache = new Cacheapi();
                     $Cache->member_cache();
-                    $this->success("更新成功！", U("Member_setting/setting"));
+                    $this->success("更新成功！", U("Setting/setting"));
                 } else {
-                    $this->error("更新失败！", U("Member_setting/setting"));
+                    $this->error("更新失败！", U("Setting/setting"));
                 }
             } else {
                 $this->error($Module->getError());

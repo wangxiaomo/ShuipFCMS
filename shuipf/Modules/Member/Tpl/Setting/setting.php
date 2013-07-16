@@ -32,7 +32,7 @@
       <li class=""><a href="javascript:;;">Connect</a></li>
     </ul>
   </div>
-  <form name="myform" action="{:U('Member_setting/setting')}" method="post" class="J_ajaxForm">
+  <form name="myform" action="{:U('Setting/setting')}" method="post" class="J_ajaxForm">
   <div class="J_tabs_contents">
     <div class="table_full">
       <div class="h_a">基本属性</div>
