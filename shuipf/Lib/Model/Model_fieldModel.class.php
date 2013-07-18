@@ -143,9 +143,12 @@ class Model_fieldModel extends CommonModel {
             $this->error = '数据表不存在！';
             return false;
         }
+        //数据正则
+        $pattern = $data['pattern'];
         //进行数据验证
         $data = $this->create($data, 1);
         if ($data) {
+            $data['pattern'] = $pattern;
             //检查字段是否存在
             if ($this->field_exists($tablename, $data['field'])) {
                 $this->error = '该字段已经存在！';
@@ -267,9 +270,12 @@ class Model_fieldModel extends CommonModel {
         }
         //附加属性值
         $data['setting'] = serialize($setting);
+        //数据正则
+        $pattern = $data['pattern'];
         //进行数据验证
         $data = $this->create($data, 2);
         if ($data) {
+            $data['pattern'] = $pattern;
             if (false !== $this->where(array("fieldid" => $fieldid))->save($data)) {
                 //如果字段名变更
                 if ($data['field'] && $info['field']) {
