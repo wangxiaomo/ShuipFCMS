@@ -650,12 +650,13 @@ function parseTemplateFile($templateFile = '') {
     //区分大小写的文件判断，如果不存在，尝试一次使用默认主题
     if (!file_exists_case($templateFile)) {
         //记录日志
-        Log::write('模板:[' . $templateFile . ']不存在！');
+        $log = '模板:[' . $templateFile . ']不存在！';
         //启用默认主题模板
         $templateFile = str_replace(C("TEMPLATE_NAME"), TEMPLATE_PATH . 'Default/' . $group, $templateFile);
         //判断默认主题是否存在，不存在直接报错提示
         if (!file_exists_case($templateFile)) {
             $TemplateFileCache[$key] = false;
+            Log::write($log);
             return false;
         }
     }
