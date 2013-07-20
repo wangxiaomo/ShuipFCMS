@@ -178,7 +178,7 @@ class TagLibShuipf extends TagLib {
         } else {
             $parsestr = '';
             $parsestr .= '<?php';
-            $parsestr .= '  $arrparentid = array_filter(explode(\',\', $Categorys[$catid][\'arrparentid\'] . \',\' . $catid)); ';
+            $parsestr .= '  $arrparentid = array_filter(explode(\',\', $Categorys['.$catid.'][\'arrparentid\'] . \',\' . '.$catid.')); ';
             $parsestr .= '  foreach ($arrparentid as $cid) {';
             $parsestr .= '      $parsestr[] = \'<a href="\' . $Categorys[$cid][\'url\'] . \'" ' . $target . '>\' . $Categorys[$cid][\'catname\'] . \'</a>\';';
             $parsestr .= '  }';
