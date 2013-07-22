@@ -1,11 +1,10 @@
 <?php
 
-/* * 
+/**
  * 通行证服务，使用Ucenter的方式！
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class PassportUcenter extends PassportService {
 
     function __construct() {
@@ -40,6 +39,18 @@ class PassportUcenter extends PassportService {
         define('UC_PPP', '20');
         //载入uc接口
         return require_cache(SITE_PATH . DIRECTORY_SEPARATOR . "api" . DIRECTORY_SEPARATOR . "uc_client" . DIRECTORY_SEPARATOR . "client.php");
+    }
+
+    /**
+     * 检验用户是否已经登陆
+     */
+    public function isLogged() {
+        //获取cookie中的用户id
+        $uid = $this->getCookieUid();
+        if (empty($uid) || $uid < 1) {
+            return false;
+        }
+        return $uid;
     }
 
     /**
@@ -262,18 +273,6 @@ class PassportUcenter extends PassportService {
     }
 
     /**
-     * 检验用户是否已经登陆
-     */
-    public function isLogged() {
-        //获取cookie中的用户id
-        $uid = $this->getCookieUid();
-        if (empty($uid) || $uid < 1) {
-            return false;
-        }
-        return $this->loginLocal((int) $uid);
-    }
-
-    /**
      * 前台会员信息
      * 根据提示符(username)和未加密的密码(密码为空时不参与验证)获取本地用户信息，前后台公用方法
      * @param type $identifier 为数字时，表示uid，其他为用户名
@@ -319,7 +318,13 @@ class PassportUcenter extends PassportService {
      */
     public function loginLocal($identifier, $password = null, $is_remember_me = 3600) {
         $db = D("Member");
-        $user = uc_user_login($identifier, $password);
+        //检查登陆方式
+        if (is_numeric($identifier) && gettype($identifier) == "integer") {
+            $isuid = 1;
+        } else {
+            $isuid = 0;
+        }
+        $user = uc_user_login($identifier, $password, $isuid);
         if ($user[0] > 0) {
             $userid = $user[0];
             $username = $user[1];
