@@ -33,12 +33,12 @@ class NodeAction extends AdminbaseAction {
     //添加采集项目
     public function add() {
         if (IS_POST) {
-            $data = I("post.data",null,"");
+            $data = I("post.data", null, "");
             if (!$data) {
                 $this->error("参数非法！");
             }
             //自定义规则
-            $customize_config = I("post.customize_config", "","");
+            $customize_config = I("post.customize_config", "", "");
             $data['customize_config'] = array();
             if (is_array($customize_config)) {
                 foreach ($customize_config['en_name'] as $k => $v) {
@@ -80,12 +80,12 @@ class NodeAction extends AdminbaseAction {
             if (!$nodeid) {
                 $this->error("该信息不存在！");
             }
-            $data = I("post.data",null,"");
+            $data = I("post.data", null, "");
             if (!$data) {
                 $this->error("参数非法！");
             }
             //自定义规则
-            $customize_config = I("post.customize_config", "","");
+            $customize_config = I("post.customize_config", "", "");
             $data['customize_config'] = array();
             if (is_array($customize_config)) {
                 foreach ($customize_config['en_name'] as $k => $v) {
@@ -232,9 +232,9 @@ class NodeAction extends AdminbaseAction {
             //得到需要采集的网页列表页
             $urls = Collection::url_list($info);
             //总数
-            if(is_array($urls)){
+            if (is_array($urls)) {
                 $total_page = count($urls);
-            }else{
+            } else {
                 $total_page = 0;
             }
             if ($total_page > 0) {
@@ -245,9 +245,9 @@ class NodeAction extends AdminbaseAction {
                 $history_db = D("CollectionHistory");
                 $content_db = D("CollectionContent");
                 //总数
-                if(is_array($url)){
+                if (is_array($url)) {
                     $total = count($url);
-                }else{
+                } else {
                     $total = 0;
                 }
                 //重复记录
@@ -286,7 +286,7 @@ class NodeAction extends AdminbaseAction {
                     }
                 }
                 //更新最后采集时间
-                if ($total_page <= $page ) {
+                if ($total_page <= $page) {
                     $this->db->where(array('nodeid' => $nodeid))->save(array('lastdate' => time()));
                 }
                 $this->assign("url_list", $url_list);
@@ -296,7 +296,7 @@ class NodeAction extends AdminbaseAction {
                 $this->assign("urllist", $url);
                 $this->assign("nodeid", $nodeid);
                 //由于数组是从0开始，但是根据这个总数和页数进行判断是否继续下一页，所以减一
-                $this->assign("total_page", $total_page-1);
+                $this->assign("total_page", $total_page - 1);
                 $this->display();
             } else {
                 $this->error("没有内容可采集！");
@@ -443,6 +443,7 @@ class NodeAction extends AdminbaseAction {
 
     //导入文章到模型
     public function import_content() {
+        C("TOKEN_ON",false);
         define("GROUP_MODULE", "Contents");
         $nodeid = (int) I("get.nodeid");
         if (!$nodeid) {
@@ -529,12 +530,12 @@ class NodeAction extends AdminbaseAction {
                     //把字段名加入到全局变量中
                     $GLOBALS['field'] = $a;
                     try {
-                        $sql[$a] = call_user_func($program['config']['funcs'][$a], $v['data'][$b]?$v['data'][$b]:$v['data'][$a]);
+                        $sql[$a] = call_user_func($program['config']['funcs'][$a], $v['data'][$b] ? $v['data'][$b] : $v['data'][$a]);
                     } catch (Exception $exc) {
-                        $sql[$a] = $v['data'][$b]?$v['data'][$b]:$v['data'][$a];
+                        $sql[$a] = $v['data'][$b] ? $v['data'][$b] : $v['data'][$a];
                     }
                 } else {
-                    $sql[$a] = $v['data'][$b]?$v['data'][$b]:$v['data'][$a];
+                    $sql[$a] = $v['data'][$b] ? $v['data'][$b] : $v['data'][$a];
                 }
 
                 //内容是否分页
@@ -542,7 +543,7 @@ class NodeAction extends AdminbaseAction {
                     $sql['paginationtype'] = 2; //手动分页
                 }
             }
-            
+
             //添加Collection_import_content 标签
             tag("Collection_import_content", $sql);
             $contentid = $Content->add($sql);
@@ -559,14 +560,13 @@ class NodeAction extends AdminbaseAction {
                     M("Attachment_index")->where(array('keyid' => 'cj-' . $nodeid . '-' . $v['id']))->save(array("keyid" => 'c-' . $program['catid'] . '-' . $contentid));
                     M("Attachment")->where(array("aid" => array("in", $a_ids)))->save(array("module" => "contents"));
                 }
+                //更新采集状态
+                $collection_content_db->where(array("id" => array("in", $coll_contentid)))->save(array('status' => 2));
             } else {
-                //入库失败，删除采集到的文章
-                $collection_content_db->delete(array('id' => $v['id']));
+                $this->error($Content->getError(),U('Node/publist',array('nodeid'=>$nodeid)));
             }
         }
 
-        //更新采集状态
-        $collection_content_db->where(array("id" => array("in", $coll_contentid)))->save(array('status' => 2));
         if ($type == 'all' && $total_page > $page) {
             $this->assign("waitSecond", 200);
             $message = "正在导入中，导入进度：" . (($page - 1) * 20 + $i) . '/' . $total;

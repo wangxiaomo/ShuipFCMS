@@ -44,9 +44,6 @@ class UploadAction extends BaseAction {
             $catid = I('post.catid', 0, 'intval');
             //取得模块名称
             $module = I('post.module', '', 'trim,strtolower');
-
-            //上传处理类
-            $upload = new UploadFile();
             //获取附件服务
             $Attachment = service("Attachment", array('module' => $module, 'catid' => $catid, 'isadmin' => self::isadmin, 'userid' => $upuserid));
             //缩略图宽度

@@ -16,7 +16,7 @@ class PassportService {
     protected $config = array();
     //错误信息
     public $error = null;
-    
+
     /**
      * 连接
      * @access public
@@ -74,7 +74,12 @@ class PassportService {
      * 检验用户是否已经登陆
      */
     public function isLogged() {
-        return $this->getCookieUid();
+        //获取cookie中的用户id
+        $uid = $this->getCookieUid();
+        if(empty($uid) || $uid < 1){
+            return false;
+        }
+        return $this->loginLocal((int)$uid);
     }
 
     /**
@@ -84,14 +89,9 @@ class PassportService {
      * @return type 成功返回布尔值
      */
     public function registerLogin(array $user, $is_remeber_me = 604800) {
-        //用户ID
-        SiteCookie("mid", $user['userid'], $is_remeber_me);
-        //用户名
-        SiteCookie("username", $user['username'], $is_remeber_me);
-        //用户组
-        SiteCookie("groupid", $user['groupid'], $is_remeber_me);
-        SiteCookie("auth", $user['password'], $is_remeber_me);
-        //记录登陆
+        $key = 'shuipfcms@' . $user['userid'];
+        SiteCookie('shuipfuser', $key, (int) $is_remeber_me);
+        //记录登陆日志
         $this->recordLogin($user['userid']);
         return true;
     }
@@ -101,10 +101,7 @@ class PassportService {
      */
     public function logoutLocal() {
         // 注销cookie
-        cookie("mid", null);
-        cookie("username", null);
-        cookie("auth", null);
-        cookie("groupid", null);
+        cookie("shuipfuser", null);
         return true;
     }
 
@@ -113,18 +110,17 @@ class PassportService {
      * @return type 成功返回用户ID，失败返回false
      */
     public function getCookieUid() {
-        //用户ID
-        $mid = SiteCookie("mid");
-        $username = SiteCookie("username");
-        $auth = SiteCookie("auth");
-        if (!$username || !$mid) {
+        static $cookie_userid = null;
+        if (isset($cookie_userid) && $cookie_userid) {
+            return $cookie_userid;
+        }
+        $cookie = SiteCookie("shuipfuser");
+        if (empty($cookie)) {
             return false;
         }
-        $info = M("Member")->where(array("userid" => $mid, 'username' => $username))->find();
-        if ($info['password'] == $auth) {
-            return $info;
-        }
-        return false;
+        $cookie = explode('@', $cookie);
+        $cookie_userid = ($cookie[0] !== 'shuipfcms') ? false : $cookie[1];
+        return $cookie_userid;
     }
 
     /**

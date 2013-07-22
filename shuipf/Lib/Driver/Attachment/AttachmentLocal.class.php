@@ -41,9 +41,13 @@ class AttachmentLocal extends AttachmentService {
         //附件存放路径
         $this->options['uploadfilepath'] = C('UPLOADFILEPATH');
         //允许上传的附件大小
-        $this->options['uploadmaxsize'] = $this->options['isadmin'] ? (int) $this->config['uploadmaxsize'] * 1024 : (int) $this->config['qtuploadmaxsize'] * 1024;
+        if(empty($this->options['uploadmaxsize'])){
+             $this->options['uploadmaxsize'] = $this->options['isadmin'] ? (int) $this->config['uploadmaxsize'] * 1024 : (int) $this->config['qtuploadmaxsize'] * 1024;
+        }
         //允许上传的附件类型
-        $this->options['uploadallowext'] = $this->options['isadmin'] ? explode("|", $this->config['uploadallowext']) : explode("|", $this->config['qtuploadallowext']);
+        if(empty($this->options['uploadallowext'])){
+            $this->options['uploadallowext'] = $this->options['isadmin'] ? explode("|", $this->config['uploadallowext']) : explode("|", $this->config['qtuploadallowext']);
+        }
         //上传目录
         $this->options['savePath'] = D('Attachment')->getFilePath($this->options['module'], $this->options['dateFormat'], $this->options['time']);
         //如果生成缩略图是否移除原图

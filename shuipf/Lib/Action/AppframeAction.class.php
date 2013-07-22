@@ -102,21 +102,19 @@ class AppframeAction extends Action {
      */
     final protected function initUser() {
         //当然登陆用户ID
-        $usDb = service("Passport")->isLogged();
-        if ($usDb == false) {
+        $userid = service("Passport")->isLogged();
+        //获取用户信息
+        $userInfo = service("Passport")->getLocalUser((int) $userid);
+        if (false == $userInfo) {
             return false;
         }
-
-        self::$Cache['uid'] = (int) $usDb['userid'];
-        self::$Cache['username'] = $usDb['username'];
+        self::$Cache['uid'] = (int) $userInfo['userid'];
+        self::$Cache['username'] = $userInfo['username'];
         $this->assign("uid", self::$Cache['uid']);
         $this->assign("username", self::$Cache['username']);
-        $User = $usDb;
-
-        self::$Cache['User'] = $User;
+        self::$Cache['User'] = $userInfo;
         $this->assign("User", self::$Cache['User']);
-        unset($usDb);
-        return $User;
+        return $userInfo;
     }
 
     /**

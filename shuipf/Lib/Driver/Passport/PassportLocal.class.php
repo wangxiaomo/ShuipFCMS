@@ -83,8 +83,7 @@ class PassportLocal extends PassportService {
             $data['password'] = $password;
             $data['encrypt'] = $encrypt;
         } else {
-            unset($data['password']);
-            unset($data['encrypt']);
+            unset($data['password'],$data['encrypt']);
         }
         if ($email) {
             $data['email'] = $email;
@@ -192,6 +191,13 @@ class PassportLocal extends PassportService {
         $auth_data = urlencode(authcode($uid, ''));
         $upurl = base64_encode(CONFIG_SITEURL . 'index.php?g=Member&m=Index&a=uploadavatar&auth_data=' . $auth_data);
         $html = '<script type="text/javascript">
+    var return_avatar=function(data) {
+        if (data == 1) {
+            window.location.reload();
+        } else {
+            alert("failure");
+        }
+    }
     var flashvars = {
         "upurl": "' . $upurl . '&callback=return_avatar&"
     };
@@ -211,14 +217,6 @@ class PassportLocal extends PassportService {
 
     };
     swfobject.embedSWF("' . CONFIG_SITEURL . 'statics/images/main.swf", "myContent", "490", "434", "9.0.0", "' . CONFIG_SITEURL . 'statics/images/expressInstall.swf", flashvars, params, attributes);
-
-    function return_avatar(data) {
-        if (data == 1) {
-            window.location.reload();
-        } else {
-            alert("failure");
-        }
-    }
 </script>';
         return $html;
     }
@@ -267,13 +265,6 @@ class PassportLocal extends PassportService {
     }
 
     /**
-     * 检验用户是否已经登陆
-     */
-    public function isLogged() {
-        return $this->getCookieUid();
-    }
-
-    /**
      * 前台会员信息
      * 根据提示符(username)和未加密的密码(密码为空时不参与验证)获取本地用户信息，前后台公用方法
      * @param type $identifier 为数字时，表示uid，其他为用户名
@@ -284,7 +275,6 @@ class PassportLocal extends PassportService {
         if (empty($identifier)) {
             return false;
         }
-
         $map = array();
         if (is_numeric($identifier) && gettype($identifier) == "integer") {
             $map['userid'] = $identifier;
@@ -295,12 +285,16 @@ class PassportLocal extends PassportService {
         }
         $UserMode = D('Member');
         $user = $UserMode->where($map)->find();
-        if (!$user) {
+        if (empty($user)) {
             return false;
         }
-        if ($password) {
-            //验证本地密码是否正确
-            if ($UserMode->encryption($identifier, $password, $user['encrypt']) != $user['password']) {
+        //是否需要进行密码验证
+        if (!empty($password)) {
+            $encrypt = $user["encrypt"];
+            //对明文密码进行加密
+            $password = $UserMode->encryption($identifier, $password, $encrypt);
+            if ($password != $user['password']) {
+                //密码错误
                 return false;
             }
         }
@@ -330,25 +324,29 @@ class PassportLocal extends PassportService {
             //没有该用户
             return -1;
         }
-        $encrypt = $userinfo["encrypt"];
-        $password = $db->encryption($identifier, $password, $encrypt);
-        if ($password == $userinfo['password']) {
-            if ($this->registerLogin($userinfo, $is_remember_me)) {
-                //修改登陆时间，和登陆IP
-                $db->where($map)->save(array(
-                    "lastdate" => time(),
-                    "lastip" => get_client_ip(),
-                    "loginnum" => $userinfo['loginnum'] + 1,
-                ));
-                //登陆成功
-                return $userinfo['userid'];
-            } else {
-                //会员注册登陆状态失败
-                return -3;
+        //是否需要进行密码验证
+        if (!empty($password)) {
+            $encrypt = $userinfo["encrypt"];
+            //对明文密码进行加密
+            $password = $db->encryption($identifier, $password, $encrypt);
+            if ($password != $userinfo['password']) {
+                //密码错误
+                return -2;
             }
+        }
+        //注册用户登陆状态
+        if ($this->registerLogin($userinfo, $is_remember_me)) {
+            //修改登陆时间，和登陆IP
+            $db->where($map)->save(array(
+                "lastdate" => time(),
+                "lastip" => get_client_ip(),
+                "loginnum" => $userinfo['loginnum'] + 1,
+            ));
+            //登陆成功
+            return $userinfo['userid'];
         } else {
-            //密码错误
-            return -2;
+            //会员注册登陆状态失败
+            return -3;
         }
     }
 

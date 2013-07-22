@@ -265,7 +265,12 @@ class PassportUcenter extends PassportService {
      * 检验用户是否已经登陆
      */
     public function isLogged() {
-        return $this->getCookieUid();
+        //获取cookie中的用户id
+        $uid = $this->getCookieUid();
+        if (empty($uid) || $uid < 1) {
+            return false;
+        }
+        return $this->loginLocal((int) $uid);
     }
 
     /**
