@@ -280,10 +280,14 @@ class PassportUcenter extends PassportService {
      * @return 成功返回用户信息array()，否则返回布尔值false
      */
     public function getLocalUser($identifier, $password = null) {
+        static $_getLocalUser = array();
         if (empty($identifier)) {
             return false;
         }
-
+        $kye = md5($identifier);
+        if (isset($_getLocalUser[$kye]) && !$password) {
+            return $_getLocalUser[$kye];
+        }
         $map = array();
         if (is_numeric($identifier) && gettype($identifier) == "integer") {
             $map['userid'] = $identifier;
@@ -303,7 +307,8 @@ class PassportUcenter extends PassportService {
                 return false;
             }
         }
-        return $user;
+        $_getLocalUser[$kye] = $user;
+        return $_getLocalUser[$kye];
     }
 
     /**
