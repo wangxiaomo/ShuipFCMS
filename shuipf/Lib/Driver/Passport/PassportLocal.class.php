@@ -83,7 +83,7 @@ class PassportLocal extends PassportService {
             $data['password'] = $password;
             $data['encrypt'] = $encrypt;
         } else {
-            unset($data['password'],$data['encrypt']);
+            unset($data['password'], $data['encrypt']);
         }
         if ($email) {
             $data['email'] = $email;
@@ -272,8 +272,13 @@ class PassportLocal extends PassportService {
      * @return 成功返回用户信息array()，否则返回布尔值false
      */
     public function getLocalUser($identifier, $password = null) {
+        static $_getLocalUser = array();
         if (empty($identifier)) {
             return false;
+        }
+        $kye = md5($identifier);
+        if (isset($_getLocalUser[$kye]) && !$password) {
+            return $_getLocalUser[$kye];
         }
         $map = array();
         if (is_numeric($identifier) && gettype($identifier) == "integer") {
@@ -298,7 +303,8 @@ class PassportLocal extends PassportService {
                 return false;
             }
         }
-        return $user;
+        $_getLocalUser[$kye] = $user;
+        return $_getLocalUser[$kye];
     }
 
     /**
