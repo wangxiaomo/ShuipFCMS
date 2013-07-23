@@ -20,6 +20,10 @@ class TagsTagLib {
      */
     public function where($data) {
         $where = array();
+        //设置SQL where 部分
+        if (isset($data['where']) && $data['where']) {
+            $where['_string'] = $data['where'];
+        }
         if (isset($data['tagid'])) {
             if (strpos($data['tagid'], ',') !== false) {
                 $tagid = explode(',', $data['tagid']);
@@ -116,7 +120,16 @@ class TagsTagLib {
             return $return;
         }
         $num = $data['num'] ? $data['num'] : 10;
-        $return = $this->db->order(array("hits" => "DESC"))->limit($num)->select();
+        $order = array("hits" => "DESC");
+        if($data['order']){
+            $order = $data['order'];
+        }
+        $where = array();
+        //设置SQL where 部分
+        if (isset($data['where']) && $data['where']) {
+            $where['_string'] = $data['where'];
+        }
+        $return = $this->db->where($where)->order($order)->limit($num)->select();
         //增加访问路径
         foreach($return as $k=>$v){
             $return[$k]['url'] = getTagsUrl($v['tagid'], $v['tag']);

@@ -27,6 +27,10 @@ class LinksTagLib {
         $order = empty($data['order']) ? "id DESC" : $data['order'];
         $db = M("Links");
         $where = array();
+        //设置SQL where 部分
+        if (isset($data['where']) && $data['where']) {
+            $where['_string'] = $data['where'];
+        }
         if ($id > 0) {
             $where['id'] = array("EQ", $id);
             $data = $db->where($where)->find();

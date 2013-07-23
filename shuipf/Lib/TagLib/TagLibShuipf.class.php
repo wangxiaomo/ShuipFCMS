@@ -6,6 +6,20 @@
  */
 class TagLibShuipf extends TagLib {
 
+    // 数据库where表达式
+    protected $comparisonShuipfcms = array(
+        '{notlike}' => 'NOT LIKE',
+        '{notin}' => 'NOT IN',
+        '{like}' => 'LIKE',
+        '{eq}' => '=',
+        '{neq}' => '<>',
+        '{elt}' => '<=',
+        '{egt}' => '>=',
+        '{gt}' => '>',
+        '{lt}' => '<',
+        '{in}' => 'IN',
+    );
+
     /**
      * @var type 
      * 标签定义： 
@@ -20,15 +34,15 @@ class TagLibShuipf extends TagLib {
      */
     protected $tags = array(
         //内容标签
-        'content' => array('attr' => 'action,cache,num,page,return,where,moreinfo,thumb,order,day', 'level' => 3),
+        'content' => array('attr' => 'action,cache,num,page,pagetp,pagefun,return,where,moreinfo,thumb,order,day,catid', 'level' => 3),
         //Tags标签
-        'tags' => array('attr' => 'action,cache,num,page,return,pagetp,pagefun', 'level' => 3),
+        'tags' => array('attr' => 'action,cache,num,page,pagetp,pagefun,return,order,tag,tagid,where', 'level' => 3),
         //评论标签
-        'comment' => array('attr' => 'action,cache,num,return', 'level' => 3),
+        'comment' => array('attr' => 'action,cache,num,return,catid,hot,date', 'level' => 3),
         //友情链接标签
-        'links' => array('attr' => 'action,cache,num,return', 'level' => 3),
+        'links' => array('attr' => 'action,cache,num,return,termsid,id,order,where', 'level' => 3),
         //推荐位标签
-        'position' => array('attr' => 'action,cache,num,return', 'level' => 3),
+        'position' => array('attr' => 'action,cache,num,return,posid,catid,thumb,order,where', 'level' => 3),
         //SQL标签
         'get' => array("attr" => 'sql,cache,page,dbsource,return,num,pagetp,pagefun', 'level' => 3),
         //模板标签
@@ -37,12 +51,12 @@ class TagLibShuipf extends TagLib {
         'admintemplate' => array("attr" => "file", "close" => 0),
         //Form标签
         'form' => array("attr" => "function,parameter", "close" => 0),
-        //导航表情
-        'navigate' => array('attr' => 'cache,catid,space', 'close' => 0),
+        //导航标签
+        'navigate' => array('attr' => 'cache,catid,space,blank', 'close' => 0),
         //上一篇
-        'pre' => array('attr' => 'blank,msg', 'close' => 0),
+        'pre' => array('attr' => 'catid,id,target,msg', 'close' => 0),
         //下一篇
-        'next' => array('attr' => 'blank,msg', 'close' => 0),
+        'next' => array('attr' => 'catid,id,target,msg', 'close' => 0),
     );
 
     /**
@@ -131,7 +145,7 @@ class TagLibShuipf extends TagLib {
      *          @catid		栏目id，可以传入数字，也可以传递变量 $catid
      *          @space		分隔符，支持html代码
      *          @blank		是否新窗口打开
-     *          @cache          缓存时间
+     *          @cache                              缓存时间
      * @staticvar array $_navigateCache
      * @param type $attr 标签属性
      * @param type $content 表情内容
@@ -178,7 +192,7 @@ class TagLibShuipf extends TagLib {
         } else {
             $parsestr = '';
             $parsestr .= '<?php';
-            $parsestr .= '  $arrparentid = array_filter(explode(\',\', $Categorys['.$catid.'][\'arrparentid\'] . \',\' . '.$catid.')); ';
+            $parsestr .= '  $arrparentid = array_filter(explode(\',\', $Categorys[' . $catid . '][\'arrparentid\'] . \',\' . ' . $catid . ')); ';
             $parsestr .= '  foreach ($arrparentid as $cid) {';
             $parsestr .= '      $parsestr[] = \'<a href="\' . $Categorys[$cid][\'url\'] . \'" ' . $target . '>\' . $Categorys[$cid][\'catname\'] . \'</a>\';';
             $parsestr .= '  }';
@@ -195,13 +209,13 @@ class TagLibShuipf extends TagLib {
     /**
      * 模板包含标签 
      * 格式
-     * <Admintemplate file="APP/模块/模板"/>
+     * <admintemplate file="APP/模块/模板"/>
      * @staticvar array $_admintemplateParseCache
      * @param type $attr 属性字符串
      * @param type $content 标签内容
      * @return array 
      */
-    public function _Admintemplate($attr, $content) {
+    public function _admintemplate($attr, $content) {
         static $_admintemplateParseCache = array();
         $cacheIterateId = md5($attr . $content);
         if (isset($_admintemplateParseCache[$cacheIterateId])) {
@@ -233,9 +247,9 @@ class TagLibShuipf extends TagLib {
     }
 
     /**
-     * 标签：<Form/>
+     * 标签：<form/>
      * 作用：生成各种表单元素
-     * 用法示例：<Form function="date" parameter="name,$valeu"/>
+     * 用法示例：<form function="date" parameter="name,$valeu"/>
      * 参数说明：
      *          @function		表示所使用的方法名称，方法来源于Form.class.php这个类。
      *          @parameter		所需要传入的参数，支持变量！
@@ -243,7 +257,7 @@ class TagLibShuipf extends TagLib {
      * @param type $attr
      * @param type $content
      */
-    public function _Form($attr, $content) {
+    public function _form($attr, $content) {
         static $_FormParseCache = array();
         $cacheIterateId = md5($attr . $content);
         if (isset($_FormParseCache[$cacheIterateId])) {
@@ -329,31 +343,34 @@ class TagLibShuipf extends TagLib {
      * 		@catid		栏目id（必填），列表页，内容页可以使用 $catid 获取当前栏目。
      * 	公用参数：
      * 		@cache		数据缓存时间，单位秒
-     *              @pagefun            分页函数，默认page()
-     * 		@pagetp		分页模板
+     * 		@pagefun                      分页函数，默认page
+     * 		@pagetp		分页模板，必须是变量传递
      * 		@return		返回值变量名称，默认data
      * 	#当action为lists时，调用栏目列表标签
      * 	#用法示例：<content action="lists" catid="$catid"  order="id DESC" num="4" page="$page"> .. HTML ..</content>
      * 	独有参数：
      * 		@order		排序，例如“id DESC”
-     * 		@where		sql语句的where部分 例如：thumb`!='' AND `status`=99（当有该参数时，thumb，catid参数失效）
+     * 		@where		sql语句的where部分 例如：`thumb`!='' AND `status`=99
      * 		@thumb		是否仅必须缩略图，1为调用带缩略图的
-     * 		@moreinfo	是否调用副表数据 1为是
+     * 		@moreinfo                    是否调用副表数据 1为是
      * 	#当action为hits时，调用排行榜
      * 	#用法示例：<content action="hits" catid="$catid"  order="weekviews DESC" num="10"> .. HTML ..</content>
      * 	独有参数：
      * 		@order		排序，例如“weekviews DESC”
      * 		@day		调用多少天内的排行
+     * 		@where		sql语句的where部分
      * 	#当action为relation时，调用相关文章
      * 	#用法示例：<content action="relation" relation="$relation" catid="$catid"  order="id DESC" num="5" keywords="$keywords"> .. HTML ..</content>
      * 	独有参数：
      * 		@nid		排除id 一般是 $id，排除当前文章
      * 		@keywords	内容页面取值：$keywords，也就是关键字
      * 		@relation		内容页取值$relation，当有$relation时keywords参数失效
+     * 		@where		sql语句的where部分
      * 	#当action为category时，调用栏目列表
      * 	#用法示例：<content action="category" catid="$catid"  order="listorder ASC" > .. HTML ..</content>
      * 	独有参数：
      * 		@order		排序，例如“id DESC”
+     * 		@where                          sql语句的where部分 例如：`child` = 0
      * 
      * +----------------------------------------------------------
      * @access public
@@ -383,6 +400,9 @@ class TagLibShuipf extends TagLib {
         //方法
         $tag['action'] = $action = trim($tag['action']);
         //sql语句的where部分
+        if ($tag['where']) {
+            $tag['where'] = $this->parseSqlCondition($tag['where']);
+        }
         $tag['where'] = $where = $tag['where'];
         //分页模板
         $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
@@ -446,6 +466,7 @@ class TagLibShuipf extends TagLib {
      * 		@id		信息ID
      * 		@hot		排序方式｛0：最新｝
      * 		@date		时间格式 Y-m-d H:i:s A
+     * 		@where                          sql语句的where部分
      *    #当action为bang时，获取评论排行榜
      * 	#用法示例：<comment action="bang" num="10"> .. HTML ..</comment>
      * 	独有参数：
@@ -493,17 +514,18 @@ class TagLibShuipf extends TagLib {
      * 		@return		返回值变量名称，默认data
      * 		@pagefun                      分页函数，默认page()
      * 		@pagetp		分页模板
+     * 		@where                        sql语句的where部分 例如：`child` = 0
      * 	#当action为lists时，获取tag标签列表
      * 	#用法示例：<tags action="lists" tag="$tag" num="4" page="$page" order="updatetime DESC"> .. HTML ..</tags>
      * 	独有参数：
-     * 		@tag	标签名，例如：厦门 支持多个，多个用空格或者英文逗号
-     * 		@tagid	标签id 多个使用英文逗号隔开
-     * 		@order	排序
-     * 		@num	每次返回数据量
+     * 		@tag                               标签名，例如：厦门 支持多个，多个用空格或者英文逗号
+     * 		@tagid                            标签id 多个使用英文逗号隔开
+     * 		@order                            排序
+     * 		@num                             每次返回数据量
      * 	#当action为top时，获取tag点击排行榜
      * 	#用法示例：<tags action="top"  num="4"  order="tagid DESC"> .. HTML ..</tags>
      * 	独有参数：
-     * 		@num	每次返回数据量
+     * 		@num                            每次返回数据量
       +----------------------------------------------------------
      * @param string $attr 标签属性
      * @param string $content  标签内容
@@ -526,6 +548,9 @@ class TagLibShuipf extends TagLib {
         //方法
         $tag['action'] = $action = trim($tag['action']);
         //sql语句的where部分
+        if ($tag['where']) {
+            $tag['where'] = $this->parseSqlCondition($tag['where']);
+        }
         $tag['where'] = $where = $tag['where'];
         //分页模板
         $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
@@ -573,6 +598,7 @@ class TagLibShuipf extends TagLib {
      * 	公用参数：
      * 		@cache		数据缓存时间，单位秒
      * 		@return		返回值变量名称，默认data
+     * 		@where                         sql语句的where部分
      * 	#当action为type_list时，获取tag标签列表
      * 	#用法示例：<links action="type_list" termsid="1" id="1"> .. HTML ..</links>
      * 	独有参数：
@@ -595,6 +621,10 @@ class TagLibShuipf extends TagLib {
         /* 属性列表 */
         $return = empty($tag['return']) ? "data" : $tag['return']; //数据返回变量
         $action = $tag['action']; //方法
+        //sql语句的where部分
+        if ($tag['where']) {
+            $tag['where'] = $this->parseSqlCondition($tag['where']);
+        }
 
         $parseStr = '<?php';
         $parseStr .= ' $links_tag = TagLib("Links");';
@@ -616,6 +646,7 @@ class TagLibShuipf extends TagLib {
      * 	公用参数：
      * 		@cache		数据缓存时间，单位秒
      * 		@return		返回值变量名称，默认data
+     * 		@where                          sql语句的where部分
      * 	#当action为position时，获取推荐位
      * 	独有参数：
      * 		@posid		推荐位ID(必填)
@@ -639,6 +670,10 @@ class TagLibShuipf extends TagLib {
         /* 属性列表 */
         $return = empty($tag['return']) ? "data" : $tag['return']; //数据返回变量
         $action = $tag['action']; //方法
+        //sql语句的where部分
+        if ($tag['where']) {
+            $tag['where'] = $this->parseSqlCondition($tag['where']);
+        }
 
         $parseStr = '<?php';
         $parseStr .= ' $Position_tag = TagLib("Position");';
@@ -678,12 +713,8 @@ class TagLibShuipf extends TagLib {
         $tag = $this->parseXmlAttr($attr, 'get');
         //当前分页参数
         $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
-        //当前分页参数
-        $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
         //数据返回变量
         $tag['return'] = $return = empty($tag['return']) ? "data" : $tag['return'];
-        //方法
-        $tag['action'] = $action = trim($tag['action']);
         //分页模板
         $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
         //分页函数，默认page
@@ -693,6 +724,9 @@ class TagLibShuipf extends TagLib {
         //每页显示总数
         $tag['num'] = $num = isset($tag['num']) && intval($tag['num']) > 0 ? intval($tag['num']) : 20;
         //SQL语句
+        if ($tag['sql']) {
+            $tag['sql'] = $this->parseSqlCondition($tag['sql']);
+        }
         $tag['sql'] = $sql = str_replace(array("think_", "shuipfcms_"), C("DB_PREFIX"), strtolower($tag['sql']));
         //数据源
         $tag['dbsource'] = $dbsource = $tag['dbsource'];
@@ -815,10 +849,19 @@ class TagLibShuipf extends TagLib {
      * @param type $variable
      * @return type
      */
-    private function variable($variable) {
+    protected function variable($variable) {
         return substr(trim($variable), 0, 1) == '$';
     }
 
-}
+    /**
+     * 解析条件表达式
+     * @access public
+     * @param string $condition 表达式标签内容
+     * @return array
+     */
+    protected function parseSqlCondition($condition) {
+        $condition = str_ireplace(array_keys($this->comparisonShuipfcms), array_values($this->comparisonShuipfcms), $condition);
+        return $condition;
+    }
 
-?>
+}
