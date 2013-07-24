@@ -1,28 +1,25 @@
 <?php
 
 /**
+ * 行为配置定义
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-//行为配置定义
-/*
- * app_init                    应用初始化标签位
- * path_info                 PATHINFO 解析标签位
- * route_check             路由检测标签位
- * app_begin               应用开始标签位
- * action_begin           控制器开始标签位
- * view_begin              视图输出开始标签位
- * view_template         视图模板解析标签位
- * view_parse               视图解析标签位
- * view_filter                视图输出过滤标签位
- * view_end                 视图输出结束标签位
- * action_end              控制器结束标签位
- * app_end                  应用结束标签位
- */
-return array(
-    "app_init" => array("Appframe"),
-    "app_begin" => array("Appcheck"),
-    //AdminbaseAction.class _initialize()
-    "appframe_rbac_init" => array("Rbac"),
-);
-?>
+$tags = array();
+//应用初始化标签位
+$tags['app_init'][] = 'Appframe';
+//应用开始标签位
+$tags['app_begin'][] = 'Appcheck';
+//RABC
+$tags['appframe_rbac_init'][] = 'Rbac';
+//content_add_begin 内容添加开始 @data 添加内容原始数据
+//content_add_end 内容添加完成 @data 添加内容经过content_input处理后的数据
+//content_edit_begin 内容编辑开始 @data 编辑内容原始数据
+//content_edit_end 内容编辑结束 @data 编辑内容后的数据content_input处理后
+//content_delete_begin 删除内容前，被删除的文章内容数组
+//content_delete_end 删除内容后 被删除的文章内容数组
+//content_check_begin 审核前 被审核的信息数据
+//content_check_end 审核后 被审核的信息数据
+
+
+return $tags;

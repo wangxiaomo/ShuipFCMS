@@ -8,13 +8,13 @@
 class Content {
 
     //内容数据模型
-    private $contentModel = null;
+    protected $contentModel = NULL;
     //模型ID
     protected $modelid = 0;
     //错误信息
-    protected $error = null;
+    protected $error = NULL;
     //URL对象
-    protected $url = null;
+    protected $url = NULL;
 
     /**
      * 构造函数
@@ -471,10 +471,8 @@ class Content {
         $content_ishtml = $setting['content_ishtml'];
         $this->contentModel = ContentModel::getInstance($this->modelid);
         $data = $this->contentModel->relation(true)->where(array("id" => $id))->find();
-        $relationName = $this->contentModel->getRelationName();
-        $datafb = $data[$relationName];
-        unset($data[$relationName]);
-        $data = array_merge($data, $datafb);
+        $this->contentModel->dataMerger($data);
+        tag('content_delete_begin', $data);
         if ($content_ishtml && !$data['islink']) {
             $this->deleteHtml($this->catid, $id, $data['inputtime'], $data['prefix'], $data);
         }
@@ -600,6 +598,7 @@ class Content {
         $this->Content = ContentModel::getInstance($this->modelid);
         $r = $this->Content->relation(true)->where(array('id' => $id, 'catid' => $catid))->find();
         $this->Content->dataMerger($r);
+        tag('content_check_begin', $r);
         if ($r) {
             if ($this->Content->where(array('id' => $id, 'catid' => $catid))->save(array("status" => $status))) {
                 //判断是否前台投稿
@@ -632,7 +631,8 @@ class Content {
                 }
             }
         }
-        return false;
+        tag('content_check_end', $r);
+        return true;
     }
 
     /**
