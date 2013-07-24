@@ -354,6 +354,9 @@ class ModelModel extends CommonModel {
      */
     public function MemberModelCache() {
         F("Model_Member", $this->Cache(2));
+        //会员模型配置信息
+        $setting = M("Module")->where(array("module" => "Member"))->getField("setting");
+        F("Member_Config", unserialize($setting));
         return true;
     }
 

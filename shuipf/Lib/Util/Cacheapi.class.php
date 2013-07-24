@@ -1,15 +1,14 @@
 <?php
 
-/* * 
+/**
  * 缓存更新
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class Cacheapi {
 
     function __call($name, $arguments) {
-        Log::write("调用Cacheapi类中未定义方法:".$name."！");
+        Log::write("调用Cacheapi类中未定义方法:" . $name . "！");
         return false;
     }
 
@@ -28,15 +27,10 @@ class Cacheapi {
 
     //会员相关缓存
     public function member_cache() {
-        //生成会员模型
-        D("Model")->MemberModelCache();
         //会员组
         D("Member_group")->Membergroup_cache();
         //会员模型
         D("Model")->MemberModelCache();
-        //会员模型配置信息
-        $setting = M("Module")->where(array("module" => "Member"))->getField("setting");
-        F("Member_Config", unserialize($setting));
     }
 
     // 更新模型缓存方法
@@ -72,5 +66,3 @@ class Cacheapi {
     }
 
 }
-
-?>
