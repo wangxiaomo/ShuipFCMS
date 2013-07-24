@@ -410,6 +410,9 @@ class ContentTagLib {
         $num = (int) $data['num'];
         if ($data['catid'] > 0) {
             $where['parentid'] = array("EQ", $data['catid']);
+        }
+        //如果条件不为空，进行查库
+        if (!empty($where)) {
             if ($num) {
                 $categorys = $db->where($where)->limit($num)->order($data['order'])->select();
             } else {
@@ -427,7 +430,6 @@ class ContentTagLib {
                 $array[$catid] = $cat;
             }
         }
-
         //结果进行缓存
         if ($cache) {
             S($cacheID, $array, $cache);
