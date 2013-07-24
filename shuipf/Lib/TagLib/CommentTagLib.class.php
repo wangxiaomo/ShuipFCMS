@@ -59,6 +59,10 @@ class CommentTagLib {
         //显示条数
         $num = empty($data['num']) ? 20 : (int) $data['num'];
         $where = array();
+        //设置SQL where 部分
+        if (isset($data['where']) && $data['where']) {
+            $where['_string'] = $data['where'];
+        }
         $where['approved'] = array("EQ", 1);
 
         $db = D("Comments");

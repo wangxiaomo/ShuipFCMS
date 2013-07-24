@@ -167,6 +167,7 @@ class ContentTagLib {
      * 排行榜标签
      * 参数名	 是否必须	 默认值	 说明
      * catid	 否	 null	 调用栏目ID，只支持单栏目
+     * where	 否	 null	 sql语句的where部分
      * modelid 否              null              模型ID
      * day	 否	 0	 调用多少天内的排行
      * order	 否	 null	 排序类型（本月排行- monthviews DESC 、本周排行 - weekviews DESC、今日排行 - dayviews DESC）
@@ -198,6 +199,10 @@ class ContentTagLib {
         $this->hits_db = M("Hits");
         $desc = $ids = '';
         $where = $array = $ids_array = array();
+        //设置SQL where 部分
+        if (isset($data['where']) && $data['where']) {
+            $where['_string'] = $data['where'];
+        }
         //排序
         $order = $data['order'];
         if (!$order) {
@@ -272,6 +277,7 @@ class ContentTagLib {
      * 相关文章标签
      * 参数名	 是否必须	 默认值	 说明
      * catid	 否	 null	 调用栏目ID
+     * where	 否	 null	 sql语句的where部分
      * nid	 否	 null	 排除id 一般是 $id，排除当前文章
      * relation	 否	 $relation	 无需更改
      * keywords	 否	 null	 内容页面取值：$rs[keywords]
@@ -298,6 +304,10 @@ class ContentTagLib {
             $data['num'] = 10;
         }
         $where = array();
+        //设置SQL where 部分
+        if (isset($data['where']) && $data['where']) {
+            $where['_string'] = $data['where'];
+        }
         $where['status'] = array("EQ", 99);
         $order = $data['order'];
         $limit = $data['nid'] ? $data['num'] + 1 : $data['num'];
@@ -391,6 +401,10 @@ class ContentTagLib {
         }
         $data['catid'] = intval($data['catid']);
         $where = $array = array();
+        //设置SQL where 部分
+        if (isset($data['where']) && $data['where']) {
+            $where['_string'] = $data['where'];
+        }
         $db = M("Category");
         $categorys = $this->category;
         $num = (int) $data['num'];

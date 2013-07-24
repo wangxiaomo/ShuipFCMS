@@ -39,6 +39,10 @@ class PositionTagLib {
             $num = $Position[$posid]['maxnum'];
         }
         $where = array();
+        //设置SQL where 部分
+        if (isset($data['where']) && $data['where']) {
+            $where['_string'] = $data['where'];
+        }
         $where['posid'] = array("EQ", $posid);
         if ($thumb) {
             $where['thumb'] = array("EQ", 1);
