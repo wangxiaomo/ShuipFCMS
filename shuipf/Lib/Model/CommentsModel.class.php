@@ -1,14 +1,13 @@
 <?php
 
-/* * 
+/**
  * 评论模型
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class CommentsModel extends CommonModel {
-    
     //审核状态
+
     const statusCheck = -1;
     //拒绝状态
     const statusRefuse = 0;
@@ -65,6 +64,8 @@ class CommentsModel extends CommonModel {
             $this->error = '数据类型有误！';
             return false;
         }
+        //增加行为标签
+        tag('comment_add_begin', $data);
         //更新自动验证条件因子
         $this->autoAddSave();
         //主表字段内容映射
@@ -77,10 +78,10 @@ class CommentsModel extends CommonModel {
         //回复评论id
         $mainData['parent'] = $data['parent'];
         //如果是空值，直接赋值默认值
-        if(empty($mainData['parent'])){
+        if (empty($mainData['parent'])) {
             $mainData['parent'] = 0;
         }
-        if(empty($mainData['user_id'])){
+        if (empty($mainData['user_id'])) {
             $mainData['user_id'] = 0;
         }
         $mainData = $this->token(false)->create($mainData);
@@ -101,7 +102,7 @@ class CommentsModel extends CommonModel {
             $filterStatus = $this->commentsFilter($secondaryField['content']);
             if (self::statusRefuse === $filterStatus) {
                 return false;
-            } else if ( self::statusCheck === $filterStatus) {
+            } else if (self::statusCheck === $filterStatus) {
                 //有审核关键字，所以评论设置为审核状态
                 $mainData['approved'] = 0;
             }
@@ -133,6 +134,9 @@ class CommentsModel extends CommonModel {
                 } else if (!$mainData['approved']) {
                     $status = self::statusCheck;
                 }
+                //行为标签
+                $tagData = array_merge($mainData, $secondaryField);
+                tag('comment_add_end', $tagData);
                 return $status;
             } else {
                 $this->where(array('id' => $commentsId))->delete();
@@ -155,6 +159,8 @@ class CommentsModel extends CommonModel {
             $this->error = '数据类型有误！';
             return false;
         }
+        //增加行为标签
+        tag('comment_edit_begin', $data);
         //原评论
         $info = $this->where(array("id" => $data['id']))->find();
         if (!$info) {
@@ -213,6 +219,9 @@ class CommentsModel extends CommonModel {
                 } else if (!$mainData['approved']) {
                     $status = self::statusCheck;
                 }
+                //行为标签
+                $tagData = array_merge($mainData, $secondaryField);
+                tag('comment_edit_end', $tagData);
                 return $status;
             } else {
                 $this->error = '更新数据库失败！';
@@ -234,6 +243,8 @@ class CommentsModel extends CommonModel {
             $this->error = '数据类型有误！';
             return false;
         }
+        //增加行为标签
+        tag('comment_delete_begin', $ids);
         //判断是批量删除还是单条删除
         if (is_array($ids)) {
             $list = $this->where(array('id' => array('IN', $ids)))->select();
@@ -254,6 +265,7 @@ class CommentsModel extends CommonModel {
                 foreach ($sideId as $stb => $dss) {
                     M($this->viceTableName($stb))->where(array('id' => array('IN', $dss)))->delete();
                 }
+                tag('comment_delete_end', $ids);
                 return true;
             } else {
                 $this->error = '删除失败！';
@@ -338,11 +350,20 @@ class CommentsModel extends CommonModel {
             $this->error = '数据类型有误！';
             return false;
         }
-        //判断是批量删除还是单条删除
+        $tagArray = array(
+            'ids' => $ids,
+            'status' => $approved,
+        );
+        tag('comment_check_begin', $tagArray);
+        //判断是批量审核还是单条审核
         if (is_array($ids)) {
-            return $this->where(array('id' => array('IN', $ids)))->save(array("approved" => $approved));
+            $status = $this->where(array('id' => array('IN', $ids)))->save(array("approved" => $approved));
+            tag('comment_check_end', $tagArray);
+            return $status;
         } else {
-            return $this->where(array('id' => $ids))->save(array("approved" => $approved));
+            $status = $this->where(array('id' => $ids))->save(array("approved" => $approved));
+            tag('comment_check_end', $tagArray);
+            return $status;
         }
         return false;
     }
@@ -364,7 +385,7 @@ class CommentsModel extends CommonModel {
                 $this->error = $Filter->getError();
                 return self::statusRefuse;
                 break;
-             case self::statusReplace://禁止发表
+            case self::statusReplace://禁止发表
                 $this->error = $Filter->getError();
                 return self::statusReplace;
                 break;
@@ -427,7 +448,7 @@ class CommentsModel extends CommonModel {
             //设置评论审核
             if (defined("IN_ADMIN") && IN_ADMIN) {
                 $this->commentsApproved = 1;
-            }else{
+            } else {
                 $this->commentsApproved = (int) $setting['check'] == 0 ? 1 : 0;
             }
         }
