@@ -24,7 +24,7 @@ function editor($field, $value, $fieldinfo) {
     
     //内容
     if (!$value)
-        $value = $defaultvalue;
+        $value = $defaultvalue?$defaultvalue:'<p></p>';
     if ($minlength || $pattern)
         $allow_empty = '';
     $module = ( in_array(GROUP_NAME,array("Contents", "contents")) )?'Contents':GROUP_NAME;
@@ -49,7 +49,7 @@ function editor($field, $value, $fieldinfo) {
         //验证不通过提示
         $this->formValidateMessages['info[' . $field . ']']= array("editor$field"=>$errortips?$errortips:$name."不能为空！");
    // }
-    return "<div id='{$field}_tip'></div>" . '<textarea id="' . $field . '" name="info[' . $field . ']">' . $value . '</textarea>' . $form;
+    return "<div id='{$field}_tip'></div>" . '<script type="text/plain" id="' . $field . '" name="info[' . $field . ']">' . $value . '</script>' . $form;
 }
 
 ?>
