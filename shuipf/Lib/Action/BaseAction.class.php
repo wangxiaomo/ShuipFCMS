@@ -59,8 +59,22 @@ class BaseAction extends AppframeAction {
      * @param string $prefix 模板缓存前缀
      * @return void
      */
-    public function display($templateFile = '', $charset = '', $contentType = '', $content = '', $prefix = '') {
+    protected function display($templateFile = '', $charset = '', $contentType = '', $content = '', $prefix = '') {
         parent::display($this->parseTemplateFile($templateFile), $charset, $contentType, $content, $prefix);
+    }
+
+    /**
+     *  获取输出页面内容
+     * 调用内置的模板引擎fetch方法，
+     * @access protected
+     * @param string $templateFile 指定要调用的模板文件
+     * 默认为空 由系统自动定位模板文件
+     * @param string $content 模板输出内容
+     * @param string $prefix 模板缓存前缀* 
+     * @return string
+     */
+    protected function fetch($templateFile = '', $content = '', $prefix = '') {
+        return parent::fetch($this->parseTemplateFile($templateFile), $content, $prefix);
     }
 
     /**
@@ -82,7 +96,7 @@ class BaseAction extends AppframeAction {
         return $templateFile;
     }
 
-     /**
+    /**
      * 分页输出
      * @staticvar array $_pageCache
      * @param type $Total_Size 信息总数
@@ -92,9 +106,9 @@ class BaseAction extends AppframeAction {
      * @param type $PageParam 接收分页号参数的标识符
      * @param type $PageLink 分页规则 
      *                          array(
-                                    "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
-                                    "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
-                                 )
+      "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
+      "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
+      )
      * @param type $static 是否开启静态
      * @param string $TP 模板
      * @param array $Tp_Config 模板配置
