@@ -197,7 +197,7 @@ class CommentsAction extends AdminbaseAction {
     //回复评论
     public function replycomment() {
         if (IS_POST) {
-            $post = I('post.');
+            $post = I('post.','','');
             if (!$post) {
                 $this->error('提交信息有误！');
             }
