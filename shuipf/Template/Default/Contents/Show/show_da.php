@@ -76,7 +76,7 @@ var jiathis_config={
 <template file="Contents/footer.php"/>
 <script type="text/javascript">
 $(function (){
-	$(window).toTop({showHeight : 100,});
+	$(window).toTop({showHeight : 100});
 	//点击
 	$.get("{$config_siteurl}api.php?m=Hits&catid={$catid}&id={$id}", function (data) {
 	    $("#hits").html(data.views);
