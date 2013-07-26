@@ -64,7 +64,7 @@ class FieldAction extends AdminbaseAction {
                 $this->error('数据不能为空！');
             }
             if ($this->modelfield->editField($post, $fieldid)) {
-                $this->success("更新成功！", U("Sitemodel_field/index", array("modelid" => $modelid)));
+                $this->success("更新成功！", U("Field/index", array("modelid" => $modelid)));
             } else {
                 $error = $this->modelfield->getError();
                 $this->error($error ? $error : '更新失败！');
@@ -142,7 +142,7 @@ class FieldAction extends AdminbaseAction {
                 $this->error('数据不能为空！');
             }
             if ($this->modelfield->addField($post)) {
-                $this->success("添加成功！", U("Sitemodel_field/index", array("modelid" => $modelid)));
+                $this->success("添加成功！", U("Field/index", array("modelid" => $modelid)));
             } else {
                 $error = $this->modelfield->getError();
                 $this->error($error ? $error : '添加失败！');
@@ -180,7 +180,7 @@ class FieldAction extends AdminbaseAction {
         }
     }
 
-   //删除字段
+    //删除字段
     public function delete() {
         //字段ID
         $fieldid = I('get.fieldid', 0, 'intval');
@@ -295,5 +295,3 @@ class FieldAction extends AdminbaseAction {
     }
 
 }
-
-?>
