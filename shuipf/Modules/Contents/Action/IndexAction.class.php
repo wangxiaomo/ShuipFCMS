@@ -100,7 +100,7 @@ class IndexAction extends BaseAction {
         //分配变量到模板 
         $this->assign($category);
         //seo分配到模板
-        $seo = seo($catid, $setting['meta_title'], $category['description'], $setting['meta_keywords']);
+        $seo = seo($catid, $setting['meta_title'], $setting['meta_description'], $setting['meta_keywords']);
         $this->assign("SEO", $seo);
         $this->display($template);
     }
