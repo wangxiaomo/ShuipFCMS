@@ -98,23 +98,5 @@
   </form>
 </div>
 <script src="{$config_siteurl}statics/js/common.js?v"></script>
-<script language="JavaScript">
-//mysql链接测试
-function mysql_test() {
-    $.get(GV.DIMAUB+'index.php?g=Member&m=Member_setting&a=myqsl_test', {
-        host: $('#uc_dbhost').val(),
-        username: $('#uc_dbuser').val(),
-        password: $('#uc_dbpw').val()
-    },
-
-    function (data) {
-        if (data == 1) {
-            alert('连接成功！');
-        } else {
-            alert('连接失败！');
-        }
-    });
-}
-</script>
 </body>
 </html>

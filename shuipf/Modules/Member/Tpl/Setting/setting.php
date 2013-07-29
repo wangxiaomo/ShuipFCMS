@@ -246,7 +246,7 @@
 <script language="JavaScript">
 //mysql链接测试
 function mysql_test() {
-    $.get(GV.DIMAUB+'index.php?g=Member&m=Member_setting&a=myqsl_test', {
+    $.get(GV.DIMAUB+'index.php?g=Member&m=Setting&a=myqsl_test', {
         host: $('#uc_dbhost').val(),
         username: $('#uc_dbuser').val(),
         password: $('#uc_dbpw').val()
