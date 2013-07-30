@@ -325,7 +325,7 @@ function str_cut($sourcestr, $length, $dot = '...') {
             $n = $n + 0.5;        //小写字母和半角标点等与半个高位字符宽...
         }
     }
-    if ($str_length > $length) {
+    if ($str_length > strlen($returnstr)) {
         $returnstr = $returnstr . $dot; //超过长度时在尾处加上省略号
     }
     return $returnstr;
