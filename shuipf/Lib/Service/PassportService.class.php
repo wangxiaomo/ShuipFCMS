@@ -1,11 +1,10 @@
 <?php
 
-/* * 
+/**
  * 通行证服务
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class PassportService {
 
     //操作句柄
@@ -76,10 +75,10 @@ class PassportService {
     public function isLogged() {
         //获取cookie中的用户id
         $uid = $this->getCookieUid();
-        if(empty($uid) || $uid < 1){
+        if (empty($uid) || $uid < 1) {
             return false;
         }
-        return $this->loginLocal((int)$uid);
+        return $uid;
     }
 
     /**

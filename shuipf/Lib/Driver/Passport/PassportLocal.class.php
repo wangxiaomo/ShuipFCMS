@@ -322,11 +322,12 @@ class PassportLocal extends PassportService {
         $map = array();
         if (is_int($identifier)) {
             $map['userid'] = $identifier;
+            $identifier = intval($identifier);
         } else {
             $map['username'] = $identifier;
         }
-        $userinfo = $db->where($map)->find();
-        if (!$userinfo) {
+        $userinfo = $this->getLocalUser($identifier);
+        if (empty($userinfo)) {
             //没有该用户
             return -1;
         }
