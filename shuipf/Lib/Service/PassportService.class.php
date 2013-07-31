@@ -90,8 +90,6 @@ class PassportService {
     public function registerLogin(array $user, $is_remeber_me = 604800) {
         $key = 'shuipfcms@' . $user['userid'];
         SiteCookie('shuipfuser', $key, (int) $is_remeber_me);
-        //记录登陆日志
-        $this->recordLogin($user['userid']);
         return true;
     }
 

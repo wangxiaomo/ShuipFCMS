@@ -374,6 +374,8 @@ class PassportUcenter extends PassportService {
                 $userinfo['encrypt'] = $encrypt;
             }
             if ($this->registerLogin($userinfo, $is_remember_me)) {
+                //记录登陆日志
+                $this->recordLogin($user['userid']);
                 //登陆成功
                 return $userinfo['userid'];
             } else {

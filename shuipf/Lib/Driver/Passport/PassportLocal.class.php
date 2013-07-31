@@ -349,6 +349,8 @@ class PassportLocal extends PassportService {
                 "lastip" => get_client_ip(),
                 "loginnum" => $userinfo['loginnum'] + 1,
             ));
+            //记录登陆日志
+            $this->recordLogin($user['userid']);
             //登陆成功
             return $userinfo['userid'];
         } else {
