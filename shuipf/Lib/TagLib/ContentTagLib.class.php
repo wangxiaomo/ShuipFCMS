@@ -113,7 +113,7 @@ class ContentTagLib {
         if (empty($data['order'])) {
             $data['order'] = array("updatetime" => "DESC", "id" => "DESC");
         }
-        $dataList = $this->db->where($this->where)->limit($data['limit'])->order(array("updatetime" => "DESC", "id" => "DESC"))->select();
+        $dataList = $this->db->where($this->where)->limit($data['limit'])->order($data['order'])->select();
         //把数据组合成以id为下标的数组集合
         if ($dataList) {
             $return = array();
