@@ -1,11 +1,10 @@
 <?php
 
-/* * 
+/**
  * Search搜索模型
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class SearchModel extends CommonModel {
 
     /**
@@ -18,11 +17,11 @@ class SearchModel extends CommonModel {
             return false;
         }
         $Search['setting'] = unserialize($Search['setting']);
-        $Search['setting']['relationenble'] = isset($Search['setting']['relationenble'])?$Search['setting']['relationenble']:1;
-        $Search['setting']['segment'] = isset($Search['setting']['segment'])?$Search['setting']['segment']:1;
-        $Search['setting']['pagesize'] = isset($Search['setting']['pagesize'])?$Search['setting']['pagesize']:10;
-        $Search['setting']['cachetime'] = isset($Search['setting']['cachetime'])?$Search['setting']['cachetime']:0;
-        $Search['setting']['sphinxenable'] = isset($Search['setting']['sphinxenable'])?$Search['setting']['sphinxenable']:0;
+        $Search['setting']['relationenble'] = isset($Search['setting']['relationenble']) ? $Search['setting']['relationenble'] : 1;
+        $Search['setting']['segment'] = isset($Search['setting']['segment']) ? $Search['setting']['segment'] : 1;
+        $Search['setting']['pagesize'] = isset($Search['setting']['pagesize']) ? $Search['setting']['pagesize'] : 10;
+        $Search['setting']['cachetime'] = isset($Search['setting']['cachetime']) ? $Search['setting']['cachetime'] : 0;
+        $Search['setting']['sphinxenable'] = isset($Search['setting']['sphinxenable']) ? $Search['setting']['sphinxenable'] : 0;
         F("Search_config", $Search['setting']);
         return false;
     }
@@ -80,7 +79,7 @@ class SearchModel extends CommonModel {
                 $Segment = new Segment();
             }
             $fulltext_data = $Segment->get_keyword($Segment->split_result($data));
-            $data = $text. " ". $fulltext_data;
+            $data = $text . " " . $fulltext_data;
         }
         return $data;
     }
@@ -107,7 +106,7 @@ class SearchModel extends CommonModel {
             "modelid" => $modelid,
             "adddate" => $inputtime,
             "data" => $data,
-                ));
+        ));
         if ($searchid !== false) {
             return $searchid;
         }
@@ -137,7 +136,7 @@ class SearchModel extends CommonModel {
                 ))->save(array(
             "adddate" => $inputtime,
             "data" => $data,
-                ));
+        ));
         if ($searchid !== false) {
             return $searchid;
         }
@@ -171,6 +170,7 @@ class SearchModel extends CommonModel {
      */
     public function search_api($id = 0, $data = array(), $modelid, $action = 'add') {
         $fulltextcontent = "";
+        $RelationName = ContentModel::getInstance($modelid)->getRelationName();
         //更新动作
         if ($action == 'add' || $action == 'updata') {
             //取得模型字段
@@ -181,29 +181,27 @@ class SearchModel extends CommonModel {
             foreach ($fulltext_array AS $key => $value) {
                 //作为全站搜索信息
                 if ((int) $value['isfulltext']) {
-                    $fulltextcontent .= $data['system'][$key] ? $data['system'][$key] : $data['model'][$key];
+                    $fulltextcontent .= $data[$key] ? $data[$key] : $data[$RelationName][$key];
                 }
             }
-            $fulltextcontent .= $data['system']['title'] . $data['system']['keywords'];
+            $fulltextcontent .= $data['title'] . $data['keywords'];
             //添加到搜索数据表
-            $inputtime = (int) $data['system']['inputtime'];
-            $catid = (int) $data['system']['catid'];
+            $inputtime = (int) $data['inputtime'];
+            $catid = (int) $data['catid'];
             if ($action == 'add') {
-                $this->searchAdd($id, $catid, $modelid, $inputtime, $fulltextcontent, $data['system']['title'] . $data['system']['keywords']);
+                $this->searchAdd($id, $catid, $modelid, $inputtime, $fulltextcontent, $data['title'] . $data['keywords']);
             } elseif ($action == 'updata') {
                 //判断是否有数据，如果没有，变成add
                 if ($this->where(array("id" => $id, "catid" => $catid, "modelid" => $modelid))->count()) {
-                    $this->searchSave($id, $catid, $modelid, $inputtime, $fulltextcontent, $data['system']['title'] . $data['system']['keywords']);
+                    $this->searchSave($id, $catid, $modelid, $inputtime, $fulltextcontent, $data['title'] . $data['keywords']);
                 } else {
-                    $this->searchAdd($id, $catid, $modelid, $inputtime, $fulltextcontent, $data['system']['title'] . $data['system']['keywords']);
+                    $this->searchAdd($id, $catid, $modelid, $inputtime, $fulltextcontent, $data['title'] . $data['keywords']);
                 }
             }
         } elseif ($action == 'delete') {//删除动作
-            $catid = $data['system']['catid'] ? $data['system']['catid'] : $data['catid'];
+            $catid = $data['catid'] ? $data['catid'] : $data[$RelationName]['catid'];
             $this->searchDelete($id, $catid, $modelid);
         }
     }
 
 }
-
-?>
