@@ -45,11 +45,11 @@ class AttachmentFtp extends AttachmentService {
         //附件存放路径
         $this->options['uploadfilepath'] = C('UPLOADFILEPATH');
         //允许上传的附件大小
-        if(empty($this->options['uploadmaxsize'])){
+        if (empty($this->options['uploadmaxsize'])) {
             $this->options['uploadmaxsize'] = $this->options['isadmin'] ? (int) $this->config['uploadmaxsize'] * 1024 : (int) $this->config['qtuploadmaxsize'] * 1024;
         }
         //允许上传的附件类型
-        if(empty($this->options['uploadallowext'])){
+        if (empty($this->options['uploadallowext'])) {
             $this->options['uploadallowext'] = $this->options['isadmin'] ? explode("|", $this->config['uploadallowext']) : explode("|", $this->config['qtuploadallowext']);
         }
         //上传目录
@@ -158,9 +158,9 @@ class AttachmentFtp extends AttachmentService {
             $info = $this->handlerLocal->getUploadFileInfo();
             //写入附件数据库信息
             foreach ($info as $i => $value) {
-                 //如果需要生成缩图，但也要删除原图时，文件名换成生成后的缩图文件名
+                //如果需要生成缩图，但也要删除原图时，文件名换成生成后的缩图文件名
                 if ($this->handlerLocal->thumb && $this->handlerLocal->thumbRemoveOrigin) {
-                    $info[$i]['savename'] = $value['savename'] = $this->handlerLocal->thumbPrefix.$value['savename'];
+                    $info[$i]['savename'] = $value['savename'] = $this->handlerLocal->thumbPrefix . $value['savename'];
                 }
                 $aid = D('Attachment')->fileInfoAdd($value, $this->options['module'], $this->options['catid'], $this->options['thumb'], $this->options['isadmin'], $this->options['userid'], $this->options['time']);
                 if ($aid) {
@@ -249,9 +249,14 @@ class AttachmentFtp extends AttachmentService {
         } else {
             //传入的是附件路径
             //取得附件存放目录
+            //去除网站的安装路径 ，例如地址 /d/file/contents/2012/07/5002ba343fc9d.jpg
             $uploadfilepath = str_replace(SITE_PATH, '', $this->options['uploadfilepath']);
-            //去除网站的安装路径 ，例如地址 /home/wwwroot/lvyou.abc3210.com/d/file/contents/2012/07/5002ba343fc9d.jpg
             $newFile = str_replace(array(SITE_PATH, $uploadfilepath), '', $file);
+            //如果是远程附件 http://file.abc3210.com/d/file/album/2013/08/thumb_51ff5fa9155cc.jpg 
+            $sitefileurl = parse_url(CONFIG_SITEFILEURL);
+            if ($sitefileurl['host']) {
+                $newFile = str_replace($sitefileurl['scheme'] . "://" . $sitefileurl['host'], '', $newFile);
+            }
             //附件路径MD5值
             $authcode = md5($newFile);
             $info = D('Attachment')->where(array("authcode" => $authcode))->find();
@@ -274,8 +279,11 @@ class AttachmentFtp extends AttachmentService {
             } else {
                 //附件表没有记录相应信息，也进行删除操作
                 try {
+                    if(strpos($newFile,'http://')){
+                        return false;
+                    }
                     //FTP删除
-                    return $this->handler->f_delete($this->options['ftpuppat'] . $uploadfilepath);
+                    return $this->handler->f_delete($this->options['ftpuppat'] . $uploadfilepath . $newFile);
                 } catch (Exception $exc) {
                     $this->error = '文件[' . $this->options['uploadfilepath'] . $newFile . ']删除失败！';
                     Log::write($this->error);
@@ -426,5 +434,3 @@ class AttachmentFtp extends AttachmentService {
     }
 
 }
-
-?>
