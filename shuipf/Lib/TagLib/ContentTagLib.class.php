@@ -194,11 +194,9 @@ class ContentTagLib {
         } else {
             return false;
         }
-
-        //点击表
-        $this->hits_db = M("Hits");
+        
         $desc = $ids = '';
-        $where = $array = $ids_array = array();
+        $where = $array = array();
         //设置SQL where 部分
         if (isset($data['where']) && $data['where']) {
             $where['_string'] = $data['where'];
@@ -234,31 +232,11 @@ class ContentTagLib {
         }
 
         $hits = array();
-        $result = $this->hits_db->where($where)->order($order)->limit($num)->select();
-        foreach ($result as $r) {
-            $pos = explode("-", $r['hitsid']);
-            //取得点击数所属信息ID
-            $ids_array[] = $id = $pos[2];
-            $hits[$id] = $r;
+        $data = $this->db->where($where)->order($order)->limit($num)->select();
+        foreach ($data as $r) {
+            $array[$r['id']] = $r;
         }
-
-        //查询文章条件
-        $where = array();
-        if ($ids_array) {
-            $where['id'] = array("IN", $ids_array);
-        }
-        $array = array();
-        $_result = $this->db->where($where)->select();
-        $_result = $_result ? $_result : array();
-        foreach ($_result as $r) {
-            $result[$r['id']] = $r;
-        }
-        //数据合并
-        foreach ($ids_array as $id) {
-            if ($result[$id]['title'] != '') {
-                $array[$id] = array_merge($result[$id], $hits[$id]);
-            }
-        }
+        
         //结果进行缓存
         if ($cache) {
             S($cacheID, $array, $cache);

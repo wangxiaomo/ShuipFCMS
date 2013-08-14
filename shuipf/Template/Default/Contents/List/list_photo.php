@@ -190,7 +190,7 @@
           <div class="post-thumbnail"> <a href="{$vo.url}" title="{$vo.title}" target="_blank"><img width="216" height="300" src="{$vo.thumb}" alt="{$vo.title}"></a></div>
           <div class="post_title"> <a href="{$vo.url}" title="{$vo.title}" target="_blank">{$vo.title}</a> </div>
           <div class="post-info">
-            <div><span><?php echo hits("c-".$vo['catid']."-".$vo['id']);?></span>Views</div>
+            <div><span>{$vo.views}</span>Views</div>
             <comment action="get_comment" catid="$vo['catid']" id="$vo['id']">
               <div><span><a href="{$vo.url}" title="{$vo.title}" target="_blank">{$data.total}</a></span>Comments</div>
             </comment>

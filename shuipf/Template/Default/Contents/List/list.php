@@ -29,7 +29,7 @@
         <dt><a href='{$vo.url}' title='{$vo.title}'><img src='<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>' alt='{$vo.title}'/></a></dt>
         <dd class="arc_title"><a href="{$vo.url}" title="{$vo.title}">{$vo.title}</a></dd>
         <dd class="arc_desc">{$vo.description}...</dd>
-        <dd class="arc_info"><span>所属栏目：<a href='{$Categorys[$catid]['url']}'>{$Categorys[$catid]['catname']}</a></span> <span>更新日期：{$vo.updatetime|date="m-d H:i:s",###}</span> <span>阅读次数：<?php echo hits("c-".$vo['catid']."-".$vo['id']);?></span></dd>
+        <dd class="arc_info"><span>所属栏目：<a href='{$Categorys[$catid]['url']}'>{$Categorys[$catid]['catname']}</a></span> <span>更新日期：{$vo.updatetime|date="m-d H:i:s",###}</span> <span>阅读次数：{$vo.views}</span></dd>
         <div style="clear:both"></div>
       </dl>
       </volist>

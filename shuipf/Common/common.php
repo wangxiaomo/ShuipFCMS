@@ -789,27 +789,15 @@ function get_avatar($id_or_email, $size = '96', $default = '', $alt = false) {
 
 /**
  * 获取点击数
- * @param type $hitsid 如果是数组，则返回多个，如果是点击ID，则返回单条
+ * @param type $catid 栏目ID
+ * @param type $id 信息ID
+ * @return type
  */
-function hits($hitsid, $cache = 0) {
-    $cacheID = to_guid_string($hitsid);
-    if ($cache && $data = S($cacheID)) {
-        return $data;
-    }
-    $db = M("Hits");
-    $where = array();
-    if (is_array($hitsid)) {
-        $where['hitsid'] = array("IN", implode(",", $hitsid));
-        $data = $db->where($where)->getField("views");
-    } else {
-        $where['hitsid'] = array("EQ", $hitsid);
-        $data = $db->where($where)->getField("views");
-    }
-    //缓存
-    if ($cache) {
-        S($cacheID, $data, $cache);
-    }
-    return $data;
+function hits($catid, $id) {
+    $Category = F("Category");
+    $Model = F("Model");
+    $tab = ucwords($Model[$Category[$catid]['modelid']]['tablename']);
+    return M($tab)->where(array("id" => $id))->getField("views");
 }
 
 /**
@@ -984,5 +972,3 @@ function isMin($value, $length) {
 function isMax($value, $length) {
     return mb_strlen($value, 'utf-8') <= (int) $length ? true : false;
 }
-
-?>

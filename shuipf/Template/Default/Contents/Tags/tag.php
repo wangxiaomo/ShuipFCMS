@@ -53,7 +53,7 @@
                 <footer class="info"><a href="">前<b>
                   <?=commcount($vo['catid'],$vo['id']);?>
                   </b>个座位已被强势霸占！</a>共有<b>
-                  <?=hits("c-".$vo['catid']."-".$vo['id']);?>
+                  {$vo.views}
                   </b>人围观</footer>
               </div>
             </li>

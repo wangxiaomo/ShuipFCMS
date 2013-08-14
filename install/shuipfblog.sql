@@ -73,6 +73,12 @@ CREATE TABLE `shuipfcms_article` (
   `posid` tinyint(3) unsigned NOT NULL default '0',
   `prefix` varchar(255) collate utf8_unicode_ci NOT NULL default '',
   `tags` varchar(255) collate utf8_unicode_ci NOT NULL default '',
+  `views` int(11) NOT NULL DEFAULT '0' COMMENT '点击总数',
+  `yesterdayviews` int(11) NOT NULL DEFAULT '0' COMMENT '最日',
+  `dayviews` int(10) NOT NULL DEFAULT '0' COMMENT '今日点击数',
+  `weekviews` int(10) NOT NULL DEFAULT '0' COMMENT '本周访问数',
+  `monthviews` int(10) NOT NULL DEFAULT '0' COMMENT '本月访问',
+  `viewsupdatetime` int(10) NOT NULL DEFAULT '0' COMMENT '点击数更新时间',
   PRIMARY KEY  (`id`),
   KEY `status` (`status`,`listorder`,`id`),
   KEY `listorder` (`catid`,`status`,`listorder`,`id`),
@@ -393,23 +399,6 @@ CREATE TABLE `shuipfcms_customtemp` (
 -- ----------------------------
 -- Records of shuipfcms_customtemp
 -- ----------------------------
-
--- ----------------------------
--- Table structure for `shuipfcms_hits`
--- ----------------------------
-DROP TABLE IF EXISTS `shuipfcms_hits`;
-CREATE TABLE `shuipfcms_hits` (
-  `hitsid` char(30) NOT NULL COMMENT 'ID',
-  `modelid` smallint(5) NOT NULL COMMENT '模型id',
-  `catid` smallint(5) unsigned NOT NULL default '0' COMMENT '栏目ID',
-  `views` int(10) unsigned NOT NULL default '0' COMMENT '点击总数',
-  `yesterdayviews` int(10) unsigned NOT NULL default '0' COMMENT '最日',
-  `dayviews` int(10) unsigned NOT NULL default '0' COMMENT '今日',
-  `weekviews` int(10) unsigned NOT NULL default '0' COMMENT '本周访问',
-  `monthviews` int(10) unsigned NOT NULL default '0' COMMENT '本月访问',
-  `updatetime` int(10) unsigned NOT NULL default '0' COMMENT '最后更新时间',
-  PRIMARY KEY  (`hitsid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='点击表';
 
 -- ----------------------------
 -- Table structure for `shuipfcms_links`
