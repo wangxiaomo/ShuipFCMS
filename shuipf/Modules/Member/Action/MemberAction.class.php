@@ -444,7 +444,7 @@ class MemberAction extends AdminbaseAction {
                 $page = $this->page($count, 20);
                 $data = $db->limit($page->firstRow . ',' . $page->listRows)->select();
                 foreach ($data as $k => $r) {
-                    $data[$k]['username'] = $member->where(array("userid" => $r['uid']))->getField("username");
+                    $data[$k]['username'] = $this->member->where(array("userid" => $r['uid']))->getField("username");
                     $data[$k]['userid'] = $r['uid'];
                 }
                 $this->assign("Page", $page->show('Admin'));
