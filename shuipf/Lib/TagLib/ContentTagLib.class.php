@@ -245,7 +245,7 @@ class ContentTagLib {
         //log
         if (APP_DEBUG) {
             $msg = "ContentTagLib标签->hits：参数：catid=$catid ,modelid=$modelid ,order=$order ,
-            SQL:" . $this->db->getLastSql() . " | " . $this->hits_db->getLastSql();
+            SQL:" . $this->db->getLastSql();
             Log::write($msg);
         }
         return $array;
@@ -416,5 +416,3 @@ class ContentTagLib {
     }
 
 }
-
-?>
