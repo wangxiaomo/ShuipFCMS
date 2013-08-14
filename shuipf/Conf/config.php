@@ -36,14 +36,13 @@ return array(
     'DB_SQL_BUILD_CACHE' => false, // 数据库查询的SQL创建缓存
     'DB_SQL_BUILD_QUEUE' => 'file', // SQL缓存队列的缓存方式 支持 file xcache和apc
     'DB_SQL_BUILD_LENGTH' => 20, // SQL缓存的队列长度
-    
+    /* SESSION相关设置 */
     'SESSION_AUTO_START' => true,
     'SESSION_TYPE' => '', // session hander类型 默认无需设置 除非扩展了session hander驱动
     'VAR_SESSION_ID' => 'session_id', //sessionID的提交变量
-    
+    /* 表单令牌相关设置 */
     'TOKEN_RESET' => true, //令牌验证出错后是否重置令牌 默认为true
     "UPLOAD_FILE_RULE" => "uniqid", //上传文件名命名规则 例如可以是 time uniqid com_create_guid 等 必须是一个无需任何参数的函数名 可以使用自定义函数
-
     /* 数据缓存设置 */
     'DATA_CACHE_TIME' => 0, // 数据缓存有效期 0表示永久缓存
     'DATA_CACHE_COMPRESS' => false, // 数据缓存是否压缩缓存
