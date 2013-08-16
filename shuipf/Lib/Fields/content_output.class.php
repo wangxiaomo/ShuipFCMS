@@ -75,7 +75,7 @@ class content_output {
                 $info[$field] = $result;
             }
         }
-        return $info;
+        return array_merge($this->data, $info);
     }
 
     ##{字段处理函数}##
