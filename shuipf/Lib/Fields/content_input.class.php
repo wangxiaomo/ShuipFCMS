@@ -71,16 +71,16 @@ class content_input {
         $ContentModel = ContentModel::getInstance($this->modelid);
         $info = array();
         foreach ($this->fields as $field => $fieldInfo) {
+            //特殊分页字段
+            //此处还需优化，最好是交给字段input.inc.php处理
+            if ('pages' == $field) {
+                $info[$ContentModel->getRelationName()]['paginationtype'] = $this->data['paginationtype'];
+                $info[$ContentModel->getRelationName()]['maxcharperpage'] = $this->data['maxcharperpage'];
+                unset($data['paginationtype'], $data['maxcharperpage']);
+            }
             //如果是更新状态下，没有数据的，跳过
             if ($type == 2) {
                 if (!isset($this->data[$field])) {
-                    //特殊分页字段
-                    //此处还需优化，最好是交给字段input.inc.php处理
-                    if ('pages' == $field) {
-                        $info[$ContentModel->getRelationName()]['paginationtype'] = $this->data['paginationtype'];
-                        $info[$ContentModel->getRelationName()]['maxcharperpage'] = $this->data['maxcharperpage'];
-                        unset($data['paginationtype'], $data['maxcharperpage']);
-                    }
                     continue;
                 }
             }
