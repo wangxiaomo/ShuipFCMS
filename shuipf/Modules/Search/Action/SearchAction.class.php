@@ -1,11 +1,10 @@
 <?php
 
-/* * 
+/**
  * 搜索管理
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class SearchAction extends AdminbaseAction {
 
     public $config;
@@ -31,30 +30,30 @@ class SearchAction extends AdminbaseAction {
                 $this->error("配置修改失败！");
             }
         } else {
-            $model = F("Model");
+            $model = F("ModelType_0");
             $this->assign("model_list", $model);
             $this->assign("config", $this->config);
             $this->display();
         }
     }
-    
+
     //搜索关键词记录
-    public function searchot(){
+    public function searchot() {
         $db = M("SearchKeyword");
-        if(IS_POST){
+        if (IS_POST) {
             $keyword = $this->_post("keyword");
-            if($keyword && is_array($keyword)){
-                foreach($keyword as $k){
-                    $db->where(array("keyword"=>$k))->delete();
+            if ($keyword && is_array($keyword)) {
+                foreach ($keyword as $k) {
+                    $db->where(array("keyword" => $k))->delete();
                 }
             }
             $this->success("操作成功！");
-        }else{
+        } else {
             $count = $db->count();
             $page = $this->page($count, 20);
-            $data = $db->limit($page->firstRow . ',' . $page->listRows)->order(array("searchnums"=>"DESC"))->select();
-            $this->assign("data",$data);
-            $this->assign("Page",$page->show('Admin'));
+            $data = $db->limit($page->firstRow . ',' . $page->listRows)->order(array("searchnums" => "DESC"))->select();
+            $this->assign("data", $data);
+            $this->assign("Page", $page->show('Admin'));
             $this->display();
         }
     }
@@ -107,12 +106,8 @@ class SearchAction extends AdminbaseAction {
                 }
                 //数据处理
                 foreach ($data as $r) {
-                    //组合数据
-                    $inputinfo = array();
-                    $inputinfo['system'] = $r;
-                    $inputinfo['model'] = $r[$table_name . "_data"];
                     $id = $r['id'];
-                    $this->db->search_api($id, $inputinfo, $modelid);
+                    $this->db->search_api($id, $r, $modelid);
                 }
 
                 if ($pages == $page || $page > $pages) {
@@ -130,7 +125,7 @@ class SearchAction extends AdminbaseAction {
                     $this->assign("waitSecond", 200);
                     $this->success($message, $forward);
                     exit;
-                } 
+                }
             } else {
                 //当没有选择模型更新时，进行全部可用模型数据更新
                 $modelArr = $this->config['modelid'];
@@ -166,12 +161,8 @@ class SearchAction extends AdminbaseAction {
                 }
                 //数据处理
                 foreach ($data as $r) {
-                    //组合数据
-                    $inputinfo = array();
-                    $inputinfo['system'] = $r;
-                    $inputinfo['model'] = $r[$table_name . "_data"];
                     $id = $r['id'];
-                    $this->db->search_api($id, $inputinfo, $modelid);
+                    $this->db->search_api($id, $r, $modelid);
                 }
 
                 if ($pages == $page || $page > $pages) {
@@ -193,7 +184,7 @@ class SearchAction extends AdminbaseAction {
                     $this->assign("waitSecond", 200);
                     $this->success($message, $forward);
                     exit;
-                } 
+                }
             }
         } else {
             if (IS_POST) {
@@ -220,5 +211,3 @@ class SearchAction extends AdminbaseAction {
     }
 
 }
-
-?>
