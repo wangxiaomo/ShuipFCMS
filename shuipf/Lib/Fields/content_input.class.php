@@ -37,7 +37,7 @@ class content_input {
         $this->fields = F("Model_field_" . $this->modelid);
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
-    
+
     /**
      * 魔术方法，获取配置
      * @param type $name
@@ -74,6 +74,13 @@ class content_input {
             //如果是更新状态下，没有数据的，跳过
             if ($type == 2) {
                 if (!isset($this->data[$field])) {
+                    //特殊分页字段
+                    //此处还需优化，最好是交给字段input.inc.php处理
+                    if ('pages' == $field) {
+                        $info[$ContentModel->getRelationName()]['paginationtype'] = $this->data['paginationtype'];
+                        $info[$ContentModel->getRelationName()]['maxcharperpage'] = $this->data['maxcharperpage'];
+                        unset($data['paginationtype'], $data['maxcharperpage']);
+                    }
                     continue;
                 }
             }
@@ -188,7 +195,7 @@ class content_input {
             if ($issystem) {
                 $info[$field] = $value;
             } else {
-                $info[ucwords($this->tablename) . 'Data'][$field] = $value;
+                $info[$ContentModel->getRelationName()][$field] = $value;
             }
         }
         //取得标题颜色
@@ -197,12 +204,12 @@ class content_input {
             $info['style'] = $_POST['style_color'] ? strip_tags($_POST['style_color']) : '';
             //标题加粗等样式
             if (isset($_POST['style_font_weight'])) {
-                $info['style'] = $info['style'] .($_POST['style_font_weight']?';':'') . strip_tags($_POST['style_font_weight']);
+                $info['style'] = $info['style'] . ($_POST['style_font_weight'] ? ';' : '') . strip_tags($_POST['style_font_weight']);
             }
         }
         //如果$data还有存在模型字段以外的值，进行合并
-        if(!empty($data)){
-            $info = array_merge($data,$info);
+        if (!empty($data)) {
+            $info = array_merge($data, $info);
         }
         return $info;
     }
