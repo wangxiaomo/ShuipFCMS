@@ -1,3 +1,47 @@
+版本：1.1.0
+流水：20130816
+[优化]
+1、优化附件上传模块！
+2、废除INTERFACE_PASSPORT通行证接口设置！
+3、调整用户通行证！
+4、支持Attachment服务传入type选择上传方案。
+5、增加缩略图生成快捷函数 thumb。
+6、升级TP核心！
+7、更新内容模型字段管理！
+8、允许修改字段类型
+9、更新安装程序，支持安装的时候选择是否使用默认测试数据！
+10、对内容模块进行更新！
+11、调整模型缓存，F('Model')表示全部模型。F("ModelType_0")表示模型为type为0的模型缓存。
+12、更新会员中心，同时对命名不规范的action进行调整
+13、更改前台模板找不到时提示内容
+14、Passport接口的getLocalUser方法优化！
+15、评论添加/编辑/删除/审核增加tag行为调用。
+16、更新str_cut函数
+17、优化附件接口delFile
+18、点击表删除，合并到各个模型的主表中去！
+[Bug修复]
+1、修复由于上版本对UploadFile进行更新，造成现在上传的路径有误！
+2、修复当后台绑定域名时，会造成表情地址错误！
+3、修复会员头像上传等问题！
+4、修复多行文本框“是否允许Html”设置失效！
+5、修复搜索分页失效！
+6、修复uc通行证参数判断错误！
+7、修复生成上传目录时，如果模块名传入有空格没有过滤！
+8、修复前台加水印函数调用错误！
+9、修复由于上一篇有分页下一篇无分页的时候，会把上一篇的分页带到下一篇！
+10、修复由于更新到最新版TP支持NULL写入，造成原有评论写入时失败！
+11、修改安装程序，可读可写判断！
+12、修复getLocalUser接口传入userid时，条件错误！
+13、修复表单字段正则会被过滤掉反斜杠的问题！
+14、修复当导航标签catid参数传递变量时，模板解析错误！
+15、更新采集导入出错！同时修改登陆状态验证方法
+16、修复当后台开启忽略URL大小写时，内容模块由于定义了单独配置，造成访问错误！
+17、修复前台调用fetch时，模板定位错误的问题！
+18、修复seo参数传入错误
+19、修复授权管理错误！
+20、修复content_output处理时，不会显示出表中全部的字段内容
+21、修复重建搜索数据出错！
+22、修复分页设置失效
 [数据库调整]
 1、UPDATE `shuipfcms_menu` SET `model` = 'Createhtml' WHERE `model` = 'Create_html';
 2、UPDATE `shuipfcms_menu` SET `model` = 'Group' WHERE `model` = 'Member_group';
@@ -8,6 +52,13 @@
 7、ALTER TABLE `shuipfcms_member` ADD COLUMN `vip`  tinyint(1) NOT NULL COMMENT 'vip等级' AFTER `islock`;
 8、ALTER TABLE `shuipfcms_member` ADD COLUMN `overduedate`  int(10) NOT NULL COMMENT 'vip过期时间' AFTER `vip`;
 9、表单模块和会员模块中的模型字段，全部都需要从新编辑保存一次！
+10、点击表删除，合并的各个模型主表中去。可以通过下面的SQL手动添加。
+	ALTER TABLE  `shuipf_article` ADD  `views` INT NOT NULL  DEFAULT  '0'  COMMENT  '点击总数' ;
+	ALTER TABLE  `shuipf_article` ADD  `yesterdayviews` INT NOT NULL  DEFAULT  '0'  COMMENT  '最日';
+	ALTER TABLE  `shuipf_article` ADD  `dayviews` INT( 10 ) NOT NULL DEFAULT  '0' COMMENT  '今日点击数';
+	ALTER TABLE  `shuipf_article` ADD  `weekviews` INT( 10 ) NOT NULL DEFAULT  '0' COMMENT  '本周访问数';
+	ALTER TABLE  `shuipf_article` ADD  `monthviews` INT( 10 ) NOT NULL DEFAULT  '0' COMMENT  '本月访问';
+	ALTER TABLE  `shuipf_article` ADD  `viewsupdatetime` INT( 10 ) NOT NULL DEFAULT  '0' COMMENT  '点击数更新时间';
 
 版本：1.0.0
 流水：20130624
