@@ -13,8 +13,8 @@
          栏目列表生成：<select class="select_2" onChange="window.location.href=''+this.value+''">
        <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$catid))}" >列表生成</option>
        <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$catid))}">生成当前栏目列表</option>
-       <if condition=" $Categorys['parentid'] "> 
-       <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$Categorys['parentid']))}">生成父栏目列表</option>
+       <if condition=" $parentid "> 
+       <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$parentid))}">生成父栏目列表</option>
        </if>
     </select>
   </div>

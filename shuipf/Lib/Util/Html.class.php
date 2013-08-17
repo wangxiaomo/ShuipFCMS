@@ -197,15 +197,11 @@ class Html extends BaseAction {
         $repagenum = (int) $setting['repagenum'];
         if ($repagenum && !$GLOBALS['dynamicRules']) {
             //设置动态访问规则给page分页使用
-            $GLOBALS["Total_Pages"] = $GLOBALS['Rule_Static_Size'] = $repagenum;
+            $GLOBALS['Rule_Static_Size'] = $repagenum;
             $GLOBALS['dynamicRules'] = CONFIG_SITEURL_MODEL."index.php?a=lists&catid={$catid}&page=*";
         }
         if ($repagenum && $page > $repagenum) {
-            try {
-                unset($GLOBALS['dynamicRules']);
-            } catch (Exception $exc) {
-                
-            }
+            unset($GLOBALS['dynamicRules']);
             return true;
         }
         //分页
