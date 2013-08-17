@@ -21,17 +21,6 @@ class IndexAction extends BaseAction {
         //模板处理
         $tp = explode(".", CONFIG_INDEXTP);
         $template = parseTemplateFile("Index:" . $tp[0]);
-        if ($template == false && $tp[0] != "index") {
-            //模板不存在，重新使用默认模板
-            $template = "index";
-            $template = parseTemplateFile("Index:" . $template);
-            if ($template == false) {
-                $this->error("首页模板不存在！");
-            }
-        } else if ($template == false) {
-            $this->error("首页模板不存在！");
-        }
-
         $SEO = seo("", "", AppframeAction::$Cache['Config']['siteinfo'], AppframeAction::$Cache['Config']['sitekeywords']);
 
         //生成路径
@@ -42,13 +31,13 @@ class IndexAction extends BaseAction {
         $this->assign("SEO", $SEO);
         //把分页分配到模板
         $this->assign(C("VAR_PAGE"), $page);
-        $this->display($template);
+        $this->display("Index:" . $tp[0]);
     }
 
     //栏目列表 
     public function lists() {
         //栏目ID
-        $catid = I('get.catid',0,'intval');
+        $catid = I('get.catid', 0, 'intval');
         //分页
         $page = isset($_GET[C("VAR_PAGE")]) ? $_GET[C("VAR_PAGE")] : 1;
         if (!$catid) {
@@ -67,7 +56,7 @@ class IndexAction extends BaseAction {
         if ($repagenum && !$GLOBALS['dynamicRules']) {
             //设置动态访问规则给page分页使用
             $GLOBALS['Rule_Static_Size'] = $repagenum;
-            $GLOBALS['dynamicRules'] = CONFIG_SITEURL_MODEL."index.php?a=lists&catid={$catid}&page=*";
+            $GLOBALS['dynamicRules'] = CONFIG_SITEURL_MODEL . "index.php?a=lists&catid={$catid}&page=*";
         }
         //父目录
         $parentdir = $category['parentdir'];
@@ -91,8 +80,6 @@ class IndexAction extends BaseAction {
             //去除完后缀的模板
             $template = $tpar[0];
             unset($tpar);
-            //模板检测
-            $template = parseTemplateFile($template);
             $GLOBALS['URLRULE'] = $urls;
         }
         //把分页分配到模板
@@ -109,8 +96,8 @@ class IndexAction extends BaseAction {
      * 内容页 
      */
     public function shows() {
-        $catid = I('get.catid',0,'intval');
-        $id = I('get.id',0,'intval');
+        $catid = I('get.catid', 0, 'intval');
+        $id = I('get.id', 0, 'intval');
         $page = intval($_GET[C("VAR_PAGE")]);
         $page = max($page, 1);
         if (!$id || !$catid) {
@@ -162,18 +149,6 @@ class IndexAction extends BaseAction {
         $newstempid = explode(".", $template);
         $template = $newstempid[0];
         unset($newstempid);
-        //检测模板是否存在、不存在使用默认！
-        $tempstatus = parseTemplateFile("Show:" . $template);
-        if ($tempstatus == false && $template != "show") {
-            //模板不存在，重新使用默认模板
-            $template = "show";
-            $tempstatus = parseTemplateFile("Show:" . $template);
-            if ($tempstatus == false) {
-                return false;
-            }
-        } else if ($tempstatus == false) {
-            return false;
-        }
 
         //分页处理
         $pages = $titles = '';
@@ -223,9 +198,7 @@ class IndexAction extends BaseAction {
         } else {
             $this->assign("content", $output_data['content']);
         }
-        $this->display($tempstatus);
+        $this->display("Show:" . $template);
     }
 
 }
-
-?>
