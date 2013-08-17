@@ -401,9 +401,6 @@ class ContentTagLib {
             if (!$cat['ismenu']) {
                 continue;
             }
-            if (strpos($cat['url'], '://') === false) {
-                $cat['url'] = substr(CONFIG_SITEURL, 0, -1) . $cat['url'];
-            }
             if ($cat['parentid'] == $data['catid']) {
                 $array[$catid] = $cat;
             }
