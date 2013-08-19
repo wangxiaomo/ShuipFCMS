@@ -157,8 +157,8 @@ switch ($step) {
             $seo_description = trim($_POST['siteinfo']);
             //关键词
             $seo_keywords = trim($_POST['keywords']);
-			//测试数据
-			$testdata = (int)$_POST['testdata'];
+            //测试数据
+            $testdata = (int) $_POST['testdata'];
 
             $conn = @ mysql_connect($dbHost, $dbUser, $dbPwd);
             if (!$conn) {
@@ -192,16 +192,18 @@ switch ($step) {
 
             //读取数据文件
             $sqldata = file_get_contents(SITEDIR . 'install/' . $sqlFile);
-			//读取测试数据
-			if($testdata){
-				$sqldataDemo = file_get_contents(SITEDIR . 'install/' . $sqlFileDemo);
-				$sqldata = $sqldata."\r\n".$sqldataDemo;
-			}else{
-				//不加测试数据的时候，删除d目录的文件
-				try {
-					$Dir->delDir(SITEDIR . 'd/file/contents/');
-				} catch (Exception $exc) {}
-			}
+            //读取测试数据
+            if ($testdata) {
+                $sqldataDemo = file_get_contents(SITEDIR . 'install/' . $sqlFileDemo);
+                $sqldata = $sqldata . "\r\n" . $sqldataDemo;
+            } else {
+                //不加测试数据的时候，删除d目录的文件
+                try {
+                    $Dir->delDir(SITEDIR . 'd/file/contents/');
+                } catch (Exception $exc) {
+                    
+                }
+            }
             $sqlFormat = sql_split($sqldata, $dbPrefix);
 
 
@@ -353,14 +355,9 @@ function dir_create($path) {
     if (!$path) {
         return false;
     }
-    if (is_dir($path)) {
-        $Dir->listFile($path);
-        $dir = $Dir->toArray();
-        $dir = $dir[0];
-    } else {
-        $dir['isReadable'] = is_readable($path);
-        $dir['isWritable'] = is_writable($path);
-    }
+    $dir = array();
+    $dir['isReadable'] = is_readable($path);
+    $dir['isWritable'] = is_writable($path);
     return $dir;
 }
 
