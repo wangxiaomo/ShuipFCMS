@@ -661,7 +661,7 @@ class ContentAction extends AdminbaseAction {
                                 $hits->where(array("hitsid" => "c-$catid-$sid", "catid" => $catid))->save(array("catid" => $tocatid, "hitsid" => "c-$tocatid-$sid"));
                             }
                         }
-                        $this->success("移动成功！", U("Create_html/update_urls"));
+                        $this->success("移动成功！", U("Createhtml/update_urls"));
                     } else {
                         $this->error("请选择需要移动的信息！");
                     }
@@ -689,7 +689,7 @@ class ContentAction extends AdminbaseAction {
                             $data['hitsid'] = array('exp', "replace(hitsid,'c-{$catids}-','c-{$tocatid}-')");
                             $hitsDb->where(array("catid" => $catids))->save($data);
                         }
-                        $this->success("移动成功，请使用《批量更新URL》更新新的地址！！", U("Create_html/update_urls"));
+                        $this->success("移动成功，请使用《批量更新URL》更新新的地址！！", U("Createhtml/update_urls"));
                     } else {
                         $this->error("移动失败");
                     }
