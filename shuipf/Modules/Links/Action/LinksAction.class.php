@@ -26,9 +26,7 @@ class LinksAction extends AdminbaseAction {
         $this->display();
     }
 
-    /**
-     * 添加 
-     */
+    //添加 
     public function add() {
         if (IS_POST) {
             $db = D("Links");
@@ -53,7 +51,7 @@ class LinksAction extends AdminbaseAction {
         } else {
             import('Form');
             $db = M("Terms");
-            $Terms = $db->data(array("module" => "links"))->select();
+            $Terms = $db->where(array("module" => "links"))->select();
             $this->assign("Terms", $Terms);
             $this->display();
         }
@@ -88,22 +86,20 @@ class LinksAction extends AdminbaseAction {
             if (!$data) {
                 $this->error("该信息不存在！");
             }
-            $Terms = $db->data(array("module" => "links"))->select();
+            $Terms = $db->where(array("module" => "links"))->select();
             $this->assign("Terms", $Terms);
             $this->assign($data);
             $this->display();
         }
     }
 
-    /**
-     * 删除 
-     */
+    //删除 
     public function delete() {
         if (IS_POST) {
             $ids = $this->_post("ids");
             $db = M("Links");
-            if(is_array($ids)){
-                foreach($ids as $id){
+            if (is_array($ids)) {
+                foreach ($ids as $id) {
                     $db->where(array("id" => $id))->delete();
                     service("Attachment")->api_delete('links-' . $id);
                 }
@@ -196,5 +192,3 @@ class LinksAction extends AdminbaseAction {
     }
 
 }
-
-?>
