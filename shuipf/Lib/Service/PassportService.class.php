@@ -50,12 +50,18 @@ class PassportService {
     public function user_integral($uid, $integral) {
         $map = array();
         if (is_numeric($uid)) {
-            $map['id'] = $uid;
+            $map['uerid'] = $uid;
         } else {
             $map['username'] = $uid;
         }
+        if (empty($map)) {
+            return false;
+        }
         $member = D("Member");
         $info = $member->where($map)->find();
+        if (empty($info)) {
+            return false;
+        }
         $point = $info['point'] + $integral;
         if ($point < 0) {
             return -1;
@@ -63,7 +69,7 @@ class PassportService {
         //计算会员组
         $groupid = $member->get_usergroup_bypoint((int) $point);
         //更新
-        if ($member->where($map)->save(array("point" => (int) $point, "groupid" => $groupid))) {
+        if (false !== $member->where($map)->save(array("point" => (int) $point, "groupid" => $groupid))) {
             return $point;
         }
         return false;
@@ -264,5 +270,3 @@ class PassportService {
     }
 
 }
-
-?>
