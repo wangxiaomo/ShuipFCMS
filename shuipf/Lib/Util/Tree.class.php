@@ -36,7 +36,7 @@ class Tree {
      *      7 => array('id'=>'7','parentid'=>3,'name'=>'三级栏目二')
      *      )
      */
-    public function init($arr=array()) {
+    public function init($arr = array()) {
         $this->arr = $arr;
         $this->ret = '';
         return is_array($arr);
@@ -134,7 +134,7 @@ class Tree {
         }
         return $this->ret;
     }
-    
+
     /**
      * 得到树型结构数组
      * @param int ID，表示获得这个ID下的所有子级
@@ -151,8 +151,8 @@ class Tree {
             $total = count($child);
             foreach ($child as $id => $value) {
                 @extract($value);
-                $retarray[$value['id']] = $value;
-                $retarray[$value['id']]["child"] = $this->get_tree_array($id, '');
+                $retarray[$id] = $value;
+                $retarray[$id]["child"] = $this->get_tree_array($id, '');
             }
         }
         return $retarray;
@@ -235,7 +235,7 @@ class Tree {
      * @param $currentlevel 计算当前层级，递归使用 适用改函数时不需要用该参数
      * @param $recursion 递归使用 外部调用时为FALSE
      */
-    function get_treeview($myid, $effected_id='example', $str="<span class='file'>\$name</span>", $str2="<span class='folder'>\$name</span>", $showlevel = 0, $style='filetree ', $currentlevel = 1, $recursion=FALSE) {
+    function get_treeview($myid, $effected_id = 'example', $str = "<span class='file'>\$name</span>", $str2 = "<span class='folder'>\$name</span>", $showlevel = 0, $style = 'filetree ', $currentlevel = 1, $recursion = FALSE) {
         $child = $this->get_child($myid);
         if (!defined('EFFECTED_INIT')) {
             $effected = ' id="' . $effected_id . '"';
@@ -279,7 +279,7 @@ class Tree {
      * Enter description here ...
      * @param unknown_type $myid
      */
-    public function creat_sub_json($myid, $str='') {
+    public function creat_sub_json($myid, $str = '') {
         $sub_cats = $this->get_child($myid);
         $n = 0;
         if (is_array($sub_cats))
