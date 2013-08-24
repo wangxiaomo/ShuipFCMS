@@ -50,7 +50,7 @@ class PassportService {
     public function user_integral($uid, $integral) {
         $map = array();
         if (is_numeric($uid)) {
-            $map['uerid'] = $uid;
+            $map['userid'] = $uid;
         } else {
             $map['username'] = $uid;
         }
