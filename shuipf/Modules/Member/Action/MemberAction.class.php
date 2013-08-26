@@ -166,40 +166,46 @@ class MemberAction extends AdminbaseAction {
                 if (empty($userinfo)) {
                     $this->error('该会员不存在！');
                 }
-                //详细信息验证
                 require_cache(RUNTIME_PATH . 'content_input.class.php');
                 $ContentModel = ContentModel::getInstance($modelid)->relation(false);
-                $content_input = new content_input($modelid);
-                $inputinfo = $content_input->get($info, 2);
-                if ($inputinfo) {
-                    //数据验证
-                    $inputinfo = $ContentModel->token(false)->create($inputinfo, 2);
-                    if (false == $inputinfo) {
+                if ($userinfo['modelid'] == $modelid && $info) {
+                    //详细信息验证
+                    $content_input = new content_input($modelid);
+                    $inputinfo = $content_input->get($info, 2);
+                    if ($inputinfo) {
+                        //数据验证
+                        $inputinfo = $ContentModel->token(false)->create($inputinfo, 2);
+                        if (false == $inputinfo) {
+                            $ContentModel->tokenRecovery($post);
+                            $this->error($ContentModel->getError());
+                        }
+                    } else {
                         $ContentModel->tokenRecovery($post);
-                        $this->error($ContentModel->getError());
+                        $this->error($content_input->getError());
                     }
-                } else {
-                    $ContentModel->tokenRecovery($post);
-                    $this->error($content_input->getError());
+                    //检查详细信息是否已经添加过
+                    if ($ContentModel->where(array("userid" => $userid))->find()) {
+                        $ContentModel->where(array("userid" => $userid))->save($inputinfo);
+                    } else {
+                        $inputinfo['userid'] = $userid;
+                        $ContentModel->add($inputinfo);
+                    }
                 }
                 //判断是否需要删除头像
                 if (I('post.delavatar')) {
                     service("Passport")->user_deleteavatar($userinfo['userid']);
                 }
-                $edit = service("Passport")->user_edit($data['username'], '', $data['password'], $data['email'], 1);
-                if ($edit < 0) {
-                    $this->error($this->member->getErrorMesg($edit));
+                //修改基本资料
+                if ($userinfo['username'] != $data['username'] || !empty($data['password']) || $userinfo['email'] != $data['email']) {
+                    $edit = service("Passport")->user_edit($data['username'], '', $data['password'], $data['email'], 1);
+                    if ($edit < 0) {
+                        $this->error($this->member->getErrorMesg($edit));
+                    }
                 }
                 unset($data['username'], $data['password'], $data['email']);
+                //更新除基本资料外的其他信息
                 if (false === $this->member->where(array('userid' => $userid))->save($data)) {
                     $this->error('更新失败！');
-                }
-                //检查详细信息是否已经添加过
-                if ($ContentModel->where(array("userid" => $userid))->find()) {
-                    $ContentModel->where(array("userid" => $userid))->save($inputinfo);
-                } else {
-                    $inputinfo['userid'] = $userid;
-                    $ContentModel->add($inputinfo);
                 }
                 $this->success("更新成功！");
             } else {
@@ -425,13 +431,13 @@ class MemberAction extends AdminbaseAction {
             //批量删除
             $connectid = I('post.connectid');
             if (is_array($connectid)) {
-                $db->where(array("connectid" => array('IN',$connectid)))->delete();
+                $db->where(array("connectid" => array('IN', $connectid)))->delete();
                 $this->success("操作成功！");
             } else {
                 $this->error("操作失败！");
             }
         } else {
-            $connectid = I('get.connectid',0,'intval');
+            $connectid = I('get.connectid', 0, 'intval');
             if ($connectid) {
                 //单个删除
                 if ($db->where(array("connectid" => $connectid))->delete()) {

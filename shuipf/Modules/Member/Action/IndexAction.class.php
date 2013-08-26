@@ -133,17 +133,19 @@ class IndexAction extends MemberbaseAction {
                 $info = I('post.info');
                 require_cache(RUNTIME_PATH . 'content_input.class.php');
                 $content_input = new content_input($modelid);
-                $info = $content_input->get($info, 2);
-                $info = ContentModel::getInstance($modelid)->relation(false)->create($info, 2);
-                if (false == $info) {
-                    $this->error(ContentModel::getInstance($modelid)->getError());
-                }
-                //检查详细信息是否已经添加过
-                if (ContentModel::getInstance($modelid)->where(array("userid" => AppframeAction::$Cache['uid']))->find()) {
-                    ContentModel::getInstance($modelid)->where(array("userid" => AppframeAction::$Cache['uid']))->save($info);
-                } else {
-                    $info['userid'] = AppframeAction::$Cache['uid'];
-                    ContentModel::getInstance($modelid)->add($info);
+                $info = $content_input->get($info, 3);
+                if (!empty($info)) {
+                    $info = ContentModel::getInstance($modelid)->relation(false)->create($info, 2);
+                    if (false == $info) {
+                        $this->error(ContentModel::getInstance($modelid)->getError());
+                    }
+                    //检查详细信息是否已经添加过
+                    if (ContentModel::getInstance($modelid)->where(array("userid" => AppframeAction::$Cache['uid']))->find()) {
+                        ContentModel::getInstance($modelid)->where(array("userid" => AppframeAction::$Cache['uid']))->save($info);
+                    } else {
+                        $info['userid'] = AppframeAction::$Cache['uid'];
+                        ContentModel::getInstance($modelid)->add($info);
+                    }
                 }
                 $this->success("更新成功！", U("Index/account_manage_info"));
             } else {
