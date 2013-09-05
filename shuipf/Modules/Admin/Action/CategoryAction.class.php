@@ -167,18 +167,16 @@ class CategoryAction extends AdminbaseAction {
                 $this->error($Category->getError());
             }
         } else {
-            $parentid = $this->_get("parentid");
+            $parentid = I('get.parentid',0,'intval');
             if (!empty($parentid)) {
                 $Category = F("Category");
                 $Ca = $Category[$parentid];
-                unset($Category);
                 if (empty($Ca)) {
                     $this->error("父栏目不存在！");
                 }
                 if ($Ca['child'] == '0') {
                     $this->error("终极栏目不能添加子栏目！");
                 }
-                unset($Ca);
             }
 
             //输出可用模型
@@ -212,8 +210,9 @@ class CategoryAction extends AdminbaseAction {
             $this->assign("tp_comment", $this->tp_comment);
             $this->assign("category", $categorydata);
             $this->assign("models", $models);
+            $this->assign('parentid_modelid',$Ca['modelid']);
 
-            $type = (int) $this->_get("type");
+            $type = I('get.type',0,'intval');
             import('Form');
             $this->assign("category_php_ruleid", Form::urlrule('content', 'category', 0, "", 'name="category_php_ruleid"'));
             $this->assign("category_html_ruleid", Form::urlrule('content', 'category', 1, "", 'name="category_html_ruleid"'));
