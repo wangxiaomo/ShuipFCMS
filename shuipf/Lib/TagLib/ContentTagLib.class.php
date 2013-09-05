@@ -344,25 +344,26 @@ class ContentTagLib {
             unset($where['keywords']);
         }
 
+        //去除排除信息
+        if ($data['nid']) {
+            unset($key_array[$data['nid']]);
+        }
+        
         //差额补齐
         if (count($key_array) < $data['num']) {
             $difference = $data['num'] - count($key_array);
             if ($difference) {
+                $where['catid'] = $catid;
                 //进行随机读取
                 $count = $this->db->where($where)->count();
-                $rand = mt_rand(0, $count - 1);
-                $difference++;
+                $rand = mt_rand(1, $count - 1 < 1?1:$count - 1);
                 $differenceList = $this->db->where($where)->limit($rand,$difference)->select();
                 foreach($differenceList as $r){
                     $key_array[$r['id']] = $r;
                 }
             }
         }
-
-        //去除排除信息
-        if ($data['nid']) {
-            unset($key_array[$data['nid']]);
-        }
+        
         //结果进行缓存
         if ($cache) {
             S($cacheID, $key_array, $cache);
