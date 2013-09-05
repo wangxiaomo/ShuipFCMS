@@ -773,6 +773,8 @@ class ContentAction extends AdminbaseAction {
                                         $textcontent[$_key] = $re[$_key];
                                     }
                                 }
+                                //样式进行特别处理
+                                $textcontent['style'] = $re['style'];
                                 //推送到推荐位
                                 $status = $position_data_db->position_update($aid, $modelid, $catid, $posid, $textcontent);
                                 if ($status) {
