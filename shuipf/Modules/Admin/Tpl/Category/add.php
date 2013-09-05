@@ -42,7 +42,7 @@
           <table width="100%" class="table_form ">
             <tr>
               <th width="200">请选择模型：</th>
-              <td><select name="info[modelid]" id="modelid" onChange="change_tpl(this.value)">
+              <td><select name="info[modelid]" id="modelid">
                   <option value='' <if condition=" empty($parentid_modelid) "> selected</if>>请选择模型</option>
                   <volist name="models" id="vo">
                     <option value="{$vo.modelid}" <if condition=" $parentid_modelid eq $vo['modelid'] "> selected</if>>{$vo.name}</option>
