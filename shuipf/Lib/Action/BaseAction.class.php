@@ -121,5 +121,3 @@ class BaseAction extends AppframeAction {
     }
 
 }
-
-?>

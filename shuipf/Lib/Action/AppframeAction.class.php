@@ -238,5 +238,3 @@ class AppframeAction extends Action {
     }
 
 }
-
-?>

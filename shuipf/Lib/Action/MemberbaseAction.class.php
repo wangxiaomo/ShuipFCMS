@@ -166,5 +166,3 @@ class MemberbaseAction extends BaseAction {
     }
 
 }
-
-?>

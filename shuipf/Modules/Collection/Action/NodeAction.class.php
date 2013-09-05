@@ -607,6 +607,12 @@ class NodeAction extends AdminbaseAction {
             $history_db->where(array("md5" => array("IN", $list), "nodeid" => $nodeid))->delete();
         }
         $collection_content_db->where(array("id" => array("IN", $ids)))->delete();
+        //删除对应附件
+        $delFile = array();
+        foreach($ids as $id){
+            $delFile[] = 'cj-' . $nodeid . '-' . $id;
+        }
+        service("Attachment")->api_delete(array('IN',$delFile));
         $this->success("删除成功！");
     }
 
@@ -922,5 +928,3 @@ class NodeAction extends AdminbaseAction {
     }
 
 }
-
-?>
