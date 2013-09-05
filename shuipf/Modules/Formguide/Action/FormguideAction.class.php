@@ -7,6 +7,7 @@
  */
 class FormguideAction extends AdminbaseAction {
 
+    //模板存放目录
     protected $filepath, $tpl;
     //表单模型对象
     protected $db = NULL;
@@ -158,5 +159,3 @@ class FormguideAction extends AdminbaseAction {
         $this->display("call");
     }
 }
-
-?>

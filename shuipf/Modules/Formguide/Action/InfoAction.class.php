@@ -9,15 +9,14 @@ class InfoAction extends AdminbaseAction {
 
     //数据库对象
     protected $db = NULL;
+    //当前表单ID
     public $formid;
 
     function _initialize() {
         parent::_initialize();
-        $formid = I('request.formid', 0, 'intval');
-        $this->formid = $formid;
+        $this->formid = I('request.formid', 0, 'intval');
         if (!empty($this->formid)) {
-            $tablename = M('Model')->where(array("modelid" => $this->formid))->getField("tablename");
-            $this->db = M(ucwords($tablename));
+            $this->db = ContentModel::getInstance($this->formid)->relation(false);
         }
         $this->assign('formid', $this->formid);
     }
@@ -27,9 +26,42 @@ class InfoAction extends AdminbaseAction {
         if (empty($this->formid)) {
             $this->error("该表单不存在！");
         }
-        $count = $this->db->count();
+        $where = array();
+        $search = I('get.search');
+        if ($search) {
+            //添加开始时间
+            $start_time = I('get.start_time');
+            if (!empty($start_time)) {
+                $start_time = strtotime($start_time);
+                $where["datetime"] = array("EGT", $start_time);
+            }
+            //添加结束时间
+            $end_time = I('get.end_time');
+            if (!empty($end_time)) {
+                $end_time = strtotime($end_time);
+                $where["datetime"] = array("ELT", $end_time);
+            }
+            if ($end_time > 0 && $start_time > 0) {
+                $where['datetime'] = array(array('EGT', $start_time), array('ELT', $end_time));
+            }
+            //类型
+            $type = I('get.type', 0, 'intval');
+            //搜索字段
+            $keyword = Input::getVar(I('get.keyword'));
+            $this->assign("keyword", $keyword);
+            if ($type) {
+                $this->assign("searchtype", $type);
+                if ($type == 1) {
+                    $where["ip"] = array("LIKE", "%{$keyword}%");
+                }
+                if ($type == 2) {
+                    $where["username"] = array("LIKE", "%{$keyword}%");
+                }
+            }
+        }
+        $count = $this->db->where($where)->count();
         $page = $this->page($count, 20);
-        $data = $this->db->limit($page->firstRow . ',' . $page->listRows)->order(array("dataid" => "DESC"))->select();
+        $data = $this->db->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("dataid" => "DESC"))->select();
 
         $this->assign("Page", $page->show('Admin'));
         $this->assign("data", $data);
@@ -81,6 +113,7 @@ class InfoAction extends AdminbaseAction {
         //字段内容
         $forminfos = $content_form->get($data);
         $fields = $content_form->fields;
+        unset($forminfos['dataid'], $forminfos['userid'], $forminfos['username'], $forminfos['datetime'], $forminfos['ip'], $forminfos['modelid']);
         $this->assign("forminfos", $forminfos);
         $this->assign("data", $data);
         $this->assign("fields", $fields);

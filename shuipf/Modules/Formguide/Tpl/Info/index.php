@@ -3,6 +3,29 @@
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
+  <div class="h_a">搜索</div>
+  <form method="get" action="">
+  <input type="hidden" value="Formguide" name="g">
+  <input type="hidden" value="Info" name="m">
+  <input type="hidden" value="index" name="a">
+  <input type="hidden" value="1" name="search">
+  <input type="hidden" value="{$formid}" name="formid">
+    <div class="search_type cc mb10">
+      <div class="mb10"> 
+        <span class="mr20">时间：
+        <input type="text" name="start_time" class="input length_2 J_date" value="{$Think.get.start_time}" style="width:80px;">-<input type="text" class="input length_2 J_date" name="end_time" value="{$Think.get.end_time}" style="width:80px;">
+        <select class="select_2" name="type"style="width:70px;">
+          <option value="0" <if condition=" $searchtype == '0' "> selected</if>>不限</option>
+          <option value="1" <if condition=" $searchtype == '1' "> selected</if>>IP</option>
+		  <option value="2" <if condition=" $searchtype == '2' "> selected</if>>用户名</option>
+        </select>
+        关键字：
+        <input type="text" class="input length_2" name="keyword" style="width:200px;" value="{$keyword}" placeholder="请输入关键字...">
+        <button class="btn">搜索</button>
+        </span>
+      </div>
+    </div>
+  </form>
   <form name="myform" class="J_ajaxForm" action="{:U('Info/delete')}" method="post" >
   <div class="table_list">
   <table width="100%" border="0" cellpadding="5" cellspacing="1" class="tableClass">
@@ -33,8 +56,9 @@
         <div class="pages"> {$Page} </div>
       </div>
   </div>
-  <div class="">
-      <div class="btn_wrap_pd">             
+  <div class="btn_wrap">
+      <div class="btn_wrap_pd">       
+        <label class="mr20"><input type="checkbox" class="J_check_all" data-direction="y" data-checklist="J_check_y">全选</label>      
         <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">删除</button>
         <input type="hidden"name="formid" value="{$formid}">
       </div>
