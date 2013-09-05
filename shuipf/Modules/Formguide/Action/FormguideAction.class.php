@@ -113,7 +113,7 @@ class FormguideAction extends AdminbaseAction {
                 $this->error($this->db->getError());
             }
         } else {
-            $formid = (int) $this->_get('formid');
+            $formid = I('get.formid', 0, 'intval');
             $r = $this->db->where(array("modelid" => $formid))->find();
             if (!$r) {
                 $this->error("该表单不存在！");
@@ -158,4 +158,5 @@ class FormguideAction extends AdminbaseAction {
         $this->assign("formid", $formid);
         $this->display("call");
     }
+
 }
