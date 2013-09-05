@@ -198,7 +198,7 @@ class TagsAction extends AdminbaseAction {
             exit;
         } else {
             import('Form');
-            $model = F("Model");
+            $model = F("ModelType_0");
             $mo = array();
             foreach ($model as $k => $v) {
                 $mo[$k] = $v['name'];
@@ -271,5 +271,3 @@ class TagsAction extends AdminbaseAction {
     }
 
 }
-
-?>
