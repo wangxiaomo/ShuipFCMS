@@ -141,6 +141,9 @@ class ContentAction extends MemberbaseAction {
             $content_form = new content_form($modelid, $catid, $this->categorys);
             //生成对应字段的输入表单
             $forminfos = $content_form->get();
+            if(empty($forminfos['senior'])){
+                $forminfos['senior'] = array();
+            }
             $forminfos = array_merge($forminfos['base'], $forminfos['senior']);
             //生成对应的JS验证规则
             $formValidateRules = $content_form->formValidateRules;
@@ -219,6 +222,9 @@ class ContentAction extends MemberbaseAction {
             $content_form = new content_form($modelid, $catid);
             //字段内容
             $forminfos = $content_form->get($data);
+            if(empty($forminfos['senior'])){
+                $forminfos['senior'] = array();
+            }
             $forminfos = array_merge($forminfos['base'], $forminfos['senior']);
             //生成对应的JS验证规则
             $formValidateRules = $content_form->formValidateRules;
