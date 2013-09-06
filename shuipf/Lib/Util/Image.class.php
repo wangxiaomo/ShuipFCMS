@@ -82,6 +82,11 @@ class Image {
         $sInfo = self::getImageInfo($source);
         $wInfo = self::getImageInfo($water);
 
+        //非图像文件不进行加水印操作
+        if (!in_array(strtolower($sInfo['type']), array('gif', 'jpg', 'jpeg', 'bmp', 'png'))) {
+            return false;
+        }
+
         //修复当bmp图片时，报undefined function imagecreatefrombmp()错误 水平凡
         $sInfo['type'] = ($sInfo['type'] == 'bmp') ? 'wbmp' : $sInfo['type'];
 
@@ -619,9 +624,9 @@ class Image {
      */
     static function UPCA($code, $type = 'png', $lw = 2, $hi = 100) {
         static $Lencode = array('0001101', '0011001', '0010011', '0111101', '0100011',
-    '0110001', '0101111', '0111011', '0110111', '0001011');
+            '0110001', '0101111', '0111011', '0110111', '0001011');
         static $Rencode = array('1110010', '1100110', '1101100', '1000010', '1011100',
-    '1001110', '1010000', '1000100', '1001000', '1110100');
+            '1001110', '1010000', '1000100', '1001000', '1110100');
         $ends = '101';
         $center = '01010';
         /* UPC-A Must be 11 digits, we compute the checksum. */

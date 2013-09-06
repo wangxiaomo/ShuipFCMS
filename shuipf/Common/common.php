@@ -412,7 +412,7 @@ function initupload($module, $catid, $args, $userid, $groupid = 8, $isadmin = fa
                                     "groupid":"' . $groupid . '",
                                     "thumb_width":"' . intval($args[3]) . '",
                                     "thumb_height":"' . intval($args[4]) . '",
-                                    "watermark_enable":"' . (($args[5] == '') ? 1 : intval($args[5])) . '",
+                                    "watermark_enable":"' . (($args[5] == '') ? (CONFIG_WATERMARKENABLE ? 1 : 0) : intval($args[5])) . '",
                                     "filetype_post":"' . $args[1] . '",
                                     "swf_auth_key":"' . $swf_auth_key . '"
 			},
