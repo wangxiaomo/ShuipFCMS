@@ -46,14 +46,41 @@ class Position_dataModel extends CommonModel {
         if (!$posid || !$id || !$modelid) {
             return false;
         }
-        $sql['id'] = $id;
-        $sql['modelid'] = $modelid;
-        $sql['posid'] = intval($posid);
-        if ($this->where($sql)->delete() !== false) {
+        $where = array();
+        $where['id'] = $id;
+        $where['modelid'] = $modelid;
+        $where['posid'] = intval($posid);
+        if ($this->where($where)->delete() !== false) {
             $this->content_pos($id, $modelid);
+            //删除相关联的附件
+            service("Attachment")->api_delete('position-' . $modelid . '-' . $id);
+            return false;
+        } else {
+            return false;
         }
-        //删除相关联的附件
-        service("Attachment")->api_delete('position-' . $modelid . '-' . $id);
+    }
+
+    /**
+     * 根据模型ID和信息ID删除推荐信息
+     * @param type $modelid
+     * @param type $id
+     * @return boolean\
+     */
+    public function deleteByModeId($modelid, $id) {
+        if (empty($modelid) || empty($id)) {
+            return false;
+        }
+        $where = array();
+        $where['id'] = $id;
+        $where['modelid'] = $modelid;
+        if ($this->where($where)->delete() !== false) {
+            $this->content_pos($id, $modelid);
+            //删除相关联的附件
+            service("Attachment")->api_delete('position-' . $modelid . '-' . $id);
+            return false;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -80,10 +107,8 @@ class Position_dataModel extends CommonModel {
             return true;
         } else {
             //有可能副表
-            return M($tablename . "_data")->where(array('id' => $id))->save(array('posid' => $posids));
+            return M($tablename . "_data")->where(array('id' => $id))->save(array('posid' => $posids)) !== false ? true : false;
         }
     }
 
 }
-
-?>

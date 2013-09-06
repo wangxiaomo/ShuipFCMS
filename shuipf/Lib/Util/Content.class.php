@@ -463,14 +463,16 @@ class Content {
             $this->error = '获取不到栏目信息！';
             return false;
         }
-        //是否生成HTML
-        $sethtml = $this->categorys[$this->catid]['sethtml'];
         //栏目配置信息
         $setting = unserialize($this->categorys[$this->catid]['setting']);
         //内容页是否生成静态
         $content_ishtml = $setting['content_ishtml'];
         $this->contentModel = ContentModel::getInstance($this->modelid);
         $data = $this->contentModel->relation(true)->where(array("id" => $id))->find();
+        if (empty($data)) {
+            $this->error = '该信息不存在！';
+            return false;
+        }
         $this->contentModel->dataMerger($data);
         tag('content_delete_begin', $data);
         if ($content_ishtml && !$data['islink']) {
@@ -493,6 +495,10 @@ class Content {
         M("MemberContent")->where(array("content_id" => $id, "catid" => $catid))->delete();
         //删除全站搜索数据
         $this->search_api($id, $data, "delete");
+        //删除推荐位的信息
+        if (!empty($data['posid'])) {
+            D('Position_data')->deleteByModeId($this->modelid, $id);
+        }
         //标签
         tag("content_delete_end", $data);
         return true;

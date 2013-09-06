@@ -31,8 +31,9 @@ class PositionModel extends CommonModel {
     public function position_update($id, $modelid, $catid, $posid, $data, $expiration = 0, $undel = 0, $model = 'content') {
         $arr = $param = array();
         $id = intval($id);
-        if ($id == '0')
+        if (empty($id)) {
             return false;
+        }
         $modelid = intval($modelid);
         $data['inputtime'] = $data['inputtime'] ? $data['inputtime'] : time();
 
@@ -93,7 +94,7 @@ class PositionModel extends CommonModel {
     }
 
     /**
-     * 判断文章是否被推荐
+     * 判断文章是否被推荐，同时更新推荐状态
      * @param $id
      * @param $modelid
      */
@@ -106,10 +107,11 @@ class PositionModel extends CommonModel {
             $db_content = M(ucwords($MODEL[$modelid]['tablename']));
             $posids = $db_data->where(array('id' => $id, 'modelid' => $modelid))->find() ? 1 : 0;
             if ($posids == 0) {
-                $db_content->where(array('id' => $id))->data(array('posids' => $posids))->save();
+                //更新推荐状态
+                $db_content->where(array('id' => $id))->save(array('posid' => $posids));
             }
         }
-        return true;
+        return $posids;
     }
 
     /**
@@ -216,5 +218,3 @@ class PositionModel extends CommonModel {
     }
 
 }
-
-?>
