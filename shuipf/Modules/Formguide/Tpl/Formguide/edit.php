@@ -68,11 +68,11 @@
 	</tr>
 	<tr>
 		<th><strong>模板选择：</strong></th>
-		<td id="show_template"><?php echo Form::select($template,$setting['show_template'],'name="setting[show_template]" id="show_template"'); ?></td>
+		<td id="show_template"><?php echo Form::select($show_template,$setting['show_template'],'name="setting[show_template]" id="show_template"'); ?> 添加模板，文件名请以“show”开头</td>
 	</tr>
 	<tr>
 		<th><strong>js调用使用的模板：</strong></th>
-		<td id="show_js_template"><?php echo Form::select($template,$setting['show_js_template'],'name="setting[show_js_template]" id="show_js_template"'); ?></td>
+		<td id="show_js_template"><?php echo Form::select($show_js_template,$setting['show_js_template'],'name="setting[show_js_template]" id="show_js_template"'); ?> 添加模板，文件名请以“js”开头</td>
 	</tr>
 	</tbody>
 </table>

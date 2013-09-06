@@ -18,8 +18,6 @@ class FormguideAction extends AdminbaseAction {
         $this->db = D("Formguide");
         //模块安装后，模板字段安装在Default主题下！
         $this->filepath = TEMPLATE_PATH . "Default/Formguide/";
-        $this->tpl = str_replace($this->filepath, "", glob($this->filepath . "Show" . DIRECTORY_SEPARATOR . 'show*'));
-        $this->tpl = str_replace(array("Show" . DIRECTORY_SEPARATOR, C("TMPL_TEMPLATE_SUFFIX")), "", $this->tpl);
         C('HTML_FILE_SUFFIX', "");
     }
 
@@ -79,10 +77,18 @@ class FormguideAction extends AdminbaseAction {
                 $this->error($this->db->getError());
             }
         } else {
+            $this->tpl = str_replace($this->filepath, "", glob($this->filepath . "Show" . DIRECTORY_SEPARATOR . 'show*'));
+            $this->tpl = str_replace(array("Show" . DIRECTORY_SEPARATOR, C("TMPL_TEMPLATE_SUFFIX")), "", $this->tpl);
             foreach ($this->tpl as $v) {
-                $tpl[$v] = $v;
+                $show_template[$v] = $v;
             }
-            $this->assign("template", $tpl);
+            $this->tpl = str_replace($this->filepath, "", glob($this->filepath . "Show" . DIRECTORY_SEPARATOR . 'js*'));
+            $this->tpl = str_replace(array("Show" . DIRECTORY_SEPARATOR, C("TMPL_TEMPLATE_SUFFIX")), "", $this->tpl);
+            foreach ($this->tpl as $v) {
+                $show_js_template[$v] = $v;
+            }
+            $this->assign('show_template', $show_template);
+            $this->assign("show_js_template", $show_js_template);
             $this->display();
         }
     }
@@ -122,10 +128,18 @@ class FormguideAction extends AdminbaseAction {
             $r['tablename'] = str_replace("form_", "", $r['tablename']);
             import("Form");
             $this->assign($r);
+            $this->tpl = str_replace($this->filepath, "", glob($this->filepath . "Show" . DIRECTORY_SEPARATOR . 'show*'));
+            $this->tpl = str_replace(array("Show" . DIRECTORY_SEPARATOR, C("TMPL_TEMPLATE_SUFFIX")), "", $this->tpl);
             foreach ($this->tpl as $v) {
-                $tpl[$v] = $v;
+                $show_template[$v] = $v;
             }
-            $this->assign("template", $tpl);
+            $this->tpl = str_replace($this->filepath, "", glob($this->filepath . "Show" . DIRECTORY_SEPARATOR . 'js*'));
+            $this->tpl = str_replace(array("Show" . DIRECTORY_SEPARATOR, C("TMPL_TEMPLATE_SUFFIX")), "", $this->tpl);
+            foreach ($this->tpl as $v) {
+                $show_js_template[$v] = $v;
+            }
+            $this->assign('show_template', $show_template);
+            $this->assign("show_js_template", $show_js_template);
             $this->display();
         }
     }

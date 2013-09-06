@@ -57,7 +57,7 @@ class IndexAction extends BaseAction {
         //模板
         $show_template = $this->setting['show_template'] ? $this->setting['show_template'] : "show";
         //js模板
-        $show_js_template = $this->setting['show_js_template'] ? $this->setting['show_js_template'] : "js_show";
+        $show_js_template = $this->setting['show_js_template'] ? $this->setting['show_js_template'] : "js";
         //引入输入表单处理类
         require_cache(RUNTIME_PATH . 'content_form.class.php');
         //实例化表单类 传入 模型ID 栏目ID 栏目数组
@@ -130,7 +130,7 @@ class IndexAction extends BaseAction {
                 //发送邮件
                 if ($this->setting['sendmail'] && $this->setting['mails']) {
                     $mails = explode(",", $this->setting['mails']);
-                    $title = $username . " 在《" . $this->modelInfo['name'] . "》提交了新的信息！";
+                    $title = $info['username'] . " 在《" . $this->modelInfo['name'] . "》提交了新的信息！";
                     $message = "刚刚有人在《" . $this->modelInfo['name'] . "》中提交了新的信息，请进入后台查看！";
                     SendMail($mails, $title, $message);
                 }
