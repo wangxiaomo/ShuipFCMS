@@ -36,7 +36,10 @@ class IndexAction extends BaseAction {
         //模型
         $this->modelInfo = $this->Model_form[$this->formid];
         if (empty($this->modelInfo)) {
-            $this->error("该表单不存在或者已经关闭！");
+            if ($this->showType == "js") {
+                exit($this->format_js('该表单不存在或者已经关闭！'));
+            }
+            $this->error('该表单不存在或者已经关闭！');
         }
         //配置
         $this->setting = unserialize($this->modelInfo['setting']);
@@ -46,11 +49,17 @@ class IndexAction extends BaseAction {
     //显示表单
     public function index() {
         if (empty($this->formid)) {
-            $this->showType == "js" ? exit : $this->error("该表单不存在！");
+            if ($this->showType == "js") {
+                exit($this->format_js('该表单不存在或者已经关闭！'));
+            }
+            $this->error('该表单不存在或者已经关闭！');
         }
         $r = $this->formguide->where(array("modelid" => $this->formid))->find();
         if (empty($r)) {
-            $this->error("该表单不存在！");
+            if ($this->showType == "js") {
+                exit($this->format_js('该表单不存在或者已经关闭！'));
+            }
+            $this->error('该表单不存在或者已经关闭！');
         }
         //验证权限
         $this->competence();
