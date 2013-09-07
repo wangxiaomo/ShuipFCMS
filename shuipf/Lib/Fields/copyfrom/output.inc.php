@@ -1,10 +1,15 @@
 <?php
 
+/**
+ * 输出来源字段
+ * @staticvar array $copyfrom_array
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @return array
+ */
 function copyfrom($field, $value) {
     static $copyfrom_array;
-    
     $copyfrom_array = array();
-    
     if ($value && strpos($value, '|') !== false) {
         $arr = explode('|', $value);
         $value = $arr[0];
@@ -24,5 +29,3 @@ function copyfrom($field, $value) {
         return $value;
     }
 }
-
-?>

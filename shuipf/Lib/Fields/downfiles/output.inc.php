@@ -1,16 +1,22 @@
 <?php
 
+/**
+ * 获取多文件上传内容
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @return type
+ */
 function downfiles($field, $value) {
-    extract(unserialize($this->fields[$field]['setting']));
+    $setting = unserialize($this->fields[$field]['setting']);
     $list_str = array();
     $file_list = unserialize($value);
     if (is_array($file_list)) {
         foreach ($file_list as $_k => $_v) {
             if ($_v['fileurl']) {
-                if($downloadlink){
+                if ($setting['downloadlink']) {
                     //链接到跳转页面
-                    $fileurl = CONFIG_SITEURL."index.php?m=Download&a=index&catid=".$this->catid."&id=".$this->id."&f=$field&k=$_k";
-                }else{
+                    $fileurl = CONFIG_SITEURL . "index.php?m=Download&a=index&catid=" . $this->catid . "&id=" . $this->id . "&f=$field&k=$_k";
+                } else {
                     $fileurl = $_v['fileurl'];
                 }
                 $filename = $_v['filename'] ? $_v['filename'] : "点击下载";
@@ -25,5 +31,3 @@ function downfiles($field, $value) {
     }
     return $list_str;
 }
-
-?>

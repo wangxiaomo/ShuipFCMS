@@ -1,6 +1,8 @@
 <?php
 
-//万能字段
+/**
+ * 万能字段字段类型相关配置
+ */
 //字段数据库类型
 $field_type = 'varchar';
 //是否允许作为主表字段
@@ -17,4 +19,3 @@ $field_allow_search = 1;
 $field_allow_fulltext = 1;
 //是否允许值唯一
 $field_allow_isunique = 1;
-?>

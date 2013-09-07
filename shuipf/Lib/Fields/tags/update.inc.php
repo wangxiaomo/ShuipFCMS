@@ -5,6 +5,12 @@
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
+
+/**
+ * Tags处理回调
+ * @param type $field 字段名
+ * @param type $value 字段值
+ */
 function tags($field, $value) {
     if (!empty($value)) {
         $db = M("Tags");
@@ -32,5 +38,3 @@ function tags($field, $value) {
         D("Tags")->deleteAll($this->id, $this->catid, $this->modelid);
     }
 }
-
-?>

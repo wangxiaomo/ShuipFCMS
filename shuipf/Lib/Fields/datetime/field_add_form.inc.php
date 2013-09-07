@@ -1,4 +1,4 @@
-<table cellpadding="2" cellspacing="1" bgcolor="#ffffff">
+<table cellpadding="2" cellspacing="1" >
     <tr> 
         <td><strong>时间格式：</strong></td>
         <td>

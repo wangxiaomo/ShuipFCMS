@@ -5,7 +5,8 @@
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-$fields = array('text' => '单行文本',
+$fields = array(
+    'text' => '单行文本',
     'textarea' => '多行文本',
     'editor' => '编辑器',
     'catid' => '栏目',
@@ -29,4 +30,3 @@ $fields = array('text' => '单行文本',
     'map' => '地图字段',
     'omnipotent' => '万能字段',
 );
-?>

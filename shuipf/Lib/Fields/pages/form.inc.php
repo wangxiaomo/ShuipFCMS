@@ -1,8 +1,13 @@
 <?php
 
-//分页选择字段
+/**
+ * 分页选择字段类型 表单组合处理
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @param type $fieldinfo 字段配置
+ * @return string
+ */
 function pages($field, $value, $fieldinfo) {
-    extract($fieldinfo);
     if ($value) {
         $v = explode('|', $value);
         $data = "<select name=\"info[paginationtype]\" id=\"paginationtype\" onchange=\"if(this.value==1)\$('#paginationtype1').css('display','');else \$('#paginationtype1').css('display','none');\">";
@@ -29,5 +34,3 @@ function pages($field, $value, $fieldinfo) {
 			<span id=\"paginationtype1\" style=\"\"><input name=\"info[maxcharperpage]\" type=\"text\" id=\"maxcharperpage\" value=\"10000\" size=\"8\" maxlength=\"8\" class='input'>字符数（包含HTML标记）</span>";
     }
 }
-
-?>

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * 地图字段类型表单组合处理
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @param type $fieldinfo 字段配置
+ * @return type
+ */
 function map($field, $value, $fieldinfo) {
     $setting = unserialize($fieldinfo['setting']);
     extract($setting);
@@ -150,5 +157,3 @@ herf;
     }
     return $data;
 }
-
-?>

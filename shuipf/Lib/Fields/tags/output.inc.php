@@ -1,15 +1,21 @@
 <?php
 
-//TAGS获取
+/**
+ * 输出tags内容
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @return type
+ */
 function tags($field, $value) {
-    if ($value == '') {
+    if (empty($value)) {
         return array();
     }
+    //把Tags进行分割成数组
     $tags = strpos($value, ',') !== false ? explode(',', $value) : explode(' ', $value);
     //获取分页规则
     $urlrules = F("urlrules");
     $urlrules = $urlrules[AppframeAction::$Cache['Config']['tagurl']];
-    if (!$urlrules) {
+    if (empty($urlrules)) {
         $urlrules = 'index.php?g=Tags&tagid={$tagid}|index.php?g=Tags&tagid={$tagid}&page={$page}';
     }
     if (strstr($urlrules, '{$tagid}')) {
@@ -40,12 +46,10 @@ function tags($field, $value) {
         $parse_url = parse_url($tagurlrules[0]);
         $return[$k]['tag'] = $v;
         if (!isset($parse_url['host'])) {
-            $return[$k]['url'] = CONFIG_SITEURL.$tagurlrules[0];
-        }else{
+            $return[$k]['url'] = CONFIG_SITEURL . $tagurlrules[0];
+        } else {
             $return[$k]['url'] = $tagurlrules[0];
         }
     }
     return $return;
 }
-
-?>

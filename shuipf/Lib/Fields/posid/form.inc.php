@@ -1,11 +1,20 @@
 <?php
-//推荐位
+
+/**
+ * 推荐字段类型表单组合处理
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @param type $fieldinfo 字段配置
+ * @return string
+ */
 function posid($field, $value, $fieldinfo) {
+    //扩展配置
     $setting = unserialize($fieldinfo['setting']);
     //推荐位缓存
     $position = F("Position");
-    if (empty($position))
+    if (empty($position)){
         return '';
+    }
     $array = array();
     foreach ($position as $_key => $_value) {
         if ($_value['modelid'] && ($_value['modelid'] != $this->modelid) || ($_value['catid'] && strpos(',' . $this->categorys[$_value['catid']]['arrchildid'] . ',', ',' . $this->catid . ',') === false))
@@ -22,5 +31,3 @@ function posid($field, $value, $fieldinfo) {
     }
     return "<input type='hidden' name='info[$field][]' value='-1'>" . Form::checkbox($array, $posids, "name='info[$field][]'", '', $setting['width']);
 }
-
-?>

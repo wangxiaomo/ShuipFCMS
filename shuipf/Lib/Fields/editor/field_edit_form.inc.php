@@ -1,4 +1,3 @@
-
 <table cellpadding="2" cellspacing="1" width="98%">
     <tr> 
         <td width="150">后台编辑器样式：</td>
@@ -18,6 +17,6 @@
     </tr>
     <tr> 
         <td>编辑器默认高度：</td>
-        <td><input type="text" name="setting[height]" value="<?php echo $setting['height']; ?>" size="4" class="input-text"> px</td>
+        <td><input type="text" name="setting[height]" value="<?php echo $setting['height']; ?>" size="4" class="input"> px</td>
     </tr>
 </table>

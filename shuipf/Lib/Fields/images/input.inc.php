@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * 多图片上传获取内容
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @return type
+ */
 function images($field, $value) {
     //取得图片列表
     $pictures = $_POST[$field . '_url'];
@@ -16,5 +22,3 @@ function images($field, $value) {
     $array = serialize($array);
     return $array;
 }
-
-?>

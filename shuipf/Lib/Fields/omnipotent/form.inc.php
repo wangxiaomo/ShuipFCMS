@@ -1,9 +1,14 @@
 <?php
 
-//万能字段
+/**
+ * 万能字段字段类型表单处理
+ * @param type $field 字段名 
+ * @param type $value 字段内容
+ * @param type $fieldinfo 字段配置
+ * @return type
+ */
 function omnipotent($field, $value, $fieldinfo) {
-    extract($fieldinfo);
-    $setting = unserialize($setting);
+    $setting = unserialize($fieldinfo['setting']);
     $formtext = str_replace('{FIELD_VALUE}', $value, $setting["formtext"]);
     $formtext = str_replace('{MODELID}', $this->modelid, $formtext);
     preg_match_all('/{FUNC\((.*)\)}/', $formtext, $_match);
@@ -17,14 +22,12 @@ function omnipotent($field, $value, $fieldinfo) {
     $id = $this->id ? $this->id : 0;
     $formtext = str_replace('{ID}', $id, $formtext);
     //错误提示
-    $errortips = $this->fields[$field]['errortips'];
-    if ($minlength){
+    $errortips = $fieldinfo['errortips'];
+    if ($fieldinfo['minlength']) {
         //验证规则
-        $this->formValidateRules['info[' . $field . ']']= array("required"=>true);
+        $this->formValidateRules['info[' . $field . ']'] = array("required" => true);
         //验证不通过提示
-        $this->formValidateMessages['info[' . $field . ']']= array("required"=>$errortips?$errortips:$name."不能为空！");
+        $this->formValidateMessages['info[' . $field . ']'] = array("required" => $errortips ? $errortips : $fieldinfo['name'] . "不能为空！");
     }
     return $formtext;
 }
-
-?>

@@ -1,6 +1,11 @@
 <?php
 
-//多好文本框
+/**
+ * 多行文本框
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @return type
+ */
 function textarea($field, $value) {
     $setting = unserialize($this->fields[$field]['setting']);
     if (!$setting['enablehtml']) {
@@ -8,5 +13,3 @@ function textarea($field, $value) {
     }
     return $value;
 }
-
-?>

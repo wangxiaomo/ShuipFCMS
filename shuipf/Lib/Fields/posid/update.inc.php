@@ -1,6 +1,10 @@
 <?php
 
-//推荐位数据处理
+/**
+ * 推荐位字段类型更新回调
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ */
 function posid($field, $value) {
     if (!empty($value) && is_array($value)) {
         //新增
@@ -42,5 +46,3 @@ function posid($field, $value) {
         }
     }
 }
-
-?>

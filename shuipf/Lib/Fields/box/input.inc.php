@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * 选项字段类型获取数据
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @return boolean|string 字段配置
+ */
 function box($field, $value) {
     $setting = unserialize($this->fields[$field]['setting']);
     if ($setting['boxtype'] == 'checkbox') {
@@ -17,5 +23,3 @@ function box($field, $value) {
         return $value;
     }
 }
-
-?>

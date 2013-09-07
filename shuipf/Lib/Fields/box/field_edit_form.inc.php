@@ -1,4 +1,3 @@
-
 <table cellpadding="2" cellspacing="1" width="98%">
     <tr> 
         <td width="100">选项列表</td>
@@ -28,31 +27,24 @@
     <tbody id="setcols" style="display:">
         <tr> 
             <td>每列宽度</td>
-            <td><input type="text" name="setting[width]" value="<?php echo $setting['width']; ?>" size="5" class="input-text"> px</td>
+            <td><input type="text" name="setting[width]" value="<?php echo $setting['width']; ?>" size="5" class="input"> px</td>
         </tr>
     </tbody>
     <tbody id="setsize" style="display:none">
         <tr> 
             <td>高度</td>
-            <td><input type="text" name="setting[size]" value="<?php echo $setting['size']; ?>" size="5" class="input-text"> 行</td>
+            <td><input type="text" name="setting[size]" value="<?php echo $setting['size']; ?>" size="5" class="input"> 行</td>
         </tr>
     </tbody>
     <tr> 
         <td>默认值</td>
-        <td><input type="text" name="setting[defaultvalue]" size="40" class="input-text" value="<?php echo $setting['defaultvalue']; ?>"></td>
+        <td><input type="text" name="setting[defaultvalue]" size="40" class="input" value="<?php echo $setting['defaultvalue']; ?>"></td>
     </tr>
     <tr> 
         <td>输出格式</td>
         <td>
             <input type="radio" name="setting[outputtype]" value="1" <?php if ($setting['outputtype']) echo 'checked'; ?> /> 输出选项值
             <input type="radio" name="setting[outputtype]" value="0" <?php if (!$setting['outputtype']) echo 'checked'; ?> /> 输出选项名称
-        </td>
-    </tr>
-    <tr> 
-        <td>是否作为筛选字段</td>
-        <td>
-            <input type="radio" name="setting[filtertype]" value="1" <?php if ($setting['filtertype']) echo 'checked'; ?> /> 是 
-            <input type="radio" name="setting[filtertype]" value="0" <?php if (!$setting['filtertype']) echo 'checked'; ?>/> 否
         </td>
     </tr>
 </table>

@@ -17,6 +17,6 @@
     </tr>
     <tr> 
         <td>编辑器默认高度：</td>
-        <td><input type="text" name="setting[height]" value="200" size="4" class="input-text"> px</td>
+        <td><input type="text" name="setting[height]" value="200" size="4" class="input"> px</td>
     </tr>
 </table>

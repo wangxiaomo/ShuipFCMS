@@ -27,18 +27,18 @@
     <tbody id="setcols" style="display:">
         <tr> 
             <td>每列宽度</td>
-            <td><input type="text" name="setting[width]" value="80" size="5" class="input-text"> px</td>
+            <td><input type="text" name="setting[width]" value="80" size="5" class="input"> px</td>
         </tr>
     </tbody>
     <tbody id="setsize" style="display:none">
         <tr> 
             <td>高度</td>
-            <td><input type="text" name="setting[size]" value="1" size="5" class="input-text"> 行</td>
+            <td><input type="text" name="setting[size]" value="1" size="5" class="input"> 行</td>
         </tr>
     </tbody>
     <tr> 
         <td>默认值</td>
-        <td><input type="text" name="setting[defaultvalue]" size="40" class="input-text"></td>
+        <td><input type="text" name="setting[defaultvalue]" size="40" class="input"></td>
     </tr>
     <tr> 
         <td>输出格式</td>
@@ -47,13 +47,6 @@
             <input type="radio" name="setting[outputtype]" value="0" /> 输出选项名称
         </td>
     </tr>
-    <tr> 
-        <td>是否作为筛选字段</td>
-        <td>
-            <input type="radio" name="setting[filtertype]" value="1"/> 是 
-            <input type="radio" name="setting[filtertype]" value="0"/> 否
-        </td>
-    </tr>	
 </table>
 <SCRIPT LANGUAGE="JavaScript">
     <!--

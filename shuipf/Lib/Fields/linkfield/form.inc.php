@@ -1,6 +1,12 @@
 <?php
 
-//关联字段
+/**
+ * 关联字段 表单组合处理
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @param type $fieldinfo 字段配置
+ * @return type
+ */
 function linkfield($field, $value, $fieldinfo) {
     extract($fieldinfo);
     $setting = unserialize($setting);
@@ -126,5 +132,3 @@ EOT;
     }
     return $data;
 }
-
-?>

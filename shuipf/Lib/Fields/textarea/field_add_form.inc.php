@@ -1,11 +1,11 @@
 <table cellpadding="2" cellspacing="1" width="98%">
     <tr> 
         <td width="100">文本域宽度</td>
-        <td><input type="text" name="setting[width]" value="100%" size="10" class="input-text" >%</td>
+        <td><input type="text" name="setting[width]" value="100" size="10" class="input" >%</td>
     </tr>
     <tr> 
         <td>文本域高度</td>
-        <td><input type="text" name="setting[height]" value="46" size="10" class="input-text"> px</td>
+        <td><input type="text" name="setting[height]" value="46" size="10" class="input"> px</td>
     </tr>
     <tr> 
         <td>默认值</td>

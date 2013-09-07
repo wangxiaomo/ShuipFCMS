@@ -1,22 +1,26 @@
 <?php
 
-//缩略图
+/**
+ * 图片字段表单组合处理
+ * @param type $field 字段名
+ * @param type $value 字段内容
+ * @param type $fieldinfo 字段配置
+ * @return type
+ */
 function image($field, $value, $fieldinfo) {
-    extract($fieldinfo);
     //错误提示
-    $errortips = $this->fields[$field]['errortips'];
-    if ($minlength){
+    $errortips = $fieldinfo['errortips'];
+    if ($fieldinfo['minlength']) {
         //验证规则
-        $this->formValidateRules['info[' . $field . ']']= array("required"=>true);
+        $this->formValidateRules['info[' . $field . ']'] = array("required" => true);
         //验证不通过提示
-        $this->formValidateMessages['info[' . $field . ']']= array("required"=>$errortips?$errortips:$name."不能为空！");
+        $this->formValidateMessages['info[' . $field . ']'] = array("required" => $errortips ? $errortips : $fieldinfo['name'] . "不能为空！");
     }
     $setting = unserialize($fieldinfo['setting']);
-    extract($setting);
     $html = '';
     //图片裁减功能只在后台使用
     if (defined('IN_ADMIN') && IN_ADMIN) {
-        $html = "<input type=\"button\" class=\"btn\" onclick=\"crop_cut_" . $field . "($('#$field').val());return false;\" value=\"裁减图片\"> 
+        $html = " <input type=\"button\" class=\"btn\" onclick=\"crop_cut_" . $field . "($('#$field').val());return false;\" value=\"裁减图片\"> 
             <input type=\"button\"  class=\"btn\" onclick=\"$('#" . $field . "_preview').attr('src','" . CONFIG_SITEURL_MODEL . "statics/images/icon/upload-pic.png');$('#" . $field . "').val('');return false;\" value=\"取消图片\"><script type=\"text/javascript\">
             function crop_cut_" . $field . "(id){
 	if ( id =='' || id == undefined ) { 
@@ -29,7 +33,7 @@ function image($field, $value, $fieldinfo) {
                         return false;
                     }
                     Wind.use('artDialog','iframeTools',function(){
-                      art.dialog.open(GV.DIMAUB+'index.php?a=public_imagescrop&m=Content&g=Contents&catid='+catid+'&picurl='+encodeURIComponent(id)+'&input=$field&preview=" . ($show_type && defined('IN_ADMIN') ? $field . "_preview" : '') . "', {
+                      art.dialog.open(GV.DIMAUB+'index.php?a=public_imagescrop&m=Content&g=Contents&catid='+catid+'&picurl='+encodeURIComponent(id)+'&input=$field&preview=" . ($setting['show_type'] && defined('IN_ADMIN') ? $field . "_preview" : '') . "', {
                         title:'裁减图片', 
                         id:'crop',
                         ok: function () {
@@ -48,15 +52,17 @@ function image($field, $value, $fieldinfo) {
 </script>";
     }
     //生成上传附件验证
-    $authkey = upload_key("1,$upload_allowext,$isselectimage,$images_width,$images_height,$watermark");
-    if ($show_type && defined('IN_ADMIN') && IN_ADMIN) {
+    $authkey = upload_key("1,{$setting['upload_allowext']},{$setting['isselectimage']},{$setting['images_width']},{$setting['images_height']},{$setting['watermark']}");
+    //图片模式
+    if ($setting['show_type']) {
         $preview_img = $value ? $value : CONFIG_SITEURL_MODEL . 'statics/images/icon/upload-pic.png';
         return $str . "<div  style=\"text-align: center;\"><input type='hidden' name='info[$field]' id='$field' value='$value'>
-			<a href='javascript:void(0);' onclick=\"flashupload('{$field}_images', '附件上传','{$field}',thumb_images,'1,{$upload_allowext},$isselectimage,$images_width,$images_height,$watermark','content','$this->catid','$authkey');return false;\">
-			<img src='$preview_img' id='{$field}_preview' width='135' height='113' style='cursor:hand' /></a>" . $html . "</div>";
+			<a href='javascript:void(0);' onclick=\"flashupload('{$field}_images', '附件上传','{$field}',thumb_images,'1,{$setting['upload_allowext']},{$setting['isselectimage']},{$setting['images_width']},{$setting['images_height']},{$setting['watermark']}','content','$this->catid','$authkey');return false;\">
+			<img src='$preview_img' id='{$field}_preview' width='135' height='113' style='cursor:hand' /></a>
+                       <br/> " . $html . "
+                   </div>";
     } else {
-        return $str . "<input type='text' name='info[$field]' id='$field' value='$value' size='$size' class='input' />  <input type='button' class='button' onclick=\"flashupload('{$field}_images', '附件上传','{$field}',submit_images,'1,{$upload_allowext},$isselectimage,$images_width,$images_height,$watermark','content','$this->catid','$authkey')\"/ value='上传图片'>" . $html;
+        //文本框模式
+        return $str . "<input type='text' name='info[$field]' id='$field' value='$value' size='$size' class='input' />  <input type='button' class='button' onclick=\"flashupload('{$field}_images', '附件上传','{$field}',submit_images,'1,{$setting['upload_allowext']},{$setting['isselectimage']},{$setting['images_width']},{$setting['images_height']},{$setting['watermark']}','content','$this->catid','$authkey')\"/ value='上传图片'>" . $html;
     }
 }
-
-?>
