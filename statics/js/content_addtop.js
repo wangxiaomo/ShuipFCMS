@@ -262,6 +262,14 @@ function submit_images(uploadid, returnid) {
     IsImg(in_content[0]) ? $('#' + returnid).attr("value", in_content[0]) : alert('选择的类型必须为图片类型');
 }
 
+//单文件上传回调
+function submit_attachment(uploadid, returnid) {
+    var d = uploadid.iframe.contentWindow;
+    var in_content = d.$("#att-status").html().substring(1);
+    var in_content = in_content.split('|');
+   $('#' + returnid).attr("value", in_content[0]);
+}
+
 //移除ID
 function remove_id(id) {
     $('#' + id).remove();

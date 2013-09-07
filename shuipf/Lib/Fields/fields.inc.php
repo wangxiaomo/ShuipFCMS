@@ -26,6 +26,7 @@ $fields = array(
     'typeid' => '类别',
     'posid' => '推荐位',
     'linkfield' => '关联字段',
+    'downfile' => '单文件上传',
     'downfiles' => '多文件上传',
     'map' => '地图字段',
     'omnipotent' => '万能字段',

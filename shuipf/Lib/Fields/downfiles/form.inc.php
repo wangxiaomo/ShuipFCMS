@@ -50,6 +50,8 @@ function downfiles($field, $value, $fieldinfo) {
 		<div class="bk10"></div>
 		';
 
+    //模块
+    $module = ( in_array(GROUP_NAME, array("Contents", "contents")) ) ? 'Contents' : GROUP_NAME;
     //生成上传附件验证
     $authkey = upload_key("{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']}");
     //后台允许权限设置
@@ -87,9 +89,9 @@ function add_multifile_admin(returnid) {
     var str = "<li id=\'multifile" + ids + "\'><input type=\'text\' name=\'" + returnid + "_fileurl[]\' value=\'\' style=\'width:310px;\' class=\'input\'> <input type=\'text\' name=\'" + returnid + "_filename[]\' value=\'附件说明\' style=\'width:160px;\' class=\'input\'> "+group+"  点数：<input type=\'text\' name=\'" + returnid + "_point[]\' value=\'0\' style=\'width:60px;\' class=\'input\'>  <a href=\"javascript:remove_div(\'multifile" + ids + "\')\">移除</a> </li>";
     $(\'#\' + returnid).append(str);
 };</script>';
-        $string .= $str . "<a herf='javascript:void(0);' class=\"btn\"  onclick=\"javascript:flashupload('{$field}_multifile', '附件上传','{$field}',change_multifile_admin,'{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']}','content','$this->catid','{$authkey}')\"><span class=\"add\"></span>多文件上传</a>    <a  class=\"btn\" herf='javascript:void(0);'  onclick=\"add_multifile_admin('{$field}')\"><span class=\"add\"></span>添加远程地址</a>$js";
+        $string .= $str . "<a herf='javascript:void(0);' class=\"btn\"  onclick=\"javascript:flashupload('{$field}_multifile', '附件上传','{$field}',change_multifile_admin,'{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']}','{$module}','$this->catid','{$authkey}')\"><span class=\"add\"></span>多文件上传</a>    <a  class=\"btn\" herf='javascript:void(0);'  onclick=\"add_multifile_admin('{$field}')\"><span class=\"add\"></span>添加远程地址</a>$js";
     } else {
-        $string .= $str . "<a herf='javascript:void(0);'  class=\"btn\" onclick=\"javascript:flashupload('{$field}_multifile', '附件上传','{$field}',change_multifile,'{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']}','content','$this->catid','{$authkey}')\"><span class=\"add\"></span>多文件上传</a>    <a herf='javascript:void(0);' class=\"btn\" onclick=\"add_multifile('{$field}')\"><span class=\"add\"></span>添加远程地址</a>";
+        $string .= $str . "<a herf='javascript:void(0);'  class=\"btn\" onclick=\"javascript:flashupload('{$field}_multifile', '附件上传','{$field}',change_multifile,'{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']}','{$module}','$this->catid','{$authkey}')\"><span class=\"add\"></span>多文件上传</a>    <a herf='javascript:void(0);' class=\"btn\" onclick=\"add_multifile('{$field}')\"><span class=\"add\"></span>添加远程地址</a>";
     }
     return $string;
 }

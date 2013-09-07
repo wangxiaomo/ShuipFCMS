@@ -17,6 +17,7 @@ function image($field, $value, $fieldinfo) {
         $this->formValidateMessages['info[' . $field . ']'] = array("required" => $errortips ? $errortips : $fieldinfo['name'] . "不能为空！");
     }
     $setting = unserialize($fieldinfo['setting']);
+    $width = $setting['width'] ? $setting['width'] : 180;
     $html = '';
     //图片裁减功能只在后台使用
     if (defined('IN_ADMIN') && IN_ADMIN) {
@@ -51,18 +52,20 @@ function image($field, $value, $fieldinfo) {
             };
 </script>";
     }
+    //模块
+    $module = ( in_array(GROUP_NAME, array("Contents", "contents")) ) ? 'Contents' : GROUP_NAME;
     //生成上传附件验证
     $authkey = upload_key("1,{$setting['upload_allowext']},{$setting['isselectimage']},{$setting['images_width']},{$setting['images_height']},{$setting['watermark']}");
     //图片模式
     if ($setting['show_type']) {
         $preview_img = $value ? $value : CONFIG_SITEURL_MODEL . 'statics/images/icon/upload-pic.png';
         return $str . "<div  style=\"text-align: center;\"><input type='hidden' name='info[$field]' id='$field' value='$value'>
-			<a href='javascript:void(0);' onclick=\"flashupload('{$field}_images', '附件上传','{$field}',thumb_images,'1,{$setting['upload_allowext']},{$setting['isselectimage']},{$setting['images_width']},{$setting['images_height']},{$setting['watermark']}','content','$this->catid','$authkey');return false;\">
+			<a href='javascript:void(0);' onclick=\"flashupload('{$field}_images', '附件上传','{$field}',thumb_images,'1,{$setting['upload_allowext']},{$setting['isselectimage']},{$setting['images_width']},{$setting['images_height']},{$setting['watermark']}','{$module}','$this->catid','$authkey');return false;\">
 			<img src='$preview_img' id='{$field}_preview' width='135' height='113' style='cursor:hand' /></a>
                        <br/> " . $html . "
                    </div>";
     } else {
         //文本框模式
-        return $str . "<input type='text' name='info[$field]' id='$field' value='$value' size='$size' class='input' />  <input type='button' class='button' onclick=\"flashupload('{$field}_images', '附件上传','{$field}',submit_images,'1,{$setting['upload_allowext']},{$setting['isselectimage']},{$setting['images_width']},{$setting['images_height']},{$setting['watermark']}','content','$this->catid','$authkey')\"/ value='上传图片'>" . $html;
+        return $str . "<input type='text' name='info[$field]' id='$field' value='$value' style='width:{$width}px;' class='input' />  <input type='button' class='button' onclick=\"flashupload('{$field}_images', '附件上传','{$field}',submit_images,'1,{$setting['upload_allowext']},{$setting['isselectimage']},{$setting['images_width']},{$setting['images_height']},{$setting['watermark']}','{$module}','$this->catid','$authkey')\"/ value='上传图片'>" . $html;
     }
 }
