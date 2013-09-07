@@ -138,9 +138,9 @@ class Form {
             $file_ext = ',';
         if (!$alowexts)
             $alowexts = 'jpg|gif';
-        if (!defined('IMAGES_INIT')) {
-            $str = '<script type="text/javascript" src="' . CONFIG_SITEURL_MODEL . 'statics/js/swfupload/swf2ckeditor.js"></script>';
-            define('IMAGES_INIT', 1);
+        if (!defined('UPFILES_INIT')) {
+            $str = '<script type="text/javascript" src="' . CONFIG_SITEURL_MODEL . 'statics/js/content_addtop.js"></script>';
+            define('UPFILES_INIT', 1);
         }
         //1, 允许上传的文件类型, 是否允许从已上传中选择, 图片高度, 图片宽度,是否添加水印1是
         $authkey = upload_key("1,$alowexts,1,$file_ext");
