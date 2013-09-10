@@ -35,7 +35,7 @@ $list_tables = D("Common")->list_tables();
                     });
 
                     function updatemenu(table_name,seltype) { 
-                        $.getJSON('api.php?m=Ajax_linkfield&act=search_data&key=<?=urlencode(authcode("true","",C("AUTHCODE"),3600));?>&callback=?', {tables: table_name,random:Math.random()}, function(data){
+                        $.getJSON('<?php echo CONFIG_SITEURL_MODEL; ?>api.php?m=Ajaxlinkfield&act=search_data&key=<?=urlencode(authcode("true","",C("AUTHCODE"),3600));?>&callback=?', {tables: table_name,random:Math.random()}, function(data){
                             if (data != null) {
                                 update(data,'set_id','<?php echo $setting['set_id']; ?>',seltype);
                                 update(data,'set_title','<?php echo $setting['set_title']; ?>',seltype);

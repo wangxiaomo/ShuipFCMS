@@ -1,6 +1,6 @@
 <table cellpadding="2" cellspacing="1" width="98%">
     <tr> 
-        <td>允许上传的文件类型</td>
+        <td width="120">允许上传的文件类型</td>
         <td><input type="text" name="setting[upload_allowext]" value="<?php echo $setting['upload_allowext']; ?>" size="40" class="input"></td>
     </tr>
     <tr> 
@@ -9,7 +9,7 @@
     </tr>
     <tr> 
         <td>允许同时上传的个数</td>
-        <td><input type="text" name="setting[upload_number]" value="<?php echo $setting['upload_number']; ?>" size=3></td>
+        <td><input type="text" name="setting[upload_number]" value="<?php echo $setting['upload_number']; ?>" size=3 class="input"></td>
     </tr>
     <tr>
         <td>文件链接方式</td>

@@ -2,9 +2,9 @@
 
 /**
  *  linkfield.php 异步获取数据
- * api.php?op=Ajax_linkfield&act=search_ajax&value=nn&table_name=think_category&select_title=catid,catname&like_title=catname&set_title=catname
+ * api.php?op=Ajaxlinkfield&act=search_ajax&value=nn&table_name=think_category&select_title=catid,catname&like_title=catname&set_title=catname
  */
-class Ajax_linkfieldAction extends AdminbaseAction {
+class AjaxlinkfieldAction extends AdminbaseAction {
 
     function _initialize() {
         parent::_initialize();
