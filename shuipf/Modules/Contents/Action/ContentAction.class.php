@@ -59,10 +59,12 @@ class ContentAction extends AdminbaseAction {
     public function classlist() {
         $catInfo = $this->categorys[$this->catid];
         //是否搜索
-        $search = $this->_get("search");
+        $search = I('get.search');
         $where = array();
         $where["catid"] = array("EQ", $this->catid);
         if (!empty($catInfo)) {
+            //栏目扩展配置
+            $setting = unserialize($catInfo['setting']);
             //检查模型是否被禁用
             if ($this->model[$catInfo['modelid']]['disabled'] == 1) {
                 $this->error("模型被禁用！");
@@ -114,6 +116,12 @@ class ContentAction extends AdminbaseAction {
             $count = $this->contentModel->where($where)->count();
             $page = $this->page($count, 20);
             $data = $this->contentModel->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "DESC"))->select();
+
+            //模板处理
+            $template = "";
+            if (!empty($setting['list_customtemplate'])) {
+                $template = "Listtemplate:" . $setting['list_customtemplate'];
+            }
         } else {
             $this->error("该栏目不存在！");
         }
@@ -129,7 +137,7 @@ class ContentAction extends AdminbaseAction {
         $this->assign("catid", $this->catid);
         $this->assign("Content", $data);
         $this->assign("Page", $page->show('Admin'));
-        $this->display();
+        $this->display($template);
     }
 
     //添加信息 
@@ -656,7 +664,7 @@ class ContentAction extends AdminbaseAction {
                             $Content->deleteHtml($catid, $sid, $data['inputtime'], $data['prefix'], $data);
                             $data['catid'] = $tocatid;
                             $urls = $this->url->show($data);
-                            if ($this->contentModel->where(array('catid' => $catid, 'id' => $sid))->save(array("catid" => $tocatid,'url'=>$urls['url']))) {
+                            if ($this->contentModel->where(array('catid' => $catid, 'id' => $sid))->save(array("catid" => $tocatid, 'url' => $urls['url']))) {
                                 //点击
                                 $hits->where(array("hitsid" => "c-$catid-$sid", "catid" => $catid))->save(array("catid" => $tocatid, "hitsid" => "c-$tocatid-$sid"));
                             }
@@ -679,7 +687,7 @@ class ContentAction extends AdminbaseAction {
                     }
                     $tablename = ucwords($this->model[$modelid]['tablename']);
                     //进行栏目id更改
-                    if (M($tablename)->where($where)->save(array("catid" => $tocatid,'url'=>''))) {
+                    if (M($tablename)->where($where)->save(array("catid" => $tocatid, 'url' => ''))) {
                         //点击表
                         $hitsDb = M("Hits");
                         $classid = $fromid;

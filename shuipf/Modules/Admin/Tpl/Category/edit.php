@@ -214,6 +214,11 @@
                 </select>
                 <span class="gray">新增模板以show_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span></td>
             </tr>
+            <tr>
+              <th>后台信息列表模板：</th>
+              <td><input type="text" name="setting[list_customtemplate]" id="catdir" class="input" value="{$data['setting']['list_customtemplate']}">
+              <span class="gray">模板名称不带后缀，不设置为使用默认列表，增加列表模板可在Contents/Tpl/Listtemplate/里增加文件</span></td>
+            </tr>
           </table>
         </div>
       </div>
