@@ -130,7 +130,7 @@ class IndexAction extends BaseAction {
             $this->error($this->db->getError() ? $this->db->getError() : '出现错误！');
         }
         if (!empty($inputinfo)) {
-            $id = $this->db->relation(true)->add($inputinfo);
+            $id = $this->db->relation(false)->add($inputinfo);
             if ($id) {
                 //信息量+1
                 M("Model")->where(array("modelid" => $this->formid))->setInc("items");
