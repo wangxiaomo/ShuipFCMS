@@ -167,7 +167,7 @@ class CategoryAction extends AdminbaseAction {
                 $this->error($Category->getError());
             }
         } else {
-            $parentid = I('get.parentid',0,'intval');
+            $parentid = I('get.parentid', 0, 'intval');
             if (!empty($parentid)) {
                 $Category = F("Category");
                 $Ca = $Category[$parentid];
@@ -210,9 +210,9 @@ class CategoryAction extends AdminbaseAction {
             $this->assign("tp_comment", $this->tp_comment);
             $this->assign("category", $categorydata);
             $this->assign("models", $models);
-            $this->assign('parentid_modelid',$Ca['modelid']);
+            $this->assign('parentid_modelid', $Ca['modelid']);
 
-            $type = I('get.type',0,'intval');
+            $type = I('get.type', 0, 'intval');
             import('Form');
             $this->assign("category_php_ruleid", Form::urlrule('content', 'category', 0, "", 'name="category_php_ruleid"'));
             $this->assign("category_html_ruleid", Form::urlrule('content', 'category', 1, "", 'name="category_html_ruleid"'));
@@ -481,11 +481,11 @@ class CategoryAction extends AdminbaseAction {
      * @return boolean
      */
     public function public_check_catdir($return_method = 1, $catdir = '', $catid = 0) {
-        $catid = $catid ? $catid : I('get.catid',0,'intval');
+        $catid = $catid ? $catid : I('get.catid', 0, 'intval');
         //需要添加的目录
         $catdir = $catdir ? $catdir : I('get.catdir');
         //父ID
-        $parentid = I('get.parentid',0,'intval');
+        $parentid = I('get.parentid', 0, 'intval');
         //旧目录
         $old_catdir = I('get.old_catdir');
         $status = D("Category")->checkCatdir($catdir, $catid, $parentid, $old_catdir);
@@ -507,12 +507,12 @@ class CategoryAction extends AdminbaseAction {
 
     //栏目属性转换  child 字段的转换
     public function categoryshux() {
-        $catid = I('get.catid',0,'intval');
+        $catid = I('get.catid', 0, 'intval');
         $r = M("Category")->where(array("catid" => $catid))->find();
         if ($r) {
             //栏目类型非0，不允许使用属性转换
-            if($r['type']){
-                $this->error("该栏目类型不允许进行属性转换！",U('Category/index'));
+            if ($r['type']) {
+                $this->error("该栏目类型不允许进行属性转换！", U('Category/index'));
             }
             $count = M("Category")->where(array("parentid" => $catid))->count();
             if ($count > 0) {

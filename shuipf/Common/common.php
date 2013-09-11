@@ -1,11 +1,10 @@
 <?php
 
-/* * 
+/**
  * 项目扩展函数库
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 // 实例化服务
 function service($name, $params = array()) {
     $class = $name . 'Service';
@@ -267,14 +266,13 @@ function upload_key($args) {
     return $authkey;
 }
 
-/*
+/**
  * 产生随机字符串 
  * 产生一个指定长度的随机字符串,并返回给用户 
  * @access public 
  * @param int $len 产生字符串的位数 
  * @return string 
  */
-
 function genRandomString($len = 6) {
     $chars = array(
         "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
@@ -640,9 +638,9 @@ function parseTemplateFile($templateFile = '') {
  * @param type $PageParam 接收分页号参数的标识符
  * @param type $PageLink 分页规则 
  *                          array(
-  "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
-  "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
-  )
+ *                                  "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
+ *                                  "list"=>"http://www.abc3210.com/192-{$page}.html",//这种表示分页非首页时启用
+ *                          )
  * @param type $static 是否开启静态
  * @param string $TP 模板
  * @param array $Tp_Config 模板配置
@@ -971,4 +969,36 @@ function isMin($value, $length) {
  */
 function isMax($value, $length) {
     return mb_strlen($value, 'utf-8') <= (int) $length ? true : false;
+}
+
+/**
+ * 对 javascript escape 解码
+ * @param type $str 
+ * @return type
+ */
+function unescape($str) {
+    $ret = '';
+    $len = strlen($str);
+    for ($i = 0; $i < $len; $i++) {
+        if ($str[$i] == '%' && $str[$i + 1] == 'u') {
+            $val = hexdec(substr($str, $i + 2, 4));
+            if ($val < 0x7f)
+                $ret .= chr($val);
+            else
+            if ($val < 0x800)
+                $ret .= chr(0xc0 | ($val >> 6)) .
+                        chr(0x80 | ($val & 0x3f));
+            else
+                $ret .= chr(0xe0 | ($val >> 12)) .
+                        chr(0x80 | (($val >> 6) & 0x3f)) .
+                        chr(0x80 | ($val & 0x3f));
+            $i += 5;
+        } else
+        if ($str[$i] == '%') {
+            $ret .= urldecode(substr($str, $i, 3));
+            $i += 2;
+        } else
+            $ret .= $str[$i];
+    }
+    return $ret;
 }

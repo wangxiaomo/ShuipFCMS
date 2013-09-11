@@ -1,15 +1,16 @@
 <?php
 
-/* * 
+/**
  * 公共模型
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class CommonModel extends Model {
 
     /**
      * 删除表
+     * @param string $tablename 不带表前缀的表名
+     * @return type
      */
     final public function drop_table($tablename) {
         $tablename = C("DB_PREFIX") . $tablename;
@@ -17,7 +18,8 @@ class CommonModel extends Model {
     }
 
     /**
-     * 读取全部表名
+     *  读取全部表名
+     * @return type
      */
     final public function list_tables() {
         $tables = array();
@@ -61,5 +63,3 @@ class CommonModel extends Model {
     }
 
 }
-
-?>

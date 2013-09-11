@@ -14,6 +14,8 @@ class AppcheckBehavior extends Behavior {
         define("SHUIPF_BUILD", C("SHUIPF_BUILD"));
         //产品名称
         define("SHUIPF_APPNAME", C("SHUIPF_APPNAME"));
+        //模块(应用)静态资源目录地址extresdir
+        define('MODEL_EXTRESDIR', 'statics/extres/' . strtolower(GROUP_NAME) . '/');
         //有效应用
         $App = F("App");
         //后台模块比较特殊，可以指定域名访问，其他模块不需要经过此步骤
@@ -61,5 +63,3 @@ class AppcheckBehavior extends Behavior {
     }
 
 }
-
-?>

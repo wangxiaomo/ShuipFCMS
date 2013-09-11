@@ -10,9 +10,9 @@ class BaseAction extends AppframeAction {
     public $TemplatePath, $Theme, $ThemeDefault;
 
     protected function _initialize() {
-        parent::_initialize();
         //定义是前台
         define('IN_ADMIN', false);
+        parent::_initialize();
         //前台关闭表单令牌
         C("TOKEN_ON", false);
         $this->initUser();
@@ -28,6 +28,8 @@ class BaseAction extends AppframeAction {
         $this->assign("Position", F("Position"));
         //URL规则数组
         $this->assign("Urlrules", F("urlrules"));
+        //模块静态资源目录，例如CSS JS等
+        $this->assign('model_extresdir', CONFIG_SITEURL_MODEL . MODEL_EXTRESDIR);
     }
 
     /**
@@ -106,9 +108,9 @@ class BaseAction extends AppframeAction {
      * @param type $PageParam 接收分页号参数的标识符
      * @param type $PageLink 分页规则 
      *                          array(
-      "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
-      "list"=>"http://www.abc3210.com/192-{page}.html",//这种表示分页非首页时启用
-      )
+     *                                  "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
+     *                                  "list"=>"http://www.abc3210.com/192-{$page}.html",//这种表示分页非首页时启用
+     *                          )
      * @param type $static 是否开启静态
      * @param string $TP 模板
      * @param array $Tp_Config 模板配置
