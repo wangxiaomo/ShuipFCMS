@@ -18,6 +18,7 @@
       <li> <em>负责人</em> <span>水平凡</span> </li>
       <li> <em>微博</em> <span><a href="http://t.qq.com/shuipf" target="_blank">http://t.qq.com/shuipf</a></span> </li>
       <li> <em>联系邮箱</em> <span>admin@abc3210.com</span> </li>
+      <li> <em>捐赠</em> <span>您因如果使用ShuipFCMS而受益或者感到愉悦，您还可以这样帮助ShuipFCMS成长~<br/>捐赠地址：<a href="https://me.alipay.com/shuipf" target="_blank">https://me.alipay.com/shuipf</a></span> </li>
     </ul>
   </div>
   <h2 class="h_a">问题反馈</h2>
