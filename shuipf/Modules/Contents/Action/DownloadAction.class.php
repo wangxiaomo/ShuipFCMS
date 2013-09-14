@@ -7,133 +7,175 @@
  */
 class DownloadAction extends BaseAction {
 
-    /**
-     * 显示下载页面 
-     */
+    //模型缓存
+    protected $modelCache = NULL;
+    //栏目缓存
+    protected $categoryCache = NULL;
+    //信息ID
+    public $id = 0, $catid = 0;
+
+    protected function _initialize() {
+        parent::_initialize();
+        $this->modelCache = F('Model');
+        $this->categoryCache = F('Category');
+        $this->id = I('get.id', 0, 'intval');
+        $this->catid = I('get.catid', 0, 'intval');
+    }
+
+    //显示下载页面
     public function index() {
-        //栏目ID
-        $catid = (int) $this->_get('catid');
-        //信息ID
-        $id = (int) $this->_get('id');
-        //编号
-        $k = (int) $this->_get('k');
+        //编号，也就是下载第几个链接，有的是多文件下载用的！
+        $k = I('get.k', 0, 'intval');
         //字段名称
-        $f = $this->_get('f');
-        if (!$catid || !$id || !$f) {
+        $f = I('get.f', '');
+        if (empty($this->id) || empty($this->catid) || empty($f)) {
             $this->error("参数有误！");
         }
-        $Category = F('Category');
-        $Model = F('Model');
         //模型ID
-        $modelid = $Category[$catid]['modelid'];
+        $modelid = $this->categoryCache[$this->catid]['modelid'];
         $Model_field = F("Model_field_" . $modelid);
-        //主表名称
-        if ((int) $Model_field[$f]['issystem'] == 1) {
-            $tablename = ucwords($Model[$modelid]['tablename']);
-        } else {
-            $tablename = ucwords($Model[$modelid]['tablename']) . "_data";
+        //判断字段类型
+        if (!in_array($Model_field[$f]['formtype'], array('downfiles', 'downfile'))) {
+            $this->error('下载地址错误！');
         }
-
-        //字段配置
-        $setting = unserialize($Model_field[$f]['setting']);
-        if ($setting) {
-            //字段信息
-            $downfiles = M($tablename)->where(array("id" => $id))->getField($f);
-            $downfiles = unserialize($downfiles);
-            $info = $downfiles[$k];
-
-            if (!$info) {
-                $this->error("该下载地址已经失效！");
+        $this->db = ContentModel::getInstance($modelid);
+        $data = $this->db->relation(true)->where(array("id" => $this->id, 'status' => 99))->find();
+        if (empty($data)) {
+            $this->error("该信息不存在！");
+        }
+        $this->db->dataMerger($data);
+        if (!empty($data)) {
+            //取得下载字段信息
+            $downfiles = $data[$f];
+            $dowUnserialize = unserialize($downfiles);
+            if ($dowUnserialize) {
+                $info = $dowUnserialize[$k];
+                if (empty($info)) {
+                    $this->error("该下载地址已经失效！");
+                }
+            } else {
+                $info = array();
+                $info['filename'] = basename($downfiles);
+                $info['point'] = 0;
+                $info['groupid'] = 0;
             }
-            //加验证码
+            //当前客户端标识
             $aut = md5(get_client_ip() . substr($_SERVER['HTTP_USER_AGENT'], 0, 254));
             //加密
             //格式：aut|栏目ID|信息id|下载编号|字段
-            $key = authcode($aut . "|" . $catid . "|" . $id . "|" . $k . "|" . $f, "", '', 3600);
-            $this->assign("fileurl", U("Download/d", "key=".  str_replace("%2F","%*2F",urlencode($key))));
+            $key = authcode(implode('|', array(
+                $aut,
+                $this->catid,
+                $this->id,
+                $k,
+                $f,)), '', '', 3600);
+
+            $this->assign("info", $data);
+            $this->assign("fileurl", U("Download/d", array('key' => urlencode($key))));
             $this->assign("filename", $info['filename']);
             $this->assign("point", $info['point']);
             $this->assign("groupid", $info['groupid']);
             $this->assign("Member_group", F("Member_group"));
-            $this->assign("SEO", seo($catid, urldecode($info['filename']), '', ''));
+            $this->assign("SEO", seo($this->catid, urldecode($info['filename']), '', ''));
             $this->display("Public:download");
         } else {
-            $this->error("出现错误，请联系管理员更新缓存！");
+            $this->error("该信息不存在！");
         }
     }
 
-    /**
-     * 文件下载 
-     */
+    //文件下载 
     public function d() {
+        //当前客户端标识
         $aut = md5(get_client_ip() . substr($_SERVER['HTTP_USER_AGENT'], 0, 254));
-        $_GET['key'] = str_replace(array("%*2F"," "),array("/","+"),$_GET['key']);
+        //key
+        $key = I('get.key', '', 'trim');
+        if (!empty($key)) {
+            $key = str_replace(array("%*2F", " "), array("/", "+"), $key);
+        }
         //格式：aut|栏目ID|信息id|下载编号|字段
-        $key = explode("|", authcode($_GET['key'], "DECODE"));
+        $key = explode("|", authcode($key, "DECODE"));
         //栏目ID
-        $catid = $key[1];
+        $this->catid = $key[1];
         //信息ID
-        $id = $key[2];
+        $this->id = $key[2];
         //编号
         $k = $key[3];
         //字段名称
         $f = $key[4];
-        $Category = F('Category');
-        $Model = F('Model');
         //模型ID
-        $modelid = $Category[$catid]['modelid'];
+        $modelid = $this->categoryCache[$this->catid]['modelid'];
         $Model_field = F("Model_field_" . $modelid);
+        //判断字段类型
+        if (!in_array($Model_field[$f]['formtype'], array('downfiles', 'downfile'))) {
+            $this->error('下载地址错误！');
+        }
         //主表名称
         if ((int) $Model_field[$f]['issystem'] == 1) {
-            $tablename = ucwords($Model[$modelid]['tablename']);
+            $tablename = ucwords($this->modelCache[$modelid]['tablename']);
         } else {
-            $tablename = ucwords($Model[$modelid]['tablename']) . "_data";
+            $tablename = ucwords($this->modelCache[$modelid]['tablename']) . "_data";
         }
-
-        if ($aut == $key[0]) {
-            $downfiles = M($tablename)->where(array("id" => $id))->getField($f);
-            $downfiles = unserialize($downfiles);
-            $info = $downfiles[$k];
-            //判断会有组
-            if ((int) $info['groupid'] > 0 || (int) $info['point'] > 0) {
-                if (!AppframeAction::$Cache['uid']) {
-                    $this->error("请登陆后再下载！", U("Member/Index/login", "forward=" . urlencode(get_url())));
-                }
-                if ((int) $info['groupid'] > 0 && (int) AppframeAction::$Cache['User']['groupid'] != (int) $info['groupid']) {
-                    $this->error("您所在的会有组不能下载该附件！");
-                }
-                if ((int) $info['point'] > 0) {
-                    $point = 0 - $info['point'];
-                    $status = service("Passport")->user_integral(AppframeAction::$Cache['uid'], $point);
-                    if ($status == -1) {
-                        $this->error("您当前的积分不足，无法下载！");
-                    } else if ($status == false) {
-                        $this->error("系统出现错误，请联系管理员！");
+        //字段配置
+        $setting = unserialize($Model_field[$f]['setting']);
+        if ($aut == $key[0] && $setting) {
+            //取得下载字段内容
+            $downfiles = M($tablename)->where(array("id" => $this->id))->getField($f);
+            $dowUnserialize = unserialize($downfiles);
+            //判断是否可以反序列化
+            if ($dowUnserialize) {
+                $info = $dowUnserialize[$k];
+                //判断会有组
+                if ((int) $info['groupid'] > 0 || (int) $info['point'] > 0) {
+                    if (!AppframeAction::$Cache['uid']) {
+                        $this->error("请登陆后再下载！", U("Member/Index/login", "forward=" . urlencode(get_url())));
                     }
-                    //下载记录----暂时木有这功能，后期增加
+                    if ((int) $info['groupid'] > 0 && (int) AppframeAction::$Cache['User']['groupid'] != (int) $info['groupid']) {
+                        $this->error("您所在的会有组不能下载该附件！");
+                    }
+                    if ((int) $info['point'] > 0) {
+                        $point = 0 - $info['point'];
+                        $status = service("Passport")->user_integral(AppframeAction::$Cache['uid'], $point);
+                        if ($status == -1) {
+                            $this->error("您当前的积分不足，无法下载！");
+                        } else if ($status == false) {
+                            $this->error("系统出现错误，请联系管理员！");
+                        }
+                        //下载记录----暂时木有这功能，后期增加
+                    }
                 }
+                //下载地址
+                $fileurl = $info['fileurl'];
+            } else {
+                //下载地址
+                $fileurl = $downfiles;
+                $info = array();
+                $info['filename'] = basename($fileurl);
             }
-            $fileurl = $info['fileurl'];
-            if( !urlDomain(CONFIG_SITEURL) ){
-                $urlDomain = urlDomain(get_url());//当前页面地址域名
-            }else{
+
+            //下载统计+1
+            if (!empty($setting['statistics'])) {
+                $statistics = trim($setting['statistics']);
+                M(ucwords($this->modelCache[$modelid]['tablename']))->where(array("id" => $this->id))->setInc($statistics);
+            }
+
+            if (!urlDomain(CONFIG_SITEURL)) {
+                $urlDomain = urlDomain(get_url()); //当前页面地址域名
+            } else {
                 $urlDomain = urlDomain(CONFIG_SITEURL);
             }
             //不管附件地址是远程地址，还是不带域名的地址，都进行替换
-            $fileurl = str_replace($urlDomain,"",$fileurl);
-           
+            $fileurl = str_replace($urlDomain, "", $fileurl);
             //远程文件
-            if (strpos($fileurl, ':/') ) {
+            if (strpos($fileurl, ':/')) {
                 header("Location: $fileurl");
                 exit;
             }
-            
             //取得文件后缀
             $houz = "." . fileext(basename($fileurl));
-            $fileurl = SITE_PATH.'/'.$fileurl;
-            if(file_exists($fileurl)){
+            $fileurl = SITE_PATH . '/' . $fileurl;
+            if (file_exists($fileurl)) {
                 $this->downfiles($fileurl, urldecode($info['filename'] . $houz));
-            }else{
+            } else {
                 $this->error("需要下载的文件不存在！");
             }
         } else {
@@ -166,5 +208,3 @@ class DownloadAction extends BaseAction {
     }
 
 }
-
-?>

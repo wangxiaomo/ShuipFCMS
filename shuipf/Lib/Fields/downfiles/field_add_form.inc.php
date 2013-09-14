@@ -11,21 +11,17 @@
         <td>允许同时上传的个数</td>
         <td><input type="text" name="setting[upload_number]" value="10" size=3 class="input"></td>
     </tr>
+    <tr> 
+        <td>下载统计字段</td>
+        <td><input type="text" name="setting[statistics]" value="" class="input"> 下载次数统计字段只能在主表！</td>
+    </tr>
     <tr>
         <td>文件链接方式</td>
         <td>
             <input name="setting[downloadlink]" value="0" type="radio">
-            链接到真实软件地址 （无法进行验证）
+            链接到真实软件地址 （无法进行验证和统计）
             <input name="setting[downloadlink]" value="1" checked="checked" type="radio">
-            链接到跳转页面
-
-        </td></tr>	
-    <tr>
-        <td>文件下载方式</td>
-        <td>
-            <input name="setting[downloadtype]" value="0" type="radio">
-            链接文件地址 
-            <input name="setting[downloadtype]" value="1" checked="checked" type="radio">
-            通过PHP读取      
-        </td></tr>		
+            链接到下载跳转页面
+        </td>
+    </tr>		
 </table>
