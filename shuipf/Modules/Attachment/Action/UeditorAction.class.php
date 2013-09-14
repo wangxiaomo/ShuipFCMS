@@ -45,8 +45,8 @@ class UeditorAction extends AttachmentsAction {
             }
             //描述
             $pictitle = I('post.pictitle');
-            $catid = I('post.catid',0,'intval');
-            $module = strtolower(GROUP_NAME);
+            $catid = I('post.catid', 0, 'intval');
+            $module = $catid ? 'contents' : strtolower(GROUP_NAME);
             $Attachment = service("Attachment", array('module' => $module, 'catid' => $catid, 'userid' => $this->upuserid, 'isadmin' => $this->isadmin ? 1 : 0));
             //设置上传类型，强制为图片类型
             $Attachment->uploadallowext = array("jpg", "png", "gif", "jpeg");
@@ -90,5 +90,3 @@ class UeditorAction extends AttachmentsAction {
     }
 
 }
-
-?>
