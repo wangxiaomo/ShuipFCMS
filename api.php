@@ -15,4 +15,3 @@ if( isset($_GET["g"]) ){
     $_GET["g"] = "Api";
 }
 require './index.php';
-?>

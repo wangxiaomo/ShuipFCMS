@@ -26,4 +26,3 @@ if (!file_exists(APP_PATH . 'Conf/dataconfig.php')) {
 }
 //载入框架核心文件
 require APP_PATH . 'Core/ThinkPHP.php';
-?>
