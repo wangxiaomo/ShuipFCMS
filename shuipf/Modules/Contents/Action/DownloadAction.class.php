@@ -13,6 +13,9 @@ class DownloadAction extends BaseAction {
     protected $categoryCache = NULL;
     //信息ID
     public $id = 0, $catid = 0;
+    //用户相关信息
+    protected $userid = 0;
+    protected $groupid = 8;
 
     protected function _initialize() {
         parent::_initialize();
@@ -20,6 +23,8 @@ class DownloadAction extends BaseAction {
         $this->categoryCache = F('Category');
         $this->id = I('get.id', 0, 'intval');
         $this->catid = I('get.catid', 0, 'intval');
+        $this->userid = AppframeAction::$Cache['uid'];
+        $this->groupid = AppframeAction::$Cache['User']['groupid'];
     }
 
     //显示下载页面
@@ -60,7 +65,7 @@ class DownloadAction extends BaseAction {
                 $info['groupid'] = 0;
             }
             //当前客户端标识
-            $aut = md5(get_client_ip() . substr($_SERVER['HTTP_USER_AGENT'], 0, 254));
+            $aut = md5($this->userid . $this->groupid . substr($_SERVER['HTTP_USER_AGENT'], 0, 254));
             //加密
             //格式：aut|栏目ID|信息id|下载编号|字段
             $key = authcode(implode('|', array(
@@ -86,7 +91,7 @@ class DownloadAction extends BaseAction {
     //文件下载 
     public function d() {
         //当前客户端标识
-        $aut = md5(get_client_ip() . substr($_SERVER['HTTP_USER_AGENT'], 0, 254));
+        $aut = md5($this->userid . $this->groupid . substr($_SERVER['HTTP_USER_AGENT'], 0, 254));
         //key
         $key = I('get.key', '', 'trim');
         if (!empty($key)) {
@@ -126,15 +131,15 @@ class DownloadAction extends BaseAction {
                 $info = $dowUnserialize[$k];
                 //判断会有组
                 if ((int) $info['groupid'] > 0 || (int) $info['point'] > 0) {
-                    if (!AppframeAction::$Cache['uid']) {
+                    if (!$this->userid) {
                         $this->error("请登陆后再下载！", U("Member/Index/login", "forward=" . urlencode(get_url())));
                     }
-                    if ((int) $info['groupid'] > 0 && (int) AppframeAction::$Cache['User']['groupid'] != (int) $info['groupid']) {
+                    if ((int) $info['groupid'] > 0 && (int) $this->groupid != (int) $info['groupid']) {
                         $this->error("您所在的会有组不能下载该附件！");
                     }
                     if ((int) $info['point'] > 0) {
                         $point = 0 - $info['point'];
-                        $status = service("Passport")->user_integral(AppframeAction::$Cache['uid'], $point);
+                        $status = service("Passport")->user_integral($this->userid, $point);
                         if ($status == -1) {
                             $this->error("您当前的积分不足，无法下载！");
                         } else if ($status == false) {
@@ -185,12 +190,16 @@ class DownloadAction extends BaseAction {
 
     //开始下载
     protected function downfiles($file, $basename) {
-        //处理中文文件名
+        //获取用户客户端UA，用来处理中文文件名
         $ua = $_SERVER["HTTP_USER_AGENT"];
+        //从下载文件地址中获取的后缀
+        $fileExt = fileext(basename($file));
+        //下载文件名后缀
+        $baseNameFileExt = fileext($basename);
         if (preg_match("/MSIE/", $ua)) {
-            $filename = basename(iconv("UTF-8", "GB2312//IGNORE", $basename));
+            $filename = iconv("UTF-8", "GB2312//IGNORE", $baseNameFileExt ? $basename : ($basename . "." . $fileExt));
         } else {
-            $filename = basename($basename);
+            $filename = $baseNameFileExt ? $basename : ($basename . "." . $fileExt);
         }
         header("Content-type: application/octet-stream");
         $encoded_filename = urlencode($filename);
