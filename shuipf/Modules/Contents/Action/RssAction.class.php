@@ -9,9 +9,8 @@ class RssAction extends BaseAction {
 
     public function index() {
         $where = array();
-        $catid = (int) $this->_get('catid');
-        $rssid = (int) $this->_get('rssid');
-
+        $catid = I('get.catid', 0, 'intval');
+        $rssid = I('get.rssid', 0, 'intval');
         if ($rssid) {
             header("Content-Type: text/xml; charset=" . C("DEFAULT_CHARSET"));
             //检测缓存
@@ -22,6 +21,15 @@ class RssAction extends BaseAction {
             }
             $Category = F("Category");
             $Model = F("Model");
+            $Cat = $Category[$rssid];
+            //检查栏目是否存在
+            if (empty($Cat)) {
+                $this->error('该栏目不存在！');
+            }
+            //检查栏目类型
+            if ($Cat['type'] != 0) {
+                $this->error('栏目类型不正确！');
+            }
             $where['status'] = array("EQ", 99);
             //判断是否有子栏目
             if ($Category[$rssid]['child']) {
@@ -33,6 +41,9 @@ class RssAction extends BaseAction {
             $modelid = $Category[$rssid]['modelid'];
             //获取表名
             $tablename = ucwords($Model[$modelid]['tablename']);
+            if (empty($tablename)) {
+                $this->error('出现错误！');
+            }
             //栏目配置
             $setting = unserialize($Category[$rssid]['setting']);
             $data = M($tablename)->where($where)->order(array("updatetime" => "DESC", "id" => "DESC"))->limit(50)->select();
@@ -70,5 +81,3 @@ class RssAction extends BaseAction {
     }
 
 }
-
-?>
