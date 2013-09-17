@@ -1,11 +1,10 @@
 <?php
 
-/* * 
- * Tag
+/**
+ * Tag模型
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class TagsModel extends CommentsModel {
 
     //自动验证
@@ -38,12 +37,12 @@ class TagsModel extends CommentsModel {
                 if ($this->where(array("tag" => $v))->find()) {
                     $this->where(array("tag" => $v))->setInc('usetimes');
                 } else {
-                    $this->data(array(
+                    $this->add(array(
                         "tag" => $v,
                         "usetimes" => 1,
                         "lastusetime" => $time,
                         "lasthittime" => $time,
-                    ))->add();
+                    ));
                 }
                 $newdata[] = array(
                     'tag' => $v,
@@ -63,12 +62,12 @@ class TagsModel extends CommentsModel {
             if ($this->where(array("tag" => $tagname))->find()) {
                 $this->where(array("tag" => $tagname))->setInc('usetimes');
             } else {
-                $this->data(array(
+                $this->add(array(
                     "tag" => $tagname,
                     "usetimes" => 1,
                     "lastusetime" => $time,
                     "lasthittime" => $time,
-                ))->add();
+                ));
             }
             M("TagsContent")->add(array(
                 'tag' => $tagname,
@@ -108,7 +107,7 @@ class TagsModel extends CommentsModel {
                 $this->deleteTagName($value['tag'], $id, $catid, $modelid);
             } else {
                 //更新URL
-                M("TagsContent")->where(array("tag" => $value['tag'], "modelid" => $value['modelid'], "contentid" => $value['contentid'], "catid" => $value['catid']))->data(array("url" => $data['url'], 'title' => $data['title']))->save();
+                M("TagsContent")->where(array("tag" => $value['tag'], "modelid" => $value['modelid'], "contentid" => $value['contentid'], "catid" => $value['catid']))->save(array("url" => $data['url'], 'title' => $data['title']));
                 foreach ($tagname as $k => $v) {
                     if ($value['tag'] == $v) {
                         unset($tagname[$k]);
@@ -134,16 +133,18 @@ class TagsModel extends CommentsModel {
             return false;
         }
         $db_tags_content = M("TagsContent");
-        $tagslist = $db_tags_content->where(array(
-                    "modelid" => $modelid,
-                    "contentid" => $id,
-                    "catid" => $catid,
-                ))->select();
+        $where = array('modelid' => $modelid, 'contentid' => $id, "catid" => $catid);
+        //取得对应tag数据
+        $tagslist = $db_tags_content->where($where)->select();
+        if (empty($tagslist)) {
+            return true;
+        }
+        //全部-1
         foreach ($tagslist as $k => $value) {
             $this->where(array("tag" => $value['tag']))->setDec('usetimes');
         }
         //删除tags数据
-        $db_tags_content->delete(array('contentid' => $id, "catid" => $catid));
+        $db_tags_content->where($where)->delete();
         return true;
     }
 
@@ -185,5 +186,3 @@ class TagsModel extends CommentsModel {
     }
 
 }
-
-?>

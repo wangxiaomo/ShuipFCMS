@@ -24,7 +24,7 @@ class content_delete {
     // 数据表名（不包含表前缀）
     protected $tablename = '';
 
-    function __construct($id, $catid, $modelid) {
+    function __construct($modelid) {
         $this->model = F("Model");
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {
@@ -33,7 +33,7 @@ class content_delete {
         $this->fields = F("Model_field_" . $this->modelid);
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
-    
+
     /**
      * 魔术方法，获取配置
      * @param type $name
