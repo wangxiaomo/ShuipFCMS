@@ -834,8 +834,11 @@ select[size]{
 }
 .pop_bottom .tips_error,
 .pop_bottom .tips_success{
+	max-width:200px;
 	float:left;
-	margin-top:4px;
+}
+.founder_pop .pop_bottom .tips_error{
+	width:150px;
 }
 .pop_cont{
 	background:#fff;
@@ -1256,10 +1259,10 @@ tr.high_light td,tr.high_light th{
 ===================
 */
 input:checked+span{
-	color:#008800;
+	color:#008800 !important;
 }
 input:radio+span{
-	color:#008800;
+	color:#008800 !important;
 }
 /*
 ===================
@@ -2802,7 +2805,7 @@ seo弹窗
 	border:1px solid;
 	border-color:#ecebeb #e1e0e0 #d5d5d5 #e1e0e0;
 	width:230px;
-	height:210px;
+	height:310px;
 	position:relative;
 }
 .design_page .img{
@@ -3044,6 +3047,25 @@ seo弹窗
 }
 .system_update a:hover{
 	text-decoration:underline;
+}
+
+/*全局应用图标效果*/
+.app_icon{
+	display:inline-block;
+	vertical-align:top;
+	width:80px;
+	height:80px;
+	position:relative;
+	background:#f7f7f7;
+}
+.app_icon b{
+	position:absolute;
+	left:0;
+	top:0;
+	width:80px;
+	height:80px;
+	background:url(../images/app_bg.png) no-repeat;
+	_background:none;
 }
 
 /*

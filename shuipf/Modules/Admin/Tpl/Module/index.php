@@ -4,74 +4,54 @@
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
   <div class="table_list">
-  <table width="100%" cellspacing="0">
-        <thead>
-          <tr>
-            <td >模块名称</td>
-            <td width="90">模块目录</td>
-            <td width="180">版本号</td>
-            <td width="120">安装日期</td>
-            <td width="120">更新日期</td>
-            <td width="120">操作</td>
-          </tr>
-        </thead>
-        <tbody>
-<?php 
-if (is_array($data)){
-	foreach ($data as $d){
-		if (array_key_exists($d, $modules)) {
-?>   
-	<tr>
-	<td width="220"><?php echo $modules[$d]['name']?></td>
-	<td width="220"><?php echo $d?></td>
-	<td><?php echo $modules[$d]['version']?></td>
-	<td><?php echo $modules[$d]['installdate']?></td>
-	<td><?php echo $modules[$d]['updatedate']?></td>
-	<td> 
-	<?php if ($modules[$d]['iscore']) {?><span style="color: #999">禁止</span><?php } else {?><a class="J_ajax_uninstall" href="<?php echo U('Module/uninstall', array('module'=>$d)  );?>"><font color="red">卸载</font></a><?php }?>
-	</td>
-	</tr>
-<?php 
-	} else {  
-		$moduel = $isinstall = $modulename = '';
-		if (file_exists(APP_PATH . C("APP_GROUP_PATH"). DIRECTORY_SEPARATOR.$d.DIRECTORY_SEPARATOR.'Install'.DIRECTORY_SEPARATOR.'Config.inc.php')) {
-			require APP_PATH . C("APP_GROUP_PATH"). DIRECTORY_SEPARATOR.$d.DIRECTORY_SEPARATOR.'Install'.DIRECTORY_SEPARATOR.'Config.inc.php';
-			$isinstall = "安装";
-		} else {
-			$module = "未知";
-			$isinstall = "无法安装";
-		}
-?>
-	<tr class="on">
-	<td width="220"><?php echo $modulename?></td>
-	<td width="220"><?php echo $d?></td>
-	<td align="center">未知</td>
-	<td align="center">未知</td>
-	<td align="center">未安装</td>
-	<td>
-	<?php if ($isinstall!="无法安装") {?> <a href="<?php echo U('Module/install', array('module'=>$d)  );?>"><font color="#009933"><?php echo $isinstall?></font><?php } else {?><font color="#009933"><?php echo $isinstall?></font><?php }?></a>
-	</td>
-	</tr>
-<?php 
-		}
-	}
-}
-?>
-        </tbody>
-      </table>
-      <div class="p10"><div class="pages"> {$Page} </div> </div>
+    <table width="100%">
+      <colgroup>
+      <col width="90">
+      <col>
+      <col width="160">
+      </colgroup>
+      <thead>
+        <tr>
+          <td align="center">应用图标</td>
+          <td>应用介绍</td>
+          <td align="center">安装时间</td>
+          <td align="center">操作</td>
+        </tr>
+      </thead>
+      <volist name="data" id="vo">
+      <tr>
+        <td><div class="app_icon"><b></b><img src="{$config_siteurl}statics/themes/extres/{$vo.module|strtolower}/icon.jpg" onerror="this.onerror=null;this.src='{$config_siteurl}statics/images/modul.png'" alt="{$vo.modulename}" width="80" height="80"></div></td>
+        <td valign="top"><h3 class="mb5 f12"><a target="_blank" href="{$vo.authorsite}">{$vo.modulename}</a></h3>
+          <div class="mb5"> <span class="mr15">版本：<b>{$vo.version}</b></span> <span>开发者：<if condition=" $vo['author'] "><a target="_blank" href="{$vo.authorsite}">{$vo.author}</a><else />匿名开发者</if></span> <span>适配 ShuipFCMS 最低版本：<if condition=" $vo['adaptation'] ">{$vo.adaptation}<else /><font color="#FF0000">没有标注，存在风险</font></if></span> </div>
+          <div class="gray"><if condition=" $vo['introduce'] ">{$vo.introduce}<else />没有任何介绍</if></div>
+          <div> <span class="mr20"><a href="{$vo.authorsite}" target="_blank">{$vo.authorsite}</a></span> </div></td>
+        <td align="center"><span>2013-09-12 14:37</span></td>
+        <td align="center">
+          <if condition=" in_array($vo['status'],array(1,2)) && !isset($modules[$vo['module']])">
+          <a  href="{:U('Module/install', array('module'=>$vo['module'])  )}" class="btn btn_submit btn_big mr5">安装</a>
+          </if>
+          <if condition=" $modules[$vo['module']] && !$modules[$vo['module']]['iscore']">
+          <button data-action="{:U('Module/uninstall',array('module'=>$vo['module']))}" class="J_ajax_upgrade btn_big btn">卸载</button>
+          </if>
+          <if condition=" $modules[$vo['module']] && $modules[$vo['module']]['iscore']">
+          系统模块
+          </if>
+         </td>
+      </tr>
+      </volist>
+    </table>
   </div>
+  <div class="p10">
+        <div class="pages">{$Page}</div>
+   </div>
 </div>
 <script src="{$config_siteurl}statics/js/common.js?v"></script>
 <script>
-if ($('a.J_ajax_uninstall').length) {
+if ($('button.J_ajax_upgrade').length) {
     Wind.use('artDialog', function () {
-        $('.J_ajax_uninstall').on('click', function (e) {
+        $('.J_ajax_upgrade').on('click', function (e) {
             e.preventDefault();
-            var $_this = this,
-                $this = $($_this),
-                href = $this.prop('href'),
-                msg = $this.data('msg');
+           var $_this = this,$this = $(this), url = $this.data('action'), msg = $this.data('msg'), act = $this.data('act');
             art.dialog({
                 title: false,
                 icon: 'question',
@@ -82,7 +62,7 @@ if ($('a.J_ajax_uninstall').length) {
                     return true;
                 },
                 ok: function () {
-                    $.getJSON(href).done(function (data) {
+                    $.getJSON(url).done(function (data) {
                         if (data.state === 'success') {
                             if (data.referer) {
                                 location.href = data.referer;
