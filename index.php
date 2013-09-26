@@ -6,7 +6,7 @@
  * Contact email:admin@abc3210.com
  */
 //开启调试模式
-define("APP_DEBUG", true);
+define("APP_DEBUG", false);
 define('SITE_PATH', getcwd());
 define('APP_NAME', 'Shuipf');
 define('APP_PATH', SITE_PATH . '/shuipf/');
