@@ -9,12 +9,15 @@ class ModuleModel extends CommonModel {
 
     //模块所处目录路径
     protected $appPath = NULL;
+    //模板路径
     protected $templatePath;
+    //静态资源
+    protected $extresPath;
     //自动验证
     protected $_validate = array(
         //array(验证字段,验证规则,错误提示,验证条件,附加规则,验证时间)
         array('module', 'require', '模块目录名称不能为空！', 1, 'regex', 3),
-//        array('module', '', '该模块已经安装过！', 0, 'unique', 1),
+        //array('module', '', '该模块已经安装过！', 0, 'unique', 1),
         array('name', 'require', '模块名称不能为空！', 1, 'regex', 3),
         array('version', 'require', '模块版本号不能为空！', 1, 'regex', 3),
     );
@@ -30,6 +33,7 @@ class ModuleModel extends CommonModel {
         $this->appPath = APP_PATH . C("APP_GROUP_PATH") . DIRECTORY_SEPARATOR;
         //模板安装目录，模板安装目录强制在Default是出于，如果用户安装了模块后，又切换了主题，会造成找不到模板报错，只好强制安装在Default主题下！---水平凡
         $this->templatePath = TEMPLATE_PATH . "Default" . DIRECTORY_SEPARATOR;
+        $this->extresPath = SITE_PATH . '/statics/extres/';
     }
 
     /**
@@ -42,9 +46,22 @@ class ModuleModel extends CommonModel {
             $this->error = '请选择需要安装的模块！';
             return false;
         }
-        //目录权限检测
+        //模板目录权限检测
         if ($this->chechmod($this->templatePath) == false) {
             $this->error = '目录 ' . $this->templatePath . ' 没有可写权限！';
+            return false;
+        }
+        //静态资源目录权限检测
+        if (!file_exists($this->extresPath)) {
+            //创建目录
+            if (mkdir($this->extresPath, 0777, true) == false) {
+                $this->error = '目录 ' . $this->extresPath . ' 创建失败！';
+                return false;
+            }
+        }
+        //权限检测
+        if ($this->chechmod($this->extresPath) == false) {
+            $this->error = '目录 ' . $this->extresPath . ' 没有可写权限！';
             return false;
         }
         define("INSTALL", true);
@@ -52,6 +69,14 @@ class ModuleModel extends CommonModel {
         define("MENUID", 74);
         //加载配置
         $config = $this->getModuleInstallConfig($module);
+        //静态资源文件
+        if (file_exists($this->appPath . $module . "/Install/Extres/")) {
+            //创建目录
+            if (mkdir($this->extresPath . strtolower($config['module']) . '/', 0777, true) == false) {
+                $this->error = '目录 ' . $this->extresPath . strtolower($config['module']) . '/' . ' 创建失败！';
+                return false;
+            }
+        }
         //组合数据
         $data = array(
             "module" => $config['module'],
@@ -64,6 +89,8 @@ class ModuleModel extends CommonModel {
         if ($data) {
             //添加记录 
             if (false !== $this->add($data)) {
+                import("Dir");
+                $Dir = new Dir();
                 //判断是否有数据库安装脚本
                 if (file_exists($this->appPath . $module . '/Install/' . $module . '.sql')) {
                     //读取
@@ -86,10 +113,13 @@ class ModuleModel extends CommonModel {
                 }
                 //前台模板
                 if (file_exists($this->appPath . $module . "/Install/Template/")) {
-                    import("Dir");
-                    $Dir = new Dir();
                     //拷贝模板到前台模板目录中去
                     $Dir->copyDir($this->appPath . $module . "/Install/Template/", $this->templatePath);
+                }
+                //静态资源文件
+                if (file_exists($this->appPath . $module . "/Install/Extres/")) {
+                    //拷贝模板到前台模板目录中去
+                    $Dir->copyDir($this->appPath . $module . "/Install/Extres/", $this->extresPath . strtolower($config['module']) . '/');
                 }
                 return true;
             } else {
@@ -127,6 +157,8 @@ class ModuleModel extends CommonModel {
             $this->error = '模块卸载失败！';
             return false;
         }
+        import("Dir");
+        $Dir = new Dir();
         //删除权限
         M("Access")->where(array("g" => $module))->delete();
         //判断是否有数据库卸载脚本
@@ -145,17 +177,19 @@ class ModuleModel extends CommonModel {
             try {
                 include $this->appPath . $module . '/Uninstall/Extention.inc.php';
             } catch (Exception $exc) {
-                throw_exception("卸载模块 {$data['name']} 出现错误！");
+                //throw_exception("卸载模块 {$info['name']} 出现错误！");
             }
         }
         //前台模板
         if (file_exists($this->appPath . $module . "/Uninstall/Template/")) {
-            import("Dir");
-            $Dir = new Dir();
             //删除模块前台模板
             $Dir->delDir($this->templatePath . $module . DIRECTORY_SEPARATOR);
         }
-
+        //静态资源移除
+        if (file_exists($this->extresPath . strtolower($module) . '/')) {
+            //拷贝模板到前台模板目录中去
+            $Dir->delDir($this->extresPath . strtolower($module) . DIRECTORY_SEPARATOR);
+        }
         return true;
     }
 
