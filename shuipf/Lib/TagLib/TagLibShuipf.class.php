@@ -35,6 +35,8 @@ class TagLibShuipf extends TagLib {
     protected $tags = array(
         //内容标签
         'content' => array('attr' => 'action,cache,num,page,pagetp,pagefun,return,where,moreinfo,thumb,order,day,catid', 'level' => 3),
+        //sp模块调用标签
+        'spf' => array('attr' => 'module,action,cache,num,page,pagetp,pagefun,return,where,order', 'level' => 3),
         //Tags标签
         'tags' => array('attr' => 'action,cache,num,page,pagetp,pagefun,return,order,tag,tagid,where', 'level' => 3),
         //评论标签
@@ -442,6 +444,91 @@ class TagLibShuipf extends TagLib {
         $parseStr .= $this->tpl->parse($content);
         $content_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
+    }
+    
+    /**
+     * spf标签，用于调用模块扩展标签
+     * 标签：<spf></spf>
+     * 作用：调用非系统内置标签，例如安装新模块后，例如新模块（Demo）目录下TagLib/DemoTagLib.class.php(类名为DemoTagLib)
+     *          用法就是 <spf module="Demo" action="lists"> .. HTML ..</spf> lists表示类DemoTagLib中一个public方法。
+     * 用法示例：<spf module="Like"> .. HTML ..</spf>
+     * 参数说明：
+     * 	基本参数
+     * 		@mo                     对应模块（必填）
+     * 		@action		调用方法（必填）
+     * 		@page		当前分页号，默认$page，当传入该参数表示启用分页，一个页面只允许有一个page，多个标签使用多个page会造成不可预知的问题。
+     * 		@num		每次返回数据量
+     * 		@catid		栏目id（必填），列表页，内容页可以使用 $catid 获取当前栏目。
+     * 	公用参数：
+     * 		@cache		数据缓存时间，单位秒
+     * 		@pagefun                      分页函数，默认page
+     * 		@pagetp		分页模板，必须是变量传递
+     * 		@return		返回值变量名称，默认data
+     * @staticvar array $sp_iterateParseCache
+     * @param type $attr
+     * @param type $content
+     * @return array
+     */
+    public function _spf($attr, $content) {
+        static $sp_iterateParseCache = array();
+        //如果已经解析过，则直接返回变量值
+        $cacheIterateId = md5($attr . $content);
+        if (isset($sp_iterateParseCache[$cacheIterateId])) {
+            return $sp_iterateParseCache[$cacheIterateId];
+        }
+        //分析content标签的标签定义
+        $tag = $this->parseXmlAttr($attr, 'spf');
+        //模块
+        $tag['module'] = $mo = ucwords($tag['module']);
+        //每页显示总数
+        $tag['num'] = $num = (int) $tag['num'];
+        //当前分页参数
+        $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
+        //数据返回变量
+        $tag['return'] = $return = empty($tag['return']) ? "data" : $tag['return'];
+        //方法
+        $tag['action'] = $action = trim($tag['action']);
+        //sql语句的where部分
+        if ($tag['where']) {
+            $tag['where'] = $this->parseSqlCondition($tag['where']);
+        }
+        $tag['where'] = $where = $tag['where'];
+        //分页模板
+        $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
+        //分页函数，默认page
+        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
+        //拼接php代码
+        $parseStr = '<?php';
+        $parseStr .= '  import("' . $mo . 'TagLib", APP_PATH . C("APP_GROUP_PATH") . "/' . $mo . '/TagLib/"); ';
+        $parseStr .= '  $' . $mo . 'TagLib = get_instance_of("' . $mo . 'TagLib"); ';
+        //如果有传入$page参数，则启用分页。
+        if ($page) {
+            //进行信息数量统计 需要 action catid where
+            $parseStr .= ' $count = $' . $mo . 'TagLib->count(' . self::arr_to_html($tag) . ');' . "\r\n";
+            //分页函数
+            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
+            //设置分页模板，模板必须是变量传递
+            if ($pagetp) {
+                $parseStr .= ' $_page_->SetPager(\'default\', ' . $pagetp . ');';
+            }
+            $tag['count'] = '$count';
+            $tag['limit'] = '$_page_->firstRow.",".$_page_->listRows';
+            //总分页数，生成静态时需要
+            $parseStr .= ' $GLOBALS["Total_Pages"] = $_page_->Total_Pages;';
+            //显示分页导航
+            $parseStr .= ' $pages = $_page_->show("default");';
+            //分页总数
+            $parseStr .= ' $pagetotal = $_page_->Total_Pages;';
+            //总信息数
+            $parseStr .= ' $totalsize = $_page_->Total_Size;';
+        }
+        $parseStr .= ' if(method_exists($' . $mo . 'TagLib, "' . $action . '")){';
+        $parseStr .= ' $' . $return . ' = $' . $mo . 'TagLib->' . $action . '(' . self::arr_to_html($tag) . ');';
+        $parseStr .= ' }';
+        $parseStr .= ' ?>';
+        $parseStr .= $this->tpl->parse($content);
+        $sp_iterateParseCache[$cacheIterateId] = $parseStr;
+        return $sp_iterateParseCache[$cacheIterateId];
     }
 
     /**
