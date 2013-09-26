@@ -15,25 +15,6 @@ class AppframeBehavior extends Behavior {
         spl_autoload_register(array('AppframeBehavior', 'autoload'));
         //消除所有的magic_quotes_gpc转义
         Input::noGPC();
-        //初始化网站基本配置
-        $Config = F("Config");
-        if (false == $Config) {
-            $Config = D("Config")->config_cache();
-        }
-        //网站访问地址
-        define("SITEURL", $Config['siteurl']);
-        foreach ($Config as $k => $v) {
-            define('CONFIG_' . strtoupper($k), $v);
-        }
-        //取得已安装模块缓存
-        $App = F("App");
-        if (false == $App) {
-            //生成好缓存
-            D("Module")->module_cache();
-            $App = F("App");
-        }
-        //配置已安装模块列表
-        C("APP_GROUP_LIST", implode(",", $App));
     }
 
     /**
@@ -76,5 +57,3 @@ class AppframeBehavior extends Behavior {
     }
 
 }
-
-?>

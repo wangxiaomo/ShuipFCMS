@@ -8,8 +8,6 @@
 $tags = array();
 //应用初始化标签位
 $tags['app_init'][] = 'Appframe';
-//应用开始标签位
-$tags['app_begin'][] = 'Appcheck';
 //RABC
 $tags['appframe_rbac_init'][] = 'Rbac';
 //content_add_begin 内容添加开始 @data 添加内容原始数据
@@ -28,6 +26,10 @@ $tags['appframe_rbac_init'][] = 'Rbac';
 //comment_delete_end 删除评论结束 $ids 需要删除的评论ID
 //comment_check_begin 评论审核开始  需要审核的评论ID，和审核状态
 //comment_check_end 评论审核结束   需要审核的评论ID，和审核状态
+//====会员空间相关======
+//member_home_end 会员个人空间最后回调 HomeAction.class.php
+//member_wall_add_begin 添加留言开始 $data 留言数据
+//member_wall_add_end 留言数据 $data 留言数据，包含自增长ID
 
 
 return $tags;

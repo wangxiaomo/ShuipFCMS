@@ -6,11 +6,10 @@
  * Contact email:admin@abc3210.com
  */
 //开启调试模式
-define("APP_DEBUG", false);
+define("APP_DEBUG", true);
 define('SITE_PATH', getcwd());
 define('APP_NAME', 'Shuipf');
 define('APP_PATH', SITE_PATH . '/shuipf/');
-define("MODE_NAME", APP_NAME);
 define('MODE_PATH', APP_PATH . 'Lib/Mode/');
 define("RUNTIME_PATH", SITE_PATH . "/#runtime/");
 define('TEMPLATE_PATH', APP_PATH . 'Template/');
