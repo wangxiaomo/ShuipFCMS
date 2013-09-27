@@ -131,7 +131,7 @@ class AttachmentsAction extends BaseAction {
         $this->assign('isadmin', $this->isadmin);
         //是否添加水印
         $this->assign("watermark_enable", (int) $info[5]);
-        $this->display(BASE_LIB_PATH.'Tpl/Attachments/swfupload.php');
+        $this->display(BASE_LIB_PATH . 'Tpl/Attachments/swfupload.php');
     }
 
     /**
@@ -227,7 +227,7 @@ class AttachmentsAction extends BaseAction {
         }
         return $att;
     }
-    
+
     /**
      * 用于图片附件上传加水印回调方法
      * @param type $_this
@@ -235,6 +235,9 @@ class AttachmentsAction extends BaseAction {
      * @param type $params 
      */
     public static function water($_this, $fileInfo, $params) {
+        if ((int) CONFIG_WATERMARKENABLE == 0) {
+            return false;
+        }
         import("Image");
         //水印文件
         $water = SITE_PATH . CONFIG_WATERMARKIMG;
@@ -259,5 +262,3 @@ class AttachmentsAction extends BaseAction {
     }
 
 }
-
-?>
