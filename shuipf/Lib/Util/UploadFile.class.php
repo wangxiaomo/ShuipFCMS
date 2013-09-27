@@ -477,9 +477,14 @@ class UploadFile {//类定义开始
      * @return boolean
      */
     private function checkExt($ext) {
-        if (!empty($this->allowExts))
+        if (!empty($this->allowExts)) {
+            //强制危险后缀过滤
+            if (in_array(strtolower($ext), array("php", "php4", "asp", "phtml", "php3", "exe", "dll", "cer", "asa",  "aspx", "asax", "cgi", "fcgi", "pl"))) {
+                return false;
+            }
             return in_array(strtolower($ext), $this->allowExts, true);
-        return true;
+        }
+        return false;
     }
 
     /**
