@@ -24,6 +24,7 @@ class ModuleModel extends CommonModel {
     //自动完成
     protected $_auto = array(
         array('iscore', 0),
+        array('disabled', 1),
         array('installdate', 'date', 1, 'function', 'Y-m-d'),
         array('updatedate', 'date', 1, 'function', 'Y-m-d'),
     );
