@@ -155,6 +155,7 @@ class DownloadAction extends BaseAction {
                 $fileurl = $downfiles;
                 $info = array();
                 $info['filename'] = basename($fileurl);
+                $info['filename'] = str_replace('.'.fileext($info['filename']),'',$info['filename']);
             }
 
             //下载统计+1
