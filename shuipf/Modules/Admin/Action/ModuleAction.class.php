@@ -28,6 +28,16 @@ class ModuleAction extends AdminbaseAction {
                 $dirs_arr[] = $path;
             }
         }
+        //取得已安装模块列表
+        $modulesdata = $this->module->select();
+        foreach ($modulesdata as $v) {
+            $modules[$v['module']] = $v;
+            //检查是否系统模块，如果是，直接不显示
+            if($v['iscore']){
+                $key = array_keys($dirs_arr,$v['module']);
+                unset($dirs_arr[$key[0]]);
+            }
+        }
         //数量
         $count = count($dirs_arr);
         //把一个数组分割为新的数组块
@@ -36,11 +46,6 @@ class ModuleAction extends AdminbaseAction {
         $page = max(I('get.' . C('VAR_PAGE'), 0, 'intval'), 1);
         //根据分页取到对应的模块列表数据
         $directory = $dirs_arr[intval($page - 1)];
-        //取得已安装模块列表
-        $modulesdata = $this->module->select();
-        foreach ($modulesdata as $v) {
-            $modules[$v['module']] = $v;
-        }
         //读取配置
         $moduleList = array();
         foreach ($directory as $module) {
