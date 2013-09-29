@@ -19,6 +19,9 @@ function posid($field, $value) {
             }
             //颜色选择为隐藏域 在这里进行取值
             $textcontent['style'] = $_POST['style_color'] ? strip_tags($_POST['style_color']) : '';
+            if ($_POST['style_font_weight']) {
+                $textcontent['style'] = $textcontent['style'] . ';' . strip_tags($_POST['style_font_weight']);
+            }
             $textcontent = serialize($textcontent);
             foreach ($value as $r) {
                 if ($r != '-1') {
@@ -40,6 +43,11 @@ function posid($field, $value) {
                 if ($_value['isposition']) {
                     $textcontent[$_key] = $this->data[$_key];
                 }
+            }
+            //颜色选择为隐藏域 在这里进行取值
+            $textcontent['style'] = $_POST['style_color'] ? strip_tags($_POST['style_color']) : '';
+            if ($_POST['style_font_weight']) {
+                $textcontent['style'] = $textcontent['style'] . ';' . strip_tags($_POST['style_font_weight']);
             }
             //颜色选择为隐藏域 在这里进行取值
             $position_data_db->position_update($this->id, $this->modelid, $catid, $posids, $textcontent);
