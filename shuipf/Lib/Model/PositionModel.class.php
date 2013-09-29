@@ -62,20 +62,14 @@ class PositionModel extends CommonModel {
     private function position_del($catid, $id, $input_posid) {
         $array = array();
         $pos_data = M("Position_data");
-
         //查找已存在推荐位
-        $r = $pos_data->where(array('id' => $id, 'catid' => $catid))->find();
-        if (!$r) {
+        $olPosid = $pos_data->where(array('id' => $id, 'catid' => $catid))->getField('posid', true);
+        if (empty($olPosid)) {
             return false;
         }
-        foreach ($r as $v) {
-            $array[] = $v['posid'];
-        }
-
         //差集计算，需要删除的推荐
-        $real_posid = implode(',', array_diff($array, $input_posid));
-
-        if (!$real_posid) {
+        $real_posid = array_diff($olPosid, $input_posid);
+        if (empty($real_posid)) {
             return false;
         }
         $Category = F("Category");
