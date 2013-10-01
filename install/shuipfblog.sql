@@ -678,10 +678,10 @@ INSERT INTO `shuipfcms_menu` VALUES ('129', '77', 'Contents', 'Position', 'publi
 INSERT INTO `shuipfcms_menu` VALUES ('130', '77', 'Contents', 'Position', 'add', '', '1', '1', '添加推荐位', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('131', '77', 'Contents', 'Position', 'edit', '', '1', '0', '编辑', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('132', '77', 'Contents', 'Position', 'delete', '', '1', '0', '删除推荐位', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('133', '92', 'Member', 'Member_group', 'add', '', '1', '1', '添加会员组', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('134', '92', 'Member', 'Member_group', 'edit', '', '1', '0', '编辑', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('135', '92', 'Member', 'Member_group', 'delete', '', '1', '0', '删除', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('136', '92', 'Member', 'Member_group', 'sort', '', '1', '0', '排序', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('133', '92', 'Member', 'Group', 'add', '', '1', '1', '添加会员组', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('134', '92', 'Member', 'Group', 'edit', '', '1', '0', '编辑', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('135', '92', 'Member', 'Group', 'delete', '', '1', '0', '删除', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('136', '92', 'Member', 'Group', 'sort', '', '1', '0', '排序', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('137', '89', 'Member', 'Member', 'add', '', '1', '1', '添加会员', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('138', '89', 'Member', 'Member', 'edit', '', '1', '0', '修改', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('139', '89', 'Member', 'Member', 'delete', '', '1', '0', '删除', '', '0');
