@@ -17,6 +17,10 @@ class content_input {
     protected $model = array();
     //数据
     protected $data = array();
+    //处理后的数据
+    protected $infoData = array();
+    //内容模型对象
+    protected $ContentModel = NULL;
     //最近错误信息
     protected $error = '';
     // 数据表名（不包含表前缀）
@@ -68,16 +72,8 @@ class content_input {
         //栏目id
         $this->catid = (int) $data['catid'];
         //获取内容模型对象
-        $ContentModel = ContentModel::getInstance($this->modelid);
-        $info = array();
+        $this->ContentModel = ContentModel::getInstance($this->modelid);
         foreach ($this->fields as $field => $fieldInfo) {
-            //特殊分页字段
-            //此处还需优化，最好是交给字段input.inc.php处理
-            if ('pages' == $field) {
-                $info[$ContentModel->getRelationName()]['paginationtype'] = $this->data['paginationtype'];
-                $info[$ContentModel->getRelationName()]['maxcharperpage'] = $this->data['maxcharperpage'];
-                unset($data['paginationtype'], $data['maxcharperpage']);
-            }
             //如果是更新状态下，没有数据的，跳过
             if ($type == 2) {
                 if (!isset($this->data[$field])) {
@@ -111,19 +107,19 @@ class content_input {
             }
             //进行长度验证 
             if ($minlength) {
-                $ContentModel->addValidate(array($field, 'require', $name . ' 不能为空！', $condition, 'regex', 3), $issystem);
-                $ContentModel->addValidate(array($field, 'isMin', $name . ' 不得小于 ' . $minlength . "个字符！", $condition, 'function', 3, array($minlength)), $issystem);
+                $this->ContentModel->addValidate(array($field, 'require', $name . ' 不能为空！', $condition, 'regex', 3), $issystem);
+                $this->ContentModel->addValidate(array($field, 'isMin', $name . ' 不得小于 ' . $minlength . "个字符！", $condition, 'function', 3, array($minlength)), $issystem);
             }
             if ($maxlength) {
-                $ContentModel->addValidate(array($field, 'isMax', $name . ' 不得多于 ' . $maxlength . "个字符！", $condition, 'function', 3, array($maxlength)), $issystem);
+                $this->ContentModel->addValidate(array($field, 'isMax', $name . ' 不得多于 ' . $maxlength . "个字符！", $condition, 'function', 3, array($maxlength)), $issystem);
             }
             //数据校验正则
             if ($pattern) {
-                $ContentModel->addValidate(array($field, $pattern, $errortips, 2, 'regex', 3), $issystem);
+                $this->ContentModel->addValidate(array($field, $pattern, $errortips, 2, 'regex', 3), $issystem);
             }
             //值唯一
             if ($fieldInfo['isunique']) {
-                $ContentModel->addValidate(array($field, '', $name . " 该值必须不重复！", 2, 'unique', 3), $issystem);
+                $this->ContentModel->addValidate(array($field, '', $name . " 该值必须不重复！", 2, 'unique', 3), $issystem);
             }
 
             //字段类型
@@ -193,25 +189,25 @@ class content_input {
             }
             //把系统字段和模型字段分开
             if ($issystem) {
-                $info[$field] = $value;
+                $this->infoData[$field] = $value;
             } else {
-                $info[$ContentModel->getRelationName()][$field] = $value;
+                $this->infoData[$this->ContentModel->getRelationName()][$field] = $value;
             }
         }
         //取得标题颜色
         if (isset($_POST['style_color'])) {
             //颜色选择为隐藏域 在这里进行取值
-            $info['style'] = $_POST['style_color'] ? strip_tags($_POST['style_color']) : '';
+            $this->infoData['style'] = $_POST['style_color'] ? strip_tags($_POST['style_color']) : '';
             //标题加粗等样式
             if (isset($_POST['style_font_weight'])) {
-                $info['style'] = $info['style'] . ($_POST['style_font_weight'] ? ';' : '') . strip_tags($_POST['style_font_weight']);
+                $this->infoData['style'] = $this->infoData['style'] . ($_POST['style_font_weight'] ? ';' : '') . strip_tags($_POST['style_font_weight']);
             }
         }
         //如果$data还有存在模型字段以外的值，进行合并
         if (!empty($data)) {
-            $info = array_merge($data, $info);
+            $this->infoData = array_merge($data, $this->infoData);
         }
-        return $info;
+        return $this->infoData;
     }
 
     /**
