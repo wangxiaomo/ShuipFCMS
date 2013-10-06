@@ -11,15 +11,13 @@ class ManagementAction extends AdminbaseAction {
 
     function _initialize() {
         parent::_initialize();
-
         $this->UserMod = D("User");
     }
 
-    /**
-     * 管理员列表
-     */
+    //管理员列表
     public function manager() {
-        $role_id = $this->_get("role_id");
+        //角色id
+        $role_id = I('get.role_id');
         $UserView = D("UserView");
         if (empty($role_id)) {
             $count = $UserView->count();
@@ -35,40 +33,22 @@ class ManagementAction extends AdminbaseAction {
         $this->display();
     }
 
-    /**
-     * 编辑信息
-     */
+    //编辑信息
     public function edit() {
-        $id = (int) $this->_get("id") == 0 ? (int) $this->_post("id") : (int) $this->_get("id");
-        if ($id < 1) {
-            $this->error("信息有误！");
+        $id = I('request.id', 0, 'intval');
+        if (empty($id)) {
+            $this->error("请选择需要编辑的信息！");
         }
         if ($id == 1) {
             $this->error("该帐号不支持非本人修改！");
         }
         //判断是否修改本人，在此方法，不能修改本人相关信息
         if (AppframeAction::$Cache['uid'] == $id) {
-            $this->error("操作非法！");
+            $this->error("不能修改本人信息！");
         }
         if (IS_POST) {
-            $role_id = (int) $this->_post("role_id");
-            $data = $this->UserMod->create();
-            if ($data) {
-                $r = $this->UserMod->where(array("id" => $data['id']))->getField('id,verify');
-                $password = $this->_post("password");
-                if (!empty($password)) {
-                    $pass = $this->UserMod->encryption($id, $this->_post("password"), $r[$data['id']]);
-                    $data = array_merge($data, array("password" => $pass));
-                } else {
-                    unset($data['password']);
-                }
-                if ($this->UserMod->save($data) !== false) {
-                    M("Role_user")->where(array("user_id" => $id))->save(array("role_id" => $role_id, "user_id" => $id));
-                    $jumpUrl = U("Management/manager");
-                    $this->success("更新成功！",$jumpUrl);
-                } else {
-                    $this->error("更新失败！");
-                }
+            if (false !== $this->UserMod->editUser($_POST)) {
+                $this->success("更新成功！", U("Management/manager"));
             } else {
                 $this->error($this->UserMod->getError());
             }
@@ -81,23 +61,11 @@ class ManagementAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 添加管理员
-     */
+    //添加管理员
     public function adminadd() {
         if (IS_POST) {
-            $data = $this->UserMod->create();
-            if ($data) {
-                //生成随机认证码
-                $data['verify'] = genRandomString(6);
-                //利用认证码和明文密码加密得到加密后的
-                $data['password'] = $this->UserMod->encryption(0, $data['password'], $data['verify']);
-                $id = $this->UserMod->add($data);
-                if ($id) {
-                    $this->success("添加管理员成功！",U('Management/manager'));
-                } else {
-                    $this->error("添加管理员失败！");
-                }
+            if ($this->UserMod->addUser($_POST)) {
+                $this->success("添加管理员成功！", U('Management/manager'));
             } else {
                 $this->error($this->UserMod->getError());
             }
@@ -108,28 +76,21 @@ class ManagementAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 管理员删除
-     */
+    //管理员删除
     public function delete() {
-        $id = $this->_get("id");
+        $id = I('get.id');
         if (empty($id)) {
             $this->error("没有指定删除对象！");
-        }
-        if ((int) $id == 1) {
-            $this->error("该管理员不能被删除！");
         }
         if ((int) $id == AppframeAction::$Cache["uid"]) {
             $this->error("你不能删除你自己！");
         }
-        if ($this->UserMod->delete($id)) {
+        //执行删除
+        if ($this->UserMod->delUser($id)) {
             $this->success("删除成功！");
-            exit;
         } else {
-            $this->error("删除失败！");
+            $this->error($this->UserMod->getError());
         }
     }
 
 }
-
-?>

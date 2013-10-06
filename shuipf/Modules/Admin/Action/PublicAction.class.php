@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * 后台模块公共方法
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
@@ -32,7 +33,7 @@ class PublicAction extends AdminbaseAction {
         $password = I("post.password","","trim");
         $code = I("post.code","","trim");
         if (empty($username) || empty($password)) {
-            $this->error("用户名或者密码不能为空，请从新输入！", U("Public/login"));
+            $this->error("用户名或者密码不能为空，请重新输入！", U("Public/login"));
         }
         if (empty($code)) {
             $this->error("请输入验证码！", U("Public/login"));
@@ -117,5 +118,3 @@ class PublicAction extends AdminbaseAction {
     }
 
 }
-
-?>

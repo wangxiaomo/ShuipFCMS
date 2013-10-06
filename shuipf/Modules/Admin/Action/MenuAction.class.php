@@ -136,21 +136,21 @@ class MenuAction extends AdminbaseAction {
     public function public_changyong() {
         if (IS_POST) {
             $menu = $this->_post("menu");
-            if (count($menu) > 15) {
+            if(count($menu) > 15){
                 $this->error("常用菜单设置不宜超过15个！");
             }
             //先删除旧的
-            M("AdminPanel")->where(array("userid" => AppframeAction::$Cache['uid']))->delete();
+            M("AdminPanel")->where(array("userid"=>  AppframeAction::$Cache['uid']))->delete();
             if (empty($menu)) {
                 $this->success('操作成功！');
             }
-            foreach ($menu as $k => $menuid) {
-                $info = M("Menu")->where(array("id" => $menuid))->find();
-                if ($info) {
+            foreach($menu as $k=>$menuid){
+                $info = M("Menu")->where(array("id"=>$menuid))->find();
+                if($info){
                     $app = $info['app'];
                     $model = $info['model'];
                     $action = $info['action'];
-                    $url = U("$app/$model/$action", $info['data'] . "&menuid=$menuid");
+                    $url = U("$app/$model/$action",$info['data']."&menuid=$menuid");
                     M("AdminPanel")->add(array(
                         "menuid" => $menuid,
                         "userid" => AppframeAction::$Cache['uid'],
@@ -162,25 +162,25 @@ class MenuAction extends AdminbaseAction {
             }
             $this->success("添加成功！");
         } else {
-            if (session(C('ADMIN_AUTH_KEY'))) {
-                $data = M("Menu")->where(array("type" => 1, "status" => 1))->select();
-            } else {
+            if(session(C('ADMIN_AUTH_KEY'))){
+                $data = M("Menu")->where(array("type"=>1,"status"=>1))->select();
+            }else{
                 $data = array();
                 $roleid = session('roleid');
-                $access = M("Access")->where(array("role_id" => $roleid, "status" => 1))->select();
-                if ($access) {
-                    foreach ($access as $r) {
-                        $info = M("Menu")->where(array("app" => $r['g'], "model" => $r['m'], "action" => $r['a']))->find();
-                        if ($info) {
+                $access = M("Access")->where(array("role_id"=>$roleid,"status"=>1))->select();
+                if($access){
+                    foreach($access as $r){
+                        $info = M("Menu")->where(array("app"=>$r['g'],"model"=>$r['m'],"action"=>$r['a']))->find();
+                        if($info){
                             $data[] = $info;
                         }
                     }
-                } else {
+                }else{
                     $data = array();
                 }
             }
-            $Panel_data = M("AdminPanel")->where(array("userid" => AppframeAction::$Cache['uid']))->field("menuid")->select();
-            foreach ($Panel_data as $r) {
+            $Panel_data = M("AdminPanel")->where(array("userid"=>  AppframeAction::$Cache['uid']))->field("menuid")->select();
+            foreach($Panel_data as $r){
                 $Panel[] = $r['menuid'];
             }
             $dataArr = array();
@@ -192,7 +192,7 @@ class MenuAction extends AdminbaseAction {
             }
             $this->assign("data", $dataArr);
             $this->assign("panel", $Panel);
-            $this->assign("name", $menuName);
+            $this->assign("name",$menuName);
             $this->display();
         }
     }

@@ -1,16 +1,15 @@
 <?php
 
-/* * 
+/**
  * 系统权限配置，用户角色管理
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class RbacAction extends AdminbaseAction {
 
     protected $User, $Role, $Access, $Role_user;
 
-    function _initialize() {
+    protected function _initialize() {
         parent::_initialize();
         $this->Role = D("Role");
     }
@@ -48,7 +47,7 @@ class RbacAction extends AdminbaseAction {
      * 删除角色
      */
     public function roledelete() {
-        $id = (int) $this->_get("id");
+        $id = I('get.id', 0, 'intval');
         if ($id == 1) {
             $this->error("超级管理员角色不能被删除！");
         }
@@ -64,9 +63,9 @@ class RbacAction extends AdminbaseAction {
      * 编辑角色
      */
     public function roleedit() {
-        $id = (int) $this->_get("id");
-        if ($id == 0) {
-            $id = (int) $this->_post("id");
+        $id = I('request.id', 0, 'intval');
+        if (empty($id)) {
+            $this->error('请选择需要编辑的角色！');
         }
         if ($id == 1) {
             $this->error("超级管理员角色不能被修改！");
@@ -98,7 +97,7 @@ class RbacAction extends AdminbaseAction {
     public function authorize() {
         $this->Access = D("Access");
         if (IS_POST) {
-            $roleid = (int) $this->_post("roleid");
+            $roleid = I('post.roleid', 0, 'intval');
             if (!$roleid) {
                 $this->error("需要授权的角色不存在！");
             }
@@ -144,7 +143,7 @@ class RbacAction extends AdminbaseAction {
             }
         } else {
             //角色ID
-            $roleid = (int) $this->_get("id");
+            $roleid = I('get.id', 0, 'intval');
             if (!$roleid) {
                 $this->error("参数错误！");
             }
@@ -159,7 +158,7 @@ class RbacAction extends AdminbaseAction {
                 $result[$n]['checked'] = ($this->is_checked($t, $roleid, $priv_data)) ? ' checked' : '';
                 $result[$n]['level'] = $this->get_level($t['id'], $result);
                 $result[$n]['parentid_node'] = ($t['parentid']) ? ' class="child-of-node-' . $t['parentid'] . '"' : '';
-                $result[$n]['tip'] = $t['type'] == 0 ?"(菜单项)":"";
+                $result[$n]['tip'] = $t['type'] == 0 ? "(菜单项)" : "";
             }
             $str = "<tr id='node-\$id' \$parentid_node>
                            <td style='padding-left:30px;'>\$spacer<input type='checkbox' name='menuid[]' value='\$id' level='\$level' \$checked onclick='javascript:checknode(this);'> \$name\$tip</td>
@@ -178,7 +177,7 @@ class RbacAction extends AdminbaseAction {
      */
     public function setting_cat_priv() {
         if (IS_POST) {
-            $roleid = $this->_post("roleid");
+            $roleid = I('post.roleid', 0, 'intval');
             $priv = array();
             foreach ($_POST['priv'] as $k => $v) {
                 foreach ($v as $e => $q) {
@@ -203,7 +202,7 @@ class RbacAction extends AdminbaseAction {
             $this->success("权限赋予成功！");
         } else {
             import('Tree');
-            $roleid = $this->_get("roleid");
+            $roleid = I('get.roleid', 0, 'intval');
             $categorys = F("Category");
             $tree = new Tree();
             $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
@@ -273,9 +272,9 @@ class RbacAction extends AdminbaseAction {
         }
         $data['role_id'] = $roleid;
         $data["g"] = $data['app'];
-        if($type == 0) {
-            $data["m"] = $data['model'].$menuid;
-            $data["a"] = $data['action'].$menuid;
+        if ($type == 0) {
+            $data["m"] = $data['model'] . $menuid;
+            $data["a"] = $data['action'] . $menuid;
         } else {
             $data["m"] = $data['model'];
             $data["a"] = $data['action'];
@@ -324,5 +323,3 @@ class RbacAction extends AdminbaseAction {
     }
 
 }
-
-?>

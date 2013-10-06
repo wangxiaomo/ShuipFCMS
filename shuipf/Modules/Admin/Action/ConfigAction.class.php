@@ -89,17 +89,17 @@ class ConfigAction extends AdminbaseAction {
                 unset($_POST[C('TOKEN_NAME')]);
             }
             //默认值
-            $_POST['DEFAULT_GROUP'] = $_POST['DEFAULT_GROUP']?$_POST['DEFAULT_GROUP']:"Contents";
-            $_POST['TOKEN_ON'] = (int)$_POST['TOKEN_ON']?true:false;
-            $_POST['URL_MODEL'] = isset($_POST['URL_MODEL'])?(int)$_POST['URL_MODEL']:0;
-            $_POST['DEFAULT_TIMEZONE'] = $_POST['DEFAULT_TIMEZONE']?$_POST['DEFAULT_TIMEZONE']:"PRC";
-            $_POST['DATA_CACHE_TYPE'] =$_POST['DATA_CACHE_TYPE']?$_POST['DATA_CACHE_TYPE']:"File";
-            $_POST['DEFAULT_LANG'] = $_POST['DEFAULT_LANG']?$_POST['DEFAULT_LANG']:"zh-cn";
-            $_POST['DEFAULT_AJAX_RETURN'] = $_POST['DEFAULT_AJAX_RETURN']?$_POST['DEFAULT_AJAX_RETURN']:"JSON";
-            $_POST['SESSION_OPTIONS'] = $_POST['SESSION_OPTIONS']?$_POST['SESSION_OPTIONS']:array();
-            $_POST['URL_PATHINFO_DEPR'] = $_POST['URL_PATHINFO_DEPR']?$_POST['URL_PATHINFO_DEPR']:"/";
+            $_POST['DEFAULT_GROUP'] = $_POST['DEFAULT_GROUP'] ? $_POST['DEFAULT_GROUP'] : "Contents";
+            $_POST['TOKEN_ON'] = (int) $_POST['TOKEN_ON'] ? true : false;
+            $_POST['URL_MODEL'] = isset($_POST['URL_MODEL']) ? (int) $_POST['URL_MODEL'] : 0;
+            $_POST['DEFAULT_TIMEZONE'] = $_POST['DEFAULT_TIMEZONE'] ? $_POST['DEFAULT_TIMEZONE'] : "PRC";
+            $_POST['DATA_CACHE_TYPE'] = $_POST['DATA_CACHE_TYPE'] ? $_POST['DATA_CACHE_TYPE'] : "File";
+            $_POST['DEFAULT_LANG'] = $_POST['DEFAULT_LANG'] ? $_POST['DEFAULT_LANG'] : "zh-cn";
+            $_POST['DEFAULT_AJAX_RETURN'] = $_POST['DEFAULT_AJAX_RETURN'] ? $_POST['DEFAULT_AJAX_RETURN'] : "JSON";
+            $_POST['SESSION_OPTIONS'] = $_POST['SESSION_OPTIONS'] ? $_POST['SESSION_OPTIONS'] : array();
+            $_POST['URL_PATHINFO_DEPR'] = $_POST['URL_PATHINFO_DEPR'] ? $_POST['URL_PATHINFO_DEPR'] : "/";
             //URL区分大小写设置
-            $_POST['URL_CASE_INSENSITIVE'] = (int)$_POST['URL_CASE_INSENSITIVE']?true:false;
+            $_POST['URL_CASE_INSENSITIVE'] = (int) $_POST['URL_CASE_INSENSITIVE'] ? true : false;
             try {
                 $filename = SITE_PATH . '/shuipf/Conf/addition.php';
                 file_exists($filename) or touch($filename);
@@ -135,5 +135,3 @@ class ConfigAction extends AdminbaseAction {
     }
 
 }
-
-?>

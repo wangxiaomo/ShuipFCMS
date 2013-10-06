@@ -76,23 +76,6 @@ class Think {
         // 加载框架底层语言包
         L(include THINK_PATH . 'Lang/' . strtolower(C('DEFAULT_LANG')) . '.php');
 
-        // 加载模式系统行为定义
-        if (C('APP_TAGS_ON')) {
-            if (isset($mode['extends'])) {
-                C('extends', is_array($mode['extends']) ? $mode['extends'] : include $mode['extends']);
-            } else { // 默认加载系统行为扩展定义
-                C('extends', include THINK_PATH . 'Conf/tags.php');
-            }
-        }
-
-        // 加载应用行为定义
-        if (isset($mode['tags'])) {
-            C('tags', is_array($mode['tags']) ? $mode['tags'] : include $mode['tags']);
-        } elseif (is_file(CONF_PATH . 'tags.php')) {
-            // 默认加载项目配置目录的tags文件定义
-            C('tags', include CONF_PATH . 'tags.php');
-        }
-
         $compile = '';
         // 读取核心编译文件列表
         if (isset($mode['core'])) {
@@ -170,6 +153,12 @@ class Think {
         }
         //配置已安装模块列表
         C("APP_GROUP_LIST", implode(",", $App));
+        //获取行为列表
+        $behaviorCache = F('Behavior');
+        if (empty($behaviorCache)) {
+            $behaviorCache = D('Behavior')->behavior_cache();
+        }
+        C('tags', $behaviorCache);
         //###########################################
 
         if (APP_DEBUG) {
@@ -275,7 +264,8 @@ class Think {
                     self::$_instance[$identify] = call_user_func_array(array(&$o, $method));
                 else
                     self::$_instance[$identify] = $o;
-            } else
+            }
+            else
                 halt(L('_CLASS_NOT_EXIST_') . ':' . $class);
         }
         return self::$_instance[$identify];

@@ -1,11 +1,10 @@
 <?php
 
-/* * 
+/**
  * 敏感词管理
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class CensorAction extends AdminbaseAction {
 
     public function _initialize() {
@@ -154,5 +153,3 @@ class CensorAction extends AdminbaseAction {
     }
 
 }
-
-?>

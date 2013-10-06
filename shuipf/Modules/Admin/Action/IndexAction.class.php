@@ -31,11 +31,13 @@ class IndexAction extends AdminbaseAction {
                     } catch (Exception $exc) {
                         
                     }
-                    try{
+                    try {
                         $cache = Cache::getInstance();
                         $cache->clear();
-                    }catch (Exception $exc) {}
-                    
+                    } catch (Exception $exc) {
+                        
+                    }
+
                     $modules = array(
                         array('name' => "菜单，模型，栏目缓存更新成功！", 'function' => 'site_cache', 'param' => ''),
                         array('name' => "模型字段缓存更新成功！", 'function' => 'model_field_cache', 'param' => ''),
@@ -96,5 +98,3 @@ class IndexAction extends AdminbaseAction {
     }
 
 }
-
-?>
