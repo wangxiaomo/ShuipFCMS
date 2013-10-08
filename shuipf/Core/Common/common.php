@@ -589,30 +589,14 @@ function tag($tag, &$params = NULL) {
     if ($tags) {
         if (APP_DEBUG) {
             G($tag . 'Start');
-            trace('[ 行为标签 ' . $tag . ' ] --START--', '', 'INFO');
+            trace('[ 行为标签 ' . $tag . ' 开始执行 ] --START--', '', 'INFO');
         }
         // 执行扩展
         foreach ($tags as $id => $behavior) {
-            switch ($behavior['_type']) {
-                //规则行为
-                case 1:
-                    D('Behavior')->execution($behavior, $params);
-                    break;
-                //文件行为
-                case 2:
-                    $name = $behavior['behavior'];
-                    if (require_cache($behavior['phpfile'])) {
-                        B($name, $params);
-                    } else {
-                        if (APP_DEBUG) { // 记录行为的执行日志
-                            trace('[ 行为规则 ' . $name . ' 执行错误] --File:'.$behavior['phpfile'], '', 'INFO');
-                        }
-                    }
-                    break;
-            }
+            D('Behavior')->behaviorDispatch($behavior, $params);
         }
         if (APP_DEBUG) { // 记录行为的执行日志
-            trace('[ 行为标签 ' . $tag . ' ] --END-- [ RunTime:' . G($tag . 'Start', $tag . 'End', 6) . 's ]', '', 'INFO');
+            trace('[ 行为标签 ' . $tag . ' 执行结束 ] --END-- [ RunTime:' . G($tag . 'Start', $tag . 'End', 6) . 's ]', '', 'INFO');
         }
     } else { // 未执行任何行为 返回false
         return false;

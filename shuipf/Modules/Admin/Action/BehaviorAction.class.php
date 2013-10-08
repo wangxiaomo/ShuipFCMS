@@ -39,7 +39,7 @@ class BehaviorAction extends AdminbaseAction {
         if (IS_POST) {
             $post = I('post.', '', '');
             if ($this->behavior->addBehavior($post)) {
-                $this->success('添加成功！', U('Behavior/index'));
+                $this->success('添加成功，需要更新缓存后生效！', U('Behavior/index'));
             } else {
                 $this->error($this->behavior->getError());
             }
@@ -54,7 +54,7 @@ class BehaviorAction extends AdminbaseAction {
         if (IS_POST) {
             $post = I('post.', '', '');
             if ($this->behavior->editBehavior($post)) {
-                $this->success('修改成功！', U('Behavior/index'));
+                $this->success('修改成功，需要更新缓存后生效！', U('Behavior/index'));
             } else {
                 $this->error($this->behavior->getError());
             }
@@ -83,7 +83,7 @@ class BehaviorAction extends AdminbaseAction {
         }
         //删除
         if ($this->behavior->delBehaviorById($id)) {
-            $this->success('行为删除成功！', U('Behavior/index'));
+            $this->success('行为删除成功，需要更新缓存后生效！', U('Behavior/index'));
         } else {
             $error = $this->behavior->getError();
             $this->error($error ? $error : '删除失败！');
@@ -98,7 +98,7 @@ class BehaviorAction extends AdminbaseAction {
         }
         //状态转换
         if ($this->behavior->statusBehaviorById($id)) {
-            $this->success('行为状态转换成功！', U('Behavior/index'));
+            $this->success('行为状态转换成功，需要更新缓存后生效！', U('Behavior/index'));
         } else {
             $error = $this->behavior->getError();
             $this->error($error ? $error : '状态转换失败！');
