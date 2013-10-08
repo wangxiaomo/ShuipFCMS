@@ -54,6 +54,14 @@
               <span class="gray">输入行为名称</span></td>
           </tr>
           <tr>
+            <th>行为类型</th>
+            <td><select name="type">
+					<option value="1" <if condition="$info['type'] eq 1 ">selected</if>>控制器</option>
+                    <option value="2" <if condition="$info['type'] eq 2 ">selected</if>>视图</option>
+                    </select>
+                    <span class="gray">控制器表示是在程序逻辑中的，视图，表示是在模板渲染过程中的！</span></td>
+          </tr>
+          <tr>
             <th>行为描述</th>
             <td><textarea name="remark" rows="2" cols="20" id="remark" class="inputtext" style="height:100px;width:500px;">{$info.remark}</textarea></td>
           </tr>
@@ -75,7 +83,7 @@
     <div class="btn_wrap">
       <div class="btn_wrap_pd">
         <input type="hidden" name="id" value="{$info.id}"/>
-        <button class="btn btn_submit mr10 " type="submit">修改</button>
+        <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">修改</button>
       </div>
     </div>
   </form>

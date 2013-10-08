@@ -13,6 +13,7 @@ class BehaviorModel extends RelationModel {
         array('name', '/^[a-zA-Z][a-zA-Z0-9_]+$/i', '行为标识只支持英文！', 0, 'regex', 3),
         array('name', '', '该行为标识已经存在！', 0, 'unique', 1),
         array('title', 'require', '行为名称不能为空！'),
+        array('type', 'require', '行为类型不能为空！'),
     );
     //array(填充字段,填充内容,[填充条件,附加规则])
     protected $_auto = array(
@@ -310,6 +311,16 @@ class BehaviorModel extends RelationModel {
 
     /**
      * 模块安装，安装行为规则
+     * 在模块配置文件中增加 tags 例如：
+     *  'tags' => array(
+     *                  'login_end' => array(
+     *                                    'title' => '会员登陆成功后行为',
+     *                                    'remark' => '会员登陆成功后行为',
+     *                                    'type' => 1,
+     *                                    '具体的规则1',
+     *                                    '具体的规则2',
+     *                   ),
+     *  )
      * @param type $module 模块标识
      * @param type $behaviorRule 对应规则
      * @return boolean
@@ -328,6 +339,8 @@ class BehaviorModel extends RelationModel {
                 $title = $ruleList['title'];
                 //行为描述
                 $remark = $ruleList['remark'];
+                //行为类型
+                $type = (int) $ruleList['type'];
                 //不存在这个行为，创建
                 $behaviorId = $this->add(array(
                     'name' => $behavior,
@@ -347,7 +360,7 @@ class BehaviorModel extends RelationModel {
             }
             //规则
             $ruleAll = array();
-            unset($ruleList['title'], $ruleList['remark']);
+            unset($ruleList['title'], $ruleList['remark'], $ruleList['type']);
             foreach ($ruleList as $key => $rule) {
                 if (!empty($rule)) {
                     $ruleAll[] = array(

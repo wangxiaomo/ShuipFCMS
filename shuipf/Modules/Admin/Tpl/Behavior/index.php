@@ -34,8 +34,9 @@
         <col width="200">
         <col width="200">
         <col>
-        <col width="80">
-        <col width="200">
+        <col width="60">
+        <col width="60">
+        <col width="120">
         </colgroup>
         <thead>
           <tr>
@@ -43,6 +44,7 @@
             <td>行为标识</td>
             <td>行为名称</td>
             <td align="center">规则说明</td>
+            <td align="center">类型</td>
             <td align="center">状态</td>
             <td align="center">操作</td>
           </tr>
@@ -53,6 +55,7 @@
             <td>{$vo.name}</td>
             <td>{$vo.title}</td>
             <td>{$vo.remark}</td>
+            <td align="center"><if condition="$vo['type'] eq 1">控制器<elseif condition="$vo['type'] eq 2"/>视图</if></td>
             <td align="center"><if condition="$vo['status']">正常<else /><font color="#FF0000">禁用</font></if></td>
             <td align="center"><a href="{:U('Behavior/edit',array('id'=>$vo['id']))}">编辑</a> | <if condition="$vo['status']"><a href="{:U('Behavior/status',array('id'=>$vo['id']))}">禁用</a><else /><font color="#FF0000"><a href="{:U('Behavior/status',array('id'=>$vo['id']))}">启用</a></font></if> | <a href="{:U('Behavior/delete',array('id'=>$vo['id']))}" class="J_ajax_del">删除</a></td>
           </tr>
