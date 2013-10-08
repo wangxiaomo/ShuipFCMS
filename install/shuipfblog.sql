@@ -1137,6 +1137,7 @@ CREATE TABLE `shuipfcms_behavior` (
   `remark` char(140) NOT NULL DEFAULT '' COMMENT '行为描述',
   `status` tinyint(2) NOT NULL COMMENT '状态（0：禁用，1：正常）',
   `system` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统',
+  `module` char(20) NOT NULL COMMENT '所属模块',
   `datetime` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统行为表';
@@ -1144,20 +1145,20 @@ CREATE TABLE `shuipfcms_behavior` (
 -- ----------------------------
 -- Records of shuipfcms_behavior
 -- ----------------------------
-INSERT INTO `shuipfcms_behavior` VALUES ('1', 'app_init', '应用初始化标签位', '应用初始化标签位', '1', '1', '1381021393');
-INSERT INTO `shuipfcms_behavior` VALUES ('2', 'path_info', 'PATH_INFO检测标签位', 'PATH_INFO检测标签位', '1', '1', '1381021411');
-INSERT INTO `shuipfcms_behavior` VALUES ('3', 'route_check', '路由检测标签位', '路由检测标签位', '1', '1', '1381021424');
-INSERT INTO `shuipfcms_behavior` VALUES ('4', 'app_begin', '应用开始标签位', '应用开始标签位', '1', '1', '1381021437');
-INSERT INTO `shuipfcms_behavior` VALUES ('5', 'action_name', '操作方法名标签位', '操作方法名标签位', '1', '1', '1381021450');
-INSERT INTO `shuipfcms_behavior` VALUES ('6', 'action_begin', '控制器开始标签位', '控制器开始标签位', '1', '1', '1381021463');
-INSERT INTO `shuipfcms_behavior` VALUES ('7', 'view_begin', '视图输出开始标签位', '视图输出开始标签位', '1', '1', '1381021476');
-INSERT INTO `shuipfcms_behavior` VALUES ('8', 'view_template', '视图模板解析标签位', '视图模板解析标签位', '1', '1', '1381021488');
-INSERT INTO `shuipfcms_behavior` VALUES ('9', 'view_parse', '视图解析标签位', '视图解析标签位', '1', '1', '1381021621');
-INSERT INTO `shuipfcms_behavior` VALUES ('10', 'view_filter', '视图输出过滤标签位', '视图输出过滤标签位', '1', '1', '1381021631');
-INSERT INTO `shuipfcms_behavior` VALUES ('11', 'view_end', '视图输出结束标签位', '视图输出结束标签位', '1', '1', '1381021642');
-INSERT INTO `shuipfcms_behavior` VALUES ('12', 'action_end', '控制器结束标签位', '控制器结束标签位', '1', '1', '1381021654');
-INSERT INTO `shuipfcms_behavior` VALUES ('13', 'app_end', '应用结束标签位', '应用结束标签位', '1', '1', '1381021670');
-INSERT INTO `shuipfcms_behavior` VALUES ('14', 'appframe_rbac_init', '后台权限控制', '后台权限控制', '1', '1', '1381023560');
+INSERT INTO `shuipfcms_behavior` VALUES ('1', 'app_init', '应用初始化标签位', '应用初始化标签位', '1', '1', '', '1381021393');
+INSERT INTO `shuipfcms_behavior` VALUES ('2', 'path_info', 'PATH_INFO检测标签位', 'PATH_INFO检测标签位', '1', '1', '', '1381021411');
+INSERT INTO `shuipfcms_behavior` VALUES ('3', 'route_check', '路由检测标签位', '路由检测标签位', '1', '1', '', '1381021424');
+INSERT INTO `shuipfcms_behavior` VALUES ('4', 'app_begin', '应用开始标签位', '应用开始标签位', '1', '1', '', '1381021437');
+INSERT INTO `shuipfcms_behavior` VALUES ('5', 'action_name', '操作方法名标签位', '操作方法名标签位', '1', '1', '', '1381021450');
+INSERT INTO `shuipfcms_behavior` VALUES ('6', 'action_begin', '控制器开始标签位', '控制器开始标签位', '1', '1', '', '1381021463');
+INSERT INTO `shuipfcms_behavior` VALUES ('7', 'view_begin', '视图输出开始标签位', '视图输出开始标签位', '1', '1', '', '1381021476');
+INSERT INTO `shuipfcms_behavior` VALUES ('8', 'view_template', '视图模板解析标签位', '视图模板解析标签位', '1', '1', '', '1381021488');
+INSERT INTO `shuipfcms_behavior` VALUES ('9', 'view_parse', '视图解析标签位', '视图解析标签位', '1', '1', '', '1381021621');
+INSERT INTO `shuipfcms_behavior` VALUES ('10', 'view_filter', '视图输出过滤标签位', '视图输出过滤标签位', '1', '1', '', '1381021631');
+INSERT INTO `shuipfcms_behavior` VALUES ('11', 'view_end', '视图输出结束标签位', '视图输出结束标签位', '1', '1', '', '1381021642');
+INSERT INTO `shuipfcms_behavior` VALUES ('12', 'action_end', '控制器结束标签位', '控制器结束标签位', '1', '1', '', '1381021654');
+INSERT INTO `shuipfcms_behavior` VALUES ('13', 'app_end', '应用结束标签位', '应用结束标签位', '1', '1', '', '1381021670');
+INSERT INTO `shuipfcms_behavior` VALUES ('14', 'appframe_rbac_init', '后台权限控制', '后台权限控制', '1', '1', '', '1381023560');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_behavior_rule`

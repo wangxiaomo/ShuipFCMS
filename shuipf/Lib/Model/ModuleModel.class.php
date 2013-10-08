@@ -70,6 +70,10 @@ class ModuleModel extends CommonModel {
         define("MENUID", 74);
         //加载配置
         $config = $this->getModuleInstallConfig($module);
+        if (empty($config)) {
+            $this->error = '获取模块安装配置出错！';
+            return false;
+        }
         //静态资源文件
         if (file_exists($this->appPath . $module . "/Install/Extres/")) {
             //创建目录
@@ -121,6 +125,10 @@ class ModuleModel extends CommonModel {
                 if (file_exists($this->appPath . $module . "/Install/Extres/")) {
                     //拷贝模板到前台模板目录中去
                     $Dir->copyDir($this->appPath . $module . "/Install/Extres/", $this->extresPath . strtolower($config['module']) . '/');
+                }
+                //安装行为
+                if (!empty($config['tags'])) {
+                    D('Behavior')->moduleBehaviorInstallation($config['module'], $config['tags']);
                 }
                 return true;
             } else {
@@ -181,6 +189,8 @@ class ModuleModel extends CommonModel {
                 //throw_exception("卸载模块 {$info['name']} 出现错误！");
             }
         }
+        //去除对应行为规则
+        D('Behavior')->moduleBehaviorUninstall($module);
         //前台模板
         if (file_exists($this->appPath . $module . "/Uninstall/Template/")) {
             //删除模块前台模板
