@@ -1083,7 +1083,7 @@ CREATE TABLE `shuipfcms_urlrule` (
   `urlrule` varchar(255) NOT NULL COMMENT 'url规则',
   `example` varchar(255) NOT NULL COMMENT '示例',
   PRIMARY KEY  (`urlruleid`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shuipfcms_urlrule
@@ -1124,7 +1124,7 @@ CREATE TABLE `shuipfcms_user` (
   `info` text NOT NULL COMMENT '信息',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `account` (`username`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='后台用户表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台用户表';
 
 -- ----------------------------
 -- Table structure for `shuipfcms_behavior`
@@ -1141,7 +1141,7 @@ CREATE TABLE `shuipfcms_behavior` (
   `module` char(20) NOT NULL COMMENT '所属模块',
   `datetime` int(11) unsigned NOT NULL default '0' COMMENT '修改时间',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统行为表';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='系统行为表';
 
 -- ----------------------------
 -- Records of shuipfcms_behavior
@@ -1166,29 +1166,30 @@ INSERT INTO `shuipfcms_behavior` VALUES ('14', 'appframe_rbac_init', '后台权�
 -- ----------------------------
 DROP TABLE IF EXISTS `shuipfcms_behavior_rule`;
 CREATE TABLE `shuipfcms_behavior_rule` (
-  `ruleid` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `ruleid` int(11) NOT NULL auto_increment COMMENT '主键',
   `behaviorid` int(11) NOT NULL COMMENT '行为id',
-  `system` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统',
+  `system` tinyint(1) NOT NULL default '0' COMMENT '是否系统',
   `module` char(20) NOT NULL COMMENT '规则所属模块',
+  `addons` char(20) NOT NULL COMMENT '规则所属插件',
   `rule` text NOT NULL COMMENT '行为规则',
-  `listorder` tinyint(3) NOT NULL DEFAULT '0' COMMENT '排序',
+  `listorder` tinyint(3) NOT NULL default '0' COMMENT '排序',
   `datetime` int(10) NOT NULL COMMENT '添加时间',
-  PRIMARY KEY (`ruleid`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='行为规则';
+  PRIMARY KEY  (`ruleid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='行为规则';
 
 -- ----------------------------
 -- Records of shuipfcms_behavior_rule
 -- ----------------------------
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('1', '4', '1', '', 'phpfile:ReadHtmlCache', '0', '1381021858');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('2', '3', '1', '', 'phpfile:CheckRoute', '0', '1381021885');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('3', '9', '1', '', 'phpfile:ParseTemplate', '0', '1381021904');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('4', '10', '1', '', 'phpfile:ContentReplace', '0', '1381021954');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('5', '10', '1', '', 'phpfile:TokenBuild', '1', '1381021954');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('6', '10', '1', '', 'phpfile:WriteHtmlCache', '2', '1381021954');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('7', '10', '1', '', 'phpfile:ShowRuntime', '3', '1381021954');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('8', '11', '1', '', 'phpfile:ShowPageTrace', '0', '1381021983');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('9', '1', '1', '', 'phpfile:Appframe', '0', '1381023518');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('10', '14', '1', '', 'phpfile:Rbac', '0', '1381023560');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('1', '4', '1', '', '', 'phpfile:ReadHtmlCache', '0', '1381021858');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('2', '3', '1', '', '', 'phpfile:CheckRoute', '0', '1381021885');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('3', '9', '1', '', '', 'phpfile:ParseTemplate', '0', '1381021904');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('4', '10', '1', '', '', 'phpfile:ContentReplace', '0', '1381021954');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('5', '10', '1', '', '', 'phpfile:TokenBuild', '1', '1381021954');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('6', '10', '1', '', '', 'phpfile:WriteHtmlCache', '2', '1381021954');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('7', '10', '1', '', '', 'phpfile:ShowRuntime', '3', '1381021954');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('8', '11', '1', '', '', 'phpfile:ShowPageTrace', '0', '1381021983');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('9', '1', '1', '', '', 'phpfile:Appframe', '0', '1381023518');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('10', '14', '1', '', '', 'phpfile:Rbac', '0', '1381023560');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_behavior_log`
@@ -1200,4 +1201,4 @@ CREATE TABLE `shuipfcms_behavior_log` (
   `guid` char(50) NOT NULL COMMENT '标识',
   `create_time` int(10) NOT NULL COMMENT '执行行为的时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='执行行为日志';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='执行行为日志';
