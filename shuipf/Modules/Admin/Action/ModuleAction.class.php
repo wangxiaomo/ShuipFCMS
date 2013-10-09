@@ -90,6 +90,10 @@ class ModuleAction extends AdminbaseAction {
             } else {
                 $Config['status'] = 4;
             }
+            //如果有安装，显示安装时间
+            if (isset($modules[$module])){
+                $Config['installdate'] = $modules[$module]['installdate'];
+            }
             $moduleList[$module] = $Config;
         }
 

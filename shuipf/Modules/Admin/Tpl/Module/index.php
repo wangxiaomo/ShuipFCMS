@@ -20,12 +20,12 @@
       </thead>
       <volist name="data" id="vo">
       <tr>
-        <td><div class="app_icon"><b></b><img src="{$config_siteurl}shuipf/Modules/{$vo.module|ucwords}/icon.jpg" onerror="this.onerror=null;this.src='{$config_siteurl}statics/images/modul.png'" alt="{$vo.modulename}" width="80" height="80"></div></td>
+        <td><div class="app_icon"><b></b><img src="{$config_siteurl}shuipf/Modules/{$vo.module|ucwords}/icon.png" onerror="this.onerror=null;this.src='{$config_siteurl}statics/images/modul.png'" alt="{$vo.modulename}" width="80" height="80"></div></td>
         <td valign="top"><h3 class="mb5 f12"><if condition=" $vo['authorsite'] "><a target="_blank" href="{$vo.authorsite}">{$vo.modulename}</a><else />{$vo.modulename}</if></h3>
           <div class="mb5"> <span class="mr15">版本：<b>{$vo.version}</b></span> <span>开发者：<if condition=" $vo['author'] "><a target="_blank" href="{$vo.authorsite}">{$vo.author}</a><else />匿名开发者</if></span> <span>适配 ShuipFCMS 最低版本：<if condition=" $vo['adaptation'] ">{$vo.adaptation}<else /><font color="#FF0000">没有标注，存在风险</font></if></span> </div>
           <div class="gray"><if condition=" $vo['introduce'] ">{$vo.introduce}<else />没有任何介绍</if></div>
           <div> <span class="mr20"><a href="{$vo.authorsite}" target="_blank">{$vo.authorsite}</a></span> </div></td>
-        <td align="center"><span>2013-09-12 14:37</span></td>
+        <td align="center"><span>{$vo.installdate}</span></td>
         <td align="center">
           <if condition=" in_array($vo['status'],array(1,2)) && !isset($modules[$vo['module']])">
           <a  href="{:U('Module/install', array('module'=>$vo['module'])  )}" class="btn btn_submit btn_big mr5">安装</a>
