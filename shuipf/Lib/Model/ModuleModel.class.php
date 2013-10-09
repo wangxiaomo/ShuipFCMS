@@ -192,7 +192,7 @@ class ModuleModel extends CommonModel {
         //去除对应行为规则
         D('Behavior')->moduleBehaviorUninstall($module);
         //前台模板
-        if (file_exists($this->appPath . $module . "/Uninstall/Template/")) {
+        if (file_exists($this->appPath . $module . "/Install/Template/")) {
             //删除模块前台模板
             $Dir->delDir($this->templatePath . $module . DIRECTORY_SEPARATOR);
         }
