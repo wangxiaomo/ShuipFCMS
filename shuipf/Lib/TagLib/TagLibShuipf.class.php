@@ -283,7 +283,7 @@ class TagLibShuipf extends TagLib {
 
         $parseStr = "<?php ";
         $parseStr .= " import(\"Form\");";
-        $parseStr .= ' echo call_user_func_array(array("Form","' . $function . '"),' . $parameter . ')';
+        $parseStr .= ' echo call_user_func_array(array("Form","' . $function . '"),' . $parameter . ');';
         //$parseStr .= " echo Form::$function(".$tag['parameter'].");\r\n";
         $parseStr .= " ?>";
 

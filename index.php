@@ -10,7 +10,6 @@ define("APP_DEBUG", false);
 define('SITE_PATH', getcwd());
 define('APP_NAME', 'Shuipf');
 define('APP_PATH', SITE_PATH . '/shuipf/');
-define('MODE_PATH', APP_PATH . 'Lib/Mode/');
 define("RUNTIME_PATH", SITE_PATH . "/#runtime/");
 define('TEMPLATE_PATH', APP_PATH . 'Template/');
 //大小写忽略处理
