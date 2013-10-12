@@ -11,7 +11,7 @@
       <li>压缩包目录结构为插件自身！</li>
     </ul>
   </div>
-  <div class="h_a">采集节点导入</div>
+  <div class="h_a">插件导入</div>
   <form name="myform" action="{:U('Addons/local')}" method="post" class="J_ajaxForm" enctype="multipart/form-data">
     <div class="table_full">
       <table width="100%" class="table_form">
