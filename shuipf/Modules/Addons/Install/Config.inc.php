@@ -14,4 +14,12 @@ return array(
     'authoremail' => 'admin@abc3210.com',
     'version' => '1.0.0',
     'adaptation' => '1.1.0',
+    'tags' => array(
+        'behavior_dispatch' => array(
+            'title' => '行为路由扩展',
+            'remark' => '对于新扩展的行为类型，进行定位解析！',
+            'type' => 1,
+            'phpfile:BehaviorDispatch|module:Addons'
+        ),
+    ),
 );

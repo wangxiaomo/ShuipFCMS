@@ -1160,6 +1160,7 @@ INSERT INTO `shuipfcms_behavior` VALUES ('11', 'view_end', '视图输出结束�
 INSERT INTO `shuipfcms_behavior` VALUES ('12', 'action_end', '控制器结束标签位', '控制器结束标签位', '1', '1', '1', '', '1381021654');
 INSERT INTO `shuipfcms_behavior` VALUES ('13', 'app_end', '应用结束标签位', '应用结束标签位', '1', '1', '1', '', '1381021670');
 INSERT INTO `shuipfcms_behavior` VALUES ('14', 'appframe_rbac_init', '后台权限控制', '后台权限控制', '1', '1', '1', '', '1381023560');
+INSERT INTO `shuipfcms_behavior` VALUES ('15', 'behavior_dispatch', '行为路由扩展', '对于新扩展的行为类型，进行定位解析！', '1', '1', '1', '', '1381482063');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_behavior_rule`

@@ -16,6 +16,63 @@ class AddonsModel extends CommonModel {
     }
 
     /**
+     * 执行行为
+     * @param type $behavior 行为规则
+     * @param type $params 参数
+     * @return boolean
+     */
+    public function execution($behavior, &$params) {
+        $addonName = $behavior['addon'];
+        if (empty($addonName) || empty($behavior['action'])) {
+            return false;
+        }
+        //检查执行周期
+        if ($behavior['cycle'] && $behavior['max']) {
+            $guid = to_guid_string($behavior);
+            $where = array(
+                'ruleid' => $ruleId,
+                'guid' => $guid,
+            );
+            $where['create_time'] = array('gt', NOW_TIME - intval($behavior['cycle']) * 3600);
+            $executionCount = M('BehaviorLog')->where($where)->count('id');
+            if ($executionCount >= (int) $behavior['max']) {
+                return false;
+            }
+        }
+        $addonsCache = F('Addons');
+        if (false == $addonsCache) {
+            $this->addons_cache();
+        }
+        //检查插件是否安装
+        if (empty($addonsCache) || !isset($addonsCache[$addonName])) {
+            return false;
+        }
+        $action = $behavior['action'];
+        import('Addons.Util.Addon', APP_PATH . C('APP_GROUP_PATH') . '/');
+        //获取类名
+        $class = $this->getAddonClassName($addonName);
+        //执行文件地址
+        $filePath = $this->addonsPath . "{$addonName}/{$addonName}Addon.class.php";
+        //导入对应插件
+        require_cache($filePath);
+        if (!class_exists($class)) {
+            if (APP_DEBUG) { // 记录行为的执行日志
+                trace('[ 插件 ' . $addonName . ' 入口文件不存在] --File:' . $filePath, '', 'INFO');
+            }
+            return false;
+        }
+        $obj = get_instance_of($class);
+        if (method_exists($obj, $action)) {
+            $obj->$action($params);
+        } else {
+            if (APP_DEBUG) { // 记录行为的执行日志
+                trace('[ 插件 ' . $addonName . ' 中方法 ' . $action . ' 不存在] --File:' . $filePath, '', 'INFO');
+            }
+        }
+        return true;
+    }
+
+    /**
      * 安装插件
      * @param type $addonName 插件标识
      * @return boolean
@@ -68,6 +125,10 @@ class AddonsModel extends CommonModel {
             //添加菜单
             $this->addAddonMenu($data, $adminlist);
         }
+        //更新插件行为实现
+        $this->addonBehavior($addonName);
+        //更新缓存
+        $this->addons_cache();
         return $id;
     }
 
@@ -113,6 +174,12 @@ class AddonsModel extends CommonModel {
             if ($info['has_adminlist']) {
                 $this->delAddonMenu($info);
             }
+            //更新缓存
+            $this->addons_cache();
+            //删除行为挂载点
+            M('BehaviorRule')->where(array('addons' => $addonName, 'system' => 0))->delete();
+            //更新行为缓存
+            D('Behavior')->behavior_cache();
             return true;
         } else {
             $this->error = '卸载插件失败！';
@@ -139,6 +206,8 @@ class AddonsModel extends CommonModel {
         }
         $status = $info['status'] ? 0 : 1;
         if (false !== $this->where(array('id' => $addonId))->save(array('status' => $status))) {
+            //更新缓存
+            $this->addons_cache();
             return true;
         } else {
             $this->error = '插件状态失败！';
@@ -323,6 +392,67 @@ class AddonsModel extends CommonModel {
             }
         }
         return true;
+    }
+
+    /**
+     * 挂载行为
+     * @param type $addonName 插件名称
+     * @return boolean
+     */
+    protected function addonBehavior($addonName) {
+        if (empty($addonName)) {
+            return false;
+        }
+        //获取类名
+        $class = $this->getAddonClassName($addonName);
+        //导入对应插件
+        require_cache($this->addonsPath . "{$addonName}/{$addonName}Addon.class.php");
+        if (!class_exists($class)) {
+            return false;
+        }
+        //获取这个插件总的方法列表，数组
+        $methods = get_class_methods($class);
+        //取得已经存在的行为列表
+        $behavior = M('Behavior')->getField('name', true);
+        //交集数组
+        $common = array_intersect($behavior, $methods);
+        if (empty($common)) {
+            return false;
+        }
+        foreach ($common as $beh) {
+            //检查是否有同样的行为
+            $behaviorInfo = D('Behavior')->where(array('name' => $beh))->find();
+            if ($behaviorInfo) {
+                //添加规则
+                $data = array(
+                    'behaviorid' => $behaviorInfo['id'],
+                    'addons' => $addonName,
+                    'rule' => "addon:{$addonName}|action:{$beh}",
+                    'datetime' => time(),
+                );
+                M('BehaviorRule')->add($data);
+            }
+        }
+        //更新行为缓存
+        D('Behavior')->behavior_cache();
+        return true;
+    }
+
+    /**
+     * 缓存已安装插件缓存
+     * @return type
+     */
+    public function addons_cache() {
+        $return = array();
+        $data = $this->where(array('status' => 1))->order(array('id' => 'DESC'))->select();
+        if (!empty($data)) {
+            foreach ($data as $r) {
+                $r['config'] = unserialize($r['config']);
+                $return[$r['name']] = $r;
+            }
+        }
+        F('Addons', $return);
+        return $return;
     }
 
 }

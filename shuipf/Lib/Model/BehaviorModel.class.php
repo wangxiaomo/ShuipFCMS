@@ -53,6 +53,14 @@ class BehaviorModel extends RelationModel {
             case 3:
                 return $this->executionSQL($behavior, $params);
                 break;
+            default :
+                //其他的通过行为扩展
+                $behavior_dispatch = array(
+                    'behavior' => $behavior,
+                    'params' => $params,
+                );
+                tag('behavior_dispatch', $behavior_dispatch);
+                break;
         }
     }
 
@@ -490,7 +498,7 @@ class BehaviorModel extends RelationModel {
                 }
                 //规则类型
                 $return[$key]['_type'] = 3;
-            } else {//简单规则条件
+            } elseif (substr($rule, 0, 6) == 'table:') {//简单规则条件
                 $rule = explode('|', $rule);
                 foreach ($rule as $k => $fields) {
                     $field = empty($fields) ? array() : explode(':', $fields);
@@ -505,6 +513,8 @@ class BehaviorModel extends RelationModel {
                 }
                 //规则类型
                 $return[$key]['_type'] = 1;
+            } else {
+                $return[$key] = $rule;
             }
         }
         return $return;

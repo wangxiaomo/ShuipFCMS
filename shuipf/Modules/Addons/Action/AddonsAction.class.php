@@ -228,7 +228,7 @@ class {$info['name']}Addon extends Addon {
                     $addonFile .="
     //实现行为 {$behavior}
     //\$param 是行为传递过来的参数
-    public function _{$behavior}(\$param = NULL) {
+    public function {$behavior}(\$param = NULL) {
         //具体的处理逻辑代码
     }
 ";
