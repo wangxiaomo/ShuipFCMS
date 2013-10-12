@@ -7,5 +7,8 @@
  * @return string
  */
 function copyfrom($field, $value) {
-    return $value;
+    if (empty($value)) {
+        return $value;
+    }
+    return htmlspecialchars($value);
 }
