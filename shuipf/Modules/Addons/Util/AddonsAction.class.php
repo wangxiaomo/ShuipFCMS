@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 前台插件抽类
+ * 前台插件类
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
@@ -18,9 +18,13 @@ class Addons extends BaseAction {
         parent::_initialize();
         $this->act = ADDON_ACT;
         $this->addonName = MODULE_NAME;
-        $this->addonInfo = D('Addons')->where(array('name' => $this->addonName))->find();
+        $addons = F('Addons');
+        if (false == $addons) {
+            $addons = D('Addons')->addons_cache();
+        }
+        $this->addonInfo = $addons[$this->addonName];
         if (empty($this->addonInfo)) {
-            $this->error('该插件没有安装！');
+            $this->error('该插件没有安装或者已经被禁用！');
         }
         $this->addonPath = D('Addons')->getAddonsPath() . $this->addonName . '/';
         //插件配置文件
@@ -38,7 +42,7 @@ class Addons extends BaseAction {
      * 此方法作用在于实现后台模板直接存放在各自项目目录下。例如Admin项目的后台模板，直接存放在Admin/Tpl/目录下
      */
     protected function display($templateFile = '', $charset = '', $contentType = '', $content = '') {
-        $this->view->display(parseAddonTemplateFile($templateFile,$this->addonPath), $charset, $contentType, $content);
+        $this->view->display(parseAddonTemplateFile($templateFile, $this->addonPath), $charset, $contentType, $content);
     }
 
     /**
@@ -47,7 +51,7 @@ class Addons extends BaseAction {
      * @param type $name
      * @return type
      */
-    final public function getConfig($name = NULL) {
+    final public function getAddonConfig($name = NULL) {
         static $_config = array();
         if (empty($name)) {
             $name = $this->addonName;

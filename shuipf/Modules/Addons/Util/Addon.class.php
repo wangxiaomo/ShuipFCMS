@@ -8,7 +8,7 @@
 abstract class Addon {
 
     //插件名称
-    public $name = NULL;
+    public $addonName = NULL;
     //插件配置文件
     public $configFile = NULL;
     //插件目录
@@ -20,9 +20,9 @@ abstract class Addon {
      */
     final public function __construct() {
         //获取插件名称
-        $this->name = $this->getName();
+        $this->addonName = $this->getAddonName();
         //插件目录
-        $this->addonPath = D('Addons/Addons')->getAddonsPath() . $this->name . '/';
+        $this->addonPath = D('Addons/Addons')->getAddonsPath() . $this->addonName . '/';
         //插件配置文件
         if (is_file($this->addonPath . 'Config.php')) {
             $this->configFile = $this->addonPath . 'Config.php';
@@ -36,7 +36,7 @@ abstract class Addon {
      * 获取插件名称
      * @return type
      */
-    final public function getName() {
+    final public function getAddonName() {
         $class = get_class($this);
         return substr($class, 0, strrpos($class, 'Addon'));
     }
@@ -47,10 +47,10 @@ abstract class Addon {
      * @param type $name
      * @return type
      */
-    final public function getConfig($name = NULL) {
+    final public function getAddonConfig($name = NULL) {
         static $_config = array();
         if (empty($name)) {
-            $name = $this->name;
+            $name = $this->addonName;
         }
         //检查是否已经存在
         if (isset($_config[$name])) {

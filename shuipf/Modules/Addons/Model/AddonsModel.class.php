@@ -117,7 +117,7 @@ class AddonsModel extends CommonModel {
         }
         $data['id'] = $id;
         //写入插件配置
-        $config = $addonObj->getConfig();
+        $config = $addonObj->getAddonConfig();
         $this->where(array('id' => $id))->save(array('config' => serialize($config)));
         //如果插件有自己的后台
         if ($data['has_adminlist']) {
@@ -254,7 +254,7 @@ class AddonsModel extends CommonModel {
                     $addons[$value]['uninstall'] = 1;
                     unset($addons[$value]['status']);
                     //是否有配置
-                    $config = $addonObj->getConfig();
+                    $config = $addonObj->getAddonConfig();
                     $addons[$value]['config'] = $config;
                 }
             }
