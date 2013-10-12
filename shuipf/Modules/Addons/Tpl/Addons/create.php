@@ -93,7 +93,7 @@
         </tr>
         <tr>
           <th>实现行为</th>
-          <td><div class="cc shift">
+          <td><div class="cc ">
 			<div class="fl">
 				<h4>行为</h4>
 				<select id="J_roles" size="10">
@@ -102,11 +102,8 @@
 				</volist>
                 </select>
 			</div>
-			<div class="fl shift_operate">
-				<p class="mb10"><a id="J_auth_role_add" href="" class="btn">添加 &gt;&gt;</a></p>
-				<p><a id="J_auth_role_del" href="" class="btn">&lt;&lt; 移除</a></p>
-			</div>
-			<div class="fr">
+			<a id="J_auth_role_add" href="" class="btn" style=" margin-top:5px;">添加 &gt;&gt;</a> <a id="J_auth_role_del" href="" class="btn" style=" margin-top:5px;">&lt;&lt; 移除</a>
+			<div class="">
 				<h4>拥有的行为</h4>
 				<select id="J_user_roles" name="info[rule_list][]" size="10" multiple="multiple">
 				</select>
