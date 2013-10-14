@@ -29,9 +29,9 @@ class PublicAction extends AdminbaseAction {
         $blacklist = F("Blacklist_ip");
         //记录登陆失败者IP
         $ip = get_client_ip();
-        $username = I("post.username","","trim");
-        $password = I("post.password","","trim");
-        $code = I("post.code","","trim");
+        $username = I("post.username", "", "trim");
+        $password = I("post.password", "", "trim");
+        $code = I("post.code", "", "trim");
         if (empty($username) || empty($password)) {
             $this->error("用户名或者密码不能为空，请重新输入！", U("Public/login"));
         }
@@ -57,7 +57,12 @@ class PublicAction extends AdminbaseAction {
             } catch (Exception $exc) {
                 
             }
-
+            //增加登陆成功行为调用
+            $admin_public_tologin = array(
+                'username' => $username,
+                'ip' => $ip,
+            );
+            tag('admin_public_tologin', $admin_public_tologin);
             $this->success("登陆成功！", $forward);
         } else {
             if (!$blacklist) {
@@ -76,7 +81,7 @@ class PublicAction extends AdminbaseAction {
     //退出登陆
     public function logout() {
         if (service("PassportAdmin")->logoutLocalAdmin()) {
-            $this->success('登出成功！',U("Admin/Public/login"));
+            $this->success('登出成功！', U("Admin/Public/login"));
         }
     }
 
