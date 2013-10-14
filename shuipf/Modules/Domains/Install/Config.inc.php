@@ -4,18 +4,13 @@
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-//模块目录
-$module = 'Domains';
-//模块名称
-$modulename = '域名绑定';
-//模块简介
-$introduce = '提供对模块进行二级域名绑定！';
-//模块作者
-$author = '水平凡';
-//作者地址
-$authorsite = 'http://www.abc3210.com';
-//作者邮箱
-$authoremail = 'admin@abc3210.com';
-//版本号
-$version = "20130217";
-?>
+return array(
+    'module' => 'Domains',
+    'modulename' => '域名绑定',
+    'introduce' => '提供对模块进行二级域名绑定！',
+    'author' => '水平凡',
+    'authorsite' => 'http://www.shuipfcms.com/',
+    'authoremail' => 'admin@abc3210.com',
+    'version' => '20130217',
+    'adaptation' => '1.1.0',
+);

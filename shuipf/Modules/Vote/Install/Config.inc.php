@@ -4,18 +4,13 @@
  * Some rights reserved：omyweb.cn
  * Contact email:admin@omyweb.cn
  */
-//模块目录
-$module = 'Vote';
-//模块名称
-$modulename = '投票';
-//模块简介
-$introduce = '投票';
-//模块作者
-$author = 'omyweb';
-//作者地址
-$authorsite = 'http://www.omyweb.cn/';
-//作者邮箱
-$authoremail = 'omyweb@163.com';
-//版本号
-$version = "20130111";
-?>
+return array(
+    'module' => 'Vote',
+    'modulename' => '投票',
+    'introduce' => '投票！',
+    'author' => '水平凡',
+    'authorsite' => 'http://www.shuipfcms.com/',
+    'authoremail' => 'admin@abc3210.com',
+    'version' => '20130111',
+    'adaptation' => '1.1.0',
+);

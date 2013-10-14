@@ -4,18 +4,13 @@
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-//模块目录
-$module = 'Formguide';
-//模块名称
-$modulename = '表单';
-//模块简介
-$introduce = '表单';
-//模块作者
-$author = '水平凡';
-//作者地址
-$authorsite = 'http://www.abc3210.com';
-//作者邮箱
-$authoremail = 'admin@abc3210.com';
-//版本号
-$version = "20130111";
-?>
+return array(
+    'module' => 'Formguide',
+    'modulename' => '表单',
+    'introduce' => '表单！',
+    'author' => '水平凡',
+    'authorsite' => 'http://www.shuipfcms.com/',
+    'authoremail' => 'admin@abc3210.com',
+    'version' => '20130111',
+    'adaptation' => '1.1.0',
+);
