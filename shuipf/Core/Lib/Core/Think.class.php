@@ -33,6 +33,8 @@ class Think {
         set_exception_handler(array('Think', 'appException'));
         // 注册AUTOLOAD方法
         spl_autoload_register(array('Think', 'autoload'));
+        //消除所有的magic_quotes_gpc转义
+        Input::noGPC();
         //[RUNTIME]
         Think::buildApp();         // 预编译项目
         //[/RUNTIME]
@@ -201,10 +203,12 @@ class Think {
                 return;
             }
         } elseif (substr($class, -5) == 'Model') { // 加载模型
+            $model = ucwords(str_replace('Model', "", $class));
             if (require_array(array(
                         LIB_PATH . 'Model/' . $group . $file,
                         $libPath . 'Model/' . $file,
-                        EXTEND_PATH . 'Model/' . $file), true)) {
+                        EXTEND_PATH . 'Model/' . $file,
+                        APP_PATH . C("APP_GROUP_PATH") . "/{$model}/Model/{$class}.class.php",), true)) {
                 return;
             }
         } elseif (substr($class, -6) == 'Action') { // 加载控制器
@@ -235,7 +239,28 @@ class Think {
         } elseif (substr($class, 0, 6) == 'TagLib') { // 加载标签库驱动
             if (require_array(array(
                         EXTEND_PATH . 'Driver/TagLib/' . $file,
-                        CORE_PATH . 'Driver/TagLib/' . $file), true)) {
+                        CORE_PATH . 'Driver/TagLib/' . $file,
+                        LIB_PATH . "/TagLib/{$class}.class.php"), true)) {
+                return;
+            }
+        } elseif (substr($class, -6) == 'TagLib') {//加载 TagLib
+            if (require_cache(LIB_PATH . "/TagLib/{$class}.class.php")) {
+                return;
+            }
+        } elseif (substr($class, -7) == 'Service') {//加载 Service
+            if (require_cache(LIB_PATH . "/Service/{$class}.class.php")) {
+                return;
+            }
+        } elseif (substr($class, 0, 10) == 'Attachment') { // 加载附件方案
+            if (require_cache(LIB_PATH . "/Driver/Attachment/{$class}.class.php")) {
+                return;
+            }
+        } elseif (substr($class, 0, 8) == 'Passport') { // 加载通行证
+            if (require_cache(LIB_PATH . "/Driver/Passport/{$class}.class.php")) {
+                return;
+            }
+        } else {//加载 Util下 自定义类
+            if (require_cache(LIB_PATH . "/Util/{$class}.class.php")) {
                 return;
             }
         }

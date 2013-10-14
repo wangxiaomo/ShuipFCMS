@@ -1189,8 +1189,7 @@ INSERT INTO `shuipfcms_behavior_rule` VALUES ('5', '10', '1', '', '', 'phpfile:T
 INSERT INTO `shuipfcms_behavior_rule` VALUES ('6', '10', '1', '', '', 'phpfile:WriteHtmlCache', '2', '1381021954');
 INSERT INTO `shuipfcms_behavior_rule` VALUES ('7', '10', '1', '', '', 'phpfile:ShowRuntime', '3', '1381021954');
 INSERT INTO `shuipfcms_behavior_rule` VALUES ('8', '11', '1', '', '', 'phpfile:ShowPageTrace', '0', '1381021983');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('9', '1', '1', '', '', 'phpfile:Appframe', '0', '1381023518');
-INSERT INTO `shuipfcms_behavior_rule` VALUES ('10', '14', '1', '', '', 'phpfile:Rbac', '0', '1381023560');
+INSERT INTO `shuipfcms_behavior_rule` VALUES ('9', '14', '1', '', '', 'phpfile:Rbac', '0', '1381023560');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_behavior_log`
