@@ -1176,7 +1176,7 @@ CREATE TABLE `shuipfcms_behavior_rule` (
   `listorder` tinyint(3) NOT NULL default '0' COMMENT '排序',
   `datetime` int(10) NOT NULL COMMENT '添加时间',
   PRIMARY KEY  (`ruleid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='行为规则';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='行为规则';
 
 -- ----------------------------
 -- Records of shuipfcms_behavior_rule
