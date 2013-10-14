@@ -26,6 +26,8 @@ class App {
      * @return void
      */
     static public function init() {
+        //消除所有的magic_quotes_gpc转义
+        Input::noGPC();
         // 页面压缩输出支持
         if (C('OUTPUT_ENCODE')) {
             $zlib = ini_get('zlib.output_compression');

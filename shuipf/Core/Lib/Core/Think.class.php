@@ -33,8 +33,6 @@ class Think {
         set_exception_handler(array('Think', 'appException'));
         // 注册AUTOLOAD方法
         spl_autoload_register(array('Think', 'autoload'));
-        //消除所有的magic_quotes_gpc转义
-        Input::noGPC();
         //[RUNTIME]
         Think::buildApp();         // 预编译项目
         //[/RUNTIME]
