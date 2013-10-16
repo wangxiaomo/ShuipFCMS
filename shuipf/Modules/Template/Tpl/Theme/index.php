@@ -1,6 +1,11 @@
 <?php if (!defined('SHUIPF_VERSION')) exit(); ?>
 <Admintemplate file="Common/Head"/>
 <body class="J_scroll_fixed">
+<style>
+.design_page li {
+	height: 218px;
+}
+</style>
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
   <div class="mb10 cc">共 <span class="org">{$count}</span> 套模板</div>
