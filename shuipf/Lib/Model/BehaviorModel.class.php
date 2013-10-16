@@ -53,13 +53,9 @@ class BehaviorModel extends RelationModel {
             case 3:
                 return $this->executionSQL($behavior, $params);
                 break;
-            default :
-                //其他的通过行为扩展
-                $behavior_dispatch = array(
-                    'behavior' => $behavior,
-                    'params' => $params,
-                );
-                tag('behavior_dispatch', $behavior_dispatch);
+            //插件行为
+            case 4:
+                return D('Addons/Addons')->execution($behavior, $params);
                 break;
         }
     }
@@ -453,7 +449,8 @@ class BehaviorModel extends RelationModel {
         if (empty($ruleList)) {
             return false;
         }
-
+        //应用缓存
+        $appCache = F('App');
         //解析规则:table:$table|field:$field|condition:$condition|rule:$rule[|cycle:$cycle|max:$max][;......]
         $return = array();
         foreach ($ruleList as $key => $ruleInfo) {
@@ -513,8 +510,25 @@ class BehaviorModel extends RelationModel {
                 }
                 //规则类型
                 $return[$key]['_type'] = 1;
-            } else {
-                $return[$key] = $rule;
+            } elseif (substr($rule, 0, 6) == 'addon:') {//插件规则
+                //检查插件模块是否安装
+                if(!isset($appCache['Addons'])){
+                    continue;
+                }
+                $rule = explode('|', $rule);
+                foreach ($rule as $k => $fields) {
+                    $field = empty($fields) ? array() : explode(':', $fields);
+                    if (!empty($field)) {
+                        $return[$key][$field[0]] = $field[1];
+                    }
+                }
+                //cycle(检查周期)和max(周期内最大执行次数)必须同时存在，否则去掉这两个条件
+                if (!array_key_exists('cycle', $return[$key]) || !array_key_exists('max', $return[$key])) {
+                    unset($return[$key]['cycle']);
+                    unset($return[$key]['max']);
+                }
+                //规则类型
+                $return[$key]['_type'] = 4;
             }
         }
         return $return;
