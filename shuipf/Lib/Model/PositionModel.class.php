@@ -153,6 +153,8 @@ class PositionModel extends CommonModel {
                         if ($r) {
                             //是否同步编辑
                             if ($r['synedit'] == '0') {
+                                //同步时，不从新设置排序值
+                                unset($info['listorder']);
                                 $pos_data->where(array('id' => $d['id'], 'posid' => $pid, 'catid' => $info['catid']))->data($info)->save();
                             }
                         } else {
