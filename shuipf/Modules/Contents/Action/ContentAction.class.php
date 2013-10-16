@@ -707,7 +707,7 @@ class ContentAction extends AdminbaseAction {
                     break;
             }
         } else {
-            $ids = $this->_request("ids");
+            $ids = I('request.ids', '', '');
             $ids = is_array($ids) ? implode("|", $ids) : $ids;
             $catid = I('get.catid', '', 'intval');
             if (!$catid) {
@@ -784,7 +784,7 @@ class ContentAction extends AdminbaseAction {
                                 //样式进行特别处理
                                 $textcontent['style'] = $re['style'];
                                 //推送到推荐位
-                                $status = $position_data_db->position_update($aid, $modelid, $catid, $posid, $textcontent);
+                                $status = $position_data_db->position_update($aid, $modelid, $catid, $posid, $textcontent, 0, 1);
                                 if ($status) {
                                     //更新信息推荐位标识
                                     $Content->where(array("id" => $aid))->save(array("posid" => 1));
@@ -885,17 +885,15 @@ class ContentAction extends AdminbaseAction {
 
     //同时发布到其他栏目选择页面
     public function add_othors() {
-        $catid = $this->_get("catid");
-        if (!empty($catid)) {
-            $this->assign("catid", $catid);
-        }
+        $catid = I('get.catid', 0, 'intval');
+        $this->assign("catid", $catid);
         $this->display();
     }
 
     //锁定时间续期
     public function public_lock_renewal() {
-        $catid = (int) $this->_get("catid");
-        $id = (int) $this->_get("id");
+        $catid = I('get.catid', 0, 'intval');
+        $id = I('get.id', 0, 'intval');
         $userid = AppframeAction::$Cache["uid"];
         $time = time();
         if ($catid && $id && $userid) {
