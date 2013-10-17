@@ -96,24 +96,48 @@ class ModuleModel extends CommonModel {
             if (false !== $this->add($data)) {
                 import("Dir");
                 $Dir = new Dir();
-                //判断是否有数据库安装脚本
-                if (file_exists($this->appPath . $module . '/Install/' . $module . '.sql')) {
-                    //读取
-                    $sql = file_get_contents($this->appPath . $module . '/Install/' . $module . '.sql');
-                    $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
-                    if (!empty($sql) && is_array($sql)) {
-                        foreach ($sql as $sql_split) {
-                            $this->execute($sql_split);
+                //判断是否有自己的安装脚本
+                if (file_exists($this->appPath . $module . '/Install/' . $module . '.class.php')) {
+                    require_cache($this->appPath . $module . '/Install/' . $module . '.class.php');
+                    //检查是否存在
+                    if (class_exists($module)) {
+                        $installObj = new $module();
+                        //检查安装方法是否存在
+                        if (method_exists($installObj, 'install')) {
+                            //执行安装
+                            if (false == $installObj->install()) {
+                                //删除安装状态
+                                $this->where(array('module' => $config['module']))->delete();
+                                //获取错误
+                                if (method_exists($installObj, 'getError')) {
+                                    $this->error = $installObj->getError();
+                                } else {
+                                    $this->error = '模块安装失败！';
+                                }
+                                return false;
+                            }
                         }
                     }
-                }
-                //判断是否有菜单安装项
-                if (file_exists($this->appPath . $module . '/Install/Extention.inc.php')) {
-                    try {
-                        include $this->appPath . $module . '/Install/Extention.inc.php';
-                    } catch (Exception $exc) {
-                        $this->where(array('module' => $data['module']))->delete();
-                        throw_exception("安装模块 {$data['name']} 出现错误！");
+                } else {
+                    //判断是否有数据库安装脚本
+                    if (file_exists($this->appPath . $module . '/Install/' . $module . '.sql')) {
+                        //读取
+                        $sql = file_get_contents($this->appPath . $module . '/Install/' . $module . '.sql');
+                        $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
+                        if (!empty($sql) && is_array($sql)) {
+                            foreach ($sql as $sql_split) {
+                                $this->execute($sql_split);
+                            }
+                        }
+                    }
+                    //判断是否有菜单安装项
+                    if (file_exists($this->appPath . $module . '/Install/Extention.inc.php')) {
+                        try {
+                            include $this->appPath . $module . '/Install/Extention.inc.php';
+                        } catch (Exception $exc) {
+                            $this->where(array('module' => $data['module']))->delete();
+                            throw_exception("安装模块 {$data['name']} 出现错误！");
+                        }
                     }
                 }
                 //前台模板
@@ -170,25 +194,44 @@ class ModuleModel extends CommonModel {
         $Dir = new Dir();
         //删除权限
         M("Access")->where(array("g" => $module))->delete();
-        //判断是否有数据库卸载脚本
-        if (file_exists($this->appPath . $module . '/Uninstall/' . $module . '.sql')) {
-            //读取
-            $sql = file_get_contents($this->appPath . $module . '/Uninstall/' . $module . '.sql');
-            $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
-            if (!empty($sql) && is_array($sql)) {
-                foreach ($sql as $sql_split) {
-                    $this->execute($sql_split);
+        //判断是否有自己的卸载脚本
+        if (file_exists($this->appPath . $module . '/Uninstall/' . $module . '.class.php')) {
+            require_cache($this->appPath . $module . '/Uninstall/' . $module . '.class.php');
+            //检查是否存在
+            if (class_exists($module)) {
+                $installObj = new $module();
+                //检查安装方法是否存在
+                if (method_exists($installObj, 'uninstall')) {
+                    //执行卸载
+                    if (false == $installObj->uninstall()) {
+                        //删除安装状态
+                        $this->where(array('module' => $config['module']))->delete();
+                        //获取错误
+                        if (method_exists($installObj, 'getError')) {
+                            $this->error = $installObj->getError();
+                        } else {
+                            $this->error = '模块安装失败！';
+                        }
+                        return false;
+                    }
+                }
+            }
+        } else {
+            //判断是否有数据库卸载脚本
+            if (file_exists($this->appPath . $module . '/Uninstall/' . $module . '.sql')) {
+                //读取
+                $sql = file_get_contents($this->appPath . $module . '/Uninstall/' . $module . '.sql');
+                $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
+                if (!empty($sql) && is_array($sql)) {
+                    foreach ($sql as $sql_split) {
+                        $this->execute($sql_split);
+                    }
                 }
             }
         }
-        //判断是否有菜单卸载项
-        if (file_exists($this->appPath . $module . '/Uninstall/Extention.inc.php')) {
-            try {
-                include $this->appPath . $module . '/Uninstall/Extention.inc.php';
-            } catch (Exception $exc) {
-                //throw_exception("卸载模块 {$info['name']} 出现错误！");
-            }
-        }
+        //移除菜单项和权限项
+        M("Menu")->where(array("app" => $module))->delete();
+        M("Access")->where(array("g" => $module))->delete();
         //去除对应行为规则
         D('Behavior')->moduleBehaviorUninstall($module);
         //前台模板
