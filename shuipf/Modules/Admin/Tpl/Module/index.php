@@ -36,7 +36,7 @@
           <else/>
           <a  href="{:U('Module/disabled', array('module'=>$vo['module'])  )}" class="btn btn_submit  mr5">启用</a>
           </if>
-          <button data-action="{:U('Module/disabled',array('module'=>$vo['module']))}" class="J_ajax_upgrade btn">卸载</button>
+          <button data-action="{:U('Module/uninstall',array('module'=>$vo['module']))}" class="J_ajax_upgrade btn">卸载</button>
           </if>
           <if condition=" $modules[$vo['module']] && $modules[$vo['module']]['iscore']">
           系统模块
