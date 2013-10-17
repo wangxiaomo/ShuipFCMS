@@ -51,7 +51,7 @@ if (window.top !== window.self) {
     <tr class="tab">
       <th> <div class="search">
           <input size="15" placeholder="Hi，ShuipFCMS！" id="J_search_keyword" type="text">
-          <button type="button" name="keyword" id="J_search" value="" data-url="{:U('Index/public_find')}">搜索</button>
+          <button type="button" name="keyword" id="J_search" value="" data-url="{$config_siteurl}index.php?g=Admin&m=Index&a=public_find">搜索</button>
         </div></th>
       <td><div id="B_tabA" class="tabA"> <a href="" tabindex="-1" class="tabA_pre" id="J_prev" title="上一页">上一页</a> <a href="" tabindex="-1" class="tabA_next" id="J_next" title="下一页">下一页</a>
           <div style="margin:0 25px;min-height:1px;">
