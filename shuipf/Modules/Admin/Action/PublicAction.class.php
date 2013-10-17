@@ -81,6 +81,8 @@ class PublicAction extends AdminbaseAction {
     //退出登陆
     public function logout() {
         if (service("PassportAdmin")->logoutLocalAdmin()) {
+            //手动登出时，清空forward
+            cookie("forward", NULL);
             $this->success('登出成功！', U("Admin/Public/login"));
         }
     }
