@@ -13,7 +13,7 @@
         <tr>
           <th>标识名</th>
           <td><input type="text" name="info[name]" class="input length_3" value="" ></td>
-          <td><div class="fun_tips"></div></td>
+          <td><div class="fun_tips">只能是英文开头，且首字母大写，标识只能包含英文、数子、下划线</div></td>
         </tr>
         <tr>
           <th>插件名称</th>
@@ -23,7 +23,7 @@
         <tr>
           <th>版本</th>
           <td><input type="text" name="info[version]" class="input length_3" value="" ></td>
-          <td><div class="fun_tips"></div></td>
+          <td><div class="fun_tips">例如：1.0.1</div></td>
         </tr>
         <tr>
           <th>作者</th>
@@ -73,7 +73,7 @@
                   <span>关闭</span></label>
               </li>
             </ul></td>
-          <td><div class="fun_tips"></div></td>
+          <td><div class="fun_tips">开启后前台可以通过 http://域名/index.php?g=Addons&m=插件标识 进行访问</div></td>
         </tr>
         <tr>
           <th>是否需要配置</th>
@@ -89,7 +89,7 @@
                   <span>关闭</span></label>
               </li>
             </ul></td>
-          <td><div class="fun_tips"></div></td>
+          <td><div class="fun_tips">可以进行插件相关的设置，代码中可以通过 getAddonConfig 方法获取配置！</div></td>
         </tr>
         <tr>
           <th>实现行为</th>

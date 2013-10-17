@@ -151,6 +151,8 @@ class AddonsAction extends AdminbaseAction {
             if (!$data) {
                 $this->error($this->addons->getError());
             }
+            //强制插件标识首字母为大写
+            $info['name'] = ucwords($info['name']);
             //插件目录
             $addonsDir = $this->addons->getAddonsPath() . "{$info['name']}/";
             //检查插件目录是否存在
