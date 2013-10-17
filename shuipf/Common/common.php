@@ -85,6 +85,19 @@ function SiteCookie($name, $value = '', $option = null) {
 }
 
 /**
+ * 检查模块是否已经安装
+ * @param type $moduleName 模块名称
+ * @return boolean
+ */
+function isModuleInstall($moduleName) {
+    $appCache = F('App');
+    if (isset($appCache[$moduleName])) {
+        return true;
+    }
+    return false;
+}
+
+/**
  * 调试，用于保存数组到txt文件 正式生产删除
  * 用法：array2file($info, SITE_PATH.'/post.txt');
  * @param type $array
