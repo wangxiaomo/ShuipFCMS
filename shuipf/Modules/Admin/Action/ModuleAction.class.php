@@ -33,8 +33,8 @@ class ModuleAction extends AdminbaseAction {
         foreach ($modulesdata as $v) {
             $modules[$v['module']] = $v;
             //检查是否系统模块，如果是，直接不显示
-            if($v['iscore']){
-                $key = array_keys($dirs_arr,$v['module']);
+            if ($v['iscore']) {
+                $key = array_keys($dirs_arr, $v['module']);
                 unset($dirs_arr[$key[0]]);
             }
         }
@@ -91,8 +91,9 @@ class ModuleAction extends AdminbaseAction {
                 $Config['status'] = 4;
             }
             //如果有安装，显示安装时间
-            if (isset($modules[$module])){
+            if (isset($modules[$module])) {
                 $Config['installdate'] = $modules[$module]['installdate'];
+                $Config['disabled'] = $modules[$module]['disabled'];
             }
             $moduleList[$module] = $Config;
         }
@@ -150,6 +151,19 @@ class ModuleAction extends AdminbaseAction {
             $this->success("模块卸载成功，请及时更新缓存！", U("Module/index"));
         } else {
             $this->error("模块卸载失败！", U("Module/index"));
+        }
+    }
+
+    //模块状态转换
+    public function disabled() {
+        $module = I('get.module', '', 'trim,ucwords');
+        if (empty($module)) {
+            $this->error('请选择模块！');
+        }
+        if ($this->module->disabled($module)) {
+            $this->success("状态转换成功，请及时更新缓存！", U("Module/index"));
+        } else {
+            $this->error("状态转换成功失败！", U("Module/index"));
         }
     }
 

@@ -205,6 +205,33 @@ class ModuleModel extends CommonModel {
     }
 
     /**
+     * 模块状态转换
+     * @param type $module 模块
+     * @return boolean
+     */
+    public function disabled($module) {
+        if (empty($module)) {
+            $this->error = '请选模块！';
+            return false;
+        }
+        //取得该模块数据库中记录的安装信息
+        $info = $this->where(array('module' => $module))->find();
+        if (empty($info)) {
+            $this->error = '该模块未安装，无需进行此操作！';
+            return false;
+        }
+        $disabled = $info['disabled'] ? 0 : 1;
+        if (false !== $this->where(array('module' => $module))->save(array('disabled' => $disabled))) {
+            //更新缓存
+            $this->module_cache();
+            return true;
+        } else {
+            $this->error = '状态转换失败！';
+            return false;
+        }
+    }
+
+    /**
      * 检查模块是否安装过
      * @param type $module
      * @return type

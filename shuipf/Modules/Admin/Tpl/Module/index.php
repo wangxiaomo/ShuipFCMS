@@ -28,10 +28,15 @@
         <td align="center"><span>{$vo.installdate}</span></td>
         <td align="center">
           <if condition=" in_array($vo['status'],array(1,2)) && !isset($modules[$vo['module']])">
-          <a  href="{:U('Module/install', array('module'=>$vo['module'])  )}" class="btn btn_submit btn_big mr5">安装</a>
+          <a  href="{:U('Module/install', array('module'=>$vo['module'])  )}" class="btn btn_submit mr5">安装</a>
           </if>
           <if condition=" $modules[$vo['module']] && !$modules[$vo['module']]['iscore']">
-          <button data-action="{:U('Module/uninstall',array('module'=>$vo['module']))}" class="J_ajax_upgrade btn_big btn">卸载</button>
+          <if condition=" $vo['disabled']">
+          <a  href="{:U('Module/disabled', array('module'=>$vo['module'])  )}" class="btn mr5">禁用</a>
+          <else/>
+          <a  href="{:U('Module/disabled', array('module'=>$vo['module'])  )}" class="btn btn_submit  mr5">启用</a>
+          </if>
+          <button data-action="{:U('Module/disabled',array('module'=>$vo['module']))}" class="J_ajax_upgrade btn">卸载</button>
           </if>
           <if condition=" $modules[$vo['module']] && $modules[$vo['module']]['iscore']">
           系统模块
