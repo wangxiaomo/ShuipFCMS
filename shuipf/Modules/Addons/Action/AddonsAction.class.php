@@ -19,6 +19,17 @@ class AddonsAction extends AdminbaseAction {
     //显示插件列表
     public function index() {
         $addons = $this->addons->getAddonList();
+        if (!empty($addons)) {
+            //遍历检查是否有前台
+            foreach ($addons as $key => $rs) {
+                $path = $this->addons->getAddonsPath() . $rs['name'] . "/Action/IndexAction.class.php";
+                if(file_exists($path)){
+                    $addons[$key]['url'] = U("Addons/{$rs['name']}/index");
+                }else{
+                    $addons[$key]['url'] = '';
+                }
+            }
+        }
         $this->assign('addons', $addons);
         $this->display();
     }

@@ -18,7 +18,7 @@
       </thead>
       <volist name="addons" id="vo">
       <tr>
-        <td>{$vo.title}</td>
+        <td><if condition=" $vo['url'] "><a  href="{$vo.url}" target="_blank">{$vo.title}</a><else/>{$vo.title}</if></td>
         <td>{$vo.name}</td>
         <td>{$vo.description}</td>
         <td align="center"><if condition=" $vo['status'] eq null ">未安装<else/><if condition=" $vo['status'] eq 1 ">启用<else/>禁用</if></if></td>
