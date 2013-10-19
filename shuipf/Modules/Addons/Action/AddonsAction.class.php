@@ -23,9 +23,9 @@ class AddonsAction extends AdminbaseAction {
             //遍历检查是否有前台
             foreach ($addons as $key => $rs) {
                 $path = $this->addons->getAddonsPath() . $rs['name'] . "/Action/IndexAction.class.php";
-                if(file_exists($path)){
+                if (file_exists($path)) {
                     $addons[$key]['url'] = U("Addons/{$rs['name']}/index");
-                }else{
+                } else {
                     $addons[$key]['url'] = '';
                 }
             }
@@ -352,7 +352,7 @@ class {$info['name']}Addon extends Addon {
         //创建压缩包
         $zip = new PclZip($file);
         $path = explode(':', $addonsDir);
-        $zip->create($addonsDir, PCLZIP_OPT_REMOVE_PATH, $path[1]);
+        $zip->create($addonsDir, PCLZIP_OPT_REMOVE_PATH, $path[1] ? $path[1] : $path[0]);
 
         //获取用户客户端UA，用来处理中文文件名
         $ua = $_SERVER["HTTP_USER_AGENT"];
