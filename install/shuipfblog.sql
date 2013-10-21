@@ -83,7 +83,7 @@ CREATE TABLE `shuipfcms_article` (
   KEY `status` (`status`,`listorder`,`id`),
   KEY `listorder` (`catid`,`status`,`listorder`,`id`),
   KEY `catid` (`catid`,`status`,`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 -- ----------------------------
@@ -128,7 +128,7 @@ CREATE TABLE `shuipfcms_attachment` (
   `authcode` char(32) NOT NULL COMMENT '附件路径MD5值',
   PRIMARY KEY  (`aid`),
   KEY `authcode` (`authcode`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 -- ----------------------------
@@ -171,7 +171,7 @@ CREATE TABLE `shuipfcms_category` (
   PRIMARY KEY  (`catid`),
   KEY `module` (`module`,`parentid`,`listorder`,`catid`),
   KEY `siteid` (`type`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 -- ----------------------------
@@ -202,7 +202,7 @@ CREATE TABLE `shuipfcms_censor_word` (
   `replacement` varchar(255) NOT NULL default '' COMMENT '不良词语类型',
   `extra` varchar(255) NOT NULL default '' COMMENT '其他',
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='词语过滤表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='词语过滤表';
 
 
 -- ----------------------------
@@ -226,7 +226,7 @@ CREATE TABLE `shuipfcms_comments` (
   KEY `comment_id` (`comment_id`),
   KEY `approved` (`approved`),
   KEY `parent` (`parent`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='评论表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='评论表';
 
 -- ----------------------------
 -- Table structure for `shuipfcms_comments_data_1`
@@ -250,7 +250,7 @@ CREATE TABLE `shuipfcms_comments_emotion` (
   `vieworder` int(10) unsigned NOT NULL default '0' COMMENT '排序',
   `isused` tinyint(3) unsigned NOT NULL default '1' COMMENT '是否使用',
   PRIMARY KEY  (`emotion_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='表情数据表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='表情数据表';
 
 -- ----------------------------
 -- Records of shuipfcms_comments_emotion
@@ -273,7 +273,7 @@ CREATE TABLE `shuipfcms_comments_field` (
   `system` tinyint(1) NOT NULL COMMENT '是否系统字段',
   PRIMARY KEY  (`fid`),
   UNIQUE KEY `fname` (`fname`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='评论自定义字段表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='评论自定义字段表';
 
 -- ----------------------------
 -- Records of shuipfcms_comments_field
@@ -316,7 +316,7 @@ CREATE TABLE `shuipfcms_config` (
   `type` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `varname` (`varname`)
-) ENGINE=MyISAM AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shuipfcms_config
@@ -420,7 +420,7 @@ CREATE TABLE `shuipfcms_links` (
   PRIMARY KEY  (`id`),
   KEY `visible` (`visible`),
   KEY `termsid` (`termsid`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='友情链接';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='友情链接';
 
 -- ----------------------------
 -- Table structure for `shuipfcms_locking`
@@ -453,116 +453,7 @@ CREATE TABLE `shuipfcms_loginlog` (
   `password` varchar(30) character set utf8 NOT NULL default '' COMMENT '尝试错误密码',
   `info` varchar(255) character set utf8 NOT NULL default '0' COMMENT '其他说明',
   PRIMARY KEY  (`loginid`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=gbk COMMENT='后台登陆日志表';
-
--- ----------------------------
--- Table structure for `shuipfcms_member`
--- ----------------------------
-DROP TABLE IF EXISTS `shuipfcms_member`;
-CREATE TABLE `shuipfcms_member` (
-  `userid` mediumint(8) unsigned NOT NULL auto_increment COMMENT '用户id',
-  `username` char(20) NOT NULL default '' COMMENT '用户名',
-  `password` char(32) NOT NULL default '' COMMENT '密码',
-  `encrypt` char(6) NOT NULL COMMENT '随机码',
-  `checked` tinyint(1) NOT NULL COMMENT '是否审核',
-  `nickname` char(20) NOT NULL COMMENT '昵称',
-  `userpic` varchar(200) NOT NULL COMMENT '会员头像',
-  `regdate` int(10) unsigned NOT NULL default '0' COMMENT '注册时间',
-  `lastdate` int(10) unsigned NOT NULL default '0' COMMENT '最后登录时间',
-  `regip` char(15) NOT NULL default '' COMMENT '注册ip',
-  `lastip` char(15) NOT NULL default '' COMMENT '上次登录ip',
-  `loginnum` smallint(5) unsigned NOT NULL default '0' COMMENT '登陆次数',
-  `email` char(32) NOT NULL default '' COMMENT '电子邮箱',
-  `groupid` tinyint(3) unsigned NOT NULL default '0' COMMENT '用户组id',
-  `areaid` smallint(5) unsigned NOT NULL default '0' COMMENT '地区id',
-  `amount` decimal(8,2) unsigned NOT NULL default '0.00' COMMENT '钱金总额',
-  `point` smallint(5) unsigned NOT NULL default '0' COMMENT '积分',
-  `modelid` smallint(5) unsigned NOT NULL default '0' COMMENT '模型id',
-  `message` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否有短消息',
-  `islock` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否锁定',
-  `vip` tinyint(1) NOT NULL COMMENT 'vip等级',
-  `overduedate` int(10) NOT NULL COMMENT 'vip过期时间',
-  PRIMARY KEY  (`userid`),
-  UNIQUE KEY `username` (`username`),
-  KEY `email` (`email`(20))
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员表';
-
--- ----------------------------
--- Records of shuipfcms_member
--- ----------------------------
-
--- ----------------------------
--- Table structure for `shuipfcms_member_content`
--- ----------------------------
-DROP TABLE IF EXISTS `shuipfcms_member_content`;
-CREATE TABLE `shuipfcms_member_content` (
-  `id` int(10) NOT NULL auto_increment,
-  `catid` smallint(5) NOT NULL COMMENT '栏目ID',
-  `content_id` int(10) NOT NULL COMMENT '信息ID',
-  `userid` mediumint(8) NOT NULL COMMENT '会员ID',
-  `integral` tinyint(1) NOT NULL COMMENT '是否赠送过点数',
-  `time` int(10) NOT NULL COMMENT '添加时间',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会员投稿信息记录表';
-
--- ----------------------------
--- Records of shuipfcms_member_content
--- ----------------------------
-
--- ----------------------------
--- Table structure for `shuipfcms_member_detail`
--- ----------------------------
-DROP TABLE IF EXISTS `shuipfcms_member_detail`;
-CREATE TABLE `shuipfcms_member_detail` (
-  `userid` mediumint(8) unsigned NOT NULL,
-  `birthday` int(10) unsigned NOT NULL default '0',
-  UNIQUE KEY `userid` (`userid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of shuipfcms_member_detail
--- ----------------------------
-
--- ----------------------------
--- Table structure for `shuipfcms_member_group`
--- ----------------------------
-DROP TABLE IF EXISTS `shuipfcms_member_group`;
-CREATE TABLE `shuipfcms_member_group` (
-  `groupid` tinyint(3) unsigned NOT NULL auto_increment COMMENT '会员组id',
-  `name` char(15) NOT NULL COMMENT '用户组名称',
-  `issystem` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否是系统组',
-  `starnum` tinyint(2) unsigned NOT NULL COMMENT '会员组星星数',
-  `point` smallint(6) unsigned NOT NULL COMMENT '积分范围',
-  `allowmessage` smallint(5) unsigned NOT NULL default '0' COMMENT '许允发短消息数量',
-  `allowvisit` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否允许访问',
-  `allowpost` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否允许发稿',
-  `allowpostverify` tinyint(1) unsigned NOT NULL COMMENT '是否投稿不需审核',
-  `allowsearch` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否允许搜索',
-  `allowupgrade` tinyint(1) unsigned NOT NULL default '1' COMMENT '是否允许自主升级',
-  `allowsendmessage` tinyint(1) unsigned NOT NULL COMMENT '允许发送短消息',
-  `allowpostnum` smallint(5) unsigned NOT NULL default '0' COMMENT '每天允许发文章数',
-  `allowattachment` tinyint(1) NOT NULL COMMENT '是否允许上传附件',
-  `icon` char(255) NOT NULL COMMENT '用户组图标',
-  `usernamecolor` char(7) NOT NULL COMMENT '用户名颜色',
-  `description` char(100) NOT NULL COMMENT '描述',
-  `sort` tinyint(3) unsigned NOT NULL default '0' COMMENT '序排',
-  `disabled` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否禁用',
-  `expand` mediumtext NOT NULL COMMENT '扩展',
-  PRIMARY KEY  (`groupid`),
-  KEY `disabled` (`disabled`),
-  KEY `listorder` (`sort`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='会员组';
-
--- ----------------------------
--- Records of shuipfcms_member_group
--- ----------------------------
-INSERT INTO `shuipfcms_member_group` VALUES ('8', '游客', '1', '0', '0', '0', '0', '0', '0', '1', '0', '0', '0', '0', '', '', '', '0', '0', '');
-INSERT INTO `shuipfcms_member_group` VALUES ('2', '新手上路', '1', '1', '50', '100', '1', '1', '0', '1', '0', '1', '0', '0', '', '', '', '2', '0', '');
-INSERT INTO `shuipfcms_member_group` VALUES ('6', '注册会员', '1', '2', '100', '150', '0', '1', '0', '1', '1', '1', '0', '1', '', '', '', '6', '0', '');
-INSERT INTO `shuipfcms_member_group` VALUES ('4', '中级会员', '1', '3', '150', '500', '1', '1', '0', '1', '1', '1', '0', '1', '', '', '', '4', '0', '');
-INSERT INTO `shuipfcms_member_group` VALUES ('5', '高级会员', '1', '5', '300', '999', '1', '1', '1', '1', '1', '1', '0', '1', '', '', '', '5', '0', '');
-INSERT INTO `shuipfcms_member_group` VALUES ('1', '禁止访问', '1', '0', '0', '0', '1', '0', '0', '0', '0', '0', '0', '0', '', '', '0', '0', '0', '');
-INSERT INTO `shuipfcms_member_group` VALUES ('7', '邮件认证', '1', '0', '0', '0', '0', '0', '0', '1', '0', '0', '0', '0', 'images/group/vip.jpg', '#000000', '', '7', '0', '');
+) ENGINE=MyISAM DEFAULT CHARSET=gbk COMMENT='后台登陆日志表';
 
 -- ----------------------------
 -- Table structure for `shuipfcms_menu`
@@ -584,12 +475,12 @@ CREATE TABLE `shuipfcms_menu` (
   KEY `status` (`status`),
   KEY `parentid` (`parentid`),
   KEY `model` (`model`)
-) ENGINE=MyISAM AUTO_INCREMENT=241 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shuipfcms_menu
 -- ----------------------------
-INSERT INTO `shuipfcms_menu` VALUES ('35', '0', 'Member', 'Model', 'index', '', '0', '1', '我的面板', '', '1');
+INSERT INTO `shuipfcms_menu` VALUES ('35', '0', 'Admin', 'Index', 'index', '', '0', '1', '我的面板', '', '1');
 INSERT INTO `shuipfcms_menu` VALUES ('2', '0', 'Admin', 'Config', 'index', '', '0', '1', '设置', '网站参数信息设置！', '2');
 INSERT INTO `shuipfcms_menu` VALUES ('36', '35', 'Admin', 'Adminmanage', 'myinfo', '', '0', '1', '个人信息', '个人信息', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('37', '36', 'Admin', 'Adminmanage', 'myinfo', '', '1', '1', '修改个人信息', '修改个人信息', '0');
@@ -630,15 +521,6 @@ INSERT INTO `shuipfcms_menu` VALUES ('75', '74', 'Comments', 'Comments', 'config
 INSERT INTO `shuipfcms_menu` VALUES ('77', '56', 'Contents', 'Position', 'index', '', '1', '1', '推荐位管理', '推荐位管理', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('82', '52', 'Tags', 'Tags', 'index', '', '1', '1', 'Tags管理', 'Tags管理', '4');
 INSERT INTO `shuipfcms_menu` VALUES ('84', '73', 'Admin', 'Module', 'index', '', '0', '1', '模块管理', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('85', '0', 'Member', 'Setting', 'index', '', '0', '1', '用户', '', '4');
-INSERT INTO `shuipfcms_menu` VALUES ('86', '85', 'Member', 'Member', 'index', '', '0', '1', '会员管理', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('87', '85', 'Member', 'Group', 'index', '', '0', '1', '会员组管理', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('88', '85', 'Member', 'Model', 'index', '', '0', '1', '会员模型管理', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('89', '86', 'Member', 'Member', 'index', '', '1', '1', '会员管理', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('90', '86', 'Member', 'Member', 'userverify', '', '1', '1', '审核会员', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('91', '86', 'Member', 'Setting', 'setting', '', '1', '1', '会员设置', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('92', '87', 'Member', 'Group', 'index', '', '1', '1', '会员组管理', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('93', '88', 'Member', 'Model', 'index', '', '1', '1', '模型管理', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('94', '33', 'Admin', 'Menu', 'add', '', '1', '1', '添加菜单', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('95', '33', 'Admin', 'Menu', 'edit', '', '1', '0', '修改', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('96', '33', 'Admin', 'Menu', 'delete', '', '1', '0', '删除', '', '0');
@@ -678,27 +560,6 @@ INSERT INTO `shuipfcms_menu` VALUES ('129', '77', 'Contents', 'Position', 'publi
 INSERT INTO `shuipfcms_menu` VALUES ('130', '77', 'Contents', 'Position', 'add', '', '1', '1', '添加推荐位', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('131', '77', 'Contents', 'Position', 'edit', '', '1', '0', '编辑', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('132', '77', 'Contents', 'Position', 'delete', '', '1', '0', '删除推荐位', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('133', '92', 'Member', 'Group', 'add', '', '1', '1', '添加会员组', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('134', '92', 'Member', 'Group', 'edit', '', '1', '0', '编辑', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('135', '92', 'Member', 'Group', 'delete', '', '1', '0', '删除', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('136', '92', 'Member', 'Group', 'sort', '', '1', '0', '排序', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('137', '89', 'Member', 'Member', 'add', '', '1', '1', '添加会员', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('138', '89', 'Member', 'Member', 'edit', '', '1', '0', '修改', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('139', '89', 'Member', 'Member', 'delete', '', '1', '0', '删除', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('140', '89', 'Member', 'Member', 'lock', '', '1', '0', '锁定', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('141', '89', 'Member', 'Member', 'unlock', '', '1', '0', '解除锁定', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('142', '89', 'Member', 'Member', 'memberinfo', '', '1', '0', '资料查看', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('143', '91', 'Member', 'Setting', 'myqsl_test', '', '1', '0', 'Ucenter 测试数据库链接', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('144', '93', 'Member', 'Model', 'add', '', '1', '1', '添加模型', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('145', '93', 'Member', 'Model', 'edit', '', '1', '0', '编辑', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('146', '93', 'Member', 'Model', 'delete', '', '1', '0', '删除', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('147', '93', 'Member', 'Model', 'move', '', '1', '0', '移动', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('148', '93', 'Member', 'Field', 'index', '', '1', '0', '字段管理', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('149', '148', 'Member', 'Field', 'edit', '', '1', '0', '编辑', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('150', '148', 'Member', 'Field', 'add', '', '1', '0', '添加字段', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('151', '148', 'Member', 'Field', 'delete', '', '1', '0', '删除字段', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('152', '148', 'Member', 'Field', 'listorder', '', '1', '0', '排序', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('153', '148', 'Member', 'Field', 'disabled', '', '1', '0', '字段启用与禁用', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('160', '62', 'Template', 'Style', 'updatefilename', '', '1', '0', '更新', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('161', '62', 'Template', 'Style', 'add', '', '1', '0', '添加', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('162', '62', 'Template', 'Style', 'delete', '', '1', '0', '删除', '', '0');
@@ -764,13 +625,12 @@ CREATE TABLE `shuipfcms_model` (
   `type` tinyint(1) NOT NULL COMMENT '模块标识',
   PRIMARY KEY  (`modelid`),
   KEY `type` (`type`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shuipfcms_model
 -- ----------------------------
 INSERT INTO `shuipfcms_model` VALUES ('1', '文章模型', '文章', 'article', '', '0', '0', '1', '0', '', '', '', '', '', '0', '0');
-INSERT INTO `shuipfcms_model` VALUES ('3', '普通会员', '', 'member_detail', '', '0', '0', '1', '0', '', '', '', '', '', '0', '2');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_model_field`
@@ -806,7 +666,7 @@ CREATE TABLE `shuipfcms_model_field` (
   PRIMARY KEY  (`fieldid`),
   KEY `modelid` (`modelid`,`disabled`),
   KEY `field` (`field`,`modelid`)
-) ENGINE=MyISAM AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shuipfcms_model_field
@@ -834,8 +694,7 @@ INSERT INTO `shuipfcms_model_field` VALUES ('20', '1', 'albums', '相册图集',
 INSERT INTO `shuipfcms_model_field` VALUES ('21', '1', 'download', '下载', '', '', '0', '0', '', '', 'downfiles', 'a:7:{s:15:\"upload_allowext\";s:31:\"gif|jpg|jpeg|png|bmp|rar|zip|7z\";s:13:\"isselectimage\";s:1:\"0\";s:13:\"upload_number\";s:2:\"20\";s:12:\"downloadlink\";s:1:\"1\";s:12:\"downloadtype\";s:1:\"1\";s:12:\"backstagefun\";s:0:\"\";s:8:\"frontfun\";s:0:\"\";}', '', '', '', '0', '0', '0', '1', '0', '1', '0', '0', '10', '0', '0');
 INSERT INTO `shuipfcms_model_field` VALUES ('22', '1', 'posid', '推荐位', '', '', '0', '0', '', '', 'posid', 'a:2:{s:5:\"width\";s:3:\"125\";s:12:\"defaultvalue\";s:0:\"\";}', '', '', '', '0', '1', '0', '1', '0', '0', '0', '0', '11', '0', '0');
 INSERT INTO `shuipfcms_model_field` VALUES ('23', '1', 'prefix', '自定义文件名', '', '', '0', '255', '', '', 'text', 'a:5:{s:4:\"size\";s:2:\"27\";s:12:\"defaultvalue\";s:0:\"\";s:10:\"ispassword\";s:1:\"0\";s:12:\"backstagefun\";s:0:\"\";s:8:\"frontfun\";s:0:\"\";}', '', '', '', '0', '1', '0', '0', '0', '1', '1', '0', '17', '0', '0');
-INSERT INTO `shuipfcms_model_field` VALUES ('43', '3', 'birthday', '日期', '', '', '1', '0', '', '', 'datetime', 'a:3:{s:9:\"fieldtype\";s:3:\"int\";s:6:\"format\";s:5:\"Y-m-d\";s:11:\"defaulttype\";s:1:\"0\";}', '', '', '', '0', '1', '0', '1', '0', '1', '0', '0', '0', '0', '0');
-INSERT INTO `shuipfcms_model_field` VALUES ('44', '1', 'tags', 'TAGS', '多关之间用空格或者“,”隔开', '', '0', '0', '', '', 'tags', 'a:4:{s:12:\"backstagefun\";s:0:\"\";s:17:\"backstagefun_type\";s:1:\"1\";s:8:\"frontfun\";s:0:\"\";s:13:\"frontfun_type\";s:1:\"1\";}', '', '', '', '0', '1', '0', '1', '0', '0', '0', '0', '4', '0', '0');
+INSERT INTO `shuipfcms_model_field` VALUES ('24', '1', 'tags', 'TAGS', '多关之间用空格或者“,”隔开', '', '0', '0', '', '', 'tags', 'a:4:{s:12:\"backstagefun\";s:0:\"\";s:17:\"backstagefun_type\";s:1:\"1\";s:8:\"frontfun\";s:0:\"\";s:13:\"frontfun_type\";s:1:\"1\";}', '', '', '', '0', '1', '0', '1', '0', '0', '0', '0', '4', '0', '0');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_module`
@@ -863,7 +722,6 @@ INSERT INTO `shuipfcms_module` VALUES ('Admin', '后台管理模块', '', '1', '
 INSERT INTO `shuipfcms_module` VALUES ('Attachment', '附件模块', '', '1', '1.0', '附件管理', '', '0', '1', '2012-06-21', '2012-06-21');
 INSERT INTO `shuipfcms_module` VALUES ('Comments', '评论模块', '', '1', '1.0', '评论管理模块', '', '0', '1', '2012-06-21', '2012-06-21');
 INSERT INTO `shuipfcms_module` VALUES ('Contents', '内容模块', '', '1', '1.0', '内容模块', '', '0', '1', '2012-06-21', '2012-06-21');
-INSERT INTO `shuipfcms_module` VALUES ('Member', '会员中心', '', '1', '1.0', '会员中心', 'a:31:{s:13:\"allowregister\";s:1:\"1\";s:11:\"choosemodel\";s:1:\"1\";s:14:\"defaultmodelid\";s:1:\"3\";s:15:\"enablemailcheck\";s:1:\"0\";s:14:\"registerverify\";s:1:\"0\";s:12:\"showapppoint\";s:1:\"0\";s:14:\"rmb_point_rate\";s:2:\"10\";s:12:\"defualtpoint\";s:1:\"0\";s:13:\"defualtamount\";s:1:\"0\";s:15:\"showregprotocol\";s:1:\"0\";s:11:\"regprotocol\";s:1755:\"欢迎您注册成为ShuipFCMS用户,请仔细阅读下面的协议，只有接受协议才能继续进行注册。\r\n      1)从中国境内向外传输技术性资料时必须符合中国有关法规。 \r\n　　2)使用网站服务不作非法用途。 \r\n　　3)不干扰或混乱网络服务。 \r\n　　4)不在论坛BBS或留言簿发表任何与政治相关的信息。 \r\n　　5)遵守所有使用网站服务的网络协议、规定、程序和惯例。\r\n　　6)不得利用本站危害国家安全、泄露国家秘密，不得侵犯国家社会集体的和公民的合法权益。\r\n　　7)不得利用本站制作、复制和传播下列信息： \r\n　　　1、煽动抗拒、破坏宪法和法律、行政法规实施的；\r\n　　　2、煽动颠覆国家政权，推翻社会主义制度的；\r\n　　　3、煽动分裂国家、破坏国家统一的；\r\n　　　4、煽动民族仇恨、民族歧视，破坏民族团结的；\r\n　　　5、捏造或者歪曲事实，散布谣言，扰乱社会秩序的；\r\n　　　6、宣扬封建迷信、淫秽、色情、赌博、暴力、凶杀、恐怖、教唆犯罪的；\r\n　　　7、公然侮辱他人或者捏造事实诽谤他人的，或者进行其他恶意攻击的；\r\n　　　8、损害国家机关信誉的；\r\n　　　9、其他违反宪法和法律行政法规的；\r\n　　　10、进行商业广告行为的。\r\n　　用户不能传输任何教唆他人构成犯罪行为的资料；不能传输长国内不利条件和涉及国家安全的资料；不能传输任何不符合当地法规、国家法律和国际法 律的资料。未经许可而非法进入其它电脑系统是禁止的。若用户的行为不符合以上的条款，ShuipFCMS将取消用户服务帐号。 \";s:21:\"registerverifymessage\";s:204:\"欢迎您注册成为ShuipFCMS用户，您的账号需要邮箱认证，点击下面链接进行认证：<a href=\\\"{$url}\\\" title=\\\"激活认证\\\">请点击</a>\r\n或者将网址复制到浏览器：{$url}\";s:14:\"forgetpassword\";s:174:\"ShuipFCMS密码找回，请在一小时内点击下面链接进行操作：<a href=\\\"{$url}\\\" title=\\\"密码找回\\\">请点击</a>\r\n或者将网址复制到浏览器：{$url}\";s:5:\"ucuse\";s:1:\"0\";s:10:\"uc_connect\";s:5:\"mysql\";s:6:\"uc_api\";s:0:\"\";s:5:\"uc_ip\";s:0:\"\";s:9:\"uc_dbhost\";s:9:\"127.0.0.1\";s:9:\"uc_dbuser\";s:0:\"\";s:7:\"uc_dbpw\";s:0:\"\";s:9:\"uc_dbname\";s:0:\"\";s:13:\"uc_dbtablepre\";s:0:\"\";s:12:\"uc_dbcharset\";s:4:\"utf8\";s:8:\"uc_appid\";s:0:\"\";s:6:\"uc_key\";s:0:\"\";s:11:\"sinawb_akey\";s:0:\"\";s:11:\"sinawb_skey\";s:0:\"\";s:9:\"qqwb_akey\";s:0:\"\";s:9:\"qqwb_skey\";s:0:\"\";s:7:\"qq_akey\";s:0:\"\";s:7:\"qq_skey\";s:0:\"\";}', '0', '1', '2012-06-21', '2012-06-21');
 INSERT INTO `shuipfcms_module` VALUES ('Models', '模型管理', '', '1', '1.0', '模型管理', '', '0', '1', '2012-06-21', '2012-06-21');
 INSERT INTO `shuipfcms_module` VALUES ('Tags', 'TAG标签', '', '1', '1.0', 'TAG标签', '', '0', '1', '2012-06-21', '2012-06-21');
 INSERT INTO `shuipfcms_module` VALUES ('Template', '模板管理', '', '1', '1.0', '前台模板管理', '', '0', '1', '2012-06-21', '2012-06-21');
@@ -889,7 +747,7 @@ CREATE TABLE `shuipfcms_operationlog` (
   PRIMARY KEY  (`id`),
   KEY `status` (`status`),
   KEY `username` (`uid`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=gbk COMMENT='后台操作日志表';
+) ENGINE=MyISAM DEFAULT CHARSET=gbk COMMENT='后台操作日志表';
 
 -- ----------------------------
 -- Table structure for `shuipfcms_position`
@@ -904,7 +762,7 @@ CREATE TABLE `shuipfcms_position` (
   `extention` char(100) default NULL,
   `listorder` smallint(5) unsigned NOT NULL default '0' COMMENT '排序',
   PRIMARY KEY  (`posid`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='推荐位';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='推荐位';
 
 -- ----------------------------
 -- Records of shuipfcms_position
@@ -949,7 +807,7 @@ CREATE TABLE `shuipfcms_role` (
   PRIMARY KEY  (`id`),
   KEY `parentId` (`pid`),
   KEY `status` (`status`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='角色信息列表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='角色信息列表';
 
 -- ----------------------------
 -- Records of shuipfcms_role
@@ -1029,7 +887,7 @@ CREATE TABLE `shuipfcms_tags` (
   UNIQUE KEY `tag` (`tag`),
   KEY `usetimes` (`usetimes`,`listorder`),
   KEY `hits` (`hits`,`listorder`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='tags主表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='tags主表';
 
 
 -- ----------------------------
@@ -1064,7 +922,7 @@ CREATE TABLE `shuipfcms_terms` (
   PRIMARY KEY  (`id`),
   KEY `name` (`name`),
   KEY `module` (`module`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='分类表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='分类表';
 
 -- ----------------------------
 -- Records of shuipfcms_terms

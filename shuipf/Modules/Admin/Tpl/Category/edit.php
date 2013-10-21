@@ -303,6 +303,7 @@
                   </dl>
                 </div></td>
             </tr>
+            <if condition="isModuleInstall('Member')">
             <tr>
               <th width="200">会员组权限：</th>
               <td><div class="user_group J_check_wrap">
@@ -318,6 +319,7 @@
                   </dl>
                 </div></td>
             </tr>
+            </if>
             <tr>
 	         <th width="200">应用到子栏目：</th>
              <td><ul class="switch_list cc ">
@@ -337,7 +339,7 @@
         </div>
       </div>
     </div>
-    <div class="">
+    <div class="btn_wrap">
       <div class="btn_wrap_pd">
         <input name="catid" type="hidden" value="{$data.catid}">
         <button class="btn btn_submit mr10 " type="submit">提交</button>

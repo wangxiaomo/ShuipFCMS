@@ -111,7 +111,6 @@ switch ($step) {
             'shuipf/Conf',
             'shuipf/Conf/addition.php',
             'shuipf/Template',
-            'api/uc_client/data',
         );
         include_once ("./templates/s2.php");
         exit();

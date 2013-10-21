@@ -305,6 +305,7 @@
                   </dl>
                 </div></td>
             </tr>
+            <if condition="isModuleInstall('Member')">
             <tr>
               <th width="200">会员组权限：</th>
               <td><div class="user_group J_check_wrap">
@@ -320,11 +321,12 @@
                   </dl>
                 </div></td>
             </tr>
+            </if>
           </table>
         </div>
       </div>
     </div>
-    <div class="">
+    <div class="btn_wrap">
       <div class="btn_wrap_pd">
         <button class="btn btn_submit mr10 " type="submit">提交</button>
       </div>

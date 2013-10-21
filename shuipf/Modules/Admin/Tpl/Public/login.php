@@ -6,7 +6,7 @@
 <meta charset="utf-8" />
 <title>系统后台 - {$Config.sitename} - by ShuipFCMS</title>
 <meta name="generator" content="ThinkPHP Shuipf" />
-<script language="javascript" type="text/javascript" src="{$config_siteurl}statics/js/jquery.js"></script>
+<Admintemplate file="Admin/Common/Js"/>
 <style type="text/css">
  html{font-size:62.5%;font-family:Tahoma}
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td,hr{margin:0;padding:0}
@@ -42,8 +42,7 @@ body{background-color:#f0f0f0}
 .wrap .inner{width:1000px;margin:0 auto}
 iframe{background-color:transparent}
 .header{padding:19px 0 0 100px}
-.header h1{
-	background-image:url({$config_siteurl}statics/images/logo.gif);background-repeat:no-repeat;width:227px;height:78px;line-height:150px;overflow:hidden;font-size:0}
+.header h1{ background-image:url({$config_siteurl}statics/images/logo.gif);background-repeat:no-repeat;width:227px;height:78px;line-height:150px;overflow:hidden;font-size:0}
 .qzone_login{margin-top:55px}
 .qzone_login .qzone_cont{float:left;margin-left:112px;position:relative;width:429px;_display:inline;overflow:hidden;height:321px}
 .qzone_cont .img_list{width:429px;height:321px}
@@ -218,12 +217,11 @@ if (window.parent !== window.self) {
 <div class="footer">
   <div class="inner">
     <div class="copyright clearfix">
-      <p class="copyright_en">Copyright &copy; 2011 - 2012 水平凡's Blog. All Rights Reserved.</p>
-      <p class="copyright_ch">水平凡's Blog</p>
+      <p class="copyright_en">Copyright &copy; 2012 - {:date('Y')} , ShuipfCMS All Rights Reserved.</p>
+      <p class="copyright_ch"><a href="http://www.shuipfcms.com" target="_blank">http://www.shuipfcms.com</a></p>
     </div>
   </div>
 </div>
-<Admintemplate file="Admin/Common/Js"/>
 <script src="{$config_siteurl}statics/js/common.js"></script>
 </body>
 </html>

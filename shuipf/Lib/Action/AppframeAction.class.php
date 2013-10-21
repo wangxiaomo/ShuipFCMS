@@ -101,6 +101,10 @@ class AppframeAction extends Action {
      * @return Boolean 没有登陆返回false，有登陆信息返回User Info
      */
     final protected function initUser() {
+        //判断模块是否安装
+        if (false == isModuleInstall('Member')) {
+            return false;
+        }
         //当然登陆用户ID
         $userid = service("Passport")->isLogged();
         //获取用户信息
@@ -150,23 +154,18 @@ class AppframeAction extends Action {
      * @return 没有返回值
      */
     final protected function initModel() {
-        if (!F("Model")) {
+        //模型缓存
+        if (false == F("Model")) {
             D("Model")->model_cache();
         }
         //栏目缓存
-        if (!F("Category")) {
+        if (false == F("Category")) {
             D("Category")->category_cache();
         }
         //20120615 增加
         if (!is_file(RUNTIME_PATH . "content_output.class.php")) {
-            import("Cacheapi");
-            $Cache = new Cacheapi();
-            $Cache->model_content_cache();
-        }
-        //会员相关必要缓存
-        if (!F("Model_Member") || !F("Member_group")) {
-            D("Model")->MemberModelCache();
-            D("Member_group")->Membergroup_cache();
+            D("Content_cache")->model_content_cache();
+            D("Position")->position_cache();
         }
     }
 

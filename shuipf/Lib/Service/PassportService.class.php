@@ -23,6 +23,10 @@ class PassportService {
      * @return object
      */
     public static function connect($options = array()) {
+        //判断模块是否安装
+        if (false == isModuleInstall('Member')) {
+            return get_instance_of('PassportService');
+        }
         //网站配置
         $config = F("Member_Config");
         if ($config['interface']) {
