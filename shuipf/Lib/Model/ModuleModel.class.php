@@ -47,6 +47,8 @@ class ModuleModel extends CommonModel {
             $this->error = '请选择需要安装的模块！';
             return false;
         }
+        //设置脚本最大执行时间
+        set_time_limit(0);
         //模板目录权限检测
         if ($this->chechmod($this->templatePath) == false) {
             $this->error = '目录 ' . $this->templatePath . ' 没有可写权限！';
@@ -108,7 +110,7 @@ class ModuleModel extends CommonModel {
                         //检查安装方法是否存在
                         if (method_exists($installObj, 'run')) {
                             //执行安装
-                            if (false == $installObj->install()) {
+                            if (false == $installObj->run()) {
                                 //删除安装状态
                                 $this->where(array('module' => $config['module']))->delete();
                                 //获取错误
@@ -189,6 +191,8 @@ class ModuleModel extends CommonModel {
             $this->error = '请选择需要卸载的模块！';
             return false;
         }
+        //设置脚本最大执行时间
+        set_time_limit(0);
         //取得该模块数据库中记录的安装信息
         $info = $this->where(array('module' => $module))->find();
         if (empty($info)) {
