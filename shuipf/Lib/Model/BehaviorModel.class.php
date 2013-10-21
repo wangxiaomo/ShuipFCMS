@@ -458,6 +458,8 @@ class BehaviorModel extends RelationModel {
             $return[$key] = array(
                 'ruleid' => $key,
             );
+            //行为名称
+            $return[$key]['tagname'] = $info['name'];
             //行为文件
             if (substr($rule, 0, 8) == 'phpfile:') {
                 $rule = explode('|', $rule);
