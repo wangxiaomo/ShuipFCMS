@@ -99,7 +99,7 @@ class App {
         }
         //判断当前访问的模块是否在已安装模块列表中
         if (!in_array(GROUP_NAME, $App)) {
-            $msg = L('_MODULE_NOT_EXIST_') . MODULE_NAME . "，该模块未进行安装！";
+            $msg = L('_MODULE_NOT_EXIST_') . GROUP_NAME . "，".L('_MODULE_NOT_INSTAL_')."！";
             if (APP_DEBUG) {
                 // 模块不存在 抛出异常
                 throw_exception($msg);
