@@ -96,14 +96,17 @@ class ModuleModel extends CommonModel {
             if (false !== $this->add($data)) {
                 import("Dir");
                 $Dir = new Dir();
+                //是否有php安装脚本
+                $isPhpScript = false;
                 //判断是否有自己的安装脚本
-                if (file_exists($this->appPath . $module . '/Install/' . $module . '.class.php')) {
-                    require_cache($this->appPath . $module . '/Install/' . $module . '.class.php');
+                if (file_exists($this->appPath . $module . '/Install/Install.class.php')) {
+                    require_cache($this->appPath . $module . '/Install/Install.class.php');
                     //检查是否存在
-                    if (class_exists($module)) {
-                        $installObj = new $module();
+                    if (class_exists('Install')) {
+                        $isPhpScript = true;
+                        $installObj = new Install();
                         //检查安装方法是否存在
-                        if (method_exists($installObj, 'install')) {
+                        if (method_exists($installObj, 'run')) {
                             //执行安装
                             if (false == $installObj->install()) {
                                 //删除安装状态
@@ -118,26 +121,25 @@ class ModuleModel extends CommonModel {
                             }
                         }
                     }
-                } else {
-                    //判断是否有数据库安装脚本
-                    if (file_exists($this->appPath . $module . '/Install/' . $module . '.sql')) {
-                        //读取
-                        $sql = file_get_contents($this->appPath . $module . '/Install/' . $module . '.sql');
-                        $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
-                        if (!empty($sql) && is_array($sql)) {
-                            foreach ($sql as $sql_split) {
-                                $this->execute($sql_split);
-                            }
+                }
+                //判断是否有数据库安装脚本
+                if (file_exists($this->appPath . $module . '/Install/' . $module . '.sql')) {
+                    //读取
+                    $sql = file_get_contents($this->appPath . $module . '/Install/' . $module . '.sql');
+                    $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
+                    if (!empty($sql) && is_array($sql)) {
+                        foreach ($sql as $sql_split) {
+                            $this->execute($sql_split);
                         }
                     }
-                    //判断是否有菜单安装项
-                    if (file_exists($this->appPath . $module . '/Install/Extention.inc.php')) {
-                        try {
-                            include $this->appPath . $module . '/Install/Extention.inc.php';
-                        } catch (Exception $exc) {
-                            $this->where(array('module' => $data['module']))->delete();
-                            throw_exception("安装模块 {$data['name']} 出现错误！");
-                        }
+                }
+                //判断是否有菜单安装项
+                if (file_exists($this->appPath . $module . '/Install/Extention.inc.php')) {
+                    try {
+                        include $this->appPath . $module . '/Install/Extention.inc.php';
+                    } catch (Exception $exc) {
+                        $this->where(array('module' => $data['module']))->delete();
+                        throw_exception("安装模块 {$data['name']} 出现错误！");
                     }
                 }
                 //前台模板
@@ -153,6 +155,19 @@ class ModuleModel extends CommonModel {
                 //安装行为
                 if (!empty($config['tags'])) {
                     D('Behavior')->moduleBehaviorInstallation($config['module'], $config['tags']);
+                }
+                //安装结束，最后调用安装脚本完成
+                if ($isPhpScript) {
+                    //检查安装方法是否存在
+                    if (method_exists($installObj, 'end')) {
+                        if (!$installObj->end()) {
+                            $this->error = '安装失败！';
+                            if (method_exists($installObj, 'getError')) {
+                                $this->error = $installObj->getError();
+                            }
+                            return false;
+                        }
+                    }
                 }
                 return true;
             } else {
@@ -192,40 +207,42 @@ class ModuleModel extends CommonModel {
         }
         import("Dir");
         $Dir = new Dir();
+        //是否有php卸载脚本
+        $isPhpScript = false;
         //删除权限
         M("Access")->where(array("g" => $module))->delete();
         //判断是否有自己的卸载脚本
-        if (file_exists($this->appPath . $module . '/Uninstall/' . $module . '.class.php')) {
-            require_cache($this->appPath . $module . '/Uninstall/' . $module . '.class.php');
+        if (file_exists($this->appPath . $module . '/Uninstall/Uninstall.class.php')) {
+            require_cache($this->appPath . $module . '/Uninstall/Uninstall.class.php');
             //检查是否存在
-            if (class_exists($module)) {
-                $installObj = new $module();
+            if (class_exists('Uninstall')) {
+                $uninstallObj = new Uninstall();
                 //检查安装方法是否存在
-                if (method_exists($installObj, 'uninstall')) {
+                if (method_exists($uninstallObj, 'run')) {
+                    $isPhpScript = true;
                     //执行卸载
-                    if (false == $installObj->uninstall()) {
+                    if (false == $uninstallObj->run()) {
                         //删除安装状态
                         $this->where(array('module' => $config['module']))->delete();
                         //获取错误
-                        if (method_exists($installObj, 'getError')) {
-                            $this->error = $installObj->getError();
+                        if (method_exists($uninstallObj, 'getError')) {
+                            $this->error = $uninstallObj->getError();
                         } else {
-                            $this->error = '模块安装失败！';
+                            $this->error = '模块卸载失败！';
                         }
                         return false;
                     }
                 }
             }
-        } else {
-            //判断是否有数据库卸载脚本
-            if (file_exists($this->appPath . $module . '/Uninstall/' . $module . '.sql')) {
-                //读取
-                $sql = file_get_contents($this->appPath . $module . '/Uninstall/' . $module . '.sql');
-                $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
-                if (!empty($sql) && is_array($sql)) {
-                    foreach ($sql as $sql_split) {
-                        $this->execute($sql_split);
-                    }
+        }
+        //判断是否有数据库卸载脚本
+        if (file_exists($this->appPath . $module . '/Uninstall/' . $module . '.sql')) {
+            //读取
+            $sql = file_get_contents($this->appPath . $module . '/Uninstall/' . $module . '.sql');
+            $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
+            if (!empty($sql) && is_array($sql)) {
+                foreach ($sql as $sql_split) {
+                    $this->execute($sql_split);
                 }
             }
         }
@@ -243,6 +260,19 @@ class ModuleModel extends CommonModel {
         if (file_exists($this->extresPath . strtolower($module) . '/')) {
             //拷贝模板到前台模板目录中去
             $Dir->delDir($this->extresPath . strtolower($module) . DIRECTORY_SEPARATOR);
+        }
+        //卸载结束，最后调用卸载脚本完成
+        if ($isPhpScript) {
+            //检查安装方法是否存在
+            if (method_exists($uninstallObj, 'end')) {
+                if (!$uninstallObj->end()) {
+                    $this->error = '卸载失败！';
+                    if (method_exists($uninstallObj, 'getError')) {
+                        $this->error = $uninstallObj->getError();
+                    }
+                    return false;
+                }
+            }
         }
         return true;
     }
