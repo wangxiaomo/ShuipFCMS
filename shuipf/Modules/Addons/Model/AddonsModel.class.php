@@ -23,7 +23,7 @@ class AddonsModel extends CommonModel {
      */
     public function execution($behavior, &$params) {
         $addonName = $behavior['addon'];
-        if (empty($addonName) || empty($behavior['action'])) {
+        if (empty($addonName) || empty($behavior['tagname'])) {
             return false;
         }
         //检查执行周期
@@ -47,7 +47,8 @@ class AddonsModel extends CommonModel {
         if (empty($addonsCache) || !isset($addonsCache[$addonName])) {
             return false;
         }
-        $action = $behavior['action'];
+        //插件对应的行为方法
+        $action = $behavior['tagname'];
         import('Addons.Util.Addon', APP_PATH . C('APP_GROUP_PATH') . '/');
         //获取类名
         $class = $this->getAddonClassName($addonName);
@@ -62,14 +63,20 @@ class AddonsModel extends CommonModel {
             return false;
         }
         $obj = get_instance_of($class);
-        if (method_exists($obj, $action)) {
-            $obj->$action($params);
-        } else {
-            if (APP_DEBUG) { // 记录行为的执行日志
-                trace('[ 插件 ' . $addonName . ' 中方法 ' . $action . ' 不存在] --File:' . $filePath, '', 'INFO');
+        //执行全局行为  _globalTag()
+        if (method_exists($obj, '_globalTag')) {
+            $obj->_globalTag($params);
+        }
+        if ($action) {
+            if (method_exists($obj, $action)) {
+                $obj->$action($params);
+                return true;
+            } else {
+                if (APP_DEBUG) { // 记录行为的执行日志
+                    trace('[ 插件 ' . $addonName . ' 中方法 ' . $action . ' 不存在] --File:' . $filePath, '', 'INFO');
+                }
             }
         }
-        return true;
     }
 
     /**
@@ -427,7 +434,7 @@ class AddonsModel extends CommonModel {
                 $data = array(
                     'behaviorid' => $behaviorInfo['id'],
                     'addons' => $addonName,
-                    'rule' => "addon:{$addonName}|action:{$beh}",
+                    'rule' => "addon:{$addonName}",
                     'datetime' => time(),
                 );
                 M('BehaviorRule')->add($data);
