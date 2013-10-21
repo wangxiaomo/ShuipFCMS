@@ -14,7 +14,7 @@
   <h2 class="h_a">开发团队</h2>
   <div class="home_info" id="home_devteam">
     <ul>
-      <li> <em>版权所有</em> <span>www.abc3210.com</span> </li>
+      <li> <em>版权所有</em> <span><a href="http://www.shuipfcms.com" target="_blank">www.shuipfcms.com</a></span> </li>
       <li> <em>负责人</em> <span>水平凡</span> </li>
       <li> <em>微博</em> <span><a href="http://t.qq.com/shuipf" target="_blank">http://t.qq.com/shuipf</a></span> </li>
       <li> <em>联系邮箱</em> <span>admin@abc3210.com</span> </li>
