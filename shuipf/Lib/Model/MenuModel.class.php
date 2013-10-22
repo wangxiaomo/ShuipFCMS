@@ -1,11 +1,10 @@
 <?php
 
-/* * 
+/**
  * 菜单
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class MenuModel extends CommonModel {
 
     //自动验证
@@ -56,7 +55,7 @@ class MenuModel extends CommonModel {
     public function admin_menu($parentid, $with_self = false) {
         //父节点ID
         $parentid = (int) $parentid;
-        $result = $this->where(array('parentid' => $parentid, 'status' => 1))->order(array("listorder" => "ASC"))->select();
+        $result = $this->where(array('parentid' => $parentid, 'status' => 1))->order(array("listorder" => "ASC", 'id' => 'ASC'))->select();
         if ($with_self) {
             $result2[] = $this->where(array('id' => $parentid))->find();
             $result = array_merge($result2, $result);
@@ -74,7 +73,7 @@ class MenuModel extends CommonModel {
             $action = $v['action'];
             //条件
             $where = array('g' => $v['app'], 'm' => $v['model'], 'a' => $action, 'role_id' => session("roleid"));
-            if($v['type'] == 0){
+            if ($v['type'] == 0) {
                 $where['m'] .= $v['id'];
                 $where['a'] .= $v['id'];
             }
@@ -203,5 +202,3 @@ class MenuModel extends CommonModel {
     }
 
 }
-
-?>
