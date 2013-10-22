@@ -15,6 +15,15 @@ abstract class Addon {
     public $configFile = NULL;
     //插件目录
     public $addonPath = NULL;
+    // 使用的模板引擎 每个行为可以单独配置不受系统影响
+    protected $template = 'Think';
+
+    /**
+     * 模板输出变量
+     * @var tVar
+     * @access protected
+     */
+    protected $tVar = array();
 
     /**
      * 架构函数 取得模板对象实例
@@ -29,8 +38,6 @@ abstract class Addon {
         if (is_file($this->addonPath . 'Config.php')) {
             $this->configFile = $this->addonPath . 'Config.php';
         }
-        //实例化视图类
-        $this->view = Think::instance('View');
         //插件初始化
         if (method_exists($this, '_initialize'))
             $this->_initialize();
@@ -88,58 +95,21 @@ abstract class Addon {
      * @param mixed $value 变量的值
      * @return Action
      */
-    final protected function assign($name, $value = '') {
-        $this->view->assign($name, $value);
-        return $this;
+    public function assign($name, $value = '') {
+        if (is_array($name)) {
+            $this->tVar = array_merge($this->tVar, $name);
+        } else {
+            $this->tVar[$name] = $value;
+        }
     }
 
     /**
-     * 模板显示 调用内置的模板引擎显示方法，
-     * @access protected
-     * @param string $templateFile 指定要调用的模板文件
-     * 默认为空 由系统自动定位模板文件
-     * @param string $charset 输出编码
-     * @param string $contentType 输出类型
-     * @param string $content 输出内容
-     * @param string $prefix 模板缓存前缀
-     * @return void
-     */
-    protected function display($templateFile = '') {
-        $this->fetch($templateFile);
-    }
-
-    /**
-     * 输出内容文本可以包括Html
-     * @access private
-     * @param string $content 输出内容
-     * @param string $charset 模板输出字符集
-     * @param string $contentType 输出类型
-     * @return mixed
-     */
-    private function render($content, $charset = '', $contentType = '') {
-        if (empty($charset))
-            $charset = C('DEFAULT_CHARSET');
-        if (empty($contentType))
-            $contentType = C('TMPL_CONTENT_TYPE');
-        // 网页字符编码
-        header('Content-Type:' . $contentType . '; charset=' . $charset);
-        header('Cache-control: ' . C('HTTP_CACHE_CONTROL'));  // 页面缓存控制
-        header('X-Powered-By:ShuipFCMS');
-        // 输出模板文件
-        echo $content;
-    }
-
-    /**
-     *  获取输出页面内容
-     * 调用内置的模板引擎fetch方法，
-     * @access protected
-     * @param string $templateFile 指定要调用的模板文件
-     * 默认为空 由系统自动定位模板文件
-     * @param string $content 模板输出内容
-     * @param string $prefix 模板缓存前缀* 
+     * 渲染模板输出 供render方法内部调用
+     * @access public
+     * @param string $templateFile  模板文件
      * @return string
      */
-    final protected function fetch($templateFile = '', $content = '', $prefix = '') {
+    protected function renderFile($templateFile = '') {
         if (empty($templateFile)) {
             //如果没有填写，尝试直接以当前插件名称
             $templateFile = $this->addonPath . 'Tpl/Behavior/' . $this->addonName . C('TMPL_TEMPLATE_SUFFIX');
@@ -153,9 +123,79 @@ abstract class Addon {
                 throw_exception($log);
             }
         }
-        // 解析并获取模板内容
-        $content = $this->view->fetch($templateFile, $content, $prefix);
-        $this->render($content);
+        ob_start();
+        ob_implicit_flush(0);
+        $template = strtolower($this->template ? $this->template : (C('TMPL_ENGINE_TYPE') ? C('TMPL_ENGINE_TYPE') : 'php'));
+        if ('php' == $template) {
+            // 使用PHP模板
+            if (!empty($this->tVar))
+                extract($this->tVar, EXTR_OVERWRITE);
+            // 直接载入PHP模板
+            include $templateFile;
+        }elseif ('think' == $template) { // 采用Think模板引擎
+            if ($this->checkCache($templateFile)) { // 缓存有效
+                // 分解变量并载入模板缓存
+                extract($this->tVar, EXTR_OVERWRITE);
+                //载入模版缓存文件
+                include C('CACHE_PATH') . md5($templateFile) . C('TMPL_CACHFILE_SUFFIX');
+            } else {
+                //如果取不到相关配置，尝试加载下ParseTemplate行为
+                if (!C('TMPL_L_DELIM')) {
+                    B('ParseTemplate');
+                }
+                $tpl = Think::instance('ThinkTemplate');
+                // 编译并加载模板文件
+                $tpl->fetch($templateFile, $this->tVar);
+            }
+        } else {
+            $class = 'Template' . ucwords($template);
+            if (is_file(CORE_PATH . 'Driver/Template/' . $class . '.class.php')) {
+                // 内置驱动
+                $path = CORE_PATH;
+            } else { // 扩展驱动
+                $path = EXTEND_PATH;
+            }
+            require_cache($path . 'Driver/Template/' . $class . '.class.php');
+            $tpl = new $class;
+            $tpl->fetch($templateFile, $this->tVar);
+        }
+        $content = ob_get_clean();
+        return $content;
+    }
+
+    /**
+     * 检查缓存文件是否有效
+     * 如果无效则需要重新编译
+     * @access public
+     * @param string $tmplTemplateFile  模板文件名
+     * @return boolen
+     */
+    protected function checkCache($tmplTemplateFile) {
+        if (!C('TMPL_CACHE_ON')) // 优先对配置设定检测
+            return false;
+        $tmplCacheFile = C('CACHE_PATH') . md5($tmplTemplateFile) . C('TMPL_CACHFILE_SUFFIX');
+        if (!is_file($tmplCacheFile)) {
+            return false;
+        } elseif (filemtime($tmplTemplateFile) > filemtime($tmplCacheFile)) {
+            // 模板文件如果有更新则缓存需要更新
+            return false;
+        } elseif (C('TMPL_CACHE_TIME') != 0 && time() > filemtime($tmplCacheFile) + C('TMPL_CACHE_TIME')) {
+            // 缓存是否在有效期
+            return false;
+        }
+        // 缓存有效
+        return true;
+    }
+
+    /**
+     * 模板显示 调用内置的模板引擎显示方法，
+     * @access protected
+     * @param string $templateFile 指定要调用的模板文件
+     * 默认为空 由系统自动定位模板文件
+     * @return void
+     */
+    protected function display($templateFile = '') {
+        echo $this->renderFile($templateFile);
     }
 
     //必须实现安装
