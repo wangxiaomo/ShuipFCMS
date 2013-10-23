@@ -656,18 +656,13 @@ class ContentAction extends AdminbaseAction {
                             $this->error("请选择需要移动信息！");
                         }
                         $ids = array_filter(explode('|', $_POST['ids']), "intval");
-                        //点击表
-                        $hits = M("Hits");
                         //删除静态文件
                         foreach ($ids as $sid) {
                             $data = $this->contentModel->where(array('catid' => $catid, 'id' => $sid))->find();
                             $Content->deleteHtml($catid, $sid, $data['inputtime'], $data['prefix'], $data);
                             $data['catid'] = $tocatid;
                             $urls = $this->url->show($data);
-                            if ($this->contentModel->where(array('catid' => $catid, 'id' => $sid))->save(array("catid" => $tocatid, 'url' => $urls['url']))) {
-                                //点击
-                                $hits->where(array("hitsid" => "c-$catid-$sid", "catid" => $catid))->save(array("catid" => $tocatid, "hitsid" => "c-$tocatid-$sid"));
-                            }
+                            $this->contentModel->where(array('catid' => $catid, 'id' => $sid))->save(array("catid" => $tocatid, 'url' => $urls['url']));
                         }
                         $this->success("移动成功！", U("Createhtml/update_urls"));
                     } else {
@@ -688,15 +683,6 @@ class ContentAction extends AdminbaseAction {
                     $tablename = ucwords($this->model[$modelid]['tablename']);
                     //进行栏目id更改
                     if (M($tablename)->where($where)->save(array("catid" => $tocatid, 'url' => ''))) {
-                        //点击表
-                        $hitsDb = M("Hits");
-                        $classid = $fromid;
-                        foreach ($classid as $catids) {
-                            $data = array();
-                            $data['catid'] = $tocatid;
-                            $data['hitsid'] = array('exp', "replace(hitsid,'c-{$catids}-','c-{$tocatid}-')");
-                            $hitsDb->where(array("catid" => $catids))->save($data);
-                        }
                         $this->success("移动成功，请使用《批量更新URL》更新新的地址！！", U("Createhtml/update_urls"));
                     } else {
                         $this->error("移动失败");
