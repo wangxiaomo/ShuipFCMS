@@ -1,1 +1,0 @@
-<?php if (!defined('SHUIPF_VERSION')) exit(); ?>投票首页
