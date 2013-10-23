@@ -14,7 +14,7 @@ class MainAction extends AdminbaseAction {
             '运行环境' => $_SERVER["SERVER_SOFTWARE"],
             'PHP运行方式' => php_sapi_name(),
             'MYSQL版本' => mysql_get_server_info(),
-            '产品名称' => '<font color="#FF0000">' . SHUIPF_APPNAME . '</font>' . "&nbsp;&nbsp;&nbsp; [<a href='http://www.abc3210.com' target='_blank'>访问官网</a>]",
+            '产品名称' => '<font color="#FF0000">' . SHUIPF_APPNAME . '</font>' . "&nbsp;&nbsp;&nbsp; [<a href='http://www.shuipfcms.com' target='_blank'>访问官网</a>]",
             '产品版本' => '<font color="#FF0000">' . SHUIPF_VERSION . '</font>',
             '产品流水号' => '<font color="#FF0000">' . SHUIPF_BUILD . '</font>',
             '上传附件限制' => ini_get('upload_max_filesize'),
