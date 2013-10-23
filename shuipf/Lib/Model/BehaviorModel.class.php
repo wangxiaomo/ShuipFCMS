@@ -352,6 +352,7 @@ class BehaviorModel extends RelationModel {
                     'remark' => $remark ? $remark : "模块{$module}中的行为！",
                     'status' => 1,
                     'system' => 0,
+                    'type' => $type,
                     'module' => $module,
                     'datetime' => $time,
                 ));
@@ -514,7 +515,7 @@ class BehaviorModel extends RelationModel {
                 $return[$key]['_type'] = 1;
             } elseif (substr($rule, 0, 6) == 'addon:') {//插件规则
                 //检查插件模块是否安装
-                if(!isset($appCache['Addons'])){
+                if (!isset($appCache['Addons'])) {
                     continue;
                 }
                 $rule = explode('|', $rule);
