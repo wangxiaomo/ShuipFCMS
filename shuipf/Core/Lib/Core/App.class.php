@@ -71,7 +71,7 @@ class App {
         //模块(应用)静态资源目录地址extresdir
         define('MODEL_EXTRESDIR', 'statics/extres/' . strtolower(GROUP_NAME) . '/');
         //后台模块比较特殊，可以指定域名访问，其他模块不需要经过此步骤
-        if ('Admin' == GROUP_NAME && $App['Domains']) {
+        if ('Admin' == GROUP_NAME && isset($App['Domains'])) {
             //网站配置缓存
             $Config = F("Config");
             //当前域名
