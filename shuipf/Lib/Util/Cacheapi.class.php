@@ -7,11 +7,6 @@
  */
 class Cacheapi {
 
-    function __call($name, $arguments) {
-        Log::write("调用Cacheapi类中未定义方法:" . $name . "！");
-        return false;
-    }
-
     //重新生成  Category Model Menu
     public function site_cache() {
         D("Config")->config_cache();
@@ -23,14 +18,6 @@ class Cacheapi {
         D("Comments")->comments_cache();
         //URL规则
         $this->urlrule_cache();
-    }
-
-    //会员相关缓存
-    public function member_cache() {
-        //会员组
-        D("Member_group")->Membergroup_cache();
-        //会员模型
-        D("Model")->MemberModelCache();
     }
 
     // 更新模型缓存方法

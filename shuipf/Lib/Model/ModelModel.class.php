@@ -349,18 +349,6 @@ class ModelModel extends CommonModel {
     }
 
     /**
-     * 生成会员模型缓存 
-     * @return boolean
-     */
-    public function MemberModelCache() {
-        F("Model_Member", $this->Cache(2));
-        //会员模型配置信息
-        $setting = M("Module")->where(array("module" => "Member"))->getField("setting");
-        F("Member_Config", unserialize($setting));
-        return true;
-    }
-
-    /**
      * 后台有更新则删除缓存
      * @param type $data
      */
@@ -388,5 +376,3 @@ class ModelModel extends CommonModel {
     }
 
 }
-
-?>

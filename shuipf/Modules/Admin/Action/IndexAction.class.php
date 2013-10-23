@@ -42,7 +42,6 @@ class IndexAction extends AdminbaseAction {
                         array('name' => "菜单，模型，栏目缓存更新成功！", 'function' => 'site_cache', 'param' => ''),
                         array('name' => "模型字段缓存更新成功！", 'function' => 'model_field_cache', 'param' => ''),
                         array('name' => "模型content处理类缓存更新成功！", 'function' => 'model_content_cache', 'param' => ''),
-                        array('name' => "会员相关缓存更新成功！", 'function' => 'member_cache', 'param' => ''),
                         array('name' => "应用更新成功！", 'function' => 'appstart_cache', 'param' => ''),
                         array('name' => "敏感词缓存生成成功！", 'function' => 'censorword_cache', 'param' => ''),
                     );
