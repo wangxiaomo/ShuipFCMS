@@ -112,7 +112,7 @@ class AddonsAction extends AdminbaseAction {
             if (!empty($info['config'])) {
                 foreach ($fileConfig as $key => $form) {
                     //如果已经有保存的值
-                    if ($info['config'][$key]) {
+                    if (isset($info['config'][$key])) {
                         $fileConfig[$key]['value'] = $info['config'][$key];
                     }
                 }
