@@ -121,14 +121,6 @@ INSERT INTO `shuipfcms_category` VALUES ('25', 'content', '0', '1', '', '8', '0,
 INSERT INTO `shuipfcms_censor_word` VALUES ('1', 'admin', '0', '/(http|https):\\/\\//', '{MOD}', '');
 
 -- ----------------------------
--- Records of shuipfcms_links
--- ----------------------------
-INSERT INTO `shuipfcms_links` VALUES ('1', 'http://www.abc3210.com/', 'ShuipFCMS', '', '_blank', '', '1', '0', '1371883030', '', '', '1');
-INSERT INTO `shuipfcms_links` VALUES ('2', 'http://git.oschina.net/shuipf/shuipfcms', '项目仓库', '', '_blank', '', '1', '0', '1371883132', '', '', '1');
-INSERT INTO `shuipfcms_links` VALUES ('3', 'http://git.oschina.net/shuipf/shuipfcms/blob/master/TemplateTagsHelp.txt', '标签使用帮助', '', '_blank', '', '1', '0', '1371883151', '', '', '1');
-
-
--- ----------------------------
 -- Records of shuipfcms_position_data
 -- ----------------------------
 INSERT INTO `shuipfcms_position_data` VALUES ('1', '21', '1', 'content', '1', '1', 'a:6:{s:5:\"title\";s:64:\"阿里封杀电商导购原因：分流淘宝 易被对手拉拢\";s:11:\"description\";s:198:\"写在前面的话：当阿里巴巴买百度关键字，封杀美丽说、蘑菇街之时，谁还曾记得，彼时，阿里还曾将美丽说、蘑菇街当作心头好。是什么原因使阿...\";s:5:\"thumb\";s:60:\"http://www.shuipfcms.com/demo/file/2013/06/51c51df81df14.jpg\";s:9:\"inputtime\";s:10:\"1371872761\";s:3:\"url\";s:24:\"/2013/yingxiao_06/1.html\";s:5:\"style\";s:0:\"\";}', '1', '0', null, '0');

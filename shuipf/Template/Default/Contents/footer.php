@@ -26,14 +26,8 @@
     </div>
     <div class="txt_con">
       <p style="line-height:2;">本站资源全来源于网络,不承担任何版权问题,如果我们侵犯了您的权益,请来信告知,我们会在第一时间处理！<br />
-        copyright &#169;2013 {$config_siteurl} <a href="http://www.miitbeian.gov.cn" ref="nofollow">湘ICP备08001074号-3</a><br/>
+        copyright &#169;2013 {$config_siteurl} <a href="http://www.miitbeian.gov.cn" ref="nofollow">闽ICP备13015355号-1</a><br/>
         {$Config.sitename}版权所有</p>
-      <p style="display:none"> 
-<script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F6a7ac600fcf5ef3f164732dcea2e2ba5' type='text/javascript'%3E%3C/script%3E"));
-</script> 
-      </p>
     </div>
     <div style="clear:both"></div>
   </div>

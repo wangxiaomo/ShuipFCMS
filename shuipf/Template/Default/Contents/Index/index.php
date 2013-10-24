@@ -375,17 +375,6 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     <div style="clear:both"></div>
   </ul>
 </div>
-<div id="links">
-  <h2><span class="more right"></span><span class="h2_txt">友情链接/Links</span></h2>
-  <div class="link_con">
-   <span class="link_a">
-   <links action="type_list" termsid="1">
-   <volist name="data" id="vo">
-       <a href='{$vo.url}' target='{$vo.target}'>{$vo.name}</a> 
-   </volist>
-   </links>
-   </span> </div>
-</div>
 <template file="Contents/footer.php"/>
 <script type="text/javascript">$(function (){$(window).toTop({showHeight : 100,});});</script>
 </body>

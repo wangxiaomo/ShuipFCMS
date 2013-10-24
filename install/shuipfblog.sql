@@ -397,32 +397,6 @@ CREATE TABLE `shuipfcms_customtemp` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='自定义模板表';
 
 -- ----------------------------
--- Records of shuipfcms_customtemp
--- ----------------------------
-
--- ----------------------------
--- Table structure for `shuipfcms_links`
--- ----------------------------
-DROP TABLE IF EXISTS `shuipfcms_links`;
-CREATE TABLE `shuipfcms_links` (
-  `id` mediumint(8) unsigned NOT NULL auto_increment COMMENT '链接id',
-  `url` varchar(255) NOT NULL default '' COMMENT '链接地址',
-  `name` varchar(255) NOT NULL default '' COMMENT '链接名称',
-  `image` varchar(255) NOT NULL default '' COMMENT '链接图片',
-  `target` varchar(25) NOT NULL default '' COMMENT '链接打开方式',
-  `description` varchar(255) NOT NULL default '' COMMENT '链接描述',
-  `visible` tinyint(1) NOT NULL COMMENT '链接是否可见',
-  `rating` int(11) NOT NULL default '0' COMMENT '链接等级',
-  `updated` int(11) NOT NULL COMMENT '链接最后更新时间',
-  `notes` mediumtext NOT NULL COMMENT '链接详细介绍',
-  `rss` varchar(255) NOT NULL default '' COMMENT '链接RSS地址',
-  `termsid` int(4) NOT NULL COMMENT '分类id',
-  PRIMARY KEY  (`id`),
-  KEY `visible` (`visible`),
-  KEY `termsid` (`termsid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='友情链接';
-
--- ----------------------------
 -- Table structure for `shuipfcms_locking`
 -- ----------------------------
 DROP TABLE IF EXISTS `shuipfcms_locking`;
@@ -577,11 +551,6 @@ INSERT INTO `shuipfcms_menu` VALUES ('179', '41', 'Admin', 'Rbac', 'roleadd', ''
 INSERT INTO `shuipfcms_menu` VALUES ('180', '41', 'Admin', 'Rbac', 'roledelete', '', '1', '0', '删除角色', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('181', '41', 'Admin', 'Rbac', 'roleedit', '', '1', '0', '角色编辑', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('185', '99', 'Models', 'Field', 'priview', '', '1', '0', '模型预览', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('199', '74', 'Links', 'Links', 'index', '', '1', '1', '友情链接', '友情链接', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('200', '199', 'Links', 'Links', 'add', '', '1', '1', '添加友情链接', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('201', '199', 'Links', 'Links', 'edit', '', '1', '0', '编辑', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('202', '199', 'Links', 'Links', 'delete', '', '1', '0', '删除', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('203', '199', 'Links', 'Links', 'terms', '', '1', '1', '分类管理', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('204', '75', 'Comments', 'Field', 'index', '', '1', '1', '字段管理', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('205', '204', 'Comments', 'Field', 'add', '', '1', '1', '添加字段', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('206', '204', 'Comments', 'Field', 'delete', '', '1', '0', '删除字段', '', '0');
@@ -725,7 +694,6 @@ INSERT INTO `shuipfcms_module` VALUES ('Contents', '内容模块', '', '1', '1.0
 INSERT INTO `shuipfcms_module` VALUES ('Models', '模型管理', '', '1', '1.0', '模型管理', '', '0', '1', '2012-06-21', '2012-06-21');
 INSERT INTO `shuipfcms_module` VALUES ('Tags', 'TAG标签', '', '1', '1.0', 'TAG标签', '', '0', '1', '2012-06-21', '2012-06-21');
 INSERT INTO `shuipfcms_module` VALUES ('Template', '模板管理', '', '1', '1.0', '前台模板管理', '', '0', '1', '2012-06-21', '2012-06-21');
-INSERT INTO `shuipfcms_module` VALUES ('Links', '友情链接', '', '0', '1.0', '友情链接模块', '', '0', '1', '2012-07-13', '2012-07-13');
 INSERT INTO `shuipfcms_module` VALUES ('Api', 'Api调用', '', '1', '1.0', 'Api调用', '', '0', '1', '2012-06-21', '2012-06-21');
 INSERT INTO `shuipfcms_module` VALUES ('Search', '搜索', '', '0', '20130531', '全站搜索', '', '0', '1', '2013-06-22', '2013-06-22');
 
@@ -923,11 +891,6 @@ CREATE TABLE `shuipfcms_terms` (
   KEY `name` (`name`),
   KEY `module` (`module`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='分类表';
-
--- ----------------------------
--- Records of shuipfcms_terms
--- ----------------------------
-INSERT INTO `shuipfcms_terms` VALUES ('1', '0', '文字链接', 'links');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_urlrule`
