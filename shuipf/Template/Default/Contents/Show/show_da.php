@@ -32,9 +32,6 @@ var GV = {
     <h1 title="{$title}">{$title}</h1>
     <p class="info"> 作者:佚名&nbsp;&nbsp;&nbsp;更新时间:{$updatetime}&nbsp;&nbsp;&nbsp; 点击次数:<span id="hits">0</span>次 </p>
     <!-- /info -->
-    <div class="article_ad"> 
-        <img src="http://lorempixel.com/640/60" />
-      </div>
     <div class="img_con">
       <center>
        {$content}

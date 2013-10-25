@@ -39,9 +39,6 @@ var GV = {
         </div>
         <div style="clear:both;"></div>
       </div>
-      <div class="article_ad"> 
-        <img src="http://lorempixel.com/640/60" />
-      </div>
       <div class="article_txt" id="a_fontsize">
         {$content}
         <if condition=" $voteid "> 
