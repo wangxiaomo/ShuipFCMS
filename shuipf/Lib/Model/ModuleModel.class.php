@@ -322,6 +322,15 @@ class ModuleModel extends CommonModel {
     }
 
     /**
+     * 检查某个模块是否存在
+     * @param type $module 模块名称
+     * @return boolean
+     */
+    public function exists($module) {
+        return is_dir($this->appPath . $module) ? true : false;
+    }
+
+    /**
      * 加载模块安装配置文件
      * @param type $module
      * @return boolean
