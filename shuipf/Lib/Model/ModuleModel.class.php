@@ -76,6 +76,13 @@ class ModuleModel extends CommonModel {
             $this->error = '获取模块安装配置出错！';
             return false;
         }
+        //版本检查
+        if ($config['adaptation']) {
+            if (version_compare(SHUIPF_VERSION, $config['adaptation'], '>=') == false) {
+                $this->error = '该模块要求系统最低版本为：' . $config['adaptation'] . '！';
+                return false;
+            }
+        }
         //静态资源文件
         if (file_exists($this->appPath . $module . "/Install/Extres/")) {
             //创建目录
@@ -83,6 +90,11 @@ class ModuleModel extends CommonModel {
                 $this->error = '目录 ' . $this->extresPath . strtolower($config['module']) . '/' . ' 创建失败！';
                 return false;
             }
+        }
+        //检查模块是否已经安装
+        if ($this->isInstall($module)) {
+            $this->error = '该模块已经安装过，无需进行重复安装！';
+            return false;
         }
         //组合数据
         $data = array(
@@ -182,8 +194,65 @@ class ModuleModel extends CommonModel {
     }
 
     /**
+     * 执行模块升级脚本
+     * @param type $module 模块名称
+     * @return boolean
+     */
+    public function upgrade($module) {
+        //检查模块是否安装
+        if ($this->isInstall($module) == false) {
+            $this->error = '模块没进行安装，无法进行模块升级！';
+            return false;
+        }
+        //取得模块信息
+        $info = $this->where(array('module' => $module))->find();
+        if (empty($info)) {
+            $this->error = '获取模块信息错误！';
+            return false;
+        }
+        //模块路径
+        $base = $this->appPath . $module . '/';
+        //SQL脚本文件
+        $exec = $base . 'Upgrade/upgrade.sql';
+        //phpScript
+        $phpScript = $base . 'Upgrade/Upgrade.class.php';
+        //判断是否有数据库升级脚本
+        if (file_exists($exec)) {
+            //获取全部参数
+            preg_match_all("/#\[version=(.*?)\](.+?)#\[\/version\]/ism", file_get_contents($exec), $match);
+            //遍历
+            foreach ($match[1] as $index => $version) {
+                //比较模块版本，仅处理小于或等于当前版本
+                if ($version && version_compare($version, $info['version'], '>=')) {
+                    //记录最后一个更新的版本号
+                    $upgradeVersion = $version;
+                    $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
+                    if (!empty($sql) && is_array($sql)) {
+                        foreach ($sql as $sql_split) {
+                            $this->execute($sql_split);
+                        }
+                    }
+                }
+            }
+            if ($upgradeVersion) {
+                $this->where(array('module' => $module))->save(array('version' => $upgradeVersion));
+                $info['version'] = $upgradeVersion;
+            }
+        }
+        //判断是否有升级程序脚本
+        if (file_exists($phpScript)) {
+            require_cache($phpScript);
+            if (class_exists('Upgrade')) {
+                $Upgrade = new Upgrade();
+                $Upgrade->run();
+            }
+        }
+        return true;
+    }
+
+    /**
      * 模块卸载
-     * @param type $module
+     * @param type $module 模块名称
      * @return boolean
      */
     public function uninstall($module) {
@@ -317,8 +386,8 @@ class ModuleModel extends CommonModel {
         if (empty($module)) {
             return false;
         }
-        $config = $this->where(array("module" => $module))->count();
-        return $config ? true : false;
+        $count = $this->where(array("module" => $module))->count();
+        return $count ? true : false;
     }
 
     /**

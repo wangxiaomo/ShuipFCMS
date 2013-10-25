@@ -89,6 +89,11 @@ class AddonsModel extends CommonModel {
             $this->error = '请选择需要安装的插件！';
             return false;
         }
+        //检查插件是否安装
+        if ($this->isInstall($addonName)) {
+            $this->error = '该插件已经安装，无需重复安装！';
+            return false;
+        }
         //获取类名
         $class = $this->getAddonClassName($addonName);
         //导入对应插件
@@ -156,7 +161,13 @@ class AddonsModel extends CommonModel {
             $this->error = '该插件不存在！';
             return false;
         }
+        //插件标识
         $addonName = $info['name'];
+        //检查插件是否安装
+        if ($this->isInstall($addonName) == false) {
+            $this->error = '该插件未安装，无需卸载！';
+            return false;
+        }
         //获取类名
         $class = $this->getAddonClassName($addonName);
         //导入对应插件
@@ -192,6 +203,63 @@ class AddonsModel extends CommonModel {
             $this->error = '卸载插件失败！';
             return false;
         }
+    }
+
+    /**
+     * 插件升级
+     * @param type $addonName 插件名称
+     * @return boolean
+     */
+    public function upgradeAddon($addonName) {
+        //检查模块是否安装
+        if ($this->isInstall($addonName) == false) {
+            $this->error = '插件没进行安装，无法进行插件升级！';
+            return false;
+        }
+        //获取插件信息
+        $info = $this->where(array('name' => $addonName))->find();
+        if (empty($info)) {
+            $this->error = '获取插件信息错误！';
+            return false;
+        }
+        //插件路径
+        $base = $this->addonsPath . $addonName . '/';
+        //SQL脚本文件
+        $exec = $base . 'upgrade.sql';
+        //phpScript
+        $phpScript = $base . 'Upgrade.class.php';
+        //判断是否有数据库升级脚本
+        if (file_exists($exec)) {
+            //获取全部参数
+            preg_match_all("/#\[version=(.*?)\](.+?)#\[\/version\]/ism", file_get_contents($exec), $match);
+            //遍历
+            foreach ($match[1] as $index => $version) {
+                //比较模块版本，仅处理小于或等于当前版本
+                if ($version && version_compare($version, $info['version'], '>=')) {
+                    //记录最后一个更新的版本号
+                    $upgradeVersion = $version;
+                    $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
+                    if (!empty($sql) && is_array($sql)) {
+                        foreach ($sql as $sql_split) {
+                            $this->execute($sql_split);
+                        }
+                    }
+                }
+            }
+            if ($upgradeVersion) {
+                $this->where(array('name' => $addonName))->save(array('version' => $upgradeVersion));
+                $info['version'] = $upgradeVersion;
+            }
+        }
+        //判断是否有升级程序脚本
+        if (file_exists($phpScript)) {
+            require_cache($phpScript);
+            if (class_exists('Upgrade')) {
+                $Upgrade = new Upgrade();
+                $Upgrade->run();
+            }
+        }
+        return true;
     }
 
     /**
@@ -284,11 +352,33 @@ class AddonsModel extends CommonModel {
     }
 
     /**
+     * 检查插件是否已经安装
+     * @param type $name 插件标识
+     * @return boolean
+     */
+    public function isInstall($name) {
+        if (empty($name)) {
+            return false;
+        }
+        $count = $this->where(array('name' => $name))->count('id');
+        return $count ? true : false;
+    }
+
+    /**
      * 获取插件目录
      * @return type
      */
     public function getAddonsPath() {
         return $this->addonsPath;
+    }
+
+    /**
+     * 检查插件目录是否存在
+     * @param type $name 插件名称
+     * @return type
+     */
+    public function exists($name) {
+        return is_dir($this->addonsPath . $name) ? true : false;
     }
 
     /**
