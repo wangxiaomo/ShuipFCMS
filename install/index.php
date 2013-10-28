@@ -155,7 +155,7 @@ switch ($step) {
             //描述
             $seo_description = trim($_POST['siteinfo']);
             //关键词
-            $seo_keywords = trim($_POST['keywords']);
+            $seo_keywords = trim($_POST['sitekeywords']);
             //测试数据
             $testdata = (int) $_POST['testdata'];
 
