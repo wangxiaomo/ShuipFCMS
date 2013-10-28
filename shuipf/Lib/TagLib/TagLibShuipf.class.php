@@ -41,8 +41,6 @@ class TagLibShuipf extends TagLib {
         'tags' => array('attr' => 'action,cache,num,page,pagetp,pagefun,return,order,tag,tagid,where', 'level' => 3),
         //评论标签
         'comment' => array('attr' => 'action,cache,num,return,catid,hot,date', 'level' => 3),
-        //友情链接标签
-        'links' => array('attr' => 'action,cache,num,return,termsid,id,order,where', 'level' => 3),
         //推荐位标签
         'position' => array('attr' => 'action,cache,num,return,posid,catid,thumb,order,where', 'level' => 3),
         //SQL标签
@@ -673,54 +671,6 @@ class TagLibShuipf extends TagLib {
         //解析模板
         $parseStr .= $this->tpl->parse($content);
         $_tags_iterateParseCache[$cacheIterateId] = $parseStr;
-        return $parseStr;
-    }
-
-    /**
-     * 友情链接标签
-     * 标签：<links></links>
-     * 作用：友情链接标签
-     * 用法示例：<links action="type_list" termsid="1" id="1"> .. HTML ..</links>
-     * 参数说明：
-     * 	公用参数：
-     * 		@cache		数据缓存时间，单位秒
-     * 		@return		返回值变量名称，默认data
-     * 		@where                         sql语句的where部分
-     * 	#当action为type_list时，获取tag标签列表
-     * 	#用法示例：<links action="type_list" termsid="1" id="1"> .. HTML ..</links>
-     * 	独有参数：
-     * 		@order		排序方式
-     * 		@termsid		分类ID
-     * 		@id		链接ID
-     * 
-      +----------------------------------------------------------
-     * @param string $attr 标签属性
-     * @param string $content  标签内容
-     */
-    public function _links($attr, $content) {
-        static $_links_iterateParseCache = array();
-        //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr . $content);
-        if (isset($_links_iterateParseCache[$cacheIterateId])) {
-            return $_links_iterateParseCache[$cacheIterateId];
-        }
-        $tag = $this->parseXmlAttr($attr, 'links');
-        /* 属性列表 */
-        $return = empty($tag['return']) ? "data" : $tag['return']; //数据返回变量
-        $action = $tag['action']; //方法
-        //sql语句的where部分
-        if ($tag['where']) {
-            $tag['where'] = $this->parseSqlCondition($tag['where']);
-        }
-
-        $parseStr = '<?php';
-        $parseStr .= ' $links_tag = TagLib("Links");';
-        $parseStr .= ' if(method_exists($links_tag, "' . $action . '")){';
-        $parseStr .= '     $' . $return . ' = $links_tag->' . $action . '(' . self::arr_to_html($tag) . ');';
-        $parseStr .= ' };';
-        $parseStr .= ' ?>';
-        $parseStr .= $this->tpl->parse($content);
-        $_links_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
     }
 
