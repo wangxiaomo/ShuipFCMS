@@ -916,51 +916,51 @@ function getTagsUrl($tagid, $tag) {
  * @return type
  */
 function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic = 'nopic.gif') {
+    static $_thumb_cache = array();
     if (empty($imgurl)) {
         return $smallpic;
+    }
+    //区分
+    $key = md5($imgurl.$width.$height.$thumbType.$smallpic);
+    if(isset($_thumb_cache[$key])){
+        return $_thumb_cache[$key];
     }
     if (!$width || !$height) {
         return $smallpic;
     }
-    //附件访问地址
-    $uploadUrl = CONFIG_SITEFILEURL;
-    //附件上传路径
-    $uploadPath = C('UPLOADFILEPATH');
-    //图片地址处理
-    $imgurlReplace = str_replace($uploadUrl, '', $imgurl);
-    //经过前面的处理，应该已经是本地路径，非http://开头的路径
-    if (strpos($imgurlReplace, '://')) {
-        return $imgurl;
-    }
+    // 解析URL
+    $imgParse = parse_url($imgurl);
+    //图片路径
+    $imgPath = SITE_PATH . $imgParse['path'];
     //检查文件是否存在，如果是开启远程附件的，估计就通过不了，以后在考虑完善！
-    if (!file_exists($uploadPath . $imgurlReplace)) {
+    if (!file_exists($imgPath)) {
         return $imgurl;
     }
     //取得图片相关信息
-    list($width_t, $height_t, $type, $attr) = getimagesize($uploadPath . $imgurlReplace);
+    list($width_t, $height_t, $type, $attr) = getimagesize($imgPath);
     //判断生成的缩略图大小是否正常
     if ($width >= $width_t || $height >= $height_t) {
         return $imgurl;
     }
     //取得文件名
-    $basename = basename($imgurlReplace);
+    $basename = basename($imgPath);
     //取得文件存放目录
-    $imgPathDir = str_replace($basename, '', $imgurlReplace);
+    $imgPathDir = str_replace($basename, '', $imgPath);
     //生成的缩略图文件名
     $newFileName = "thumb_{$width}_{$height}_" . $basename;
-    //检查是否已经生成过
-    if (file_exists($uploadPath . $newFileName)) {
-        return $uploadPath . $newFileName;
+    //检查生成的缩略图是否已经生成过
+    if (file_exists($imgPathDir . $newFileName)) {
+        return str_replace($basename, $newFileName, $imgurl);
     }
     //生成缩略图
     import('Image');
     if (1 == $thumbType) {
-        Image::thumb2($uploadPath . $imgurlReplace, $uploadPath . $imgPathDir . $newFileName, '', $width, $height, true);
+        Image::thumb2($imgPath, $imgPathDir . $newFileName, '', $width, $height, true);
     } else {
-        Image::thumb($uploadPath . $imgurlReplace, $uploadPath . $imgPathDir . $newFileName, '', $width, $height, true);
+        Image::thumb($imgPath, $imgPathDir . $newFileName, '', $width, $height, true);
     }
-
-    return $uploadUrl . $imgPathDir . $newFileName;
+    $_thumb_cache[$key] = str_replace($basename, $newFileName, $imgurl);
+    return $_thumb_cache[$key];
 }
 
 /**
