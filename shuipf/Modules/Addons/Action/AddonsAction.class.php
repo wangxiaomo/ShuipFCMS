@@ -306,6 +306,17 @@ class {$info['name']}Addon extends Addon {
             }
             //插件目录
             $addonsDir = $this->addons->getAddonsPath();
+            //检查插件目录是否存在
+            if (!file_exists($addonsDir)) {
+                //创建
+                if (mkdir($addonsDir, 0777, true) == false) {
+                    $this->error('插件目录' . $addonsDir . '创建失败！');
+                }
+            }
+            //检查插件目录可写权限
+            if (is_writeable($addonsDir) === false) {
+                $this->error('插件目录' . $addonsDir . '不可写！');
+            }
             //插件名称
             $addonName = pathinfo($_FILES['file']['name']);
             $addonName = $addonName['filename'];
