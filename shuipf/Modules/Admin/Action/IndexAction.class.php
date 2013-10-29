@@ -21,7 +21,7 @@ class IndexAction extends AdminbaseAction {
             $Cache = new Cacheapi();
             $Cachepath = RUNTIME_PATH;
             $Dir = new Dir();
-            $type = $this->_get("type");
+            $type = I('get.type');
             switch ($type) {
                 case "site":
                     try {
@@ -75,7 +75,7 @@ class IndexAction extends AdminbaseAction {
 
     //后台框架首页菜单搜索
     public function public_find() {
-        $keyword = trim($this->_get("keyword"));
+        $keyword = I('get.keyword');
         if (!$keyword) {
             $this->error("请输入需要搜索的关键词！");
         }
