@@ -7,8 +7,11 @@
  * @return type
  */
 function map($field, $value) {
-    foreach ($value as $r) {
-        $data.='|' . $r;
+    //因为是 有 x y 坐标，是以数组的形式
+    if (is_array($value)) {
+        $data = implode('|', $value);
+    } else {
+        $data = $value;
     }
-    return substr($data, 1);
+    return $data;
 }
