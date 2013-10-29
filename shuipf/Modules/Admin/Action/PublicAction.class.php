@@ -90,16 +90,8 @@ class PublicAction extends AdminbaseAction {
     //检查
     public final function public_notice() {
         $host = isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
-        $url = "ht" .
-                "tp:/" .
-                "/www" .
-                ".ab" .
-                "c321" .
-                "0.com/api_" .
-                "update.php?ve" .
-                "rsion=" . SHUIPF_VERSION . "&build=" . SHUIPF_BUILD .
-                "&do" .
-                "main={$host}";
+        $url = base64_decode('aHR0cDovL3d3dy5zaHVpcGZjbXMuY29tL2FwaV91cGRhdGUucGhw');
+        $url .= "?version=" . SHUIPF_VERSION . "&build=" . SHUIPF_BUILD . "&domain={$host}";
         try {
             if (function_exists("curl_init")) {
                 $ch = curl_init();
