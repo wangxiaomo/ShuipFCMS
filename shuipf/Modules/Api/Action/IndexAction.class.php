@@ -68,6 +68,16 @@ class IndexAction extends Action {
             return false;
         }
     }
+    
+    //是否开启安全通信
+    private function isconnect(){
+        //是否开启安全通信
+        if ($this->connect() == false) {
+            exit(serialize(array('error' => -10010, 'status' => 'fail')));
+        }else{
+            exit(serialize(array('status' => 'success')));
+        }
+    }
 
     //系统操作相关
     private function system() {
