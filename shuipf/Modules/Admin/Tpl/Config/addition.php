@@ -5,6 +5,16 @@
   <Admintemplate file="Common/Nav"/>
   <div class="table_full">
     <form method='post'   id="myform" class="J_ajaxForm"  action="{:U('Config/addition')}">
+      <div class="h_a">云平台设置</div>
+      <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+        <tr>
+          <th width="140">是否开启云平台:</th>
+          <td><select name="CLOUD_ON" id="CLOUD_ON" >
+            <option value="0" <if condition="$addition['CLOUD_ON'] eq '0' "> selected</if>>关闭</option>
+            <option value="1" <if condition="$addition['CLOUD_ON'] eq '1' "> selected</if>>开启</option>
+          </select> <span class="gray"> 为了安全，请在需要的时候开启！</span></td>
+        </tr>
+      </table>
       <div class="h_a">Cookie配置</div>
       <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
         <tr>

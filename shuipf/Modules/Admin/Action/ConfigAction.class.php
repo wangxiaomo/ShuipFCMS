@@ -100,6 +100,8 @@ class ConfigAction extends AdminbaseAction {
             $_POST['URL_PATHINFO_DEPR'] = $_POST['URL_PATHINFO_DEPR'] ? $_POST['URL_PATHINFO_DEPR'] : "/";
             //URL区分大小写设置
             $_POST['URL_CASE_INSENSITIVE'] = (int) $_POST['URL_CASE_INSENSITIVE'] ? true : false;
+            //云平台开关
+            $_POST['CLOUD_ON'] = (int) $_POST['CLOUD_ON'] ? true : false;
             try {
                 $filename = SITE_PATH . '/shuipf/Conf/addition.php';
                 file_exists($filename) or touch($filename);

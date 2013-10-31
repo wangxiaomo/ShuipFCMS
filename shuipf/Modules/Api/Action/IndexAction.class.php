@@ -61,7 +61,12 @@ class IndexAction extends Action {
 
     //是否开启安全通信
     private function connect() {
-        return true;
+        $open = C('CLOUD_ON');
+        if ($open) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //系统操作相关

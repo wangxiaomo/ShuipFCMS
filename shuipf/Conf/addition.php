@@ -5,6 +5,9 @@
  * @author 水平凡 <admin@abc3210.com>
  */
 return array(
+    //云平台开关
+    'CLOUD_ON' => false,
+    
     'COOKIE_EXPIRE' => 3600, // Coodie有效期
     'COOKIE_DOMAIN' => '', // Cookie有效域名
     'COOKIE_PATH' => '/', // Cookie路径
