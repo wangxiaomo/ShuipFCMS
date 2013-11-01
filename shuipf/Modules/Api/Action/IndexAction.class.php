@@ -68,13 +68,13 @@ class IndexAction extends Action {
             return false;
         }
     }
-    
+
     //是否开启安全通信
-    private function isconnect(){
+    private function isconnect() {
         //是否开启安全通信
         if ($this->connect() == false) {
             exit(serialize(array('error' => -10010, 'status' => 'fail')));
-        }else{
+        } else {
             exit(serialize(array('status' => 'success')));
         }
     }
@@ -177,7 +177,7 @@ class IndexAction extends Action {
                         } else {
                             //删除模块目录
                             $Dir->delDir($modulePath);
-                            exit(serialize(array('error' => $status, 'appid' => $command['appid'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile)));
+                            exit(serialize(array('error' => $status, 'appid' => $command['appid'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile, 'info' => $this->Cloud->getError())));
                         }
                         break;
                     //模块升级
