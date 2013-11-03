@@ -207,12 +207,13 @@ class IndexAction extends Action {
                     //模块搜索
                     case 'listing':
                         $module = array();
-                        $Module = F('Module');
-                        if (empty($Module)) {
-                            $Module = array();
+                        $moduleList = M('Module')->select();
+                        if (empty($moduleList)) {
+                            $moduleList = array();
                         }
-                        foreach ($Module as $appid => $app) {
-                            $module[$appid] = array('version' => $app['version']);
+                        foreach ($moduleList as $key => $app) {
+                            unset($app['setting']);
+                            $module[$app['module']] = $app;
                         }
                         exit(serialize(array('module' => $module, 'status' => 'success')));
                         break;

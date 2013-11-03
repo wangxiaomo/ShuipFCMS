@@ -234,10 +234,6 @@ class ModuleModel extends CommonModel {
                     }
                 }
             }
-            if ($upgradeVersion) {
-                $this->where(array('module' => $module))->save(array('version' => $upgradeVersion));
-                $info['version'] = $upgradeVersion;
-            }
         }
         //判断是否有升级程序脚本
         if (file_exists($phpScript)) {
@@ -246,6 +242,12 @@ class ModuleModel extends CommonModel {
                 $Upgrade = new Upgrade();
                 $Upgrade->run();
             }
+        }
+        //加载配置
+        $config = $this->getModuleInstallConfig($module);
+        if (!empty($config)) {
+            //更新版本号
+            $this->where(array('module' => $module))->save(array('version' => $config['version'], 'updatedate' => date('Y-m-d')));
         }
         return true;
     }
