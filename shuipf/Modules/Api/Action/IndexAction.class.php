@@ -286,15 +286,16 @@ class IndexAction extends Action {
                         break;
                     //插件搜索
                     case 'listing':
-                        $addonList = array();
-                        $Addons = F('Addons');
-                        if (empty($Addons)) {
-                            $Addons = array();
+                        $addon = array();
+                        $addonList = M('Addons')->select();
+                        if (empty($addonList)) {
+                            $addonList = array();
                         }
-                        foreach ($Addons as $name => $rs) {
-                            $addonList[$name] = array('version' => $rs['version']);
+                        foreach ($addonList as $key => $info) {
+                            unset($info['config'],$info['description']);
+                            $addon[$info['name']] = $info;
                         }
-                        exit(serialize(array('addon' => $addonList)));
+                        exit(serialize(array('addon' => $addon, 'status' => 'success')));
                         break;
                 }
                 break;
