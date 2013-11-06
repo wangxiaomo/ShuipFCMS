@@ -16,7 +16,7 @@ class Cloud {
 
     public function __construct() {
         //初始化临时文件存储目录
-        $this->filehash = RUNTIME_PATH . 'cloud/filehash/';
+        $this->filehash = RUNTIME_PATH . 'Cloud/filehash/';
     }
 
     /**
@@ -26,7 +26,7 @@ class Cloud {
      */
     public function get_temp_file($file) {
         $basename = pathinfo($file);
-        return $this->filehash . $basename['filename'] . '/';
+        return $this->filehash . md5($basename['filename']) . '/';
     }
 
     /**
@@ -35,7 +35,7 @@ class Cloud {
      * @return type
      */
     public function get_pack_file($file) {
-        return $this->filehash . basename($file);
+        return $this->filehash . md5(basename($file)).'.zip';
     }
 
     /**
