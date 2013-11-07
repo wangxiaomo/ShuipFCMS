@@ -86,6 +86,11 @@ class PublicAction extends AdminbaseAction {
             $this->success('登出成功！', U("Admin/Public/login"));
         }
     }
+    
+    //维持在线
+    public function online(){
+        
+    }
 
     //检查
     public final function public_notice() {

@@ -133,6 +133,10 @@ $(function () {
     $('#J_B_main_block').html(html.join(''));
     //后台位在第一个导航
     $('#J_B_main_block li:first > a').click();
+    //维持在线
+    setInterval(function(){
+        online();
+    }, 60000);
 });
 
 //检查是否出现上下页
@@ -498,6 +502,11 @@ function showTab(li) {
         }
         li.trigger('click');
     }
+}
+
+//用于维持在线
+function online(){
+    $.get('<?php echo U("Admin/Public/online");?>');
 }
 
 //增强体验，如果支持全屏，则使用更完美的全屏方案
