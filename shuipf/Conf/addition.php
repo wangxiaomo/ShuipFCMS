@@ -7,7 +7,6 @@
 return array(
     //云平台开关
     'CLOUD_ON' => false,
-    
     'COOKIE_EXPIRE' => 3600, // Coodie有效期
     'COOKIE_DOMAIN' => '', // Cookie有效域名
     'COOKIE_PATH' => '/', // Cookie路径
@@ -41,9 +40,11 @@ return array(
     'TOKEN_ON' => true, // 是否开启令牌验证
     'TOKEN_NAME' => '__hash__', // 令牌验证的表单隐藏字段名称
     'TOKEN_TYPE' => 'md5', //令牌哈希验证规则 默认为MD5
-    
+
     /* 分页配置 */
     "PAGE_LISTROWS" => 20, //分页数
     "VAR_PAGE" => "page", //当前分页变量 page=2 page=3
     'DEFAULT_GROUP' => 'Contents', // 默认分组
+    //函数加载
+    'LOAD_EXT_FILE' => 'extend',
 );

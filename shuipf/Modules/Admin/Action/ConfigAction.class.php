@@ -102,6 +102,8 @@ class ConfigAction extends AdminbaseAction {
             $_POST['URL_CASE_INSENSITIVE'] = (int) $_POST['URL_CASE_INSENSITIVE'] ? true : false;
             //云平台开关
             $_POST['CLOUD_ON'] = (int) $_POST['CLOUD_ON'] ? true : false;
+            //函数加载
+            $_POST['LOAD_EXT_FILE'] = trim($_POST['LOAD_EXT_FILE']);
             try {
                 $filename = SITE_PATH . '/shuipf/Conf/addition.php';
                 file_exists($filename) or touch($filename);
