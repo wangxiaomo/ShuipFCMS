@@ -22,10 +22,18 @@ function posid($field, $value) {
             if ($_POST['style_font_weight']) {
                 $textcontent['style'] = $textcontent['style'] . ';' . strip_tags($_POST['style_font_weight']);
             }
-            $textcontent = serialize($textcontent);
             foreach ($value as $r) {
                 if ($r != '-1') {
-                    $data = array('id' => $this->id, 'catid' => $this->data['catid'], 'posid' => $r, 'module' => 'content', 'modelid' => $this->modelid, 'data' => $textcontent, 'listorder' => $this->id);
+                    $data = array(
+                        'id' => $this->id,
+                        'catid' => $this->data['catid'],
+                        'posid' => $r,
+                        'module' => 'content',
+                        'thumb' => $textcontent['thumb'] ? 1 : 0,
+                        'modelid' => $this->modelid,
+                        'data' => serialize($textcontent),
+                        'listorder' => $this->id
+                    );
                     //增加
                     $position_data_db->data($data)->add();
                 }
