@@ -1,23 +1,18 @@
 <?php
 
 /**
+ * 网站主题切换
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
 class ThemeAction extends AdminbaseAction {
 
-    function _initialize() {
-        parent::_initialize();
-    }
-
-    /**
-     * 主题显示 
-     */
+    //主题显示
     public function index() {
         $filed = glob(TEMPLATE_PATH . '*');
         $count = 0;
         foreach ($filed as $key => $v) {
-            if(is_dir($v) == false){
+            if (is_dir($v) == false) {
                 continue;
             }
             $arr[$key]['name'] = basename($v);
@@ -26,8 +21,9 @@ class ThemeAction extends AdminbaseAction {
             } else {
                 $arr[$key]['preview'] = CONFIG_SITEURL . 'statics/images/nopic.jpg';
             }
-            if (AppframeAction::$Cache["Config"]['theme'] == $arr[$key]['name'])
+            if (AppframeAction::$Cache["Config"]['theme'] == $arr[$key]['name']) {
                 $arr[$key]['use'] = 1;
+            }
             $count ++;
         }
 
@@ -36,21 +32,17 @@ class ThemeAction extends AdminbaseAction {
         $this->display();
     }
 
-    /**
-     * 风格选择 
-     */
+    //风格选择
     public function chose() {
-        $theme = $this->_get("theme");
+        $theme = I('get.theme');
         if (empty($theme)) {
             $this->error("主题名称不能为空！");
         }
-
         if ($theme == AppframeAction::$Cache["Config"]['theme']) {
-            $this->error("主题未改变！",U("Theme/index"));
+            $this->error("主题未改变！", U("Theme/index"));
         }
-
         $status = D('Config')->where(array("varname" => "theme"))->save(array("value" => $theme));
-        if ($status) {
+        if ($status !== false) {
             $this->success("更新成功！");
         } else {
             $this->error("更新失败！");
@@ -58,5 +50,3 @@ class ThemeAction extends AdminbaseAction {
     }
 
 }
-
-?>
