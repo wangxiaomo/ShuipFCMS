@@ -20,7 +20,7 @@
                         </tr>
                         <tr>
                             <th>内容</th>
-                            <td><textarea id="content" name="content" style="width:95%; height:400px" validate="required:true, minlength:4" class="valid">{$content}</textarea></td>
+                            <td><textarea id="content" name="content" style="width:95%; height:400px" validate="required:true, minlength:4" class="valid"></textarea></td>
                         </tr>
                     </tbody>
                 </table>

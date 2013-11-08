@@ -25,7 +25,7 @@
           </tr>
           <tr>
             <th>页面内容</th>
-            <td><textarea id="temptext" name="temptext" style="width:95%; height:400px" validate="required:true, minlength:4" class="valid">{$temptext}</textarea></td>
+            <td><textarea id="temptext" name="temptext" style="width:95%; height:400px" validate="required:true, minlength:4" class="valid"><literal><?php echo $temptext;?></literal></textarea></td>
           </tr>
         </tbody>
       </table>
