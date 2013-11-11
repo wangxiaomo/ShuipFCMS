@@ -328,7 +328,7 @@ class CategoryAction extends AdminbaseAction {
                 $this->error($Category->getError());
             }
         } else {
-            $catid = (int) $this->_get("catid");
+            $catid = I('get.catid', 0, 'intval');
             import('Tree');
             $tree = new Tree();
             $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');

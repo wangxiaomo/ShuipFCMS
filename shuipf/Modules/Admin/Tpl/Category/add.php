@@ -196,7 +196,7 @@
                 <span class="gray">新增模板以category_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span>
                 </td>
             </tr>
-            <tr>
+            <tr id="lbmb" style="display:none;">
               <th width="200">栏目列表：</th>
               <td><select name="setting[list_template]" id="list_template">
                   <option value="list<?php echo C("TMPL_TEMPLATE_SUFFIX")?>" selected>默认列表页：list<?php echo C("TMPL_TEMPLATE_SUFFIX")?></option>
@@ -206,7 +206,7 @@
                 </select>
                 <span class="gray">新增模板以show_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span></td>
             </tr>
-            <tr  id="plmb">
+            <tr  id="plmb" style="display:none;">
               <th width="200">栏目内容页：</th>
               <td><select name="setting[show_template]" id="show_template">
                   <option value="show<?php echo C("TMPL_TEMPLATE_SUFFIX")?>" selected>默认内容页：show<?php echo C("TMPL_TEMPLATE_SUFFIX")?></option>
@@ -337,6 +337,17 @@
 <script type="text/javascript" src="{$config_siteurl}statics/js/content_addtop.js"></script>
 <script type="text/javascript">
 $(function(){
+	$("#child").click(function(){
+		if($(this).attr("checked")){
+			$('#fmmb').hide();
+			$('#plmb').show();
+			$('#lbmb').show();
+		}else{
+			$('#fmmb').show();
+			$('#plmb').hide();
+			$('#lbmb').hide();
+		}
+	});
     Wind.use('validate', 'ajaxForm', 'artDialog', function () {
         var form = $('form.J_ajaxForms');
         //ie处理placeholder提交问题

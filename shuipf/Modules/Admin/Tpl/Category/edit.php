@@ -183,6 +183,7 @@
         <div class="h_a">模板设置</div>
         <div class="table_full">
           <table width="100%" class="table_form ">
+            <if condition="$data['child']">
             <tr id="fmmb">
               <th width="200">栏目首页模板：</th>
               <td><select name="setting[category_template]" id="category_template">
@@ -194,6 +195,7 @@
                 <span class="gray">新增模板以category_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span>
                 </td>
             </tr>
+            <else />
             <tr>
               <th width="200">栏目列表：</th>
               <td><select name="setting[list_template]" id="list_template">
@@ -214,6 +216,7 @@
                 </select>
                 <span class="gray">新增模板以show_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span></td>
             </tr>
+            </if>
             <tr>
               <th>后台信息列表模板：</th>
               <td><input type="text" name="setting[list_customtemplate]" id="catdir" class="input" value="{$data['setting']['list_customtemplate']}">
