@@ -139,8 +139,6 @@ class Content {
         $oldata['url'] = $data['url'] = $urls['url'];
         //更新url
         $this->contentModel->token(false)->where(array('id' => $id))->save(array('url' => $data['url']));
-        //字段合并
-        $this->contentModel->dataMerger($data);
         //添加点击统计
         $this->hits_db = M("Hits");
         $hitsid = 'c-' . $data['catid'] . '-' . $id;
@@ -173,6 +171,9 @@ class Content {
                 $this->othor_catid($othor_catid, $urls['url'], $data, $this->modelid);
             }
         }
+        
+        //字段合并
+        $this->contentModel->dataMerger($data);
 
         //更新附件状态，把相关附件和文章进行管理
         $attachment = service("Attachment");
