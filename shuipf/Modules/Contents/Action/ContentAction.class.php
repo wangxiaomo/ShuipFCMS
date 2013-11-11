@@ -870,10 +870,10 @@ class ContentAction extends AdminbaseAction {
     }
 
     //同时发布到其他栏目选择页面
-    public function add_othors() {
+    public function public_othors() {
         $catid = I('get.catid', 0, 'intval');
         $this->assign("catid", $catid);
-        $this->display();
+        $this->display('add_othors');
     }
 
     //锁定时间续期
