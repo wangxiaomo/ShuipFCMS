@@ -102,11 +102,11 @@ class AdminAction extends AdminbaseAction {
     public function public_album_load() {
         $where = array();
         $db = M("Attachment");
-        $filename = $this->_get("filename");
-        $args = $this->_get("args");
+        $filename = I('get.filename', '', '');
+        $args = I('get.args', '', '');
         $args = explode(",", $args);
         empty($filename) ? "" : $where['filename'] = array('like', '%' . $filename . '%');
-        $uploadtime = $this->_get("uploadtime");
+        $uploadtime = I('get.uploadtime', '', '');
         if (!empty($uploadtime)) {
             $start_uploadtime = strtotime($uploadtime . ' 00:00:00');
             $stop_uploadtime = strtotime($uploadtime . ' 23:59:59');
@@ -133,7 +133,7 @@ class AdminAction extends AdminbaseAction {
     }
 
     //图片在线裁减，保存图片 
-    public function crop_upload() {
+    public function public_crop_upload() {
         $Prefix = "thumb_"; //默认裁减图片前缀
         if (isset($GLOBALS["HTTP_RAW_POST_DATA"])) {
             $pic = $GLOBALS["HTTP_RAW_POST_DATA"];
@@ -154,7 +154,7 @@ class AdminAction extends AdminbaseAction {
                 }
                 $new_file = $Prefix . $width . '_' . $height . '_' . $basename;
                 //栏目ID
-                $catid = I('get.catid',0,'intval');
+                $catid = I('get.catid', 0, 'intval');
                 $module = I('get.module');
                 $Attachment = service("Attachment", array("module" => $module, "catid" => $catid));
                 //附件存放路径
@@ -187,7 +187,7 @@ class AdminAction extends AdminbaseAction {
     }
 
     //显示附件下的缩图
-    public function pullic_showthumbs() {
+    public function public_showthumbs() {
         $aid = I('get.aid');
         $info = M("Attachment")->where(array('aid' => $aid))->find();
         if ($info) {
@@ -205,14 +205,18 @@ class AdminAction extends AdminbaseAction {
     }
 
     //删除附件缩图 
-    public function pullic_delthumbs() {
-        $filepath = urldecode($this->_get("filepath"));
+    public function public_delthumbs() {
+        load('@.adminfun');
+        //检查是否有删除附件权限
+        if (isCompetence('Attachment/Atadmin/delete') == false) {
+            exit('您没有附件删除权限！');
+        }
+        $filepath = urldecode(I('get.filepath', '', ''));
         $reslut = @unlink($filepath);
-        if ($reslut)
+        if ($reslut) {
             exit('1');
-        exit('0');
+        }
+        exit('附件删除失败！');
     }
 
 }
-
-?>

@@ -28,8 +28,12 @@ function thumb_delete(filepath, obj) {
             style: 'confirm',
             id: 'att_delete',
             ok: function () {
-                $.get(GV.DIMAUB + 'index.php?a=pullic_delthumbs&m=Attachments&g=Attachment&filepath=' + filepath, function (data) {
-                    if (data == 1) $(obj).parent().fadeOut("slow");
+                $.get(GV.DIMAUB + 'index.php?a=public_delthumbs&m=Admin&g=Attachment&filepath=' + filepath, function (data) {
+                    if (data == 1) {
+                    		$(obj).parent().fadeOut("slow");
+                    }else{
+                    		alert(data);
+                    }
                 })
             },
             cancel: function () {
