@@ -17,6 +17,10 @@ function isCompetence($path = null, $role_id = 0) {
         //角色ID
         $role_id = (int) AppframeAction::$Cache['User']['role_id'];
     }
+    //是否超级管理员组
+    if ($role_id == 1) {
+        return true;
+    }
     if (empty($role_id)) {
         return false;
     }
