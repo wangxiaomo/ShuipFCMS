@@ -178,6 +178,12 @@ class CategoryModel extends CommonModel {
 
     /**
      * 检查目录是否存在 
+     * @param type $catdir 栏目目录
+     * @param type $catid 栏目ID
+     * @param type $parentid 父栏目ID
+     * @param type $old_catdir 原来的栏目目录
+     * @param type $type 栏目类型
+     * @return boolean
      */
     public function checkCatdir($catdir, $catid = 0, $parentid = 0, $old_catdir = false, $type = false) {
         $type = $type ? $type : (int) $_REQUEST['type'];
@@ -193,6 +199,9 @@ class CategoryModel extends CommonModel {
         import('Url');
         $Url = new Url();
         $parenpath = $Url->get_categorydirpath($parentid);
+        if(!$parenpath){
+            $parenpath = '';
+        }
         $where = array("parentdir" => $parenpath, 'module' => 'content', 'catdir' => $catdir);
         $rs_catid = $this->where($where)->getField("catid");
         if ($rs_catid && $rs_catid != $catid) {
@@ -255,5 +264,3 @@ class CategoryModel extends CommonModel {
     }
 
 }
-
-?>
