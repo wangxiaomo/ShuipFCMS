@@ -248,8 +248,9 @@
               <th width="200">栏目生成静态页数：</th>
               <td><input type="text" name="setting[repagenum]" id="listorder" class="input" value="{$setting.repagenum}"> <span class="gray"> 页(超过分页采用动态链接，0为不限)</span></td>
             </tr>
+            <if condition="$data['child'] eq 0">
             <tr>
-              <th>内容页生成Html：</th>
+              <th width="200">内容页生成Html：</th>
               <td><ul class="switch_list cc ">
                   <li>
                     <label>
@@ -263,16 +264,19 @@
                   </li>
                 </ul></td>
             </tr>
+            </if>
             <tr>
               <th>栏目页URL规则：</th>
               <td><div style="<if condition="$setting['ishtml'] eq '1' ">display:none</if>" id="category_php_ruleid"> {$category_php_ruleid} </div>
                 <div style="<if condition="$setting['ishtml'] eq '0' ">display:none</if>" id="category_html_ruleid"> {$category_html_ruleid} </div></td>
             </tr>
+             <if condition="$data['child'] eq 0">
             <tr>
               <th>内容页URL规则：</th>
               <td><div style="<if condition="$setting['content_ishtml'] eq '1' ">display:none</if>" id="show_php_ruleid"> {$show_php_ruleid} </div>
                 <div style="<if condition="$setting['content_ishtml'] eq '0' ">display:none</if>" id="show_html_ruleid"> {$show_html_ruleid} </div></td>
             </tr>
+            </if>
             <tr style="<if condition="$setting['ishtml'] eq '0' ">display:none</if>" id="tr_domain">
               <th>绑定域名：</th>
               <td><input type="text" value="{$data.domain}" size="50" class="input" id="url" name="info[url]">
