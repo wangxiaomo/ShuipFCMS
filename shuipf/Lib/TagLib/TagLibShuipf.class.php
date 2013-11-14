@@ -177,7 +177,7 @@ class TagLibShuipf extends TagLib {
             //获取模板中的Categorys变量
             $Categorys = $this->tpl->get('Categorys');
             if (!$Categorys) {
-                $Categorys = F('Categorys');
+                $Categorys = F('Category');
             }
             if (!$Categorys[$catid]) {
                 return '';
