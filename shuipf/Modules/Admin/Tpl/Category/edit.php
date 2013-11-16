@@ -115,6 +115,7 @@
                   <option value="6" <if condition="$data['setting']['generatelish'] eq '6' ">selected</if>>生成当前栏目、父栏目与首页</option>
                 </select></td>
             </tr>
+            <if condition="isModuleInstall('Member')">
             <tr>
               <th>前台投稿审核：</th>
               <td><ul class="switch_list cc ">
@@ -161,6 +162,7 @@
               <td><input type="text" class="input" value="{$data['setting']['member_addpoint']}" name="setting[member_addpoint]">
                 <span class="gray"><b class="red  ">点数</b> (不增加请设为0,扣点请设为负数)</span></td>
             </tr>
+            </if>
             <tr>
               <th ><strong>META Title（栏目标题）</strong><br/>
                 针对搜索引擎设置的标题</th>
