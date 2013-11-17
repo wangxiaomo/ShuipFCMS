@@ -9,19 +9,19 @@
       <table width="100%"  class="table_form">
         <tr>
           <th width="180">是否开启评论：</th>
-          <td class="y-bg"><input type="checkbox" class="input" name="status" value="1" <if condition="$data['status'] eq '1' ">checked</if> />开启评论</td>
+          <td class="y-bg"><input type="checkbox" name="status" value="1" <if condition="$data['status'] eq '1' ">checked</if> />开启评论</td>
         </tr>
         <tr>
           <th width="180">是否允许游客评论：</th>
-          <td class="y-bg"><input type="checkbox" class="input" name="guest" value="1" <if condition="$data['guest'] eq '1' ">checked</if> />允许游客评论</td>
+          <td class="y-bg"><input type="checkbox" name="guest" value="1" <if condition="$data['guest'] eq '1' ">checked</if> />允许游客评论</td>
         </tr>
         <tr>
           <th width="180">是否需要审核：</th>
-          <td class="y-bg"><input type="checkbox" class="input" class="" name="check" value="1"  <if condition="$data['check'] eq '1' ">checked</if>/>发表评论需要审核</td>
+          <td class="y-bg"><input type="checkbox" class="" name="check" value="1"  <if condition="$data['check'] eq '1' ">checked</if>/>发表评论需要审核</td>
         </tr>
         <tr>
           <th width="180">是否开启验证码：</th>
-          <td class="y-bg"><input type="checkbox" class="input" name="code" value="1"  <if condition="$data['code'] eq '1' ">checked</if>/>开启验证码</td>
+          <td class="y-bg"><input type="checkbox" name="code" value="1"  <if condition="$data['code'] eq '1' ">checked</if>/>开启验证码</td>
         </tr>
         <tr>
           <th width="180">评论发表间隔时间：</th>

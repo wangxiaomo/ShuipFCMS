@@ -56,7 +56,7 @@
         </tbody>
       </table>
    </div>
-   <div class="">
+   <div class="btn_wrap">
       <div class="btn_wrap_pd">             
         <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">修改</button>
       </div>

@@ -8,7 +8,7 @@
   <table width="100%" cellspacing="0">
         <thead>
           <tr>
-            <td width="50"  align="center"><input type="checkbox" class="J_check_all" data-direction="x" data-checklist="J_check_x" onclick="selectall('tagid[]');">全选</td>
+            <td width="50"  align="center"><input type="checkbox" class="J_check_all" data-direction="x" data-checklist="J_check_x" onClick="selectall('tagid[]');">全选</td>
             <td width="50">排序</td>
             <td align="center">关键字</td>
             <td align="center">信息总数</td>
@@ -37,8 +37,9 @@
         <div class="pages"> {$Page} </div>
       </div>
   </div>
-  <div class="">
+  <div class="btn_wrap">
       <div class="btn_wrap_pd">             
+      	<label class="mr20"><input type="checkbox" class="J_check_all" data-direction="y" data-checklist="J_check_y">全选</label>
         <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit" data-action="{:U('Tags/listorder')}">排序</button>
         <button class="btn  mr10 J_ajax_submit_btn" type="submit">删除</button>
       </div>

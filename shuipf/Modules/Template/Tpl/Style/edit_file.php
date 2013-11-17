@@ -17,7 +17,7 @@
                     <tbody>
                         <tr>
                             <th width="120">文件名称</th>
-                            <td><input type="text" class="input" validate="required:true, minlength:2, maxlength:30"  value="{$file}" readonly="readonly"></td>
+                            <td><input type="text" class="input" validate="required:true, minlength:2, maxlength:30"  value="{$file}" readonly></td>
                         </tr>
                         <tr>
                             <th>内容</th>
@@ -26,7 +26,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="">
+            <div class="btn_wrap">
                 <div class="btn_wrap_pd">
                     <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">提交</button>
                 </div>

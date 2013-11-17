@@ -35,7 +35,7 @@
         </tr>
       </tbody></table>
     </div>
-     <div class="">
+     <div class="btn_wrap" style="z-index:999;">
       <div class="btn_wrap_pd">             
         <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">回复</button>
       </div>

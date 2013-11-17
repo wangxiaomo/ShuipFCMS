@@ -31,8 +31,9 @@
         <div class="pages"> {$Page} </div>
       </div>
     </div>
-    <div class="">
+    <div class="btn_wrap">
       <div class="btn_wrap_pd">
+        <label class="mr20"><input type="checkbox" class="J_check_all" data-direction="y" data-checklist="J_check_y">全选</label> 
         <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">生成自定义页面</button>
       </div>
     </div>

@@ -55,7 +55,7 @@
         </thead>
         <volist name="data" id="vo">
           <tr>
-            <td ><input class="input" type="checkbox" name="delete[]" value="{$vo.id}" ></td>
+            <td ><input type="checkbox" name="delete[]" value="{$vo.id}" ></td>
             <td><input type="text" class="input" size="30" name="find[{$vo.id}]" value="{$vo.find}" ></td>
             <td><select name="replacement[{$vo.id}]" onChange="replaces({$vo.id},this.value);" >
                 <option value="{BANNED}" <if condition=" $vo['replacement'] eq '{BANNED}' ">selected</if> >禁止关键词</option>
@@ -80,7 +80,7 @@
         <div class="pages"> {$Page} </div>
       </div>
     </div>
-    <div class="">
+    <div class="btn_wrap">
       <div class="btn_wrap_pd">
         <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">提交</button>
       </div>
