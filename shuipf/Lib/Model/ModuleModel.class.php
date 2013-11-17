@@ -429,8 +429,12 @@ class ModuleModel extends CommonModel {
             'adaptation' => '',
         );
         //加载安装配置文件
-        if (file_exists($this->appPath . $module . '/Install/Config.inc.php')) {
-            $moduleConfig = include $this->appPath . $module . '/Install/Config.inc.php';
+        if (file_exists($this->appPath . $module . '/Install/Config.inc.php') || file_exists($this->appPath . $module . '/Config.inc.php')) {
+            if(file_exists($this->appPath . $module . '/Config.inc.php')){
+                    $moduleConfig = include $this->appPath . $module . '/Config.inc.php';
+                }else{
+                    $moduleConfig = include $this->appPath . $module . '/Install/Config.inc.php';
+                }
             if (is_array($moduleConfig)) {
                 $Config = $moduleConfig;
             } else {
