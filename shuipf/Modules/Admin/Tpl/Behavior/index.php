@@ -17,7 +17,7 @@
   <div class="search_type  mb10">
     <form action="{$config_siteurl}index.php" method="get">
       <input type="hidden" value="Admin" name="g">
-      <input type="hidden" value="Action" name="m">
+      <input type="hidden" value="Behavior" name="m">
       <input type="hidden" value="index" name="a">
       <div class="mb10">
         <div class="mb10"> <span class="mr20"> 行为标识：
