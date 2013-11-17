@@ -7,7 +7,7 @@
  * @return int
  */
 function pages($field, $value) {
-    $this->infoData[$this->ContentModel->getRelationName()]['paginationtype'] = empty($this->data['paginationtype']) ? 1 : $this->data['paginationtype'];
-    $this->infoData[$this->ContentModel->getRelationName()]['maxcharperpage'] = empty($this->data['maxcharperpage']) ? 10000 : $this->data['maxcharperpage'];
+    $this->infoData[$this->ContentModel->getRelationName()]['paginationtype'] = !isset($value['paginationtype']) ? 2 : $value['paginationtype'];
+    $this->infoData[$this->ContentModel->getRelationName()]['maxcharperpage'] = empty($value['maxcharperpage']) ? 10000 : $value['maxcharperpage'];
     return $value;
 }
