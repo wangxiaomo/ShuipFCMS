@@ -64,7 +64,7 @@ if (window.top !== window.self) {
         </div></td>
     </tr>
     <tr class="content">
-      <th  style="overflow:hidden;border-right: 1px solid #CCC;"> 
+      <th  style="overflow:hidden;border-right: 2px solid #CCC;"> 
         <div id="B_menunav">
           <div class="menubar">
             <dl id="B_menubar">
