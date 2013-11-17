@@ -67,8 +67,12 @@ class ModuleAction extends AdminbaseAction {
                 //适配最低ShuipFCMS版本，
                 'adaptation' => '',
             );
-            if (file_exists($this->appPath . $module . '/Install/Config.inc.php')) {
-                $moduleConfig = include $this->appPath . $module . '/Install/Config.inc.php';
+            if (file_exists($this->appPath . $module . '/Install/Config.inc.php') || file_exists($this->appPath . $module . '/Config.inc.php')) {
+                if(file_exists($this->appPath . $module . '/Config.inc.php')){
+                    $moduleConfig = include $this->appPath . $module . '/Config.inc.php';
+                }else{
+                    $moduleConfig = include $this->appPath . $module . '/Install/Config.inc.php';
+                }
                 if (is_array($moduleConfig)) {
                     $Config = $moduleConfig;
                     $Config['status'] = 1;
