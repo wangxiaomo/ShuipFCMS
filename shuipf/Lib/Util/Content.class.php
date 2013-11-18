@@ -139,10 +139,6 @@ class Content {
         $oldata['url'] = $data['url'] = $urls['url'];
         //更新url
         $this->contentModel->token(false)->where(array('id' => $id))->save(array('url' => $data['url']));
-        //添加点击统计
-        $this->hits_db = M("Hits");
-        $hitsid = 'c-' . $data['catid'] . '-' . $id;
-        $this->hits_db->add(array('hitsid' => $hitsid, 'modelid' => $this->modelid, 'catid' => $data['catid'], 'updatetime' => time()), array(), true);
         //更新到全站搜索
         if ($data['status'] == 99) {
             $this->search_api($id, $data);
@@ -171,7 +167,7 @@ class Content {
                 $this->othor_catid($othor_catid, $urls['url'], $data, $this->modelid);
             }
         }
-        
+
         //字段合并
         $this->contentModel->dataMerger($data);
 
@@ -484,8 +480,6 @@ class Content {
         //调用 content_delete
         $content_update = new content_delete($this->modelid);
         $content_update->get($data);
-        //删除统计
-        M("Hits")->where(array("hitsid" => "c-" . $this->catid . "-" . $id))->delete();
         //删除评论
         $comment_id = "c-$this->catid-$id";
         D('Comments')->deleteCommentsMark($comment_id);
@@ -493,7 +487,9 @@ class Content {
         $Attachment = service("Attachment");
         $Attachment->api_delete('c-' . $this->catid . '-' . $id);
         //删除对应的会员投稿记录信息
-        M("MemberContent")->where(array("content_id" => $id, "catid" => $catid))->delete();
+        if (isModuleInstall('Member')) {
+            M("MemberContent")->where(array("content_id" => $id, "catid" => $catid))->delete();
+        }
         //删除全站搜索数据
         $this->search_api($id, $data, "delete");
         //删除推荐位的信息
@@ -525,9 +521,6 @@ class Content {
         $html = get_instance_of('Html');
         import('Url');
         $this->url = get_instance_of('Url');
-        if (!is_object($this->hits_db)) {
-            $this->hits_db = M("Hits");
-        }
         $this->contentModel = ContentModel::getInstance($modelid);
         //循环需要同步发布的栏目
         foreach ($othor_catid as $cid) {
@@ -579,9 +572,6 @@ class Content {
                 );
                 $newid = $contentModel->relation(true)->add($dataarray);
             }
-            //添加统计
-            $hitsid = 'c-' . $cid . '-' . $newid;
-            $this->hits_db->add(array('hitsid' => $hitsid, 'modelid' => $mid, 'catid' => $cid, 'updatetime' => time()), array(), true);
         }
         return true;
     }
@@ -609,7 +599,7 @@ class Content {
         if ($r) {
             if ($this->Content->where(array('id' => $id, 'catid' => $catid))->save(array("status" => $status))) {
                 //判断是否前台投稿
-                if ($r['sysadd'] == 0 && $status == 99) {
+                if ($r['sysadd'] == 0 && $status == 99 && isModuleInstall('Member')) {
                     //检查是否已经赠送过积分
                     $integral = M("MemberContent")->where(array("content_id" => $id, "catid" => $catid))->getField("integral");
                     if (!$integral) {
@@ -734,5 +724,3 @@ class Content {
     }
 
 }
-
-?>
