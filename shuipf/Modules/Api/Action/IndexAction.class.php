@@ -162,12 +162,20 @@ class IndexAction extends Action {
                         }
                         //创建模块目录
                         if (mkdir($modulePath, 0777, TRUE) === FALSE) {
-                            exit(serialize(array('error' => -10013, 'catalog' => $modulePath, 'status' => 'fail')));
-                        }
-                        //测试读写权限
-                        $status = $this->Cloud->valid_perm($modulePath);
-                        if (count($status)) {
-                            exit(serialize(array('error' => -10007, 'catalog' => $status, 'status' => 'fail')));
+                            //====表明已经存在目录，尝试检测权限
+                            //测试读写权限
+                            $status = $this->Cloud->valid_perm($modulePath);
+                            if (count($status)) {
+                                exit(serialize(array('error' => -10007, 'catalog' => $status, 'status' => 'fail')));
+                            } else {
+                                exit(serialize(array('error' => -10013, 'catalog' => $modulePath, 'status' => 'fail')));
+                            }
+                        } else {
+                            //测试读写权限
+                            $status = $this->Cloud->valid_perm($modulePath);
+                            if (count($status)) {
+                                exit(serialize(array('error' => -10007, 'catalog' => $status, 'status' => 'fail')));
+                            }
                         }
                         //安装模块
                         $status = $this->Cloud->install_module($command['package'], $command['hash'], $command['appid'], $command['option']['install']['ignore']);
@@ -242,12 +250,20 @@ class IndexAction extends Action {
                         }
                         //创建插件目录
                         if (mkdir($addonPath, 0777, TRUE) === FALSE) {
-                            exit(serialize(array('error' => -10013, 'catalog' => $addonPath, 'status' => 'fail')));
-                        }
-                        //测试读写权限
-                        $status = $this->Cloud->valid_perm($addonPath);
-                        if (count($status)) {
-                            exit(serialize(array('error' => -10007, 'catalog' => $status, 'status' => 'fail')));
+                            //====表明已经存在目录，尝试检测权限
+                            //测试读写权限
+                            $status = $this->Cloud->valid_perm($addonPath);
+                            if (count($status)) {
+                                exit(serialize(array('error' => -10007, 'catalog' => $status, 'status' => 'fail')));
+                            } else {
+                                exit(serialize(array('error' => -10013, 'catalog' => $addonPath, 'status' => 'fail')));
+                            }
+                        } else {
+                            //测试读写权限
+                            $status = $this->Cloud->valid_perm($addonPath);
+                            if (count($status)) {
+                                exit(serialize(array('error' => -10007, 'catalog' => $status, 'status' => 'fail')));
+                            }
                         }
                         //安装模块
                         $status = $this->Cloud->install_addons($command['package'], $command['hash'], $command['name'], $command['option']['install']['ignore']);
@@ -292,7 +308,7 @@ class IndexAction extends Action {
                             $addonList = array();
                         }
                         foreach ($addonList as $key => $info) {
-                            unset($info['config'],$info['description']);
+                            unset($info['config'], $info['description']);
                             $addon[$info['name']] = $info;
                         }
                         exit(serialize(array('addon' => $addon, 'status' => 'success')));

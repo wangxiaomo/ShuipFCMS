@@ -35,7 +35,7 @@ class Cloud {
      * @return type
      */
     public function get_pack_file($file) {
-        return $this->filehash . md5(basename($file)).'.zip';
+        return $this->filehash . md5(basename($file)) . '.zip';
     }
 
     /**
@@ -455,6 +455,23 @@ class Cloud {
                 return false;
             }
         } else {
+            //PHP 5.3 兼容
+            if (PHP_VERSION >= '5.3') {
+                $userAgent = $_SERVER['HTTP_USER_AGENT'];
+                $opts = array(
+                    "http" => array(
+                        "method" => "GET",
+                        "header" => $userAgent,
+                        "timeout" => $timeout)
+                );
+                $context = stream_context_create($opts);
+                $res = copy($url, $file, $context);
+            } else {
+                $res = copy($url, $file);
+            }
+            if ($res) {
+                return $file;
+            }
             return false;
         }
     }
