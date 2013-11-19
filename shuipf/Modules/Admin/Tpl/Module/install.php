@@ -42,7 +42,7 @@
      <div class="">
       <div class="btn_wrap_pd">
         <input type="hidden" name="module" value="{$config.module}">
-        <button class="btn btn_submit mr10" type="submit">确定安装</button>
+        <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">确定安装</button>
       </div>
     </div>
   </form>
