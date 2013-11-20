@@ -58,7 +58,7 @@ class ModuleModel extends CommonModel {
         if (!file_exists($this->extresPath)) {
             //创建目录
             if (mkdir($this->extresPath, 0777, true) == false) {
-                $this->error = '目录 ' . $this->extresPath . ' 创建失败，如果该目录已存在请删除！';
+                $this->error = '目录 ' . $this->extresPath . ' 创建失败，请检查是否有可写权限！';
                 return false;
             }
         }
@@ -87,7 +87,7 @@ class ModuleModel extends CommonModel {
         if (file_exists($this->appPath . $module . "/Install/Extres/")) {
             //创建目录
             if (mkdir($this->extresPath . strtolower($config['module']) . '/', 0777, true) == false) {
-                $this->error = '目录 ' . $this->extresPath . strtolower($config['module']) . '/' . ' 创建失败！';
+                $this->error = '目录 ' . $this->extresPath . strtolower($config['module']) . '/' . ' 创建失败，如果该目录已存在请删除！';
                 return false;
             }
         }
