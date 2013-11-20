@@ -45,8 +45,8 @@ function getCursortPosition (ctrl) {
         u = n.getElementsByTagName("head")[0] || n.getElementsByTagName("body")[0],
         //初始化方法
         init = {
-            version: 130603,
-            DEBUG: true,
+            version: 20131120,
+            DEBUG: false,
             DOMAIN: GV.DIMAUB,
             EMBED_STYLESHEET: "statics/js/comment/css/embed.css?version=" + this.version,
             GET_JSONP: "index.php?g=Comments&m=Index&a=json",
