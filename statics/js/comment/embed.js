@@ -46,7 +46,7 @@ function getCursortPosition (ctrl) {
         //初始化方法
         init = {
             version: 130603,
-            DEBUG: false,
+            DEBUG: true,
             DOMAIN: GV.DIMAUB,
             EMBED_STYLESHEET: "statics/js/comment/css/embed.css?version=" + this.version,
             GET_JSONP: "index.php?g=Comments&m=Index&a=json",
@@ -376,6 +376,8 @@ function getCursortPosition (ctrl) {
         addModel = {
             //加载导航
             commentsInfo: function (thread) {
+				//显示评论框
+                this.newsCommentBox(thread);
                 //显示评论数，和 最新，最早，最热排序导航
                 thread.append('<div class="ds-comments-info">\
                                 <div class="ds-sort" style="display:none;"><a class="ds-order-desc ds-current">最新</a><a class="ds-order-asc">最早</a><a class="ds-order-hot">最热</a></div>\
@@ -540,8 +542,6 @@ function getCursortPosition (ctrl) {
                         init.getComment();
                     });
                 }
-                //显示评论框
-                this.newsCommentBox(thread);
             },
             //回复评论框
             replybox: function () {
@@ -618,13 +618,13 @@ function getCursortPosition (ctrl) {
                                   <td>网址：</td>\
                                     <td><input name="author_url" class="J_CmFormField" placeholder="http://"/></td>\
                                     <td>验证码：</td>\
-                                    <td style="vertical-align:middle"><input name="verify" placeholder="验证码"/><img  id="code_img" src="' + init.DOMAIN + init.VERIFYURL + '"  alt="验证码" onClick="this.src = \'' + init.DOMAIN + init.VERIFYURL + '&time=' + Math.random() + '\'"></td>\
+                                    <td style="vertical-align:middle"><input name="verify" placeholder="验证码"/><img  id="code_img" src="' + init.DOMAIN + init.VERIFYURL + '"  alt="验证码" onClick="this.src = \'' + init.DOMAIN + init.VERIFYURL + '&time=' + Math.random() + '\'" style="vertical-align: middle ;"></td>\
                                   </tr>';
                 }
                 strHtml = '<table>' + userHtml + qtHtml + '</table>';
                 //检查是否游客允许评论
-                if(init.config.guest < 1){
-                    strHtml = '游客不运行评论，请登陆后操作！o(∩_∩)o ';
+                if(init.config.guest == 0 && init.users.user_id < 1){
+                    strHtml = '游客不允许评论，请登陆后操作！o(∩_∩)o ';
                 }
                 jQuery('.ds-user').empty().append(strHtml);
             }

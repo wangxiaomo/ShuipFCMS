@@ -187,6 +187,5 @@ var commentsQuery = {
 })();
 //评论结束
 </script> 
-<script language="javascript" src="/js/roll_ul.js"></script>
 </body>
 </html>

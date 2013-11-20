@@ -45,7 +45,7 @@
 #ds-reset ul.ds-comments-tabs .ds-service-icon{vertical-align:middle;margin:0 2px 1px 0;}
 #ds-reset .ds-highlight{color:#dd3322 !important;}
 
-#ds-reset .ds-paginator{border-bottom:1px solid rgba(0, 0, 0, 0.13);text-align:right;padding-bottom:15px;clear:both;line-height:1em;}
+#ds-reset .ds-paginator{text-align:right;padding-bottom:15px;clear:both;line-height:1em;}
 #ds-reset .ds-paginator div.ds-border{border-top:1px solid rgba(255, 255, 255, 0.7);margin-bottom:15px;}
 #ds-reset .ds-paginator a{font-size:12px;margin:0 3px;padding:2px 5px;border:1px solid transparent;}
 #ds-reset .ds-paginator a:hover,#ds-reset .ds-paginator a.ds-current{-webkit-border-radius:3px;border-radius:3px;background-color:rgba(0, 0, 0, 0.03);}
