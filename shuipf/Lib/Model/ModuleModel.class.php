@@ -326,16 +326,10 @@ class ModuleModel extends CommonModel {
         M("Access")->where(array("g" => $module))->delete();
         //去除对应行为规则
         D('Behavior')->moduleBehaviorUninstall($module);
-        //前台模板
-        if (file_exists($this->appPath . $module . "/Install/Template/")) {
-            //删除模块前台模板
-            $Dir->delDir($this->templatePath . $module . DIRECTORY_SEPARATOR);
-        }
+        //删除模块前台模板
+        $Dir->delDir($this->templatePath . $module . DIRECTORY_SEPARATOR);
         //静态资源移除
-        if (file_exists($this->extresPath . strtolower($module) . '/')) {
-            //拷贝模板到前台模板目录中去
-            $Dir->delDir($this->extresPath . strtolower($module) . DIRECTORY_SEPARATOR);
-        }
+        $Dir->delDir($this->extresPath . strtolower($module) . DIRECTORY_SEPARATOR);
         //卸载结束，最后调用卸载脚本完成
         if ($isPhpScript) {
             //检查安装方法是否存在
@@ -430,11 +424,11 @@ class ModuleModel extends CommonModel {
         );
         //加载安装配置文件
         if (file_exists($this->appPath . $module . '/Install/Config.inc.php') || file_exists($this->appPath . $module . '/Config.inc.php')) {
-            if(file_exists($this->appPath . $module . '/Config.inc.php')){
-                    $moduleConfig = include $this->appPath . $module . '/Config.inc.php';
-                }else{
-                    $moduleConfig = include $this->appPath . $module . '/Install/Config.inc.php';
-                }
+            if (file_exists($this->appPath . $module . '/Config.inc.php')) {
+                $moduleConfig = include $this->appPath . $module . '/Config.inc.php';
+            } else {
+                $moduleConfig = include $this->appPath . $module . '/Install/Config.inc.php';
+            }
             if (is_array($moduleConfig)) {
                 $Config = $moduleConfig;
             } else {
