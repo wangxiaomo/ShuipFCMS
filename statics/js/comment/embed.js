@@ -411,13 +411,13 @@ function getCursortPosition (ctrl) {
                         post.append('<li class="ds-post">\
                                       <div class="ds-post-self">\
                                           <div class="ds-avatar">\
-                                            <a rel="nofollow author" href="javascript:;;" title="' + rs.author + '" onerror="this.src=\'' + init.DOMAIN + 'statics/images/member/nophoto.gif\'"><img src="' + tool.getAvatar(rs.user_id, rs.author_email) + '" alt="' + rs.author + '"></a>\
+                                            <a rel="nofollow author" href="javascript:;;" title="' + rs.author + '"><img src="' + tool.getAvatar(rs.user_id, rs.author_email) + '" alt="' + rs.author + '" onerror="this.src=\'' + init.DOMAIN + 'statics/images/member/nophoto.gif\'"></a>\
                                           </div>\
                                           <div class="ds-comment-body">\
                                             <div class="ds-comment-header"><a class="ds-user-name ds-highlight" href="javascript:;;" rel="nofollow" data-userid="' + rs.user_id + '">' + rs.author + '</a></div>\
                                             <p>' + rs.content + '</p>\
                                             <div class="ds-comment-footer ds-comment-actions"> \
-                                                <span class="ds-time" title="' + tool.getYearsMonthDay(rs.date * 1000) + '">' + tool.getTimeBefore(rs.date * 1000) + '</span> \
+                                                <span class="ds-time" title="' + tool.getYearsMonthDay(rs.date * 1000,"yyyy-MM-dd hh:mm:ss") + '">' + tool.getTimeBefore(rs.date * 1000) + '</span> \
                                                 <a class="ds-post-reply" href="javascript:void(0);" data-comentid="' + comentId + '"><span class="ds-ui-icon"></span>回复</a> \
                                                 <a class="ds-post-likes" style="display:none;" href="javascript:void(0);" data-comentid="' + comentId + '"><span class="ds-ui-icon"></span>顶</a> \
                                             </div>\
@@ -462,7 +462,7 @@ function getCursortPosition (ctrl) {
                                         </div>\
                                         <p>' + rs.content + '</p>\
                                         <div class="ds-comment-footer ds-comment-actions"> \
-                                            <span class="ds-time" title="' + tool.getYearsMonthDay(rs.date * 1000) + '">' + tool.getTimeBefore(rs.date * 1000) + '</span> \
+                                            <span class="ds-time" title="' + tool.getYearsMonthDay(rs.date * 1000,"yyyy-MM-dd hh:mm:ss") + '">' + tool.getTimeBefore(rs.date * 1000) + '</span> \
                                             <a class="ds-post-reply" href="javascript:void(0);" data-comentid="' + json.id + '"><span class="ds-ui-icon"></span>回复</a> \
                                             <a class="ds-post-likes" style="display:none;" href="javascript:void(0);" data-comentid="' + comentId + '"><span class="ds-ui-icon"></span>顶</a> \
                                         </div>\
@@ -506,7 +506,7 @@ function getCursortPosition (ctrl) {
                                         </div>\
                                         <p>' + rs.content + '</p>\
                                         <div class="ds-comment-footer ds-comment-actions"> \
-                                            <span class="ds-time" title="' + tool.getYearsMonthDay(rs.date * 1000) + '">' + tool.getTimeBefore(rs.date * 1000) + '</span> \
+                                            <span class="ds-time" title="' + tool.getYearsMonthDay(rs.date * 1000,"yyyy-MM-dd hh:mm:ss") + '">' + tool.getTimeBefore(rs.date * 1000) + '</span> \
                                             <a class="ds-post-reply" href="javascript:void(0);" data-comentid="' + comentid + '"><span class="ds-ui-icon"></span>回复</a> \
                                             <a class="ds-post-likes" style="display:none;" href="javascript:void(0);" data-comentid="' + rs.id + '"><span class="ds-ui-icon"></span>顶</a> \
                                         </div>\
@@ -641,7 +641,7 @@ function getCursortPosition (ctrl) {
                 var getHours = t.getHours();
                 var getMinutes = t.getMinutes();
                 if (delay > (10 * 24 * 60 * 60 * 1000)) {
-                    ret = tool.getYearsMonthDay(time);
+                    ret = tool.getYearsMonthDay(time, "yyyy-MM-dd hh:mm:ss");
                 } else if (delay >= (24 * 60 * 60 * 1000)) {
                     delay = (delay / (24 * 60 * 60 * 1000));
                     var num = Math.floor(delay);
@@ -668,15 +668,29 @@ function getCursortPosition (ctrl) {
                 return ret;
             },
             //获取 年月日的时间格式
-            getYearsMonthDay: function (time) {
+            getYearsMonthDay: function (time, format) {
                 var dt = new Date(time);
-                var year = dt.getFullYear(); //获取年
-                var month = dt.getMonth(); //获取月
-                var day = dt.getDay(); //获取日
-                var hours = dt.getHours(); //时
-                var minutes = dt.getMinutes(); //分
-                var seconds = dt.getSeconds(); //秒
-                return year + '年' + month + '月' + day + '日' + hours + ':' + minutes + ':' + seconds;
+				/*
+				 * eg:format="yyyy-MM-dd hh:mm:ss";
+				 */
+				var o = {
+					"M+": dt.getMonth() + 1, // month
+					"d+": dt.getDate(), // day
+					"h+": dt.getHours(), // hour
+					"m+": dt.getMinutes(), // minute
+					"s+": dt.getSeconds(), // second
+					"q+": Math.floor((dt.getMonth() + 3) / 3), // quarter
+					"S": dt.getMilliseconds()// millisecond
+				}
+				if (/(y+)/.test(format)) {
+					format = format.replace(RegExp.$1, (dt.getFullYear() + "").substr(4 - RegExp.$1.length));
+				}
+				for (var k in o) {
+					if (new RegExp("(" + k + ")").test(format)) {
+						format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+					}
+				}
+				return format;
             },
             //获取头像地址
             getAvatar: function (uid, email) {
