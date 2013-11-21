@@ -59,7 +59,7 @@ class FieldAction extends AdminbaseAction {
             $this->error('字段ID不能为空！');
         }
         if (IS_POST) {
-            $post = I('post.', '', '');
+            $post = $_POST;
             if (empty($post)) {
                 $this->error('数据不能为空！');
             }
@@ -137,7 +137,7 @@ class FieldAction extends AdminbaseAction {
             $this->error('模型ID不能为空！');
         }
         if (IS_POST) {
-            $post = I('post.', '', '');
+            $post = $_POST;
             if (empty($post)) {
                 $this->error('数据不能为空！');
             }
