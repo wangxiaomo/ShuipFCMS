@@ -63,7 +63,7 @@ class PublicAction extends AdminbaseAction {
                 'ip' => $ip,
             );
             tag('admin_public_tologin', $admin_public_tologin);
-            $this->success("登陆成功！", $forward);
+            $this->redirect('Index/index');
         } else {
             if (!$blacklist) {
                 $blacklist = array();
@@ -86,9 +86,9 @@ class PublicAction extends AdminbaseAction {
             $this->success('登出成功！', U("Admin/Public/login"));
         }
     }
-    
+
     //维持在线
-    public function online(){
+    public function online() {
         
     }
 
