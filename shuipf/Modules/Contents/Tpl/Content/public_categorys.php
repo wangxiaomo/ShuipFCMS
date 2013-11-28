@@ -6,6 +6,8 @@ Wind.use('cookie','treeview', function(){
 	$("#category_tree").treeview({
 			control: "#treecontrol",
 			persist: "cookie",
+			collapsed:false,
+			unique:true,
 			cookieId: "treeview-black"
 	});
 });
