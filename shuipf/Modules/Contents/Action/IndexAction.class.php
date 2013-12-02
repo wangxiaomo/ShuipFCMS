@@ -92,9 +92,7 @@ class IndexAction extends BaseAction {
         $this->display($template);
     }
 
-    /**
-     * 内容页 
-     */
+    //内容页 
     public function shows() {
         $catid = I('get.catid', 0, 'intval');
         $id = I('get.id', 0, 'intval');
@@ -106,6 +104,9 @@ class IndexAction extends BaseAction {
         $this->categorys = F("Category");
         //获取当前栏目数据
         $category = $this->categorys[$catid];
+        if (empty($category)) {
+            $this->error('该栏目不存在！');
+        }
         //反序列化栏目配置
         $category['setting'] = unserialize($category['setting']);
         //模型ID
