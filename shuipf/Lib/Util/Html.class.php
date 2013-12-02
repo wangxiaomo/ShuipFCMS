@@ -156,6 +156,7 @@ class Html extends BaseAction {
         $this->assign("pages", null);
         $this->assign("content", $output_data['content']);
         //当没有启用内容页分页时候（如果内容字段有启用分页，不会执行到此步骤），判断其他支持分页的标签进行分页处理
+        unset($GLOBALS["Total_Pages"]);
         $page = 1;
         $j = 1;
         //开始生成列表
@@ -251,6 +252,7 @@ class Html extends BaseAction {
         $page = 1;
         $j = 1;
         //开始生成列表
+        unset($GLOBALS["Total_Pages"]);
         do {
             $this->category($catid, $page);
             $page++;
@@ -287,7 +289,7 @@ class Html extends BaseAction {
         }
 
         $SEO = seo("", "", AppframeAction::$Cache['Config']['siteinfo'], AppframeAction::$Cache['Config']['sitekeywords']);
-
+        unset($GLOBALS["Total_Pages"]);
         $j = 1;
         //分页生成
         do {
@@ -315,6 +317,7 @@ class Html extends BaseAction {
      * @param $catid
      */
     public function create_relation_html($catid) {
+        unset($GLOBALS["Total_Pages"]);
         $page = 1;
         $j = 1;
         //开始生成列表
