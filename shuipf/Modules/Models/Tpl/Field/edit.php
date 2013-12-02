@@ -28,14 +28,6 @@
 		  </if></td>
       </tr>
       <tr>
-        <th><strong>作为主表字段</strong></th>
-        <td><input type="hidden" name="issystem" id="issystem" value="{$data['issystem']}">
-          <input type="radio" name="issystem" id="field_basic_table1" value="1" <if condition="$data['issystem'] eq '1'"> checked</if> disabled>
-          是
-          <input type="radio" id="field_basic_table0" name="issystem" value="0" <if condition="$data['issystem'] eq '0'"> checked</if> disabled>
-          否</td>
-      </tr>
-      <tr>
         <th width="25%"><font color="red">*</font> <strong>字段名</strong><br />
           只能由英文字母、数字和下划线组成，并且仅能字母开头，不以下划线结尾 </th>
         <td><input type="text" name="field" id="field" size="20" class="input" value="{$data.field}" <if condition=" !$isEditField "> disabled</if>></td>

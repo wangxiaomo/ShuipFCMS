@@ -227,6 +227,8 @@ class Model_fieldModel extends CommonModel {
             $this->error = '该字段不存在！';
             return false;
         }
+        //字段主表副表不能修改
+        unset($data['issystem']);
         //字段类型
         if (empty($data['formtype'])) {
             $data['formtype'] = $info['formtype'];
