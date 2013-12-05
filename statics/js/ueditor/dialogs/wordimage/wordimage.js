@@ -34,7 +34,6 @@ function addOkListener() {
 			var src = img.getAttribute("word_img");
 			if (!src) continue;
 			for (var j = 0,url; url = imageUrls[j++];) {
-				console.log('变量：', url);
 				if (src.indexOf(url.title.replace(" ","")) != -1) {
 					img.src = editor.options.wordImagePath + url.url;
 					img.setAttribute("_src", editor.options.wordImagePath + url.url);  //同时修改"_src"属性
