@@ -32,9 +32,9 @@
     <script type="text/javascript" src="../tangram.js"></script>
     <script type="text/javascript" src="wordimage.js"></script>
     <script type="text/javascript">
-    //获取parent页的catid
-var catid = parent.catid;
-var https = parent.editorURL;
+	    //获取parent页的catid
+		var catid = editor.options._catid;
+		var https = editor.options._https;
             //全局变量
         var imageUrls = [],          //用于保存从服务器返回的图片信息数组
             selectedImageCount = 0;  //当前已选择的但未上传的图片数量
@@ -47,7 +47,7 @@ var https = parent.editorURL;
             //创建Flash相关的参数集合
             var flashOptions = {
                 container:"flashContainer",                                                    //flash容器id
-                url:https+'index.php?a=imageUp&m=Ueditor&g=Attachment&catid='+catid,                                           // 上传处理页面的url地址
+                url:https+'index.php?a=imageUp&m=Ueditor&g=Attachment&catid='+catid,// 上传处理页面的url地址
                 ext:'{"param1":"value1", "param2":"value2"}',                                 //可向服务器提交的自定义参数列表
                 fileType:'{"description":"'+lang.fileType+'", "extension":"*.gif;*.jpeg;*.png;*.jpg"}',     //上传文件格式限制
                 flashUrl:'imageUploader.swf',                                                  //上传用的flash组件地址

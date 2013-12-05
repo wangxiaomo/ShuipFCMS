@@ -94,8 +94,8 @@
 
     <script type="text/javascript">
 	    //获取parent页的catid
-var catid = parent.catid;
-var https = parent.editorURL;
+		var catid = editor.options._catid;
+		var https = editor.options._https;
         //全局变量
         var imageUrls = [],          //用于保存从服务器返回的图片信息数组
             selectedImageCount = 0;  //当前已选择的但未上传的图片数量

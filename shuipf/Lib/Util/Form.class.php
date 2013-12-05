@@ -36,7 +36,7 @@ class Form {
             $toolbar = "['FullScreen', 'Source', '|', 'Undo', 'Redo', '|',
                 'Bold', 'Italic', 'Underline', 
                 'Link',  '|',  'InsertImage', 
-                'SelectAll', 'ClearDoc', 'SearchReplace', 'Print', 'Preview', 'CheckImage', ".($allowupload && $allowbrowser?"'Attachments',":"")." 'Help','AutoTypeSet']
+                'SelectAll', 'ClearDoc', 'SearchReplace', 'Print', 'Preview', 'CheckImage', " . ($allowupload && $allowbrowser ? "'Attachments'," : "") . " 'Help','AutoTypeSet']
                 ";
         } elseif ($toolbar == 'full') {//标准型
             $toolbar = "['FullScreen', 'Source', '|', 'Undo', 'Redo', '|',
@@ -45,7 +45,7 @@ class Form {
                 'Paragraph', '|','RowSpacingTop', 'RowSpacingBottom','LineHeight', '|','FontFamily', 'FontSize', '|',
                 'DirectionalityLtr', 'DirectionalityRtl', '|', '', 'Indent', '|',
                 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyJustify', '|',
-                'Link', 'Unlink', 'Anchor', '|', 'ImageNone', 'ImageLeft', 'ImageRight', 'ImageCenter', '|', 'InsertImage', 'Emotion', 'InsertVideo', 'Music',".($allowupload && $allowbrowser?"'Attachments',":"")." 'Map', 'GMap', 'InsertFrame', 'PageBreak', 'insertcode', 'Webapp','Template','Background','|',
+                'Link', 'Unlink', 'Anchor', '|', 'ImageNone', 'ImageLeft', 'ImageRight', 'ImageCenter', '|', 'InsertImage', 'Emotion', 'InsertVideo', 'Music'," . ($allowupload && $allowbrowser ? "'Attachments'," : "") . " 'Map', 'GMap', 'InsertFrame', 'PageBreak', 'insertcode', 'Webapp','Template','Background','|',
                 'Horizontal', 'Date', 'Time', 'Spechars', 'WordImage', '|',
                 'InsertTable', 'DeleteTable', 'InsertParagraphBeforeTable', 'InsertRow', 'DeleteRow', 'InsertCol', 'DeleteCol', 'MergeCells', 'MergeRight', 'MergeDown', 'SplittoCells', 'SplittoRows', 'SplittoCols', '|',
                  'Print', 'Preview', 'SearchReplace','Help']";
@@ -69,6 +69,9 @@ class Form {
                             }
                         };
                         var editor_config_$textareaid = {
+                             _catid:'{$catid}',
+                             _https: '".CONFIG_SITEURL_MODEL."',
+                             imageUrl:'" . U('Attachment/Ueditor/imageUp', array('catid' => $catid)) . "',
                              textarea:'" . ( in_array($module, array("Contents", "contents")) ? "info[$textareaid]" : "$textareaid" ) . "',
                              toolbars:[$toolbar],
                              minFrameHeight:{$height}
@@ -76,9 +79,9 @@ class Form {
         ";
         //内容模块，编辑器实例化在formValidator里面
         //if (!in_array($module, array("Contents", "contents"))) {
-            $str .="\r\n $(document).ready(function(){\r\n    editor$textareaid = new baidu.editor.ui.Editor(editor_config_$textareaid);";
-            $str .="\r\n    editor$textareaid.render( '$textareaid' );\r\n }); \r\n";
-       // }
+        $str .="\r\n $(document).ready(function(){\r\n    editor$textareaid = new baidu.editor.ui.Editor(editor_config_$textareaid);";
+        $str .="\r\n    editor$textareaid.render( '$textareaid' );\r\n }); \r\n";
+        // }
         $str .= '</script>';
         return $str;
     }
