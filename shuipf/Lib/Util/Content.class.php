@@ -94,14 +94,6 @@ class Content {
             $data['description'] = str_cut(str_replace(array("\r\n", "\t", '[page]', '[/page]', '&ldquo;', '&rdquo;', '&nbsp;'), '', strip_tags($content)), $introcude_length);
             $data['description'] = Input::getVar($data['description']);
         }
-        //自动提取缩略图，从content 中提取
-        if (isset($_POST['auto_thumb']) && $data['thumb'] == '' && isset($data['content'])) {
-            $content = $content ? $content : stripslashes($data['content']);
-            $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
-            if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
-                $data['thumb'] = $matches[3][$auto_thumb_no];
-            }
-        }
         //数据模型对象
         $this->contentModel = ContentModel::getInstance($this->modelid);
         require_cache(RUNTIME_PATH . 'content_input.class.php');
@@ -120,6 +112,18 @@ class Content {
             $this->error = $content_input->getError();
             $this->contentModel->tokenRecovery($data);
             return false;
+        }
+        //取得副表下标
+        $getRelationName = $this->contentModel->getRelationName();
+        //检查content字段在主表还是副表
+        $isContent = isset($data['content']) ? 1 : 0;
+        //自动提取缩略图，从content 中提取
+        if (empty($data['thumb'])) {
+            $content = stripslashes($isContent ? $data['content'] : $data[$getRelationName]['content']);
+            $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
+            if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
+                $data['thumb'] = $matches[3][$auto_thumb_no];
+            }
         }
         //插入成功返回ID
         $id = $data['id'] = $oldata['id'] = $this->contentModel->relation(true)->add($data);
@@ -298,14 +302,6 @@ class Content {
             $data['description'] = str_cut(str_replace(array("\r\n", "\t", '[page]', '[/page]', '&ldquo;', '&rdquo;', '&nbsp;'), '', strip_tags($content)), $introcude_length);
             $data['description'] = Input::getVar($data['description']);
         }
-        //自动提取缩略图，从content 中提取
-        if (isset($_POST['auto_thumb']) && $data['thumb'] == '' && isset($data['content'])) {
-            $content = $content ? $content : stripslashes($data['content']);
-            $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
-            if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
-                $data['thumb'] = $matches[3][$auto_thumb_no];
-            }
-        }
         //转向地址
         if ($data['islink'] == 1) {
             $urls["url"] = $_POST['linkurl'];
@@ -334,6 +330,18 @@ class Content {
         } else {
             $this->error = $content_input->getError();
             return false;
+        }
+        //取得副表下标
+        $getRelationName = $this->contentModel->getRelationName();
+        //检查content字段在主表还是副表
+        $isContent = isset($data['content']) ? 1 : 0;
+        //自动提取缩略图，从content 中提取
+        if (empty($data['thumb'])) {
+            $content = stripslashes($isContent ? $data['content'] : $data[$getRelationName]['content']);
+            $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
+            if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
+                $data['thumb'] = $matches[3][$auto_thumb_no];
+            }
         }
         //数据修改，这里使用关联操作
         $status = $this->contentModel->relation(true)->where(array('id' => $id))->save($data);
