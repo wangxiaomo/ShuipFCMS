@@ -46,6 +46,9 @@
          </foreach>
         </tbody>
       </table>
+      <div class="p10">
+        <div class="pages"> {$Page} </div>
+      </div>
    </div>
 </div>
 <script src="{$config_siteurl}statics/js/common.js?v"></script>
