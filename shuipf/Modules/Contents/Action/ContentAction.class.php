@@ -228,10 +228,19 @@ class ContentAction extends AdminbaseAction {
                 $this->assign("category", $category);
                 $this->display();
             } else if ($category['type'] == 1) {//单网页模型
+                $info = D('Page')->getPage($this->catid);
+                if ($info && $info['style']) {
+                    $style = explode(';', $info['style']);
+                    $info['style_color'] = $style[0];
+                    if ($style[1]) {
+                        $info['style_font_weight'] = $style[1];
+                    }
+                }
+
                 $this->assign("catid", $this->catid);
                 $this->assign("uploadurl", CONFIG_SITEFILEURL);
                 $this->assign("setting", $setting);
-                $this->assign('info', D('Page')->getPage($this->catid));
+                $this->assign('info', $info);
                 $this->assign("category", $category);
                 $this->display('singlepage');
             }
@@ -448,7 +457,7 @@ class ContentAction extends AdminbaseAction {
         //管理员uid
         $uid = AppframeAction::$Cache['uid'];
         $cache_class_list = S("cache_class_list_$uid_" . C('AUTHCODE'));
-        if ($cache_class_list) {
+        if (!$cache_class_list) {
             import('Tree');
             $tree = new Tree();
             //栏目权限 超级管理员例外

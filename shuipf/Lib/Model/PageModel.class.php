@@ -42,7 +42,7 @@ class PageModel extends CommonModel {
             return false;
         }
         $data = $post['info'];
-         //表单令牌
+        //表单令牌
         $data[C("TOKEN_NAME")] = $post[C("TOKEN_NAME")];
         $catid = $data['catid'];
         //单页内容
@@ -52,6 +52,15 @@ class PageModel extends CommonModel {
         }
         $data = $this->token(false)->create($data, isset($data['catid']) ? 1 : 2);
         if ($data) {
+            //取得标题颜色
+            if (isset($post['style_color'])) {
+                //颜色选择为隐藏域 在这里进行取值
+                $data['style'] = $post['style_color'] ? strip_tags($post['style_color']) : '';
+                //标题加粗等样式
+                if (isset($post['style_font_weight'])) {
+                    $data['style'] = $data['style'] . ($post['style_font_weight'] ? ';' : '') . strip_tags($post['style_font_weight']);
+                }
+            }
             if ($info) {
                 if ($this->where(array('catid' => $catid))->save($data) !== false) {
                     return true;
