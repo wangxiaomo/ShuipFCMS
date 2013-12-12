@@ -570,6 +570,7 @@ INSERT INTO `shuipfcms_menu` VALUES ('237', '236', 'Admin', 'Behavior', 'add', '
 INSERT INTO `shuipfcms_menu` VALUES ('238', '236', 'Admin', 'Behavior', 'edit', '', '1', '0', '编辑行为', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('239', '236', 'Admin', 'Behavior', 'delete', '', '1', '0', '删除行为', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('240', '236', 'Admin', 'Behavior', 'status', '', '1', '0', '行为状态转换', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('241', '57', 'Admin', 'Category', 'singlepage', '', '1', '1', '添加单页栏目', '', '0');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_model`
@@ -1022,3 +1023,19 @@ CREATE TABLE `shuipfcms_behavior_log` (
   `create_time` int(10) NOT NULL COMMENT '执行行为的时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='执行行为日志';
+
+-- ----------------------------
+-- Table structure for `shuipfcms_page`
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_page`;
+CREATE TABLE `shuipfcms_page` (
+  `catid` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '栏目ID',
+  `title` varchar(160) NOT NULL COMMENT '标题',
+  `style` varchar(24) NOT NULL COMMENT '样式',
+  `keywords` varchar(40) NOT NULL COMMENT '关键字',
+  `content` text NOT NULL COMMENT '内容',
+  `template` varchar(30) NOT NULL,
+  `updatetime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`catid`),
+  KEY `catid` (`catid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='单页内容表';

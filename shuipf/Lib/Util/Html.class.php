@@ -199,7 +199,7 @@ class Html extends BaseAction {
         if ($repagenum && !$GLOBALS['dynamicRules']) {
             //设置动态访问规则给page分页使用
             $GLOBALS['Rule_Static_Size'] = $repagenum;
-            $GLOBALS['dynamicRules'] = CONFIG_SITEURL_MODEL."index.php?a=lists&catid={$catid}&page=*";
+            $GLOBALS['dynamicRules'] = CONFIG_SITEURL_MODEL . "index.php?a=lists&catid={$catid}&page=*";
         }
         if ($repagenum && $page > $repagenum) {
             unset($GLOBALS['dynamicRules']);
@@ -217,7 +217,7 @@ class Html extends BaseAction {
         $urls = $category_url['page'];
 
         //生成类型为0的栏目
-        if ($type == 0) {
+        if ($category['type'] == 0) {
             //栏目首页模板
             $template = $setting['category_template'] ? $setting['category_template'] : 'category';
             //栏目列表页模板
@@ -232,6 +232,19 @@ class Html extends BaseAction {
             //模板检测
             $template = parseTemplateFile($template);
             $GLOBALS['URLRULE'] = $urls;
+        } else if ($category['type'] == 1) {//单页
+            $db = D('Page');
+            $template = $setting['page_template'] ? $setting['page_template'] : 'page';
+            //判断使用模板类型，如果有子栏目使用频道页模板，终极栏目使用的是列表模板
+            $template = "Page:" . $template;
+            //去除后缀开始
+            $tpar = explode(".", $template, 2);
+            //去除完后缀的模板
+            $template = $tpar[0];
+            unset($tpar);
+            $GLOBALS['URLRULE'] = $urls;
+            $info = $db->getPage($catid);
+            $this->assign($info);
         }
         //把分页分配到模板
         $this->assign(C("VAR_PAGE"), $page);

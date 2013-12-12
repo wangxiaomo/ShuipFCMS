@@ -8,7 +8,8 @@ class IndexAction extends BaseAction {
 
     private $url;
 
-    function _initialize() {
+    //初始化
+    protected function _initialize() {
         parent::_initialize();
         import('Url');
         $this->url = new Url();
@@ -22,11 +23,9 @@ class IndexAction extends BaseAction {
         $tp = explode(".", CONFIG_INDEXTP);
         $template = parseTemplateFile("Index:" . $tp[0]);
         $SEO = seo("", "", AppframeAction::$Cache['Config']['siteinfo'], AppframeAction::$Cache['Config']['sitekeywords']);
-
         //生成路径
         $urls = $this->url->index($page);
         $GLOBALS['URLRULE'] = $urls['page'];
-
         //seo分配到模板
         $this->assign("SEO", $SEO);
         //把分页分配到模板
@@ -40,9 +39,6 @@ class IndexAction extends BaseAction {
         $catid = I('get.catid', 0, 'intval');
         //分页
         $page = isset($_GET[C("VAR_PAGE")]) ? $_GET[C("VAR_PAGE")] : 1;
-        if (!$catid) {
-            $this->error("您没有访问该信息的权限！");
-        }
         $this->categorys = F("Category");
         //获取栏目数据
         $category = $this->categorys[$catid];
@@ -66,9 +62,8 @@ class IndexAction extends BaseAction {
         $category_url = $this->url->category_url($catid, $page);
         //取得URL规则
         $urls = $category_url['page'];
-
         //生成类型为0的栏目
-        if ($type == 0) {
+        if ($category['type'] == 0) {
             //栏目首页模板
             $template = $setting['category_template'] ? $setting['category_template'] : 'category';
             //栏目列表页模板
@@ -81,6 +76,19 @@ class IndexAction extends BaseAction {
             $template = $tpar[0];
             unset($tpar);
             $GLOBALS['URLRULE'] = $urls;
+        } else if ($category['type'] == 1) {//单页
+            $db = D('Page');
+            $template = $setting['page_template'] ? $setting['page_template'] : 'page';
+            //判断使用模板类型，如果有子栏目使用频道页模板，终极栏目使用的是列表模板
+            $template = "Page:" . $template;
+            //去除后缀开始
+            $tpar = explode(".", $template, 2);
+            //去除完后缀的模板
+            $template = $tpar[0];
+            unset($tpar);
+            $GLOBALS['URLRULE'] = $urls;
+            $info = $db->getPage($catid);
+            $this->assign($info);
         }
         //把分页分配到模板
         $this->assign(C("VAR_PAGE"), $page);
@@ -98,9 +106,6 @@ class IndexAction extends BaseAction {
         $id = I('get.id', 0, 'intval');
         $page = intval($_GET[C("VAR_PAGE")]);
         $page = max($page, 1);
-        if (!$id || !$catid) {
-            $this->error("缺少参数！");
-        }
         $this->categorys = F("Category");
         //获取当前栏目数据
         $category = $this->categorys[$catid];
@@ -150,7 +155,6 @@ class IndexAction extends BaseAction {
         $newstempid = explode(".", $template);
         $template = $newstempid[0];
         unset($newstempid);
-
         //分页处理
         $pages = $titles = '';
         //分页方式 0不分页 1自动分页 2手动分页

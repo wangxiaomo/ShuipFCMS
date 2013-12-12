@@ -9,12 +9,193 @@ class CategoryModel extends CommonModel {
     public $categorys;
     //array(验证字段,验证规则,错误提示,[验证条件,附加规则,验证时间])
     protected $_validate = array(
-        array('modelid', 'require', '所属模型不能为空！', 1, 'regex', 3),
         array('catname', 'require', '栏目名称不能为空！', 1, 'regex', 3),
         array('catdir', 'require', '英文目录不能为空！', 1, 'regex', 3),
         array('catdir', 'checkCatdir', '目录名称已存在！', 1, 'callback', 1),
         array('setting', 'checkSetting', 'Setting配置信息有误！', 1, 'callback', 1),
+        //验证栏目类型
+        array('type', array(0, 1, 2), '栏目类型错误！', 1, 'in', 3)
     );
+    //自动完成
+    protected $_auto = array(
+        //array(填充字段,填充内容,填充条件,附加规则)
+        array('module', 'content'),
+    );
+
+    /**
+     * 添加栏目
+     * @param type $data 页面提交数据
+     * @return boolean]
+     */
+    public function addCategory($post) {
+        if (empty($post)) {
+            $this->error = '添加栏目数据不能为空！';
+            return false;
+        }
+        $data = $post['info'];
+        //栏目类型
+        $data['type'] = (int) $post['type'];
+        //表单令牌
+        $data[C("TOKEN_NAME")] = $post[C("TOKEN_NAME")];
+        $data['setting'] = $post['setting'];
+        //终极栏目设置
+        if (!isset($data['child'])) {
+            $data['child'] = 1;
+        }
+        //栏目生成静态配置
+        if ($data['setting']['ishtml']) {
+            $data['setting']['category_ruleid'] = $post['category_html_ruleid'];
+        } else {
+            $data['setting']['category_ruleid'] = $post['category_php_ruleid'];
+        }
+        //栏目是否生成静态
+        $data['sethtml'] = $data['setting']['ishtml'] ? 1 : 0;
+        //内容生成静态配置
+        if ($data['setting']['content_ishtml']) {
+            $data['setting']['show_ruleid'] = $post['show_html_ruleid'];
+        } else {
+            $data['setting']['show_ruleid'] = $post['show_php_ruleid'];
+        }
+        //判断URL规则是否有设置
+        if ((int) $data['type'] == 0) {//内部栏目
+            if (empty($data['setting']['category_ruleid'])) {
+                $this->error = '栏目URL规则没有设置！';
+                return false;
+            }
+            if (empty($data['setting']['show_ruleid']) && $data['child']) {
+                $this->error = '栏目内容页URL规则没有设置！';
+                return false;
+            }
+            //添加modelid自动验证规则
+            array_unshift($this->_validate, array('modelid', 'require', '所属模型不能为空！', 1, 'regex', 3));
+        } else if ((int) $data['type'] == 1) {//单页栏目
+            if (empty($data['setting']['category_ruleid'])) {
+                $this->error = '栏目URL规则没有设置！';
+                return false;
+            }
+        }
+        load("@.iconvfunc");
+        //栏目拼音
+        $catname = iconv('utf-8', 'gbk', $data['catname']);
+        $letters = gbk_to_pinyin($catname);
+        $data['letter'] = strtolower(implode('', $letters));
+        //序列化setting数据
+        $data['setting'] = serialize($data['setting']);
+        $data = $this->create($data, 1);
+        if ($data) {
+            if ((int) $data['type'] != 2) {
+                //绑定域名
+                $data['domain'] = $data['url'];
+            }
+            //添加数据
+            $catid = $this->add($data);
+            if ($catid) {
+                //更新附件状态
+                if ($data['image']) {
+                    //更新附件状态，把相关附件和文章进行管理
+                    service("Attachment")->api_update('', 'catid-' . $catid, 1);
+                }
+                return $catid;
+            } else {
+                $this->error = '栏目添加失败！';
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 编辑栏目
+     * @param type $post 页面提交过来的数据
+     * @return boolean
+     */
+    public function editCategory($post) {
+        if (empty($post)) {
+            $this->error = '添加栏目数据不能为空！';
+            return false;
+        }
+        $catid = $post['catid'];
+        $data = $post['info'];
+        //查询该栏目是否存在
+        $info = $this->where(array('catid' => $catid))->find();
+        if (empty($info)) {
+            $this->error = '该栏目不存在！';
+            return false;
+        }
+        unset($data['catid'], $info['catid'], $data['module'], $data['child']);
+        //表单令牌
+        $data[C("TOKEN_NAME")] = $post[C("TOKEN_NAME")];
+        $data['setting'] = $post['setting'];
+        //内部栏目
+        if ((int) $info['type'] != 2) {
+            if ($data['setting']['ishtml']) {
+                $data['setting']['category_ruleid'] = $post['category_html_ruleid'];
+            } else {
+                $data['setting']['category_ruleid'] = $post['category_php_ruleid'];
+                $data['url'] = '';
+            }
+        }
+        //栏目生成静态配置
+        if ($data['setting']['ishtml']) {
+            $data['setting']['category_ruleid'] = $post['category_html_ruleid'];
+        } else {
+            $data['setting']['category_ruleid'] = $post['category_php_ruleid'];
+        }
+        //内容生成静态配置
+        if ($data['setting']['content_ishtml']) {
+            $data['setting']['show_ruleid'] = $post['show_html_ruleid'];
+        } else {
+            $data['setting']['show_ruleid'] = $post['show_php_ruleid'];
+        }
+        //栏目是否生成静态
+        $data['sethtml'] = $data['setting']['ishtml'] ? 1 : 0;
+        //判断URL规则是否有设置
+        if ((int) $info['type'] == 0) {//内部栏目
+            if (empty($data['setting']['category_ruleid'])) {
+                $this->error = '栏目URL规则没有设置！';
+                return false;
+            }
+            if (empty($data['setting']['show_ruleid']) && $data['child']) {
+                $this->error = '栏目内容页URL规则没有设置！';
+                return false;
+            }
+            //添加modelid自动验证规则
+            array_unshift($this->_validate, array('modelid', 'require', '所属模型不能为空！', 1, 'regex', 3));
+        } else if ((int) $info['type'] == 1) {//单页栏目
+            if (empty($data['setting']['category_ruleid'])) {
+                $this->error = '栏目URL规则没有设置！';
+                return false;
+            }
+        }
+        load("@.iconvfunc");
+        //栏目拼音
+        $catname = iconv('utf-8', 'gbk', $data['catname']);
+        $letters = gbk_to_pinyin($catname);
+        $data['letter'] = strtolower(implode('', $letters));
+        //序列化setting数据
+        $data['setting'] = serialize($data['setting']);
+        $data = $this->create($data, 2);
+        if ($data) {
+            if ((int) $info['type'] != 2) {
+                //绑定域名
+                $data['domain'] = $data['url'];
+            }
+            if ($this->where(array("catid" => $catid))->save($data) !== false) {
+                //更新附件状态
+                if ($data['image']) {
+                    //更新附件状态，把相关附件和文章进行管理
+                    service("Attachment")->api_update('', 'catid-' . $catid, 1);
+                }
+                return true;
+            } else {
+                $this->error = '栏目修改失败！';
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
     /**
      * 删除栏目，如果有子栏目，会删除对应的子目录
@@ -199,7 +380,7 @@ class CategoryModel extends CommonModel {
         import('Url');
         $Url = new Url();
         $parenpath = $Url->get_categorydirpath($parentid);
-        if(!$parenpath){
+        if (!$parenpath) {
             $parenpath = '';
         }
         $where = array("parentdir" => $parenpath, 'module' => 'content', 'catdir' => $catdir);

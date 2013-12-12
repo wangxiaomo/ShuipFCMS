@@ -14,8 +14,10 @@ class CategoryAction extends AdminbaseAction {
     protected $tp_category;
     //列表页模板路径
     protected $tp_list;
-    //内容也模板路径
+    //内容页模板路径
     protected $tp_show;
+    //单页模板路径
+    protected $tp_page;
     //评论模板路径
     protected $tp_comment;
 
@@ -29,6 +31,8 @@ class CategoryAction extends AdminbaseAction {
         $this->tp_list = str_replace($this->filepath . "List" . DIRECTORY_SEPARATOR, "", glob($this->filepath . "List" . DIRECTORY_SEPARATOR . 'list*'));
         //取得内容页模板列表
         $this->tp_show = str_replace($this->filepath . "Show" . DIRECTORY_SEPARATOR, "", glob($this->filepath . "Show" . DIRECTORY_SEPARATOR . 'show*'));
+        //取得单页模板
+        $this->tp_page = str_replace($this->filepath . "Page" . DIRECTORY_SEPARATOR, "", glob($this->filepath . "Page" . DIRECTORY_SEPARATOR . 'page*'));
         //取得评论模板列表
         $this->tp_comment = str_replace($this->filepath . "Comment" . DIRECTORY_SEPARATOR, "", glob($this->filepath . "Comment" . DIRECTORY_SEPARATOR . 'comment*'));
         import('Url');
@@ -47,15 +51,30 @@ class CategoryAction extends AdminbaseAction {
         //栏目数据，可以设置为缓存的方式
         $result = F('Category');
         $siteurl = parse_url(CONFIG_SITEURL);
-        $types = array(0 => '内部栏目', 1 => 'font color="blue">单网页</font>', 2 => '<font color="red">外部链接</font>');
+        $types = array(0 => '内部栏目', 1 => '<font color="blue">单网页</font>', 2 => '<font color="red">外部链接</font>');
         if (!empty($result)) {
             foreach ($result as $r) {
                 $r['modelname'] = $models[$r['modelid']]['name'];
                 $r['str_manage'] = '';
-
-                $r['str_manage'] .= '<a href="' . U("Category/add", array("parentid" => $r['catid'])) . '">添加子栏目</a> | ';
-
-                $r['str_manage'] .= '<a href="' . U("Category/edit", array("catid" => $r['catid'])) . '">修改</a> | <a class="J_ajax_del" href="' . U("Category/delete", array("catid" => $r['catid'])) . '">删除</a> | <a href="' . U("Category/categoryshux", array("catid" => $r['catid'])) . '">终极属性转换</a>';
+                if ($r['child']) {
+                    $r['yesadd'] = '';
+                } else {
+                    $r['yesadd'] = 'blue';
+                }
+                if ($r['type'] != 2) {
+                    if ($r['child']) {
+                        if ($r['type'] == 1) {
+                            $r['str_manage'] .= '<a href="' . U("Category/singlepage", array("parentid" => $r['catid'])) . '">添加子栏目</a> | ';
+                        } else {
+                            $r['str_manage'] .= '<a href="' . U("Category/add", array("parentid" => $r['catid'])) . '">添加子栏目</a> | ';
+                        }
+                    }
+                }
+                $r['str_manage'] .= '<a href="' . U("Category/edit", array("catid" => $r['catid'])) . '">修改</a> | <a class="J_ajax_del" href="' . U("Category/delete", array("catid" => $r['catid'])) . '">删除</a>';
+                //终极栏目转换
+                if (in_array($r['type'], array(0, 1))) {
+                    $r['str_manage'] .= ' | <a href="' . U("Category/categoryshux", array("catid" => $r['catid'])) . '">终极属性转换</a> ';
+                }
                 $r['typename'] = $types[$r['type']];
                 $r['display_icon'] = $r['ismenu'] ? '' : ' <img src ="' . AppframeAction::$Cache['Config']['siteurl'] . 'statics/images/icon/gear_disable.png" title="不在导航显示">';
 
@@ -80,9 +99,9 @@ class CategoryAction extends AdminbaseAction {
         }
         $str = "<tr>
 	<td align='center'><input name='listorders[\$id]' type='text' size='3' value='\$listorder' class='input'></td>
-	<td align='center'>\$id</td>
+	<td align='center'><font color='\$yesadd'>\$id</font></td>
 	<td >\$spacer\$catname\$display_icon</td>
-	<td>\$typename</td>
+	<td  align='center'>\$typename</td>
 	<td>\$modelname</td>
 	<td align='center'>\$url</td>
 	<td align='center'>\$help</td>
@@ -98,73 +117,20 @@ class CategoryAction extends AdminbaseAction {
     public function add() {
         if (IS_POST) {
             $Category = D("Category");
-            //栏目类型，空为正常栏目，2为外部栏目，1为单页(废除)
-            $_POST['info']['type'] = intval($_POST['type']);
-            //表单令牌
-            $_POST['info'][C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
-            $setting = $_POST['setting'];
-
-            //设置所属内容模块
-            $_POST['info']['module'] = 'content';
-            //终极栏目设置
-            if ($_POST['info']['child'] == "" || $_POST['info']['child'] == "1") {
-                //没有该值时，默认为非终极栏目
-                $_POST['info']['child'] = 1;
-            }
-
-            if ((int) $_POST['type'] != 2) {
-                //绑定域名
-                $_POST['info']['domain'] = $_POST['info']['url'];
-            }
-            //栏目生成静态配置
-            if ($setting['ishtml']) {
-                $setting['category_ruleid'] = $_POST['category_html_ruleid'];
-            } else {
-                $setting['category_ruleid'] = $_POST['category_php_ruleid'];
-            }
-
-            $_POST['info']['sethtml'] = $setting['ishtml'] ? 1 : 0;
-
-            //内容生成静态配置
-            if ($setting['content_ishtml']) {
-                $setting['show_ruleid'] = $_POST['show_html_ruleid'];
-            } else {
-                $setting['show_ruleid'] = $_POST['show_php_ruleid'];
-            }
-
-            //判断URL规则是否有设置
-            if ((!$setting['category_ruleid'] || !$setting['category_ruleid']) && (int) $_POST['type'] != 2) {
-                $this->error("URL规则不能为空！");
-            }
-
-            //栏目拼音
-            $catname = iconv('utf-8', 'gbk', $_POST['info']['catname']);
-            $letters = gbk_to_pinyin($catname);
-            $_POST['info']['letter'] = strtolower(implode('', $letters));
-
-            $_POST['info']['setting'] = serialize($setting);
-
-            $data = $Category->create($_POST['info']);
-            if ($data) {
-                $catid = $Category->add($data);
-                if ($catid) {
-                    $this->assign("jumpUrl", U("Category/index"));
-                    $this->cache();
-                    //更新附件状态
-                    if ($_POST['info']['image']) {
-                        //更新附件状态，把相关附件和文章进行管理
-                        service("Attachment")->api_update('', 'catid-' . $catid, 1);
-                    }
-                    //更新角色栏目权限
-                    $this->update_priv($catid, $_POST['priv_roleid']);
+            $catid = $Category->addCategory($_POST);
+            if ($catid) {
+                //更新角色栏目权限
+                $this->update_priv($catid, $_POST['priv_roleid']);
+                if (isModuleInstall('Member')) {
                     //更新会员组权限
                     $this->update_priv($catid, $_POST['priv_groupid'], 0);
-                    $this->success("添加成功！");
-                } else {
-                    $this->error("添加失败！");
                 }
+                //更新缓存
+                $this->cache();
+                $this->success("添加成功！", U("Category/index"));
             } else {
-                $this->error($Category->getError());
+                $error = $Category->getError();
+                $this->error($error ? $error : '栏目添加失败！');
             }
         } else {
             $parentid = I('get.parentid', 0, 'intval');
@@ -208,6 +174,7 @@ class CategoryAction extends AdminbaseAction {
             $this->assign("tp_list", $this->tp_list);
             $this->assign("tp_show", $this->tp_show);
             $this->assign("tp_comment", $this->tp_comment);
+            $this->assign("tp_page", $this->tp_page);
             $this->assign("category", $categorydata);
             $this->assign("models", $models);
             $this->assign('parentid_modelid', $Ca['modelid']);
@@ -216,18 +183,15 @@ class CategoryAction extends AdminbaseAction {
             import('Form');
             $this->assign("category_php_ruleid", Form::urlrule('content', 'category', 0, "", 'name="category_php_ruleid"'));
             $this->assign("category_html_ruleid", Form::urlrule('content', 'category', 1, "", 'name="category_html_ruleid"'));
-
             $this->assign("show_php_ruleid", Form::urlrule('content', 'show', 0, "", 'name="show_php_ruleid"'));
             $this->assign("show_html_ruleid", Form::urlrule('content', 'show', 1, "", 'name="show_html_ruleid"'));
-            //会员组
-            $this->assign("Member_group", F("Member_group"));
+            if (isModuleInstall('Member')) {
+                //会员组
+                $this->assign("Member_group", F("Member_group"));
+            }
             //角色组
             $this->assign("Role_group", M("Role")->order(array("id" => "ASC"))->select());
-            if ($type == 2) {
-                $this->display("wadd");
-            } else {
-                $this->display();
-            }
+            $this->display();
         }
     }
 
@@ -236,96 +200,42 @@ class CategoryAction extends AdminbaseAction {
         $this->add();
     }
 
+    //添加单页
+    public function singlepage() {
+        $this->add();
+    }
+
     //编辑栏目 
     public function edit() {
         if (IS_POST) {
-            $_POST['info'][C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
             $catid = I("post.catid", "", "intval");
-            $setting = $_POST['setting'];
-            //栏目生成静态配置，外部栏目无需
-            if ($_POST['type'] != 2) {
-                if ($setting['ishtml']) {
-                    $setting['category_ruleid'] = $_POST['category_html_ruleid'];
-                } else {
-                    $setting['category_ruleid'] = $_POST['category_php_ruleid'];
-                    $_POST['info']['url'] = '';
-                }
+            if (empty($catid)) {
+                $this->error('请选择需要修改的栏目！');
             }
-
-            //栏目生成静态配置
-            if ($setting['ishtml']) {
-                $setting['category_ruleid'] = $_POST['category_html_ruleid'];
-            } else {
-                $setting['category_ruleid'] = $_POST['category_php_ruleid'];
-            }
-
-            //内容生成静态配置
-            if ($setting['content_ishtml']) {
-                $setting['show_ruleid'] = $_POST['show_html_ruleid'];
-            } else {
-                $setting['show_ruleid'] = $_POST['show_php_ruleid'];
-            }
-
-            $_POST['info']['sethtml'] = $setting['ishtml'] ? 1 : 0;
-
-            if ((int) $_POST['type'] != 2) {
-                //绑定域名
-                $_POST['info']['domain'] = $_POST['info']['url'];
-            }
-
-            $_POST['info']['setting'] = serialize($setting);
-            //设置模块
-            $_POST['info']['module'] = 'content';
-
-            // //栏目拼音
-            $catname = iconv('utf-8', 'gbk', $_POST['info']['catname']);
-            $letters = gbk_to_pinyin($catname);
-            $_POST['info']['letter'] = strtolower(implode('', $letters));
-
             $Category = D("Category");
-            //去除child属性，防止意外发生，如需改变栏目属性，使用属性转换功能
-            unset($_POST['info']['child']);
-
-            //判断URL规则是否有设置
-            if ((!$setting['category_ruleid'] || !$setting['category_ruleid']) && (int) $_POST['type'] != 2) {
-                $this->error("URL规则不能为空！");
-            }
-
-            $data = $Category->create($_POST['info']);
-            if ($data) {
-                if ($Category->where(array("catid" => $catid))->save($data) !== false) {
-                    $this->assign("jumpUrl", U("Category/index"));
-                    //更新附件状态
-                    if ($_POST['info']['image']) {
-                        //更新附件状态，把相关附件和文章进行管理
-                        service("Attachment")->api_update('', 'catid-' . $catid, 1);
+            $status = $Category->editCategory($_POST);
+            if ($status) {
+                //应用权限设置到子栏目
+                if ($_POST['priv_child']) {
+                    $arrchildid_arr = explode(',', $arrchildid);
+                    foreach ($arrchildid_arr as $arr_v) {
+                        $this->update_priv($arr_v, $_POST['priv_roleid']);
+                        $this->update_priv($arr_v, $_POST['priv_groupid'], 0);
                     }
-                    //子栏目
-                    $arrchildid = $Category->where(array('catid' => $catid))->getField('arrchildid');
-                    //当前栏目目录路径
-                    $catdir = $this->get_parentdir($catid) . $data['catdir'] . "/";
-                    //应用权限设置到子栏目
-                    if ($_POST['priv_child']) {
-                        $arrchildid_arr = explode(',', $arrchildid);
-                        foreach ($arrchildid_arr as $arr_v) {
-                            $this->update_priv($arr_v, $_POST['priv_roleid']);
-                            $this->update_priv($arr_v, $_POST['priv_groupid'], 0);
-                        }
-                    } else {
-                        //更新角色栏目权限
-                        $this->update_priv($catid, $_POST['priv_roleid']);
-                        //更新会有组权限
+                } else {
+                    //更新角色栏目权限
+                    $this->update_priv($catid, $_POST['priv_roleid']);
+                    if (isModuleInstall('Member')) {
+                        //更新会员组权限
                         $this->update_priv($catid, $_POST['priv_groupid'], 0);
                     }
-                    //更新缓存
-                    $this->cache();
-                    $this->success("更新成功！");
-                } else {
-                    $this->assign("jumpUrl", U("Category/edit", array("catid" => $catid)));
-                    $this->error("更新失败！");
                 }
+                //更新缓存
+                $this->cache();
+                $this->success("更新成功！", U("Category/index"));
             } else {
-                $this->error($Category->getError());
+                $error = $Category->getError();
+                $this->error($error ? $error : '栏目修改失败！');
             }
         } else {
             $catid = I('get.catid', 0, 'intval');
@@ -359,18 +269,23 @@ class CategoryAction extends AdminbaseAction {
             $this->assign("tp_list", $this->tp_list);
             $this->assign("tp_show", $this->tp_show);
             $this->assign("tp_comment", $this->tp_comment);
+            $this->assign("tp_page", $this->tp_page);
             $this->assign("category", $categorydata);
             $this->assign("models", $models);
             $this->assign("data", $data);
             $this->assign("setting", $setting);
-            //会员组
-            $this->assign("Member_group", F("Member_group"));
+            if (isModuleInstall('Member')) {
+                //会员组
+                $this->assign("Member_group", F("Member_group"));
+            }
             //角色组
             $this->assign("Role_group", M("Role")->order(array("id" => "ASC"))->select());
             $this->assign("big_menu", array(U("Category/index"), "栏目管理"));
             //权限数据
             $this->assign("privs", M("CategoryPriv")->where(array('catid' => $catid))->select());
-            if ($data['type'] == 2) {
+            if ($data['type'] == 1) {//单页栏目
+                $this->display("singlepage_edit");
+            } else if ($data['type'] == 2) {//外部栏目
                 $this->display("wedit");
             } else {
                 $this->display();
@@ -511,7 +426,7 @@ class CategoryAction extends AdminbaseAction {
         $r = M("Category")->where(array("catid" => $catid))->find();
         if ($r) {
             //栏目类型非0，不允许使用属性转换
-            if ($r['type']) {
+            if (!in_array($r['type'], array(0, 1))) {
                 $this->error("该栏目类型不允许进行属性转换！", U('Category/index'));
             }
             $count = M("Category")->where(array("parentid" => $catid))->count();

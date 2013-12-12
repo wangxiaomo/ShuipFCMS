@@ -45,7 +45,7 @@ class ContentAction extends AdminbaseAction {
             }
         }
         import('Form');
-        if (isset($_GET['catid']) && empty($this->model[$this->categorys[$this->catid]['modelid']])) {
+        if (isset($_GET['catid']) && empty($this->model[$this->categorys[$this->catid]['modelid']]) && $this->categorys[$this->catid]['type'] == 0) {
             $this->error("模型或者栏目不存在！！");
         }
     }
@@ -171,6 +171,17 @@ class ContentAction extends AdminbaseAction {
                 } else {
                     $this->error($Content->getError());
                 }
+            } else if ($category['type'] == 1) {//单页栏目
+                $db = D('Page');
+                if ($db->savePage($_POST)) {
+                    import('Html');
+                    $html = get_instance_of('Html');
+                    $html->category($catid);
+                    $this->success('操作成功！');
+                } else {
+                    $error = $db->getError();
+                    $this->error($error ? $error : '操作失败！');
+                }
             } else {
                 $this->error("该栏目类型无法发布！");
             }
@@ -184,37 +195,46 @@ class ContentAction extends AdminbaseAction {
             if ($category['child']) {
                 $this->error("只有终极栏目可以发布文章！");
             }
-            //模型ID
-            $modelid = $category['modelid'];
-            //检查模型是否被禁用
-            if ($this->model[$modelid]['disabled'] == 1) {
-                $this->error("该模型已被禁用！");
+            if ($category['type'] == 0) {
+                //模型ID
+                $modelid = $category['modelid'];
+                //检查模型是否被禁用
+                if ($this->model[$modelid]['disabled'] == 1) {
+                    $this->error("该模型已被禁用！");
+                }
+                //取模型ID，依模型ID来生成对应的表单
+                require_cache(RUNTIME_PATH . 'content_form.class.php');
+                //实例化表单类 传入 模型ID 栏目ID 栏目数组
+                $content_form = new content_form($modelid, $this->catid);
+                //生成对应字段的输入表单
+                $forminfos = $content_form->get();
+                //生成对应的JS验证规则
+                $formValidateRules = $content_form->formValidateRules;
+                //js验证不通过提示语
+                $formValidateMessages = $content_form->formValidateMessages;
+                //js
+                $formJavascript = $content_form->formJavascript;
+                //取得当前栏目setting配置信息
+                $setting = unserialize($category['setting']);
+                //var_dump($category);exit;
+                $this->assign("catid", $this->catid);
+                $this->assign("uploadurl", CONFIG_SITEFILEURL);
+                $this->assign("content_form", $content_form);
+                $this->assign("forminfos", $forminfos);
+                $this->assign("formValidateRules", $formValidateRules);
+                $this->assign("formValidateMessages", $formValidateMessages);
+                $this->assign("formJavascript", $formJavascript);
+                $this->assign("setting", $setting);
+                $this->assign("category", $category);
+                $this->display();
+            } else if ($category['type'] == 1) {//单网页模型
+                $this->assign("catid", $this->catid);
+                $this->assign("uploadurl", CONFIG_SITEFILEURL);
+                $this->assign("setting", $setting);
+                $this->assign('info', D('Page')->getPage($this->catid));
+                $this->assign("category", $category);
+                $this->display('singlepage');
             }
-            //取模型ID，依模型ID来生成对应的表单
-            require_cache(RUNTIME_PATH . 'content_form.class.php');
-            //实例化表单类 传入 模型ID 栏目ID 栏目数组
-            $content_form = new content_form($modelid, $this->catid);
-            //生成对应字段的输入表单
-            $forminfos = $content_form->get();
-            //生成对应的JS验证规则
-            $formValidateRules = $content_form->formValidateRules;
-            //js验证不通过提示语
-            $formValidateMessages = $content_form->formValidateMessages;
-            //js
-            $formJavascript = $content_form->formJavascript;
-            //取得当前栏目setting配置信息
-            $setting = unserialize($category['setting']);
-            //var_dump($category);exit;
-            $this->assign("catid", $this->catid);
-            $this->assign("uploadurl", CONFIG_SITEFILEURL);
-            $this->assign("content_form", $content_form);
-            $this->assign("forminfos", $forminfos);
-            $this->assign("formValidateRules", $formValidateRules);
-            $this->assign("formValidateMessages", $formValidateMessages);
-            $this->assign("formJavascript", $formJavascript);
-            $this->assign("setting", $setting);
-            $this->assign("category", $category);
-            $this->display();
         }
     }
 
@@ -298,7 +318,11 @@ class ContentAction extends AdminbaseAction {
             $this->assign("formValidateRules", $formValidateRules);
             $this->assign("formValidateMessages", $formValidateMessages);
             $this->assign("formJavascript", $formJavascript);
-            $this->display();
+            if ($category['type'] == 1) {
+                $this->display('singlepage_edit');
+            } else {
+                $this->display();
+            }
         }
     }
 
@@ -423,8 +447,8 @@ class ContentAction extends AdminbaseAction {
     public function public_categorys() {
         //管理员uid
         $uid = AppframeAction::$Cache['uid'];
-        $cache_class_list = S("cache_class_list_$uid");
-        if (!$cache_class_list) {
+        $cache_class_list = S("cache_class_list_$uid_" . C('AUTHCODE'));
+        if ($cache_class_list) {
             import('Tree');
             $tree = new Tree();
             //栏目权限 超级管理员例外
@@ -448,10 +472,19 @@ class ContentAction extends AdminbaseAction {
                             continue;
                         }
                     }
-                    $r['icon_type'] = $r['vs_show'] = '';
-                    $r['type'] = 'classlist';
-                    $r['add_icon'] = "<a target='right' href='" . U("Contents/Content/classlist", array("catid" => $r['catid'])) . "' onclick=javascript:openwinx('" . U("Contents/Content/add", array("catid" => $r['catid'])) . "','')><img src='" . AppframeAction::$Cache['Config']['siteurl'] . "statics/images/add_content.gif' alt='添加'></a> ";
-                    $r['add_lists'] = "<a href='" . U("Contents/Content/classlist", array("catid" => $r['catid'])) . "' target='right' >" . $r['catname'] . "</a>";
+                    //单页模型
+                    if ($r['type'] == 1) {
+                        $r['icon_type'] = 'file';
+                        $r['add_icon'] = '';
+                        $r['type'] = '';
+                        $r['add_lists'] = "<a href='" . U("Contents/Content/add", array("catid" => $r['catid'])) . "' target='right' >" . $r['catname'] . "</a>";
+                    } else {
+                        $r['icon_type'] = $r['vs_show'] = '';
+                        $r['type'] = 'classlist';
+                        $r['add_icon'] = "<a target='right' href='" . U("Contents/Content/classlist", array("catid" => $r['catid'])) . "' onclick=javascript:openwinx('" . U("Contents/Content/add", array("catid" => $r['catid'])) . "','')><img src='" . AppframeAction::$Cache['Config']['siteurl'] . "statics/images/add_content.gif' alt='添加'></a> ";
+                        $r['add_lists'] = "<a href='" . U("Contents/Content/classlist", array("catid" => $r['catid'])) . "' target='right' >" . $r['catname'] . "</a>";
+                    }
+
                     $categorys[$r['catid']] = $r;
                 }
             }
@@ -464,7 +497,7 @@ class ContentAction extends AdminbaseAction {
                 $categorys = "该站点下面还没有栏目，请先添加栏目";
             }
             //缓存
-            S("cache_class_list_$uid", $categorys, 300);
+            S("cache_class_list_$uid_" . C('AUTHCODE'), $categorys, 300);
         } else {
             $categorys = $cache_class_list;
         }
