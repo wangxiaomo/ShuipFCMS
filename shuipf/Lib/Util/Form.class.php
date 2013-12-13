@@ -33,10 +33,8 @@ class Form {
 
         //编辑器类型
         if ($toolbar == 'basic') {//简洁型
-            $toolbar = "['FullScreen', 'Source', '|', 'Undo', 'Redo', '|',
-                'Bold', 'Italic', 'Underline', 
-                'Link',  '|',  'InsertImage', 
-                'SelectAll', 'ClearDoc', 'SearchReplace', 'Print', 'Preview', 'CheckImage', " . ($allowupload && $allowbrowser ? "'Attachments'," : "") . " 'Help','AutoTypeSet']
+            $toolbar = "['FullScreen', 'Source', '|', 'Undo', 'Redo', '|','FontSize','Bold', 'Italic', 'Underline', 'Link',  '|',  'InsertImage', 
+                 'ClearDoc',  'CheckImage','Emotion',  " . ($allowupload && $allowbrowser ? "'Attachments'," : "") . " 'PageBreak','insertcode', 'WordImage','RemoveFormat', 'FormatMatch','AutoTypeSet']
                 ";
         } elseif ($toolbar == 'full') {//标准型
             $toolbar = "['FullScreen', 'Source', '|', 'Undo', 'Redo', '|',
