@@ -571,6 +571,11 @@ INSERT INTO `shuipfcms_menu` VALUES ('238', '236', 'Admin', 'Behavior', 'edit', 
 INSERT INTO `shuipfcms_menu` VALUES ('239', '236', 'Admin', 'Behavior', 'delete', '', '1', '0', '删除行为', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('240', '236', 'Admin', 'Behavior', 'status', '', '1', '0', '行为状态转换', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('241', '57', 'Admin', 'Category', 'singlepage', '', '1', '1', '添加单页栏目', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('242', '70', 'Template', 'Customlist', 'index', '', '1', '1', '自定义列表', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('243', '242', 'Template', 'Customlist', 'add', '', '1', '1', '添加列表', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('244', '242', 'Template', 'Customlist', 'delete', '', '1', '0', '删除列表', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('245', '242', 'Template', 'Customlist', 'edit', '', '1', '0', '编辑列表', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('246', '242', 'Template', 'Customlist', 'generate', '', '1', '0', '生成列表', '', '0');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_model`
@@ -1039,3 +1044,25 @@ CREATE TABLE `shuipfcms_page` (
   PRIMARY KEY (`catid`),
   KEY `catid` (`catid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='单页内容表';
+
+-- ----------------------------
+-- Table structure for `shuipfcms_customlist`
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_customlist`;
+CREATE TABLE `shuipfcms_customlist` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自定义列表ID',
+  `url` char(100) NOT NULL COMMENT '访问地址',
+  `name` varchar(60) NOT NULL COMMENT '列表标题',
+  `title` varchar(120) NOT NULL COMMENT '网页标题',
+  `keywords` varchar(40) NOT NULL COMMENT '网页关键字',
+  `description` text NOT NULL COMMENT '页面简介',
+  `totalsql` text NOT NULL COMMENT '数据统计SQL',
+  `listsql` text NOT NULL COMMENT '数据查询SQL',
+  `lencord` int(11) NOT NULL DEFAULT '0' COMMENT '每页显示',
+  `urlruleid` int(11) NOT NULL COMMENT 'URL规则ID',
+  `urlrule` varchar(120) NOT NULL COMMENT 'URL规则',
+  `template` mediumtext NOT NULL COMMENT '模板',
+  `listpath` varchar(60) NOT NULL COMMENT '列表模板文件',
+  `createtime` int(10) NOT NULL COMMENT '添加时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='自定义列表';
