@@ -3,6 +3,13 @@
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
+  <div class="h_a">自定义列表模板使用说明</div>
+  <literal>
+  <div class="prompt_text">
+    <p>模板支持如下变量：SEO输出（数组）->$SEO，查询数据（数组）->$listData，分页代码->$pages</p>
+    <p>URL规则 可以在 内容->URL规则管理 添加。“模块名称” 选择 “模板管理”，“URL规则名称”填写 “list”然后 选择生成静态</p>
+  </div>
+  </literal>
   <div class="h_a">添加自定义页面</div>
   <form name="myform" id="myform" action="{:U("Template/Customlist/edit")}" method="post" class="J_ajaxForm">
     <div class="table_full">
@@ -10,7 +17,7 @@
         <tbody>
           <tr>
             <th width="120">自定义列表标题名称</th>
-            <td><input type="text" class="input" name="name" value="{$info.name}" ></td>
+            <td><input type="text" class="input" name="name" value="{$info.name}" placeholder="请输入自定义列表标题名称，必填项" style="width:300px;"></td>
           </tr>
           <tr>
             <th width="120">网页标题</th>
@@ -26,12 +33,12 @@
           </tr>
           <tr>
             <th width="120">数据统计SQL</th>
-            <td><input type="text" class="input" name="totalsql" value="{$info.totalsql}"  style="width:95%;"> <br/>
+            <td><input type="text" class="input" name="totalsql" value="{$info.totalsql}"  style="width:95%;" placeholder="请输入数据统计SQL，必填项"> <br/>
             <span class="gray">如：select count(*) as total from shuipfcms_article where catid = 1</span></td>
           </tr>
           <tr>
             <th width="120">数据查询SQL</th>
-            <td><input type="text" class="input" name="listsql" value="{$info.listsql}"  style="width:95%;"> <br/>
+            <td><input type="text" class="input" name="listsql" value="{$info.listsql}"  style="width:95%;" placeholder="请输入数据查询SQL，请不要在结尾出现LIMIT"> <br/>
             <span class="gray">如：select * from shuipfcms_article where catid = 1 order by id desc</span></td>
           </tr>
           <tr>

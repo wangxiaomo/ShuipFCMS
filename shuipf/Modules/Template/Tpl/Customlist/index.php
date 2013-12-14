@@ -3,7 +3,7 @@
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
-  <form action="{:U("Customlist/generate")}" method="post">
+  <form action="{:U("Customlist/generate")}" method="post" class="J_ajaxForm">
     <div class="table_list">
       <table width="100%" cellspacing="0">
         <thead>
@@ -18,7 +18,7 @@
         <tbody>
           <volist name="data" id="vo">
             <tr>
-              <td align="center"><input class="J_check" data-yid="J_check_y" data-xid="J_check_x" name="tempid[]" value="{$vo.id}" type="checkbox"></td>
+              <td align="center"><input class="J_check" data-yid="J_check_y" data-xid="J_check_x" name="ids[]" value="{$vo.id}" type="checkbox"></td>
               <td align="center">{$vo.id}</td>
               <td align="left"><a href="{$Config.siteurl|substr=###,0,-1}{$vo.temppath}{$vo.tempname}" target="_blank" >{$vo.name}</a></td>
               <td align="center"><a href="{$vo.url}" target="_blank">点击预览</a></td>
