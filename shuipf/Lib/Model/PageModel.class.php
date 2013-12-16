@@ -63,10 +63,14 @@ class PageModel extends CommonModel {
             }
             if ($info) {
                 if ($this->where(array('catid' => $catid))->save($data) !== false) {
+                    //更新附件状态，把相关附件和文章进行管理
+                    service("Attachment")->api_update('', 'catid-' . $catid, 1);
                     return true;
                 }
             } else {
                 if ($this->add($data) !== false) {
+                    //更新附件状态，把相关附件和文章进行管理
+                    service("Attachment")->api_update('', 'catid-' . $catid, 1);
                     return true;
                 }
             }
