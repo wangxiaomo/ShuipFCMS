@@ -54,9 +54,9 @@ class TagLibShuipf extends TagLib {
         //导航标签
         'navigate' => array('attr' => 'cache,catid,space,blank', 'close' => 0),
         //上一篇
-        'pre' => array('attr' => 'catid,id,target,msg', 'close' => 0),
+        'pre' => array('attr' => 'catid,id,target,msg,field', 'close' => 0),
         //下一篇
-        'next' => array('attr' => 'catid,id,target,msg', 'close' => 0),
+        'next' => array('attr' => 'catid,id,target,msg,field', 'close' => 0),
     );
 
     /**
@@ -83,6 +83,8 @@ class TagLibShuipf extends TagLib {
         $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
         //是否新窗口打开
         $target = !empty($tag['blank']) ? ' target=\"_blank\" ' : '';
+        //返回对应字段内容
+        $field = $tag['field'] && in_array($tag['field'], array('id', 'title', 'url')) ? $tag['field'] : '';
         if (!$tag['catid']) {
             $tag['catid'] = '$catid';
         }
@@ -92,7 +94,11 @@ class TagLibShuipf extends TagLib {
 
         $parsestr = '<?php ';
         $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys[' . $tag['catid'] . '][\'modelid\']][\'tablename\']))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("LT",' . $tag['id'] . ')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
-        $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" ' . $target . '>".$_pre_r["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
+        if($field){
+            $parsestr .= ' echo $_pre_r?$_pre_r["'.$field.'"]:""';
+        }else{
+            $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" ' . $target . '>".$_pre_r["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
+        }
         $parsestr .= ' ?> ';
         $_preParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
@@ -122,6 +128,8 @@ class TagLibShuipf extends TagLib {
         $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
         //是否新窗口打开
         $target = !empty($tag['blank']) ? ' target=\"_blank\" ' : '';
+        //返回对应字段内容
+        $field = $tag['field'] && in_array($tag['field'], array('id', 'title', 'url')) ? $tag['field'] : '';
         if (!$tag['catid']) {
             $tag['catid'] = '$catid';
         }
@@ -130,8 +138,12 @@ class TagLibShuipf extends TagLib {
         }
 
         $parsestr = '<?php ';
-        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys[' . $tag['catid'] . '][\'modelid\']][\'tablename\']))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("GT",' . $tag['id'] . ')))->order(array("id" => "ASC"))->field("id,title,url")->find(); ';
-        $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" ' . $target . '>".$_pre_r["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
+        $parsestr .= ' $_pre_n = M(ucwords($Model[$Categorys[' . $tag['catid'] . '][\'modelid\']][\'tablename\']))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("GT",' . $tag['id'] . ')))->order(array("id" => "ASC"))->field("id,title,url")->find(); ';
+        if($field){
+            $parsestr .= ' echo $_pre_n?$_pre_n["'.$field.'"]:""';
+        }else{
+            $parsestr .= ' echo $_pre_n?"<a class=\"pre_a\" href=\"".$_pre_n["url"]."\" ' . $target . '>".$_pre_n["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
+        }
         $parsestr .= ' ?> ';
         $_nextParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
@@ -443,7 +455,7 @@ class TagLibShuipf extends TagLib {
         $content_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
     }
-    
+
     /**
      * spf标签，用于调用模块扩展标签
      * 标签：<spf></spf>
