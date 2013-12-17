@@ -19,6 +19,7 @@ class ModelModel extends CommonModel {
     protected $_validate = array(
         array('name', 'require', '模型名称不能为空！'),
         array('tablename', 'require', '表名不能为空！'),
+        array('tablename', '/^[a-zwd_]+$/i', '模型表键名只支持英文！', 0, 'regex', 3),
         array('name', '', '该模型名称已经存在！', 0, 'unique', 1),
         array('tablename', '', '该表名已经存在！', 0, 'unique', 3),
         array('tablename', 'checkTablesql', '创建模型所需要的SQL文件丢失，创建失败！', 1, 'callback', 3),
