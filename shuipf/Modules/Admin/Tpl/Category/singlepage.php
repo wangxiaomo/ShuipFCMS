@@ -153,6 +153,11 @@
               <td><div style="display:" id="category_php_ruleid"> {$category_php_ruleid} </div>
                 <div style="display:none" id="category_html_ruleid"> {$category_html_ruleid} </div></td>
             </tr>
+            <tr style="display:none" id="tr_domain">
+              <th>绑定域名：</th>
+              <td><input type="text" value="" size="50" class="input" id="url" name="info[url]">
+                <span class="gray"> 域名可为空，格式应该为http://www.abc3210.com/</span></td>
+            </tr>
           </table>
         </div>
       </div>

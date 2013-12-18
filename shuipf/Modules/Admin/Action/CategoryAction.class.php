@@ -86,7 +86,7 @@ class CategoryAction extends AdminbaseAction {
                         $catdir = $r['catdir'];
                         //如果生成静态，将设置一个指定的静态目录
                         $catdir = '/' . $r['parentdir'] . $catdir;
-                        if ($r['type'] == 0 && $setting['ishtml'] && strpos($r['url'], '?') === false) {
+                        if ($setting['ishtml'] && strpos($r['url'], '?') === false) {
                             $r['help'] = '<img src="' . AppframeAction::$Cache['Config']['siteurl'] . 'statics/images/icon/help.png" title="将域名：' . $r['url'] . '&#10;绑定到目录&#10;' . $catdir . '/">';
                         }
                     }

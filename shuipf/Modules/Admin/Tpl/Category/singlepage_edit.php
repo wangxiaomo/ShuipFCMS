@@ -151,6 +151,11 @@
               <td><div style="<if condition="$setting['ishtml'] eq '1' ">display:none</if>" id="category_php_ruleid"> {$category_php_ruleid} </div>
                 <div style="<if condition="$setting['ishtml'] eq '0' ">display:none</if>" id="category_html_ruleid"> {$category_html_ruleid} </div></td>
             </tr>
+            <tr style="<if condition="$setting['ishtml'] eq '0' ">display:none</if>" id="tr_domain">
+              <th>绑定域名：</th>
+              <td><input type="text" value="{$data.domain}" size="50" class="input" id="url" name="info[url]">
+                <span class="gray"> 域名可为空，格式应该为http://www.abc3210.com/</span> </td>
+            </tr>
           </table>
         </div>
       </div>
