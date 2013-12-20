@@ -45,10 +45,10 @@ class IndexAction extends Action {
     protected function _initialize() {
         //获取命令
         $execute = I('execute', '', '');
-//        $execute = authcode($execute, 'DECODE');
-//        if (empty($execute)) {
-//            exit(serialize(array('error' => -10000, 'status' => 'fail')));
-//        }
+        $execute = authcode($execute, 'DECODE');
+        if (empty($execute)) {
+            exit(serialize(array('error' => -10000, 'status' => 'fail')));
+        }
         //反序列化
         $execute = unserialize($execute);
         //获取操作名
