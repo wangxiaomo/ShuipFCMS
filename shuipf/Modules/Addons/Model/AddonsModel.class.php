@@ -246,21 +246,29 @@ class AddonsModel extends CommonModel {
                     }
                 }
             }
-            if ($upgradeVersion) {
-                $this->where(array('name' => $addonName))->save(array('version' => $upgradeVersion));
-                $info['version'] = $upgradeVersion;
-            }
         }
         //判断是否有升级程序脚本
         if (file_exists($phpScript)) {
             require_cache($phpScript);
             if (class_exists('Upgrade')) {
                 $Upgrade = new Upgrade();
-                if($Upgrade->run() == false){
+                if ($Upgrade->run() == false) {
                     $this->error = $Upgrade->getError() ? $Upgrade->getError() : "执行插件升级脚本错误，升级未完成！";
                     return -10027;
                 }
             }
+        }
+        //插件Addon执行文件地址
+        $filePath = $base . "{$addonName}Addon.class.php";
+        //导入对应插件
+        require_cache($filePath);
+        //获取类名
+        $class = $this->getAddonClassName($addonName);
+        $obj = get_instance_of($class);
+        $info = $obj->info;
+        //更新版本号
+        if($info['version']){
+            $this->where(array('name' => $addonName))->save(array('version' => $upgradeVersion));
         }
         return true;
     }
