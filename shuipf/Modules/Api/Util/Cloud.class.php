@@ -80,7 +80,7 @@ class Cloud {
         import('Util.Addon', APP_PATH . C('APP_GROUP_PATH') . '/Addons/');
         //执行插件安装
         if (false !== $addonModel->installAddon($name)) {
-            return true;
+            return 1;
         } else {
             $this->error = $addonModel->getError();
             //插件安装失败
@@ -119,7 +119,7 @@ class Cloud {
             //清理
             $Dir = get_instance_of('Dir');
             $Dir->delDir($modulePath . 'Install/');
-            return true;
+            return 1;
         }
         $this->error = D('Module')->getError();
         //模块安装失败
@@ -214,9 +214,9 @@ class Cloud {
         //升级脚本
         $status = $addonModel->upgradeAddon($name);
         if ($status === true) {
-            return 0;
-        } else {
             return 1;
+        } else {
+            return 0;
         }
     }
 
@@ -249,9 +249,9 @@ class Cloud {
         //执行升级程序
         $status = D('Module')->upgrade($appid);
         if ($status === true) {
-            return 0;
-        } else {
             return 1;
+        } else {
+            return 0;
         }
     }
 
