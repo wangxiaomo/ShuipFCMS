@@ -53,10 +53,10 @@ class Cloud {
      * @param type $file 地址
      * @param type $md5 文件md5
      * @param type $name 插件名称
-     * @param type $clean 清理列表
+     * @param type $option 其他参数选项
      * @return boolean
      */
-    public function install_addons($file, $md5, $name, $clean = array()) {
+    public function install_addons($file, $md5, $name, $option = array()) {
         //插件模型
         $addonModel = D('Addons/Addons');
         //获取插件目录
@@ -71,8 +71,6 @@ class Cloud {
         $tmp = $this->get_temp_file($file);
         //编码处理
         $this->trans_file($tmp);
-        //清理文件
-        $this->clean_file($tmp, $clean);
         //处理文件，清理不需要的文件
         $status = $this->moved_file($tmp, $addonPath, $file);
         if ($status < 1) {
@@ -95,10 +93,10 @@ class Cloud {
      * @param type $file 地址
      * @param type $md5 文件md5
      * @param type $appid 模块名称
-     * @param type $clean 清理列表
+     * @param type $option 其他参数选项
      * @return boolean
      */
-    public function install_module($file, $md5, $appid, $clean = array()) {
+    public function install_module($file, $md5, $appid, $option = array()) {
         //模块路径
         $modulePath = APP_PATH . C('APP_GROUP_PATH') . '/' . $appid . '/';
         //存储更新包
@@ -111,8 +109,6 @@ class Cloud {
         $tmp = $this->get_temp_file($file);
         //编码处理
         $this->trans_file($tmp);
-        //清理文件
-        $this->clean_file($tmp, $clean);
         //处理文件，清理不需要的文件
         $status = $this->moved_file($tmp, $modulePath, $file);
         if ($status < 1) {
@@ -131,7 +127,7 @@ class Cloud {
     }
 
     /**
-     * 升级系统
+     * 升级系统(暂不可用)
      * @param type $file 升级包地址
      * @param type $md5 升级包md5
      * @return boolean
@@ -190,10 +186,10 @@ class Cloud {
      * @param type $file 升级包地址
      * @param type $md5 升级包md5
      * @param type $name 插件名称
-     * @param type $clean 清理列表
+     * @param type $option 其他参数选项
      * @return boolean
      */
-    public function upgrade_addons($file, $md5, $name, $clean = array()) {
+    public function upgrade_addons($file, $md5, $name, $option = array()) {
         //插件模型
         $addonModel = D('Addons/Addons');
         //获取插件目录
@@ -208,8 +204,6 @@ class Cloud {
         $tmp = $this->get_temp_file($file);
         //转换编码
         $this->trans_file($tmp);
-        //清理文件
-        $this->clean_file($tmp, $clean);
         //处理文件，清理不需要的文件
         $status = $this->moved_file($tmp, $addonPath, $file);
         if ($status < 1) {
@@ -218,8 +212,12 @@ class Cloud {
         //载入Addon类
         import('Util.Addon', APP_PATH . C('APP_GROUP_PATH') . '/Addons/');
         //升级脚本
-        $addonModel->upgradeAddon($name);
-        return true;
+        $status = $addonModel->upgradeAddon($name);
+        if ($status === true) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 
     /**
@@ -227,10 +225,10 @@ class Cloud {
      * @param type $file 升级包地址
      * @param type $md5 升级包md5
      * @param type $appid 模块名称
-     * @param type $clean 清理列表
+     * @param type $option 其他参数选项
      * @return boolean
      */
-    public function upgrade_module($file, $md5, $appid, $clean = array()) {
+    public function upgrade_module($file, $md5, $appid, $option = array()) {
         //模块路径
         $modulePath = APP_PATH . C('APP_GROUP_PATH') . '/' . $appid . '/';
         //存储更新包
@@ -243,77 +241,86 @@ class Cloud {
         $tmp = $this->get_temp_file($file);
         //转换编码
         $this->trans_file($tmp);
-        //清理文件
-        $this->clean_file($tmp, $clean);
         //处理文件，清理不需要的文件
         $status = $this->moved_file($tmp, $modulePath, $file);
         if ($status < 1) {
             return $status;
         }
-        //升级脚本
-        D('Module')->upgrade($appid);
-        return true;
+        //执行升级程序
+        $status = D('Module')->upgrade($appid);
+        if ($status === true) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
 
     /**
-     * 处理文件，清理不需要的文件
+     * 处理文件，对文件进行更新，创建
      * @param type $tmpdir 临时目录
      * @param type $newdir 目标目录
      * @param type $pack 下载文件包
      * @return type
      */
     public function moved_file($tmpdir, $newdir, $pack) {
+        //删除文件包
+        unlink($this->get_pack_file($pack));
         $Dir = get_instance_of('Dir');
         $list = $this->rglob($tmpdir . '*', GLOB_BRACE);
         //批量迁移文件
         foreach ($list as $file) {
             $newd = str_replace($tmpdir, $newdir, $file);
-            if (file_exists($file) && is_writable($file) == FALSE) {
+            //检查缓存包中的文件如果文件或者文件夹存在，但是不可写提示错误
+            if (file_exists($file) && is_writable($file) == false) {
                 //记录在案
-                $this->lastfile = str_replace($tmpdir, '', $file);
+                $this->lastfile = $file;
                 //文件缺少读写权限
                 return -10007;
             }
-            if (file_exists($newd) && is_writable($newd) == FALSE) {
+            //检查目标文件是否存在，如果文件或者文件夹存在，但是不可写提示错误
+            if (file_exists($newd) && is_writable($newd) == false) {
                 //记录在案
-                $this->lastfile = str_replace($newdir, '', $newd);
+                $this->lastfile = $newd;
                 //文件缺少读写权限
                 return -10007;
             }
-            //创建文件夹
+            //检查缓存包对应的文件是否文件夹，如果是，则创建文件夹
             if (is_dir($file)) {
-                if (!mkdir($newd, 0777, TRUE)) {
+                //文件夹不存在则创建
+                if (file_exists($newd) == false && mkdir($newd, 0777, TRUE) == false) {
                     //记录在案
                     $this->lastfile = str_replace($newdir, '', $newd);
                     //不能创建临时目录
                     return -10002;
                 }
             } else {
-                //删除旧文件（winodws 环境需要）
+                //========文件处理！=============
                 if (file_exists($newd)) {
-                    unlink($newd);
+                    //删除旧文件（winodws 环境需要）
+                    if (!unlink($newd)) {
+                        //记录在案
+                        $this->lastfile = $newd;
+                        //不能创建临时目录
+                        return -10021;
+                    }
                 }
-                //生成新文件
-                $test = rename($file, $newd);
-                //记录在案
-                $this->lastfile = str_replace($tmpdir, '', $file);
-            }
-            //移动文件出错
-            if ($test === FALSE) {
-                //不能移动文件到新目录
-                return -10005;
+                //生成新文件，也就是把下载的，生成到新的路径中去
+                if (!rename($file, $newd)) {
+                    //记录在案
+                    $this->lastfile = $newd;
+                    //不能移动文件到新目录
+                    return -10005;
+                }
             }
         }
         //删除临时目录
         $Dir->delDir($tmpdir);
-        //删除文件包
-        unlink($this->get_pack_file($pack));
         return true;
     }
 
     /**
      * 移除文件
-     * @param type $tmpdir 临时目录
+     * @param type $tmpdir 目录
      * @param type $list 需要删除的文件列表
      * @return type
      */

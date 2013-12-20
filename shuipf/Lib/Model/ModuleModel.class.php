@@ -202,13 +202,13 @@ class ModuleModel extends CommonModel {
         //检查模块是否安装
         if ($this->isInstall($module) == false) {
             $this->error = '模块没进行安装，无法进行模块升级！';
-            return false;
+            return -10022;
         }
         //取得模块信息
         $info = $this->where(array('module' => $module))->find();
         if (empty($info)) {
             $this->error = '获取模块信息错误！';
-            return false;
+            return -10023;
         }
         //模块路径
         $base = $this->appPath . $module . '/';
@@ -240,7 +240,10 @@ class ModuleModel extends CommonModel {
             require_cache($phpScript);
             if (class_exists('Upgrade')) {
                 $Upgrade = new Upgrade();
-                $Upgrade->run();
+                if ($Upgrade->run() == false) {
+                    $this->error = $Upgrade->getError() ? $Upgrade->getError() : "执行模块升级脚本错误，升级未完成！";
+                    return -10024;
+                }
             }
         }
         //加载配置

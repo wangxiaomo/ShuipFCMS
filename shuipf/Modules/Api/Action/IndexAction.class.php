@@ -26,6 +26,13 @@
  * -10018		获取不到网站配置
  * -10019		更新网站密钥失败
  * -10020		文件数目为空
+ * -10021		无法删除原来的旧文件
+ * -10022		该模块没有安装，无法升级
+ * -10023		无法获取模块安装信息
+ * -10024		执行模块升级脚本错误，升级未完成
+ * -10025		插件没进行安装，无法进行插件升级
+ * -10026		无法获取插件安装信息
+ * -10027		执行插件升级脚本错误，升级未完成
  */
 class IndexAction extends Action {
 
@@ -38,10 +45,10 @@ class IndexAction extends Action {
     protected function _initialize() {
         //获取命令
         $execute = I('execute', '', '');
-        $execute = authcode($execute, 'DECODE');
-        if (empty($execute)) {
-            exit(serialize(array('error' => -10000, 'status' => 'fail')));
-        }
+//        $execute = authcode($execute, 'DECODE');
+//        if (empty($execute)) {
+//            exit(serialize(array('error' => -10000, 'status' => 'fail')));
+//        }
         //反序列化
         $execute = unserialize($execute);
         //获取操作名
@@ -178,7 +185,7 @@ class IndexAction extends Action {
                             }
                         }
                         //安装模块
-                        $status = $this->Cloud->install_module($command['package'], $command['hash'], $command['appid'], $command['option']['install']['ignore']);
+                        $status = $this->Cloud->install_module($command['package'], $command['hash'], $command['appid'], $command['option']);
                         //安装成功
                         if ($status > 0) {
                             exit(serialize(array('appid' => $command['appid'], 'status' => 'success')));
@@ -204,7 +211,7 @@ class IndexAction extends Action {
                             exit(serialize(array('error' => -10007, 'catalog' => $status, 'status' => 'fail')));
                         }
                         //升级模块
-                        $status = $this->Cloud->upgrade_module($command['package'], $command['hash'], $command['appid'], $command['option']['upgrade']['ignore']);
+                        $status = $this->Cloud->upgrade_module($command['package'], $command['hash'], $command['appid'], $command['option']);
                         //升级成功
                         if ($status > 0) {
                             exit(serialize(array('appid' => $command['appid'], 'status' => 'success')));
@@ -266,7 +273,7 @@ class IndexAction extends Action {
                             }
                         }
                         //安装模块
-                        $status = $this->Cloud->install_addons($command['package'], $command['hash'], $command['name'], $command['option']['install']['ignore']);
+                        $status = $this->Cloud->install_addons($command['package'], $command['hash'], $command['name'], $command['option']);
                         //安装成功
                         if ($status > 0) {
                             exit(serialize(array('name' => $command['name'], 'status' => 'success')));
@@ -292,7 +299,7 @@ class IndexAction extends Action {
                             exit(serialize(array('error' => -10007, 'catalog' => $status, 'status' => 'fail')));
                         }
                         //升级插件
-                        $status = $this->Cloud->upgrade_addons($command['package'], $command['hash'], $command['name'], $command['option']['upgrade']['ignore']);
+                        $status = $this->Cloud->upgrade_addons($command['package'], $command['hash'], $command['name'], $command['option']);
                         //升级成功
                         if ($status > 0) {
                             exit(serialize(array('name' => $command['name'], 'status' => 'success')));

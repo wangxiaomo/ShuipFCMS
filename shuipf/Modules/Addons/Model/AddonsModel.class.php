@@ -214,13 +214,13 @@ class AddonsModel extends CommonModel {
         //检查模块是否安装
         if ($this->isInstall($addonName) == false) {
             $this->error = '插件没进行安装，无法进行插件升级！';
-            return false;
+            return -10025;
         }
         //获取插件信息
         $info = $this->where(array('name' => $addonName))->find();
         if (empty($info)) {
             $this->error = '获取插件信息错误！';
-            return false;
+            return -10026;
         }
         //插件路径
         $base = $this->addonsPath . $addonName . '/';
@@ -256,7 +256,10 @@ class AddonsModel extends CommonModel {
             require_cache($phpScript);
             if (class_exists('Upgrade')) {
                 $Upgrade = new Upgrade();
-                $Upgrade->run();
+                if($Upgrade->run() == false){
+                    $this->error = $Upgrade->getError() ? $Upgrade->getError() : "执行插件升级脚本错误，升级未完成！";
+                    return -10027;
+                }
             }
         }
         return true;
