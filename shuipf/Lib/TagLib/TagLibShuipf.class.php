@@ -780,7 +780,7 @@ class TagLibShuipf extends TagLib {
         //数据源
         $tag['dbsource'] = $dbsource = $tag['dbsource'];
         //表名
-        $table = str_replace(C("DB_PREFIX"), '', strtolower($tag['table']));
+        $table = str_replace(C("DB_PREFIX"), '', $tag['table']);
         if (!$sql && !$table) {
             return false;
         }
@@ -790,6 +790,7 @@ class TagLibShuipf extends TagLib {
         }
         //如果使用table参数方式，使用类似tp的查询语言效果
         if ($table) {
+            $table = strtolower($table);
             //条件
             $tableWhere = array();
             foreach ($tag as $key => $val) {
@@ -797,7 +798,7 @@ class TagLibShuipf extends TagLib {
                     $tableWhere[$key] = $this->parseSqlCondition($val);
                 }
             }
-            if($tag['where']){
+            if ($tag['where']) {
                 $tableWhere['_string'] = $this->parseSqlCondition($tag['where']);
             }
         }
