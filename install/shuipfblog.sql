@@ -102,7 +102,7 @@ CREATE TABLE `shuipfcms_article_data` (
   `copyfrom` varchar(255) collate utf8_unicode_ci NOT NULL default '',
   `albums` mediumtext collate utf8_unicode_ci NOT NULL,
   `download` mediumtext collate utf8_unicode_ci NOT NULL,
-  KEY `id` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 

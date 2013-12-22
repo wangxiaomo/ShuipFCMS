@@ -7,6 +7,5 @@ CREATE TABLE `@shuipfcms@@zhubiao@_data` (
   `paytype` tinyint(1) unsigned NOT NULL default '0',
   `allow_comment` tinyint(1) unsigned NOT NULL default '1',
   `relation` varchar(255) NOT NULL default '',
-  PRIMARY KEY (`id`),
-  KEY `id` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
