@@ -79,6 +79,8 @@ class AddonsAction extends AdminbaseAction {
             if (false !== $this->addons->where(array('id' => $id))->save(array('config' => serialize($config)))) {
                 //更新附件状态，把相关附件和插件进行关联
                 service("Attachment")->api_update('', 'addons-' . $id, 1);
+                //更新插件缓存
+                $this->addons->addons_cache();
                 $this->success('保存成功！', U('Addons/index'));
             } else {
                 $this->error('保存失败！');
