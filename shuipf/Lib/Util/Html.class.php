@@ -32,6 +32,8 @@ class Html extends BaseAction {
         if (!$data['inputtime'] || !$data['id'] || !$data['catid']) {
             return false;
         }
+        //初始化一些模板分配变量
+        $this->assignInitialize();
         //取得信息ID
         $id = $data['id'];
         //栏目ID
@@ -194,6 +196,8 @@ class Html extends BaseAction {
         if (!$category['ishtml']) {
             return true;
         }
+        //初始化一些模板分配变量
+        $this->assignInitialize();
         //生成静态分页数
         $repagenum = (int) $setting['repagenum'];
         if ($repagenum && !$GLOBALS['dynamicRules']) {
@@ -286,7 +290,8 @@ class Html extends BaseAction {
         if (CONFIG_GENERATE == '0' || CONFIG_GENERATE < 1) {
             return false;
         }
-
+        //初始化一些模板分配变量
+        $this->assignInitialize();
         //模板处理
         $tp = explode(".", CONFIG_INDEXTP);
         $template = parseTemplateFile("Index:" . $tp[0]);
@@ -361,6 +366,8 @@ class Html extends BaseAction {
         if (!$temptext || !is_array($data)) {
             return false;
         }
+        //初始化一些模板分配变量
+        $this->assignInitialize();
         //生成文件名，包含后缀
         $filename = $data['tempname'];
         //生成路径
@@ -381,6 +388,21 @@ class Html extends BaseAction {
             throw_exception("自定义页面生成失败：" . $htmlpath);
         }
         return true;
+    }
+
+    /**
+     * 另类的销毁分配给模板的变量
+     * 防止生成不同类型的页面，造成参数乱窜！
+     */
+    protected function assignInitialize() {
+        //栏目ID
+        $this->assign('catid', NULL);
+        //分页号
+        $this->assign(C("VAR_PAGE"), NULL);
+        //seo分配到模板
+        $this->assign("SEO", NULL);
+        $this->assign('content', NULL);
+        $this->assign('pages', NULL);
     }
 
 }
