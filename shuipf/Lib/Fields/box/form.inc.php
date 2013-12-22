@@ -18,7 +18,7 @@ function box($field, $value, $fieldinfo) {
     }
     //扩展配置
     $setting = unserialize($fieldinfo['setting']);
-    if (empty($value)){
+    if (is_null($value) || $value == ''){
         $value = $setting['defaultvalue'];
     }
     $options = explode("\n", $setting['options']);
