@@ -19,7 +19,7 @@
         <tbody>
           <volist name="data" id="vo">
             <tr>
-              <td align="center"><input class="input checkbox J_check "  data-yid="J_check_y" data-xid="J_check_x"  name="ids[]" value="{$vo.id}" type="checkbox"></td>
+              <td align="center"><input class="checkbox J_check "  data-yid="J_check_y" data-xid="J_check_x"  name="ids[]" value="{$vo.id}" type="checkbox"></td>
               <td align="center">{$vo.id}</td>
               <td align="center">{$vo.author}</td>
               <td >{$vo.content}<br/>
