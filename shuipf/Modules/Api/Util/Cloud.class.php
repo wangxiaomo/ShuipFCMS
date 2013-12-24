@@ -216,7 +216,9 @@ class Cloud {
         if ($status === true) {
             return 1;
         } else {
-            return 0;
+            //错误信息
+            $this->error = $addonModel->getError() ? $addonModel->getError() : "插件升级失败！";
+            return -10027;
         }
     }
 
@@ -249,9 +251,14 @@ class Cloud {
         //执行升级程序
         $status = D('Module')->upgrade($appid);
         if ($status === true) {
+            //清理升级目录
+            $Dir = get_instance_of('Dir');
+            $Dir->delDir($modulePath . 'Upgrade/');
             return 1;
         } else {
-            return 0;
+            //错误信息
+            $this->error = D('Module')->getError() ? D('Module')->getError() : "模块升级失败！";
+            return -10024;
         }
     }
 
@@ -274,6 +281,8 @@ class Cloud {
             if (file_exists($file) && is_writable($file) == false) {
                 //记录在案
                 $this->lastfile = $file;
+                //错误信息
+                $this->error = "文件或者目录{$file}，不可写！";
                 //文件缺少读写权限
                 return -10007;
             }
@@ -281,6 +290,8 @@ class Cloud {
             if (file_exists($newd) && is_writable($newd) == false) {
                 //记录在案
                 $this->lastfile = $newd;
+                //错误信息
+                $this->error = "文件或者目录{$newd}，不可写！";
                 //文件缺少读写权限
                 return -10007;
             }
@@ -290,6 +301,8 @@ class Cloud {
                 if (file_exists($newd) == false && mkdir($newd, 0777, TRUE) == false) {
                     //记录在案
                     $this->lastfile = str_replace($newdir, '', $newd);
+                    //错误信息
+                    $this->error = "创建文件夹{$newd}失败！";
                     //不能创建临时目录
                     return -10002;
                 }
@@ -300,7 +313,9 @@ class Cloud {
                     if (!unlink($newd)) {
                         //记录在案
                         $this->lastfile = $newd;
-                        //不能创建临时目录
+                        //错误信息
+                        $this->error = "无法删除{$newd}文件！";
+                        //无法删除原来的旧文件
                         return -10021;
                     }
                 }
@@ -308,6 +323,8 @@ class Cloud {
                 if (!rename($file, $newd)) {
                     //记录在案
                     $this->lastfile = $newd;
+                    //错误信息
+                    $this->error = "无法生成{$newd}文件！";
                     //不能移动文件到新目录
                     return -10005;
                 }
@@ -342,6 +359,8 @@ class Cloud {
             if (is_file($object) && unlink($object) === FALSE) {
                 //记录在案
                 $this->lastfile = $object;
+                //错误信息
+                $this->error = "无法删除{$object}文件！";
                 return -10006;
             }
         }
@@ -370,6 +389,8 @@ class Cloud {
             if (mkdir($tmpdir, 0777, TRUE) === FALSE) {
                 //记录在案
                 $this->lastfile = str_replace(RUNTIME_PATH, '', $this->lastfile);
+                //错误信息
+                $this->error = "创建目录{$tmpdir}失败！";
                 //不能创建临时目录
                 return -10002;
             }
@@ -388,6 +409,8 @@ class Cloud {
             $basename = pathinfo($file);
             //记录在案
             $this->lastfile = $basename['filename'];
+            //错误信息
+            $this->error = "无法获取远程文件！";
             //不能下载远程附件
             return -10001;
         }
@@ -397,7 +420,13 @@ class Cloud {
         //解压到临时目录
         $stat = $zip->extract(PCLZIP_OPT_PATH, $tmpdir);
         //返回文件数量 不能正常解压附件
-        return $stat ? $stat : -10004;
+        if ($stat) {
+            return $stat;
+        } else {
+            //错误信息
+            $this->error = "不能正常解压文件！";
+            return -10004;
+        }
     }
 
     /**

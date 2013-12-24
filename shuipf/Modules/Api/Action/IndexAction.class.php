@@ -192,7 +192,7 @@ class IndexAction extends Action {
                         } else {
                             //删除模块目录
                             $Dir->delDir($modulePath);
-                            exit(serialize(array('error' => $status, 'appid' => $command['appid'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile, 'info' => $this->Cloud->getError())));
+                            exit(serialize(array('error' => $status, 'errorinfo' => $this->Cloud->getError(), 'appid' => $command['appid'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile, 'info' => $this->Cloud->getError())));
                         }
                         break;
                     //模块升级
@@ -216,7 +216,7 @@ class IndexAction extends Action {
                         if ($status > 0) {
                             exit(serialize(array('appid' => $command['appid'], 'status' => 'success')));
                         } else {
-                            exit(serialize(array('error' => $status, 'appid' => $command['appid'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile)));
+                            exit(serialize(array('error' => $status, 'errorinfo' => $this->Cloud->getError(), 'appid' => $command['appid'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile)));
                         }
                         break;
                     //模块搜索
@@ -280,7 +280,7 @@ class IndexAction extends Action {
                         } else {
                             //删除模块目录
                             $Dir->delDir($modulePath);
-                            exit(serialize(array('error' => $status, 'name' => $command['name'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile)));
+                            exit(serialize(array('error' => $status, 'errorinfo' => $this->Cloud->getError(), 'name' => $command['name'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile)));
                         }
                         break;
                     //插件升级
@@ -304,7 +304,7 @@ class IndexAction extends Action {
                         if ($status > 0) {
                             exit(serialize(array('name' => $command['name'], 'status' => 'success')));
                         } else {
-                            exit(serialize(array('error' => $status, 'name' => $command['name'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile)));
+                            exit(serialize(array('error' => $status, 'errorinfo' => $this->Cloud->getError(), 'name' => $command['name'], 'status' => 'fail', 'lastfile' => $this->Cloud->lastfile)));
                         }
                         break;
                     //插件搜索
