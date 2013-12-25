@@ -103,7 +103,7 @@ class CustomlistModel extends CommonModel {
             array_push($this->_validate, array('listpath', 'require', '列表模板不能为空！', 1, 'regex', 3));
             $post['template'] = '';
         }
-        $data = $this->create($post, 1);
+        $data = $this->create($post, 2);
         if (!$data) {
             return false;
         }
