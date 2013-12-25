@@ -92,7 +92,7 @@ class content_form {
             if (!method_exists($this, $func)) {
                 continue;
             }
-            $value = isset($this->data[$field]) ? Input::getVar($this->data[$field]) : '';
+            $value = isset($this->data[$field]) ? $this->data[$field] : '';
             //如果是分页类型字段
             if ($func == 'pages' && isset($this->data['maxcharperpage'])) {
                 $value = $this->data['paginationtype'] . '|' . $this->data['maxcharperpage'];

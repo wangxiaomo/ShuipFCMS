@@ -821,7 +821,8 @@ class Model {
                 if(!in_array($key,$fields)) {
                     unset($data[$key]);
                 }elseif(MAGIC_QUOTES_GPC && is_string($val)){
-                    $data[$key] =   stripslashes($val);
+                    //前面已经进行全局的magic_quotes_gpc引起的转义，这里就不在进行
+                    //$data[$key] =   stripslashes($val);
                 }
             }
         }

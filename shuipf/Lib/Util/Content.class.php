@@ -89,10 +89,9 @@ class Content {
         $data['sysadd'] = (defined('IN_ADMIN') && IN_ADMIN) ? 1 : 0;
         //自动提取摘要，如果有设置自动提取，且description为空，且有内容字段才执行
         if (isset($_POST['add_introduce']) && $data['description'] == '' && isset($data['content'])) {
-            $content = stripslashes($data['content']);
+            $content = $data['content'];
             $introcude_length = intval($_POST['introcude_length']);
             $data['description'] = str_cut(str_replace(array("\r\n", "\t", '[page]', '[/page]', '&ldquo;', '&rdquo;', '&nbsp;'), '', strip_tags($content)), $introcude_length);
-            $data['description'] = Input::getVar($data['description']);
         }
         //数据模型对象
         $this->contentModel = ContentModel::getInstance($this->modelid);
@@ -119,7 +118,7 @@ class Content {
         $isContent = isset($data['content']) ? 1 : 0;
         //自动提取缩略图，从content 中提取
         if (empty($data['thumb'])) {
-            $content = stripslashes($isContent ? $data['content'] : $data[$getRelationName]['content']);
+            $content = $isContent ? $data['content'] : $data[$getRelationName]['content'];
             $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
                 $data['thumb'] = $matches[3][$auto_thumb_no];
@@ -297,10 +296,9 @@ class Content {
         }
         //自动提取摘要，如果有设置自动提取，且description为空，且有内容字段才执行
         if (isset($_POST['add_introduce']) && $data['description'] == '' && isset($data['content'])) {
-            $content = stripslashes($data['content']);
+            $content = $data['content'];
             $introcude_length = intval($_POST['introcude_length']);
             $data['description'] = str_cut(str_replace(array("\r\n", "\t", '[page]', '[/page]', '&ldquo;', '&rdquo;', '&nbsp;'), '', strip_tags($content)), $introcude_length);
-            $data['description'] = Input::getVar($data['description']);
         }
         //转向地址
         if ($data['islink'] == 1) {
@@ -337,7 +335,7 @@ class Content {
         $isContent = isset($data['content']) ? 1 : 0;
         //自动提取缩略图，从content 中提取
         if (empty($data['thumb'])) {
-            $content = stripslashes($isContent ? $data['content'] : $data[$getRelationName]['content']);
+            $content = $isContent ? $data['content'] : $data[$getRelationName]['content'];
             $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
                 $data['thumb'] = $matches[3][$auto_thumb_no];
