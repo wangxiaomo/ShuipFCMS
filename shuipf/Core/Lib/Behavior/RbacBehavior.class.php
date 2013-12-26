@@ -24,7 +24,7 @@ class RbacBehavior extends Behavior {
             //检查认证识别号
             if (!RBAC::checkLogin()) {
                 $rbac_status['status'] = false;
-                $rbac_status['error'] = "请登陆后操作！";
+                $rbac_status['error'] = "请登录后操作！";
                 $rbac_status['url'] = C('USER_AUTH_GATEWAY');
                 //记录当前页面地址到cookie中，用于登陆成功后跳转到该地址。
                 cookie("forward", get_url());
