@@ -206,7 +206,7 @@
                     <option value="{$vo}">{$vo}</option>
                   </volist>
                 </select>
-                <span class="gray">新增模板以show_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span></td>
+                <span class="gray">新增模板以list_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span></td>
             </tr>
             <tr  id="plmb" style="display:none;">
               <th width="200">栏目内容页：</th>

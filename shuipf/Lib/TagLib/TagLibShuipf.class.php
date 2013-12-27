@@ -464,11 +464,10 @@ class TagLibShuipf extends TagLib {
      * 用法示例：<spf module="Like"> .. HTML ..</spf>
      * 参数说明：
      * 	基本参数
-     * 		@mo                     对应模块（必填）
+     * 		@module                     对应模块（必填）
      * 		@action		调用方法（必填）
      * 		@page		当前分页号，默认$page，当传入该参数表示启用分页，一个页面只允许有一个page，多个标签使用多个page会造成不可预知的问题。
      * 		@num		每次返回数据量
-     * 		@catid		栏目id（必填），列表页，内容页可以使用 $catid 获取当前栏目。
      * 	公用参数：
      * 		@cache		数据缓存时间，单位秒
      * 		@pagefun                      分页函数，默认page
