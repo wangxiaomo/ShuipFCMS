@@ -185,9 +185,9 @@ class Model_fieldModel extends CommonModel {
                 'fieldname' => $data['field'],
                 'maxlength' => $data['maxlength'],
                 'minlength' => $data['minlength'],
-                'defaultvalue' => $data['defaultvalue'],
-                'minnumber' => $data['minnumber'],
-                'decimaldigits' => $data['decimaldigits'],
+                'defaultvalue' => $setting['defaultvalue'],
+                'minnumber' => $setting['minnumber'],
+                'decimaldigits' => $setting['decimaldigits'],
             );
             if ($this->addFieldSql($field_type, $field)) {
                 $fieldid = $this->add($data);
@@ -288,15 +288,18 @@ class Model_fieldModel extends CommonModel {
                         $this->where(array("fieldid" => $fieldid))->save($info);
                         return false;
                     }
+                    //合并字段更改后的
+                    $newInfo = array_merge($info,$data);
+                    $newInfo['setting'] = unserialize($newInfo['setting']);
                     $field = array(
                         'tablename' => C("DB_PREFIX") . $tablename,
                         'newfilename' => $data['field'],
                         'oldfilename' => $info['field'],
-                        'maxlength' => $oldData['maxlength'],
-                        'minlength' => $oldData['minlength'],
-                        'defaultvalue' => $oldData['defaultvalue'],
-                        'minnumber' => $oldData['minnumber'],
-                        'decimaldigits' => $oldData['decimaldigits'],
+                        'maxlength' => $newInfo['maxlength'],
+                        'minlength' => $newInfo['minlength'],
+                        'defaultvalue' => $newInfo['setting']['defaultvalue'],
+                        'minnumber' => $newInfo['setting']['minnumber'],
+                        'decimaldigits' => $newInfo['setting']['decimaldigits'],
                     );
                     if (false === $this->editFieldSql($field_type, $field)) {
                         $this->error = '数据库字段结构更改失败！';
