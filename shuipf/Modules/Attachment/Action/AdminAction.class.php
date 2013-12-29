@@ -67,7 +67,7 @@ class AdminAction extends AdminbaseAction {
             //开始上传
             $info = $Attachment->upload($Callback);
             if ($info) {
-                if (in_array($info[0]['extension'], array("jpg", "png", "jpeg", "gif"))) {
+                if (in_array(strtolower($info[0]['extension']), array("jpg", "png", "jpeg", "gif"))) {
                     // 附件ID 附件网站地址 图标(图片时为1) 文件名
                     echo "{$info[0]['aid']}," . $info[0]['url'] . ",1," . str_replace(array("\\", "/"), "", $info[0]['name']);
                     exit;
