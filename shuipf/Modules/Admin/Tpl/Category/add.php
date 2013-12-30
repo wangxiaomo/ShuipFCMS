@@ -57,6 +57,28 @@
                 </select></td>
             </tr>
             <tr>
+              <th>添加方式：</th>
+              <td><ul class="switch_list cc ">
+                  <li>
+                    <label>
+                      <input type='radio' name='isbatch' value='1'  onClick="$('#normal_add').hide();$('#catdir_tr').hide();$('#batch_add').show();$('#catname').attr('disabled',true);$('#catdir').attr('disabled',true);">
+                      <span>批量添加</span></label>
+                  </li>
+                  <li>
+                    <label>
+                      <input type='radio' name='isbatch' value='0'  checked onClick="$('#normal_add').show();$('#catdir_tr').show();$('#batch_add').hide();$('#catname').attr('disabled','');$('#catdir').attr('disabled','');">
+                      <span>单条添加</span></label>
+                  </li>
+                </ul></td>
+            </tr>
+            <tr id="batch_add" style="display:none">
+              <th>栏目名称：</th>
+              <td><textarea name="batch_add" maxlength="255" style="width:300px;height:150px;"></textarea><br/>例如：<br/>
+国内新闻|china<br/>
+国际新闻|world
+              </td>
+            </tr>
+            <tr id="normal_add">
               <th>栏目名称：</th>
               <td><input type="text" name="info[catname]" id="catname" class="input" value=""></td>
             </tr>

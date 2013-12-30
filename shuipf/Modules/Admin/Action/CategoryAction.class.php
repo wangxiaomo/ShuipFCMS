@@ -117,20 +117,53 @@ class CategoryAction extends AdminbaseAction {
     public function add() {
         if (IS_POST) {
             $Category = D("Category");
-            $catid = $Category->addCategory($_POST);
-            if ($catid) {
-                //更新角色栏目权限
-                $this->update_priv($catid, $_POST['priv_roleid']);
-                if (isModuleInstall('Member')) {
-                    //更新会员组权限
-                    $this->update_priv($catid, $_POST['priv_groupid'], 0);
+            //批量添加
+            $isbatch = I('post.isbatch', 0, 'intval');
+            if ($isbatch) {
+                $post = $_POST;
+                unset($post['isbatch'], $post['info']['catname'], $post['info']['catdir']);
+                //需要批量添加的栏目
+                $batch_add = explode("\n", $_POST['batch_add']);
+                if (empty($batch_add) || empty($_POST['batch_add'])) {
+                    $this->error('请填写需要添加的栏目！');
+                }
+                //关闭表单令牌验证
+                C('TOKEN_ON',false);
+                foreach ($batch_add as $rs) {
+                    $cat = explode('|', $rs, 2);
+                    if ($cat[0] && $cat[1]) {
+                        $post['info']['catname'] = $cat[0];
+                        $post['info']['catdir'] = $cat[1];
+                        $catid = $Category->addCategory($post);
+                        if ($catid) {
+                            //更新角色栏目权限
+                            $this->update_priv($catid, $_POST['priv_roleid']);
+                            if (isModuleInstall('Member')) {
+                                //更新会员组权限
+                                $this->update_priv($catid, $_POST['priv_groupid'], 0);
+                            }
+                        }
+                    }
                 }
                 //更新缓存
                 $this->cache();
                 $this->success("添加成功！", U("Category/index"));
             } else {
-                $error = $Category->getError();
-                $this->error($error ? $error : '栏目添加失败！');
+                $catid = $Category->addCategory($_POST);
+                if ($catid) {
+                    //更新角色栏目权限
+                    $this->update_priv($catid, $_POST['priv_roleid']);
+                    if (isModuleInstall('Member')) {
+                        //更新会员组权限
+                        $this->update_priv($catid, $_POST['priv_groupid'], 0);
+                    }
+                    //更新缓存
+                    $this->cache();
+                    $this->success("添加成功！", U("Category/index"));
+                } else {
+                    $error = $Category->getError();
+                    $this->error($error ? $error : '栏目添加失败！');
+                }
             }
         } else {
             $parentid = I('get.parentid', 0, 'intval');
