@@ -33,7 +33,7 @@ class Form {
 
         //编辑器类型
         if ($toolbar == 'basic') {//简洁型
-            $toolbar = "['FullScreen', 'Source', '|', 'Undo', 'Redo', '|','FontSize','Bold', 'Italic', 'Underline', 'Link',  '|',  'InsertImage', 
+            $toolbar = "['FullScreen', 'Source', '|', 'Undo', 'Redo', '|','FontSize','Bold', 'forecolor', 'Italic', 'Underline', 'Link',  '|',  'InsertImage', 
                  'ClearDoc',  'CheckImage','Emotion',  " . ($allowupload && $allowbrowser ? "'Attachments'," : "") . " 'PageBreak','insertcode', 'WordImage','RemoveFormat', 'FormatMatch','AutoTypeSet']
                 ";
         } elseif ($toolbar == 'full') {//标准型
@@ -68,7 +68,7 @@ class Form {
                         };
                         var editor_config_$textareaid = {
                              _catid:'{$catid}',
-                             _https: '".CONFIG_SITEURL_MODEL."',
+                             _https: '" . CONFIG_SITEURL_MODEL . "',
                              imageUrl:'" . U('Attachment/Ueditor/imageUp', array('catid' => $catid)) . "',
                              textarea:'" . ( in_array($module, array("Contents", "contents")) ? "info[$textareaid]" : "$textareaid" ) . "',
                              toolbars:[$toolbar],
