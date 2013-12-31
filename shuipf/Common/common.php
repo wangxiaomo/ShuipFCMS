@@ -641,41 +641,47 @@ function parseTemplateFile($templateFile = '') {
 }
 
 /**
- * 分页输出
- * @staticvar array $_pageCache
- * @param type $Total_Size 信息总数
- * @param type $Page_Size 每页显示信息数量
- * @param type $Current_Page 当前分页号
- * @param type $List_Page 每次显示几个分页导航链接
- * @param type $PageParam 接收分页号参数的标识符
- * @param type $PageLink 分页规则 
- *                          array(
- *                                  "index"=>"http://www.abc3210.com/192.html",//这种是表示当前是首页，无需加分页1
- *                                  "list"=>"http://www.abc3210.com/192-{$page}.html",//这种表示分页非首页时启用
- *                          )
- * @param type $static 是否开启静态
- * @param string $TP 模板
- * @param array $Tp_Config 模板配置
- * @return array|\Page
+ * 分页处理
+ * @staticvar array $_pageCache 静态变量
+ * @param type $total 信息总数
+ * @param type $size 每页数量
+ * @param type $number 当前分页号（页码）
+ * @param type $config 配置，会覆盖默认设置
+ * @return \Page|array
  */
-function page($Total_Size = 1, $Page_Size = 0, $Current_Page = 0, $List_Page = 6, $PageParam = '', $PageLink = '', $static = FALSE, $TP = "", $Tp_Config = "") {
+function page($total, $size = 0, $number = 0, $config = array()) {
     static $_pageCache = array();
     $cacheIterateId = to_guid_string(func_get_args());
     if (isset($_pageCache[$cacheIterateId])) {
         return $_pageCache[$cacheIterateId];
     }
+    //配置
+    $defaultConfig = array(
+        //当前分页号
+        'number' => $number,
+        //每次显示几个分页导航链接
+        'list' => 6,
+        //接收分页号参数的标识符
+        'param' => C("VAR_PAGE"),
+        //分页规则
+        'rule' => '',
+        //是否启用自定义规则
+        'isrule' => false,
+        //分页模板
+        'tpl' => '',
+        //分页配置
+        'tplconfig' => array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => ""),
+    );
+    //覆盖配置
+    if (!empty($config) && is_array($config)) {
+        $defaultConfig = array_merge($defaultConfig, $config);
+    }
+    //每页显示信息数量
+    $defaultConfig['size'] = $size ? $size : C("PAGE_LISTROWS");
     import('Page');
-    //分页数
-    if ($Page_Size == 0) {
-        $Page_Size = C("PAGE_LISTROWS");
-    }
-    //接收分页号参数的标识符
-    if (!$PageParam) {
-        $PageParam = C("VAR_PAGE");
-    }
-    //生成静态，需要传递一个常量URLRULE，来生成对应规则
-    //不建议使用常量定义分页规则，推荐直接传统参数方式
-    if (empty($PageLink) && $static) {
+    //是否启用自定义规则，规则是一个数组，index和list。不启用的情况下，直接以当前$_GET的参数组成地址
+    if ($defaultConfig['isrule'] && empty($defaultConfig['rule'])) {
+        //通过全局参数获取分页规则
         $URLRULE = $GLOBALS['URLRULE'] ? $GLOBALS['URLRULE'] : URLRULE;
         $PageLink = array();
         if (!is_array($URLRULE)) {
@@ -683,14 +689,11 @@ function page($Total_Size = 1, $Page_Size = 0, $Current_Page = 0, $List_Page = 6
         }
         $PageLink['index'] = $URLRULE['index'] ? $URLRULE['index'] : $URLRULE[0];
         $PageLink['list'] = $URLRULE['list'] ? $URLRULE['list'] : $URLRULE[1];
+        $defaultConfig['rule'] = $PageLink;
     }
-    if (!$Tp_Config) {
-        $Tp_Config = array("listlong" => "6", "first" => "首页", "last" => "尾页", "prev" => "上一页", "next" => "下一页", "list" => "*", "disabledclass" => "");
-    }
-    $Page = new Page($Total_Size, $Page_Size, $Current_Page, $List_Page, $PageParam, $PageLink, $static);
-    $Page->SetPager('default', $TP, $Tp_Config);
+    $Page = new Page($total, $defaultConfig['size'], $defaultConfig['number'], $defaultConfig['list'], $defaultConfig['param'], $defaultConfig['rule'], $defaultConfig['isrule']);
+    $Page->SetPager('default', $defaultConfig['tpl'], $defaultConfig['tplconfig']);
     $_pageCache[$cacheIterateId] = $Page;
-
     return $_pageCache[$cacheIterateId];
 }
 
@@ -921,8 +924,8 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
         return $smallpic;
     }
     //区分
-    $key = md5($imgurl.$width.$height.$thumbType.$smallpic);
-    if(isset($_thumb_cache[$key])){
+    $key = md5($imgurl . $width . $height . $thumbType . $smallpic);
+    if (isset($_thumb_cache[$key])) {
         return $_thumb_cache[$key];
     }
     if (!$width || !$height) {
