@@ -407,6 +407,8 @@ class TagLibShuipf extends TagLib {
         $tag['num'] = $num = (int) $tag['num'];
         //当前分页参数
         $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
+        //分页函数，默认page
+        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
         //数据返回变量
         $tag['return'] = $return = empty($tag['return']) ? "data" : $tag['return'];
         //方法
@@ -416,24 +418,17 @@ class TagLibShuipf extends TagLib {
             $tag['where'] = $this->parseSqlCondition($tag['where']);
         }
         $tag['where'] = $where = $tag['where'];
-        //分页模板
-        $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
-        //分页函数，默认page
-        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
-
         //拼接php代码
         $parseStr = '<?php';
         $parseStr .= ' $content_tag = TagLib("Content");' . "\r\n";
         //如果有传入$page参数，则启用分页。
         if ($page && in_array($action, array('lists'))) {
+            //分页配置处理
+            $pageConfig = $this->resolvePageParameter($tag);
             //进行信息数量统计 需要 action catid where
             $parseStr .= ' $count = $content_tag->count(' . self::arr_to_html($tag) . ');' . "\r\n";
             //分页函数
-            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
-            //设置分页模板，模板必须是变量传递
-            if ($pagetp) {
-                $parseStr .= ' $_page_->SetPager(\'default\', ' . $pagetp . ');';
-            }
+            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',' . self::arr_to_html($pageConfig) . ');';
             $tag['count'] = '$count';
             $tag['limit'] = '$_page_->firstRow.",".$_page_->listRows';
             //总分页数，生成静态时需要
@@ -493,6 +488,8 @@ class TagLibShuipf extends TagLib {
         $tag['num'] = $num = (int) $tag['num'];
         //当前分页参数
         $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
+        //分页函数，默认page
+        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
         //数据返回变量
         $tag['return'] = $return = empty($tag['return']) ? "data" : $tag['return'];
         //方法
@@ -502,24 +499,19 @@ class TagLibShuipf extends TagLib {
             $tag['where'] = $this->parseSqlCondition($tag['where']);
         }
         $tag['where'] = $where = $tag['where'];
-        //分页模板
-        $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
-        //分页函数，默认page
-        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
+
         //拼接php代码
         $parseStr = '<?php';
         $parseStr .= '  import("' . $mo . 'TagLib", APP_PATH . C("APP_GROUP_PATH") . "/' . $mo . '/TagLib/"); ';
         $parseStr .= '  $' . $mo . 'TagLib = get_instance_of("' . $mo . 'TagLib"); ';
         //如果有传入$page参数，则启用分页。
         if ($page) {
+            //分页配置处理
+            $pageConfig = $this->resolvePageParameter($tag);
             //进行信息数量统计 需要 action catid where
             $parseStr .= ' $count = $' . $mo . 'TagLib->count(' . self::arr_to_html($tag) . ');' . "\r\n";
             //分页函数
-            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
-            //设置分页模板，模板必须是变量传递
-            if ($pagetp) {
-                $parseStr .= ' $_page_->SetPager(\'default\', ' . $pagetp . ');';
-            }
+            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',' . self::arr_to_html($pageConfig) . ');';
             $tag['count'] = '$count';
             $tag['limit'] = '$_page_->firstRow.",".$_page_->listRows';
             //总分页数，生成静态时需要
@@ -639,6 +631,8 @@ class TagLibShuipf extends TagLib {
         $tag['num'] = $num = (int) $tag['num'];
         //当前分页参数
         $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
+        //分页函数，默认page
+        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
         //数据返回变量
         $tag['return'] = $return = empty($tag['return']) ? "data" : $tag['return'];
         //方法
@@ -648,21 +642,15 @@ class TagLibShuipf extends TagLib {
             $tag['where'] = $this->parseSqlCondition($tag['where']);
         }
         $tag['where'] = $where = $tag['where'];
-        //分页模板
-        $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
-        //分页函数，默认page
-        $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
 
         $parseStr = '<?php';
         $parseStr .= ' $Tags_tag = TagLib("Tags");';
         //如果有传入$page参数，则启用分页。
         if ($page && in_array($action, array('lists'))) {
+            //分页配置处理
+            $pageConfig = $this->resolvePageParameter($tag);
             $parseStr .= ' $count = $Tags_tag->count(' . self::arr_to_html($tag) . ');';
-            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
-            //设置分页模板，模板必须是变量传递
-            if ($pagetp) {
-                $parseStr .= ' $_page_->SetPager(\'default\', ' . $pagetp . ');';
-            }
+            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',' . self::arr_to_html($pageConfig) . ');';
             $tag['count'] = '$count';
             $tag['limit'] = '$_page_->firstRow.",".$_page_->listRows';
             //总分页数，生成静态时需要
@@ -763,8 +751,6 @@ class TagLibShuipf extends TagLib {
         $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
         //数据返回变量
         $tag['return'] = $return = empty($tag['return']) ? "data" : $tag['return'];
-        //分页模板
-        $tag['pagetp'] = $pagetp = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
         //分页函数，默认page
         $tag['pagefun'] = $pagefun = empty($tag['pagefun']) ? "page" : trim($tag['pagefun']);
         //缓存时间
@@ -787,13 +773,17 @@ class TagLibShuipf extends TagLib {
         if (strpos($tag['sql'], "delete") || strpos($tag['sql'], "insert")) {
             return false;
         }
+        //分页配置处理
+        if ($page) {
+            $pageConfig = $this->resolvePageParameter($tag);
+        }
         //如果使用table参数方式，使用类似tp的查询语言效果
         if ($table) {
             $table = strtolower($table);
             //条件
             $tableWhere = array();
             foreach ($tag as $key => $val) {
-                if (!in_array($key, $this->tags['get']['attr'])) {
+                if (!in_array($key, explode(',', $this->tags['get']['attr']))) {
                     $tableWhere[$key] = $this->parseSqlCondition($val);
                 }
             }
@@ -801,7 +791,6 @@ class TagLibShuipf extends TagLib {
                 $tableWhere['_string'] = $this->parseSqlCondition($tag['where']);
             }
         }
-
         $parseStr = ' <?php ';
 
         //有启用分页
@@ -863,11 +852,7 @@ class TagLibShuipf extends TagLib {
                     return false;
                 }
             }
-            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',6,C("VAR_PAGE"),"",true);';
-            //设置分页模板，模板必须是变量传递
-            if ($pagetp) {
-                $parseStr .= ' $_page_->SetPager(\'default\', ' . $pagetp . ');';
-            }
+            $parseStr .= ' $_page_ = ' . $pagefun . '($count ,' . $num . ',' . $page . ',' . self::arr_to_html($pageConfig) . ');';
             //显示分页导航
             $parseStr .= ' $pages = $_page_->show("default");';
             //总分页数
@@ -965,6 +950,36 @@ class TagLibShuipf extends TagLib {
     protected function parseSqlCondition($condition) {
         $condition = str_ireplace(array_keys($this->comparisonShuipfcms), array_values($this->comparisonShuipfcms), $condition);
         return $condition;
+    }
+
+    /**
+     * 解析分页参数
+     * @param type $tag
+     * @return type\
+     */
+    protected function resolvePageParameter(&$tag) {
+        if (empty($tag)) {
+            return array();
+        }
+        //分页设置
+        $config = array();
+        foreach ($tag as $key => $value) {
+            if ($key && substr($key, 0, 5) == "page_") {
+                //配置名称
+                $name = str_replace('page_', '', $key);
+                if (substr($value, 0, 1) == '$') {
+                    $config[$name] = $value;
+                } else {
+                    $config[$name] = $this->parseSqlCondition($value);
+                }
+                unset($tag[$key]);
+            }
+        }
+        //兼容 pagetp 参数
+        if (!empty($tag['pagetp'])) {
+            $config['tpl'] = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
+        }
+        return $config;
     }
 
 }
