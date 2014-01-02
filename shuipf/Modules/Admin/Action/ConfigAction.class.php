@@ -85,6 +85,12 @@ class ConfigAction extends AdminbaseAction {
     //高级配置
     public function addition() {
         if (IS_POST) {
+            //配置文件地址
+            $filename = SITE_PATH . '/shuipf/Conf/addition.php';
+            //检查文件是否可写
+            if (is_writable($filename) == false) {
+                $this->error("请检查[shuipf/Conf/addition.php]文件权限是否可写！");
+            }
             if (isset($_POST[C('TOKEN_NAME')])) {
                 unset($_POST[C('TOKEN_NAME')]);
             }
@@ -104,15 +110,13 @@ class ConfigAction extends AdminbaseAction {
             $_POST['CLOUD_ON'] = (int) $_POST['CLOUD_ON'] ? true : false;
             //函数加载
             $_POST['LOAD_EXT_FILE'] = trim($_POST['LOAD_EXT_FILE']);
-            try {
-                $filename = SITE_PATH . '/shuipf/Conf/addition.php';
-                file_exists($filename) or touch($filename);
-                $return = var_export($_POST, TRUE);
-                if ($return) {
-                    file_put_contents($filename, "<?php \r\n return " . $return . ";");
-                }
-            } catch (Exception $exc) {
-                $this->error("保存失败，请检查文件[{$filename}]是否有可读写权限！");
+            //默认分页模板
+            $_POST['PAGE_TEMPLATE'] = str_replace("\n", "", trim($_POST['PAGE_TEMPLATE']));
+            
+            file_exists($filename) or touch($filename);
+            $return = var_export($_POST, TRUE);
+            if ($return) {
+                file_put_contents($filename, "<?php \r\n return " . $return . ";");
             }
             $this->success("修改成功！", U("Admin/Index/public_cache", "type=site"));
         } else {

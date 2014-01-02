@@ -43,6 +43,8 @@ return array(
 
     /* 分页配置 */
     "PAGE_LISTROWS" => 20, //分页数
+    //默认分页模板
+    "PAGE_TEMPLATE" => '<span class="all">共有{recordcount}条信息</span><span class="pageindex">{pageindex}/{pagecount}</span>{first}{prev}{liststart}{list}{listend}{next}{last}',
     "VAR_PAGE" => "page", //当前分页变量 page=2 page=3
     'DEFAULT_GROUP' => 'Contents', // 默认分组
     //函数加载

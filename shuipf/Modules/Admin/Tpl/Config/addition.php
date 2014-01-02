@@ -126,6 +126,13 @@
                 <div class="h_a">杂项配置</div>
                 <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
                     <tr>
+                        <th width="140">默认分页模板:</th>
+                        <td>
+                            <textarea name="PAGE_TEMPLATE" style="width:500px;">{$addition.PAGE_TEMPLATE}</textarea>
+                            <br/>
+                            <span class="gray"> 当没有设置分页模板时，默认使用该项设置</span></td>
+                    </tr>
+                    <tr>
                         <th width="140">默认分组:</th>
                         <td><input type="text" class="input"  name="DEFAULT_GROUP" value="{$addition.DEFAULT_GROUP}" size="40">
                             <span class="gray"> 默认：Contents，建议不修改，填写时注意大小写</span></td>

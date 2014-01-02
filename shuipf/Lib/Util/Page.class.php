@@ -64,7 +64,7 @@ class Page {
      */
     function __construct($Total_Size = 1, $Page_Size = 20, $Current_Page = 1, $List_Page = 6, $PageParam = 'page', $pageRule = '', $static = FALSE, $static_size = 0) {
         //默认模板配置
-        $this->Page_tpl['default'] = array('Tpl' => '<span class="all">共有{recordcount}条信息</span><span class="pageindex">{pageindex}/{pagecount}</span>{first}{prev}{liststart}{list}{listend}{next}{last}', 'Config' => array());
+        $this->Page_tpl['default'] = array('Tpl' => C("PAGE_TEMPLATE") ? C("PAGE_TEMPLATE") : '<span class="all">共有{recordcount}条信息</span><span class="pageindex">{pageindex}/{pagecount}</span>{first}{prev}{liststart}{list}{listend}{next}{last}', 'Config' => array());
         //每页显示信息数量
         $this->Page_size = (int) $Page_Size;
         //信息总数
@@ -234,7 +234,7 @@ class Page {
                         $pListStart .= '<a href="' . str_replace('*', $i, $cfg['link']) . '">' . str_replace('*', $i, $cfg ['list']) . '</a>';
                     }
                 }
-                $pListStart .= ($cfg['listsidelong'] + 1) == $pStart ? '' : ('<span>'.$cfg['more'] . '</span> ');
+                $pListStart .= ($cfg['listsidelong'] + 1) == $pStart ? '' : ('<span>' . $cfg['more'] . '</span> ');
             } else {
                 if ($cfg['listsidelong'] >= $pStart && $pStart > 1) {
                     for ($i = 1; $i <= ($pStart - 1); $i++) {
@@ -247,7 +247,7 @@ class Page {
                 }
             }
             if (($cfg['pagecount'] - $cfg['listsidelong']) > $pEnd) {
-                $pListEnd = '<span>' . $cfg ['more'].'</span>' . $pListEnd;
+                $pListEnd = '<span>' . $cfg ['more'] . '</span>' . $pListEnd;
                 for ($i = (($cfg ['pagecount'] - $cfg['listsidelong']) + 1); $i <= $cfg['pagecount']; $i++) {
                     if ($this->Static && $i == 1) {
                         $pListEnd .= '<a href="' . $this->pageRule['index'] . '">' . str_replace('*', $i, $cfg['list']) . '</a>';
