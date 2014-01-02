@@ -29,6 +29,8 @@ class IndexAction extends AdminbaseAction {
                         //删除Data目录
                         $Dir->delDir(RUNTIME_PATH . "Data/");
                         $Dir->delDir(RUNTIME_PATH . "Temp/");
+                        //更新开启其他方式的缓存
+                        Cache::getInstance()->clear();
                     } catch (Exception $exc) {
                         
                     }
@@ -62,6 +64,8 @@ class IndexAction extends AdminbaseAction {
                 case "template":
                     $Dir->delDir(RUNTIME_PATH . "Cache/");
                     $Dir->delDir(RUNTIME_PATH . "Temp/");
+                    //更新开启其他方式的缓存
+                    Cache::getInstance()->clear();
                     $this->success("模板缓存清理成功！", U('Index/public_cache'));
                     break;
                 case "logs":
