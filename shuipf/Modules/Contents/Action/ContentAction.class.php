@@ -813,10 +813,6 @@ class ContentAction extends AdminbaseAction {
                                 $textcontent['style'] = $re['style'];
                                 //推送到推荐位
                                 $status = $position_data_db->position_update($aid, $modelid, $catid, $posid, $textcontent, 0, 1);
-                                if ($status) {
-                                    //更新信息推荐位标识
-                                    $Content->where(array("id" => $aid))->save(array("posid" => 1));
-                                }
                                 $r = $re = null;
                             }
                         }

@@ -9,7 +9,7 @@ function posid($field, $value) {
     if (!empty($value) && is_array($value)) {
         //新增
         if (ACTION_NAME == 'add') {
-            $position_data_db = M('Position_data');
+            $position_data_db = D('Position');
             $textcontent = array();
             foreach ($this->fields AS $_key => $_value) {
                 //判断字段是否入库到推荐位字段
@@ -22,22 +22,13 @@ function posid($field, $value) {
             if ($_POST['style_font_weight']) {
                 $textcontent['style'] = $textcontent['style'] . ';' . strip_tags($_POST['style_font_weight']);
             }
+            $posid = array();
             foreach ($value as $r) {
                 if ($r != '-1') {
-                    $data = array(
-                        'id' => $this->id,
-                        'catid' => $this->data['catid'],
-                        'posid' => $r,
-                        'module' => 'content',
-                        'thumb' => $textcontent['thumb'] ? 1 : 0,
-                        'modelid' => $this->modelid,
-                        'data' => serialize($textcontent),
-                        'listorder' => $this->id
-                    );
-                    //增加
-                    $position_data_db->data($data)->add();
+                    $posid[] = $r;
                 }
             }
+            $position_data_db->position_update($this->id, $this->modelid, $this->data['catid'], $posid, $textcontent, 0, 1);
         } else {
             $posids = array();
             $catid = $this->data['catid'];

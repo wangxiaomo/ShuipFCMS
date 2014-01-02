@@ -100,10 +100,8 @@ class PositionModel extends CommonModel {
             $MODEL = F("Model");
             $db_content = M(ucwords($MODEL[$modelid]['tablename']));
             $posids = $db_data->where(array('id' => $id, 'modelid' => $modelid))->find() ? 1 : 0;
-            if ($posids == 0) {
-                //更新推荐状态
-                $db_content->where(array('id' => $id))->save(array('posid' => $posids));
-            }
+            //更新推荐状态
+            $db_content->where(array('id' => $id))->save(array('posid' => $posids));
         }
         return $posids;
     }
@@ -158,13 +156,16 @@ class PositionModel extends CommonModel {
                                 $pos_data->where(array('id' => $d['id'], 'posid' => $pid, 'catid' => $info['catid']))->data($info)->save();
                             }
                         } else {
-                            $pos_data->data($info)->add();
+                            $status = $pos_data->data($info)->add();
+                            if ($status !== false) {
+                                $this->content_pos($info['id'], $info['modelid']);
+                            }
                         }
                         unset($info);
                     }
                     //最大存储数据量
-                    $maxnum = (int) $position_info[$pid]['maxnum'] + 4;
-                    $r = $pos_data->where(array('catid' => $catid, 'posid' => $pid))->order("listorder DESC, id DESC")->limit($maxnum . ",100")->select();
+                    $maxnum = (int) $position_info[$pid]['maxnum'];
+                    $r = $pos_data->where(array('posid' => $pid))->order("listorder DESC, id DESC")->limit($maxnum . ",100")->select();
                     if ($r && $position_info[$pid]['maxnum']) {
                         foreach ($r as $k => $v) {
                             $pos_data->where(array('id' => $v['id'], 'posid' => $v['posid'], 'catid' => $v['catid']))->delete();
