@@ -17,6 +17,7 @@
        <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$parentid))}">生成父栏目列表</option>
        </if>
     </select>
+    <a href="{$url}" target="_blank"  class="btn" title="访问该栏目">访问该栏目</a>
   </div>
   <div class="h_a">搜索</div>
   <form method="get" action="">
