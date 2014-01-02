@@ -26,9 +26,9 @@
         </tr>
         <tr>
           <th>是否生成静态？ :</th>
-          <td><input type="radio" class="input" value="1" name="ishtml"/>
+          <td><input type="radio" value="1" name="ishtml"/>
             是
-            <input type="radio" class="input" value="0" name="ishtml" checked />
+            <input type="radio" value="0" name="ishtml" checked />
             否 </td>
         </tr>
         <tr>

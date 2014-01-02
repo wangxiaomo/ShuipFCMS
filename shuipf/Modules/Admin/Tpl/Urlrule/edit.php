@@ -28,10 +28,10 @@
         </tr>
         <tr>
           <th>是否生成静态？ :</th>
-          <td><input type="radio" class="input" value="1" name="ishtml" 
+          <td><input type="radio" value="1" name="ishtml" 
             <if condition="$data['ishtml'] eq '1' "> checked</if>
             />
-            是 <input type="radio" class="input" value="0" name="ishtml" 
+            是 <input type="radio" value="0" name="ishtml" 
             <if condition="$data['ishtml'] eq '0' "> checked</if>
             />
             否 </td>
