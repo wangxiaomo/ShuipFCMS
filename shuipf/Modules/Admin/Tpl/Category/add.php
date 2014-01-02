@@ -66,7 +66,7 @@
                   </li>
                   <li>
                     <label>
-                      <input type='radio' name='isbatch' value='0'  checked onClick="$('#normal_add').show();$('#catdir_tr').show();$('#batch_add').hide();$('#catname').attr('disabled','');$('#catdir').attr('disabled','');">
+                      <input type='radio' name='isbatch' value='0'  checked onClick="$('#normal_add').show();$('#catdir_tr').show();$('#batch_add').hide();$('#catname').attr('disabled',false);$('#catdir').attr('disabled',false);">
                       <span>单条添加</span></label>
                   </li>
                 </ul></td>
