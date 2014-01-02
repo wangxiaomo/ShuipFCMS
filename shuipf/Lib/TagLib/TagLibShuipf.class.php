@@ -979,6 +979,8 @@ class TagLibShuipf extends TagLib {
         if (!empty($tag['pagetp'])) {
             $config['tpl'] = (substr($tag['pagetp'], 0, 1) == '$') ? $tag['pagetp'] : '';
         }
+        //标签默认开启自定义分页规则
+        $config['isrule'] = true;
         return $config;
     }
 
