@@ -36,22 +36,19 @@ class UrlruleAction extends AdminbaseAction {
         $this->assign("Module", $Module);
     }
 
-    /**
-     * 显示 
-     */
+    //URL规则显示
     public function index() {
-        $infos = F("urlrules_detail");
-        $this->assign("info", $infos);
+        $this->assign("info", $this->Urlrule->order(array('urlruleid' => 'DESC'))->select());
         $this->display();
     }
 
-    /**
-     * 添加新规则
-     */
+    //添加新规则
     public function add() {
         if (IS_POST) {
-            if ($this->Urlrule->create()) {
-                $status = $this->Urlrule->add();
+            $data = $this->Urlrule->create();
+            if ($data) {
+                $data['urlrule'] = str_replace(' ', '', trim($data['urlrule']));
+                $status = $this->Urlrule->add($data);
                 if ($status) {
                     $this->success("添加成功！", U("Urlrule/index"));
                 } else {
@@ -65,13 +62,13 @@ class UrlruleAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 编辑规则
-     */
+    //编辑规则
     public function edit() {
         if (IS_POST) {
-            if ($this->Urlrule->create()) {
-                $status = $this->Urlrule->save();
+            $data = $this->Urlrule->create();
+            if ($data) {
+                $data['urlrule'] = str_replace(' ', '', trim($data['urlrule']));
+                $status = $this->Urlrule->save($data);
                 if ($status !== false) {
                     $this->success("更新成功！", U("Urlrule/index"));
                 } else {
@@ -81,7 +78,7 @@ class UrlruleAction extends AdminbaseAction {
                 $this->error($this->Urlrule->getError());
             }
         } else {
-            $urlruleid = (int) $this->_get("urlruleid");
+            $urlruleid = I('get.urlruleid', 0, 'intval');
             $data = $this->Urlrule->where(array("urlruleid" => $urlruleid))->find();
             if (empty($data)) {
                 $this->error("该规则不存在！");
@@ -91,9 +88,7 @@ class UrlruleAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 删除规则
-     */
+    //删除规则
     public function delete() {
         $urlruleid = I('get.urlruleid', 0, 'intval');
         if (empty($urlruleid)) {
