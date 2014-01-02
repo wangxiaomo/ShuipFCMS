@@ -69,7 +69,13 @@
           </tr>
           <tr id="template">
             <th>模板内容</th>
-            <td><textarea name="template" style="width:95%; height:400px" validate="required:true, minlength:4"></textarea></td>
+            <td>
+            <span class="gray"><literal>
+            基本使用：
+            <br/>1、分页标签 {$pages}
+            <br/>2、查询出的数据都保存在 $listData 变量，请使用相关循环标签进行循环读取。例如：Volist标签。
+            </span></literal>
+            <textarea name="template" style="width:95%; height:400px" validate="required:true, minlength:4"></textarea></td>
           </tr>
         </tbody>
       </table>
