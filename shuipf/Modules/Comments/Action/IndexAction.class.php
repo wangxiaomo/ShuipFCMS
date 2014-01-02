@@ -48,7 +48,7 @@ class IndexAction extends BaseAction {
         );
 
         $commentCount = $this->db->where($where)->count();
-        $pages = page($commentCount, $pageSize, $page, 6, '');
+        $pages = page($commentCount, $pageSize, $page);
         //评论主表数据
         $commentData = $this->db->where($where)->order($this->setting['order'])->limit($pages->firstRow . ',' . $pages->listRows)->select();
         foreach ($commentData as $r) {

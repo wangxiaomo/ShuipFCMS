@@ -139,7 +139,10 @@ class Html extends BaseAction {
                 foreach ($pageurls as $page => $urls) {
                     //$pagenumber 分页总数
                     $_GET[C("VAR_PAGE")] = $page;
-                    $pages = page($pagenumber, 1, $page, 6, C("VAR_PAGE"), $pageurl, true)->show("default");
+                    $pages = page($pagenumber, 1, $page, array(
+                        'isrule' => true,
+                        'rule' => $pageurl,
+                    ))->show("default");
                     //判断[page]出现的位置是否在第一位 
                     if ($CONTENT_POS < 7) {
                         $content = $contents[$page];

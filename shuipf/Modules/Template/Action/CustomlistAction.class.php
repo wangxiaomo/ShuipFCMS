@@ -134,7 +134,10 @@ class CustomlistAction extends AdminbaseAction {
             }
             //取得URL规则
             $urls = $customlistUrl['page'];
-            $page = page($count, $info['lencord'], $pagehao, 6, C("VAR_PAGE"), $urls, true);
+            $page = page($count, $info['lencord'], $pagehao, array(
+                'isrule' => true,
+                'rule' => $urls,
+            ));
             $data = $this->db->query($info['listsql'] . " LIMIT {$page->firstRow},{$page->listRows}");
             //把分页分配到模板
             $this->assign(C("VAR_PAGE"), $pagehao);

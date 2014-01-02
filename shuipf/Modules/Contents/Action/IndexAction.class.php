@@ -189,7 +189,10 @@ class IndexAction extends BaseAction {
             if ($CONTENT_POS !== false) {
                 $contents = array_filter(explode('[page]', $output_data['content']));
                 $pagenumber = count($contents);
-                $pages = page($pagenumber, 1, $page, 6, C("VAR_PAGE"), $urlrules['page'], true)->show("default");
+                $pages = page($pagenumber, 1, $page, array(
+                    'isrule' => true,
+                    'rule' => $urlrules['page'],
+                ))->show("default");
                 //判断[page]出现的位置是否在第一位 
                 if ($CONTENT_POS < 7) {
                     $content = $contents[$page];

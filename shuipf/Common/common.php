@@ -664,7 +664,7 @@ function page($total, $size = 0, $number = 0, $config = array()) {
         //分页规则
         'rule' => '',
         //是否启用自定义规则
-        'isrule' => true,
+        'isrule' => false,
         //分页模板
         'tpl' => '',
         //分页具体可控制配置参数默认配置
