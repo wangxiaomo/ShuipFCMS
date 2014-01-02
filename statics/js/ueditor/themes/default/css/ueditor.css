@@ -845,14 +845,6 @@ div.edui-box {
     background-position: -360px -40px;
 }
 
-.edui-default  .edui-for-highlightcode .edui-icon {
-    background-position: -440px -40px;
-}
-
-.edui-default  .edui-for-deletehighlightcode .edui-icon {
-    background-position: -360px -40px;
-}
-
 .edui-default  .edui-for-attachment .edui-icon {
     background-position: -620px -40px;
 }
@@ -1325,12 +1317,6 @@ div.edui-box {
     overflow: hidden;
 }
 
-/*code-dialog*/
-.edui-default .edui-for-highlightcode .edui-dialog-content {
-    width: 550px;
-    height: 360px;
-    overflow: hidden;
-}
 
 /*map-dialog*/
 .edui-default .edui-for-map .edui-dialog-content {
