@@ -24,7 +24,7 @@ class Model_fieldModel extends CommonModel {
         array('formtype', 'require', '字段类型不能为空！'),
         array('field', 'require', '字段名称必须填写！'),
         array('name', 'require', '字段别名必须填写！'),
-        array('field', '/^[a-z0-9]+$/i', '字段名只支持英文！', 0, 'regex', 3),
+        array('field', '/^[a-z_0-9]+$/i', '字段名只支持英文！', 0, 'regex', 3),
         array('isbase', array(0, 1), '是否作为基本信息设置错误！', 0, 'in', 3),
         array('isadd', array(0, 1), '是否前台投稿中显示设置错误！', 0, 'in', 3),
     );
