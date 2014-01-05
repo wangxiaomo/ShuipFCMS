@@ -117,8 +117,12 @@ class AddonsModel extends CommonModel {
         }
         //开始安装
         $install = $addonObj->install();
-        if (!$install) {
-            $this->error = '执行插件预安装操作失败！';
+        if ($install !== true) {
+            if (method_exists($addonObj, 'getError')) {
+                $this->error = $addonObj->getError() ? $addonObj->getError() : '执行插件预安装操作失败！';
+            } else {
+                $this->error = '执行插件预安装操作失败！';
+            }
             return false;
         }
         //添加插件安装记录
@@ -180,8 +184,12 @@ class AddonsModel extends CommonModel {
         $addonObj = new $class();
         //卸载插件
         $uninstall = $addonObj->uninstall();
-        if (!$uninstall) {
-            $this->error = '执行插件预卸载操作失败！';
+        if ($uninstall !== true) {
+            if (method_exists($addonObj, 'getError')) {
+                $this->error = $addonObj->getError() ? $addonObj->getError() : '执行插件预卸载操作失败！';
+            } else {
+                $this->error = '执行插件预卸载操作失败！';
+            }
             return false;
         }
         //删除插件记录
@@ -267,7 +275,7 @@ class AddonsModel extends CommonModel {
         $obj = get_instance_of($class);
         $info = $obj->info;
         //更新版本号
-        if($info['version']){
+        if ($info['version']) {
             $this->where(array('name' => $addonName))->save(array('version' => $upgradeVersion));
         }
         return true;
