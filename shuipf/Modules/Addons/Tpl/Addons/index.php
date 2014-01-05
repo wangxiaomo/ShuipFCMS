@@ -15,13 +15,13 @@
     <table width="100%">
       <thead>
         <tr>
-          <td>名称</td>
-          <td>标识</td>
+          <td width="100">名称</td>
+          <td width="100">标识</td>
           <td align="center">描述</td>
-          <td align="center">状态</td>
-          <td align="center">作者</td>
-          <td align="center">版本</td>
-          <td align="center">操作</td>
+          <td align="center" width="50">状态</td>
+          <td align="center" width="100">作者</td>
+          <td align="center" width="50">版本</td>
+          <td align="center" width="227">操作</td>
         </tr>
       </thead>
       <volist name="addons" id="vo">
@@ -32,7 +32,7 @@
         <td align="center"><if condition=" $vo['status'] eq null ">未安装<else/><if condition=" $vo['status'] eq 1 ">启用<else/>禁用</if></if></td>
         <td align="center">{$vo.author}</td>
         <td align="center">{$vo.version}</td>
-        <td align="center" width="227">
+        <td align="center">
           <if condition=" $vo['uninstall'] ">
           <a  href="{:U('Addons/install', array('addonename'=>$vo['name'])  )}" class="btn btn_submit btn_big">安装</a>
           <else/>
