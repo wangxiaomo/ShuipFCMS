@@ -71,7 +71,7 @@ class CommentsModel extends CommonModel {
         //主表字段内容映射
         $mainData = array();
         foreach ($this->mainField as $field => $v) {
-            $mainData[$field] = $data[$field];
+            $mainData[$field] = $data[$field] ? $data[$field] : '';
         }
         //信息ID comment_id
         $mainData['comment_id'] = $data['comment_id'];
@@ -92,7 +92,7 @@ class CommentsModel extends CommonModel {
         //======副表======
         $secondaryField = array();
         foreach ($this->secondaryField as $field => $v) {
-            $secondaryField[$field] = $data[$field];
+            $secondaryField[$field] = $data[$field] ? $data[$field] : '';
         }
         //评论内容
         $secondaryField['content'] = $data['content'];
