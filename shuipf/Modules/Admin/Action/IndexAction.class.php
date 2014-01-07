@@ -23,19 +23,21 @@ class IndexAction extends AdminbaseAction {
             $type = I('get.type');
             switch ($type) {
                 case "site":
-                    try {
-                        //删除缓存目录下的文件
-                        $Dir->del(RUNTIME_PATH);
-                        //删除Data目录
-                        $Dir->delDir(RUNTIME_PATH . "Data/");
-                        $Dir->delDir(RUNTIME_PATH . "Temp/");
-                        //更新开启其他方式的缓存
-                        Cache::getInstance()->clear();
-                    } catch (Exception $exc) {
-                        
-                    }
                     //开始刷新缓存
                     $stop = I('get.stop', 0, 'intval');
+                    if (empty($stop)) {
+                        try {
+                            //删除缓存目录下的文件
+                            $Dir->del(RUNTIME_PATH);
+                            //删除Data目录
+                            $Dir->delDir(RUNTIME_PATH . "Data/");
+                            $Dir->delDir(RUNTIME_PATH . "Temp/");
+                            //更新开启其他方式的缓存
+                            Cache::getInstance()->clear();
+                        } catch (Exception $exc) {
+                            
+                        }
+                    }
                     if ($stop) {
                         $modules = array(
                             array('name' => "菜单，模型，栏目缓存更新成功！", 'function' => 'site_cache', 'param' => ''),
@@ -62,6 +64,8 @@ class IndexAction extends AdminbaseAction {
                     $this->success("即将更新站点缓存！", U('Index/public_cache', array('type' => 'site', 'stop' => 1)));
                     break;
                 case "template":
+                    //删除缓存目录下的文件
+                    $Dir->del(RUNTIME_PATH);
                     $Dir->delDir(RUNTIME_PATH . "Cache/");
                     $Dir->delDir(RUNTIME_PATH . "Temp/");
                     //更新开启其他方式的缓存
