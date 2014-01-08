@@ -492,7 +492,7 @@ class ContentAction extends AdminbaseAction {
                 $data['isParent'] = true;
             }
             //单页
-            if ($rs['type'] == 1) {
+            if ($rs['type'] == 1 && $rs['child'] == 0) {
                 $data['url'] = U("Contents/Content/add", array("catid" => $rs['catid']));
                 //设置图标 
                 $data['icon'] = CONFIG_SITEURL . "statics/js/zTree/zTreeStyle/img/diy/2.png";
