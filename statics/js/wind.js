@@ -687,6 +687,7 @@ Wind.ready(function() {
             tabs               : 'tabs/tabs',
             swfobject          : 'swfobject',
             imgready           : 'imgready',
+			zTree           : 'zTree/zTree',
 
             //jquery util plugs
             ajaxForm          : 'ajaxForm',
@@ -708,7 +709,8 @@ Wind.ready(function() {
             colorPicker : 'colorPicker/style',
             artDialog   : 'artDialog/skins/default',
 			datePicker	: 'datePicker/style',
-            treeTable    : 'treeTable/treeTable'
+            treeTable    : 'treeTable/treeTable',
+			zTree    : 'zTree/zTreeStyle/zTreeStyle'
 		};
 
 	//add suffix and version

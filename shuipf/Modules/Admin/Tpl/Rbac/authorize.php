@@ -1,43 +1,68 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-<title>系统后台 - ShuipFCMS内容管理系统 - by ShuipFCMS</title>
-<link href="{$config_siteurl}statics/css/admin_style.css" rel="stylesheet" />
-<link href="{$config_siteurl}statics/js/artDialog/skins/default.css" rel="stylesheet" />
-<script type="text/javascript">
-//全局变量，是Global Variables不是Gay Video喔
-var GV = {
-    DIMAUB: "{$config_siteurl}",
-    JS_ROOT: "statics/js/",
-    TOKEN: "{$__token__}"
-};
-</script>
-<script src="{$config_siteurl}statics/js/wind.js"></script>
-<script src="{$config_siteurl}statics/js/jquery142.js"></script>
-</head>
+<?php if (!defined('SHUIPF_VERSION')) exit(); ?>
+<Admintemplate file="Common/Head"/>
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
   <div class="h_a">角色授权</div>
-  <form class="J_ajaxForm" action="{:U('Rbac/authorize')}" method="post">
+  <form class="J_ajaxFsorm" action="{:U('Rbac/authorize')}" method="post">
     <div class="table_full">
-      <table width="100%" cellspacing="0" id="dnd-example">
-        <tbody>
-          <?php echo $categorys;?>
-        </tbody>
-      </table>
+      <ul id="treeDemo" class="ztree">
+      </ul>
     </div>
     <div class="btn_wrap">
       <div class="btn_wrap_pd">
         <input type="hidden" name="roleid" value="{$roleid}" />
+        <input type="hidden" name="menuid" value="" />
         <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">授权</button>
       </div>
     </div>
   </form>
 </div>
 <script type="text/javascript">
+//配置
+var setting = {
+	check: {
+		enable: true,
+		chkboxType:{ "Y" : "ps", "N" : "ps" }
+	},
+    data: {
+        simpleData: {
+            enable: true,
+            idKey: "id",
+            pIdKey: "parentid",
+        }
+    },
+    callback: {
+        beforeClick: function (treeId, treeNode) {
+            if (treeNode.isParent) {
+                zTree.expandNode(treeNode);
+                return false;
+            } else {
+                return true;
+            }
+        },
+		onClick:function(event, treeId, treeNode){
+			//栏目ID
+			var catid = treeNode.catid;
+			//保存当前点击的栏目ID
+			setCookie('tree_catid',catid,1);
+		}
+    }
+};
+//节点数据
+var zNodes ={$json};
+//zTree对象
+var zTree = null;
+Wind.css('zTree');
+$(function(){
+	Wind.use('cookie','zTree', function(){
+		$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+		zTree = $.fn.zTree.getZTreeObj("treeDemo");
+		zTree.expandAll(true);
+	});
+});
+
+
 var ajaxForm_list = $('form.J_ajaxFsorm');
 if (ajaxForm_list.length) {
     Wind.use('ajaxForm', 'artDialog', function () {
@@ -54,34 +79,7 @@ if (ajaxForm_list.length) {
             /*var btn = $(this).find('button.J_ajax_submit_btn'),
 					form = $(this);*/
             var btn = $(this),
-                form = btn.parents('form.J_ajaxForm');
-
-            //批量操作 判断选项
-            if (btn.data('subcheck')) {
-                btn.parent().find('span').remove();
-                if (form.find('input.J_check:checked').length) {
-                    var msg = btn.data('msg');
-                    if (msg) {
-                        art.dialog({
-                            id: 'warning',
-                            icon: 'warning',
-                            content: btn.data('msg'),
-                            cancelVal: '关闭',
-                            cancel: function () {
-                                btn.data('subcheck', false);
-                                btn.click();
-                            }
-                        });
-                    } else {
-                        btn.data('subcheck', false);
-                        btn.click();
-                    }
-
-                } else {
-                    $('<span class="tips_error">请至少选择一项</span>').appendTo(btn.parent()).fadeIn('fast');
-                }
-                return false;
-            }
+                form = btn.parents('form.J_ajaxFsorm');
 
             //ie处理placeholder提交问题
             if ($.browser.msie) {
@@ -92,7 +90,19 @@ if (ajaxForm_list.length) {
                     }
                 });
             }
-
+			
+			//处理被选中的数据
+			form.find('input[name="menuid"]').val("");
+			var  nodes = zTree.getCheckedNodes(true); 
+			var str = "";
+			$.each(nodes,function(i,value){
+				if (str != "") {
+					str += ","; 
+				}
+				str += value.id;
+			});
+			form.find('input[name="menuid"]').val(str);
+			
             form.ajaxSubmit({
                 url: btn.data('action') ? btn.data('action') : form.attr('action'),
                 //按钮上是否自定义提交地址(多按钮情况)
@@ -105,10 +115,8 @@ if (ajaxForm_list.length) {
                 },
                 success: function (data, statusText, xhr, $form) {
                     var text = btn.text();
-
                     //按钮文案、状态修改
                     btn.removeClass('disabled').text(text.replace('中...', '')).parent().find('span').remove();
-
                     if (data.state === 'success') {
                         $('<span class="tips_success">' + data.info + '</span>').appendTo(btn.parent()).fadeIn('slow').delay(1000).fadeOut(function () {
                             if (data.referer) {
@@ -135,40 +143,7 @@ if (ajaxForm_list.length) {
                 }
             });
         });
-
     });
-}
-$(document).ready(function () {
-	Wind.css('treeTable');
-    Wind.use('treeTable', function () {
-        $("#dnd-example").treeTable({
-            indent: 20
-        });
-    });
-});
-
-function checknode(obj) {
-    var chk = $("input[type='checkbox']");
-    var count = chk.length;
-    var num = chk.index(obj);
-    var level_top = level_bottom = chk.eq(num).attr('level')
-    for (var i = num; i >= 0; i--) {
-        var le = chk.eq(i).attr('level');
-        if (eval(le) < eval(level_top)) {
-            chk.eq(i).attr("checked", true);
-            var level_top = level_top - 1;
-        }
-    }
-    for (var j = num + 1; j < count; j++) {
-        var le = chk.eq(j).attr('level');
-        if (chk.eq(num).attr("checked") == true) {
-            if (eval(le) > eval(level_bottom)) chk.eq(j).attr("checked", true);
-            else if (eval(le) == eval(level_bottom)) break;
-        } else {
-            if (eval(le) > eval(level_bottom)) chk.eq(j).attr("checked", false);
-            else if (eval(le) == eval(level_bottom)) break;
-        }
-    }
 }
 </script>
 </body>

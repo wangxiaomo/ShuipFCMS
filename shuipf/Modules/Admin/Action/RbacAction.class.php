@@ -91,9 +91,7 @@ class RbacAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 角色授权
-     */
+    //角色授权
     public function authorize() {
         $this->Access = D("Access");
         if (IS_POST) {
@@ -101,7 +99,9 @@ class RbacAction extends AdminbaseAction {
             if (!$roleid) {
                 $this->error("需要授权的角色不存在！");
             }
-            if (is_array($_POST['menuid']) && count($_POST['menuid']) > 0) {
+            //被选中的菜单项
+            $menuidAll = explode(',', I('post.menuid', ''));
+            if (is_array($menuidAll) && count($menuidAll) > 0) {
                 //取得菜单数据
                 $menuinfo = M("Menu")->select();
                 foreach ($menuinfo as $_v) {
@@ -110,7 +110,7 @@ class RbacAction extends AdminbaseAction {
                 C('TOKEN_ON', false);
                 $addauthorize = array();
                 //检测数据合法性
-                foreach ($_POST['menuid'] as $menuid) {
+                foreach ($menuidAll as $menuid) {
                     $info = array();
                     $info = $this->get_menuinfo((int) $menuid, $menu_info);
                     if ($info == false) {
@@ -144,29 +144,27 @@ class RbacAction extends AdminbaseAction {
         } else {
             //角色ID
             $roleid = I('get.id', 0, 'intval');
-            if (!$roleid) {
+            if (empty($roleid)) {
                 $this->error("参数错误！");
             }
-            import("Tree");
-            $menu = new Tree();
-            $menu->icon = array('│ ', '├─ ', '└─ ');
-            $menu->nbsp = '&nbsp;&nbsp;&nbsp;';
+            //菜单缓存
             $result = F("Menu");
-            $priv_data = $this->Access->where(array("role_id" => $roleid))->field("role_id,g,m,a")->select(); //获取权限表数据
+            //获取已权限表数据
+            $priv_data = $this->Access->where(array("role_id" => $roleid))->field("role_id,g,m,a")->select();
 
-            foreach ($result as $n => $t) {
-                $result[$n]['checked'] = ($this->is_checked($t, $roleid, $priv_data)) ? ' checked' : '';
-                $result[$n]['level'] = $this->get_level($t['id'], $result);
-                $result[$n]['parentid_node'] = ($t['parentid']) ? ' class="child-of-node-' . $t['parentid'] . '"' : '';
-                $result[$n]['tip'] = $t['type'] == 0 ? "(菜单项)" : "";
+            $json = array();
+            foreach ($result as $rs) {
+                $data = array(
+                    'id' => $rs['id'],
+                    'checked' => $rs['id'],
+                    'parentid' => $rs['parentid'],
+                    'name' => $rs['name'] . ($rs['type'] == 0 ? "(菜单项)" : ""),
+                    'checked' => ($this->is_checked($rs, $roleid, $priv_data)) ? true : false,
+                );
+                $json[] = $data;
             }
-            $str = "<tr id='node-\$id' \$parentid_node>
-                           <td style='padding-left:30px;'>\$spacer<input type='checkbox' name='menuid[]' value='\$id' level='\$level' \$checked onclick='javascript:checknode(this);'> \$name\$tip</td>
-	    </tr>";
-            $menu->init($result);
-            $categorys = $menu->get_tree(0, $str);
 
-            $this->assign("categorys", $categorys);
+            $this->assign('json', json_encode($json));
             $this->assign("roleid", $roleid);
             $this->display();
         }

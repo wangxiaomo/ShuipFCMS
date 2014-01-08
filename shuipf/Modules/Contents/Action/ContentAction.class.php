@@ -454,63 +454,52 @@ class ContentAction extends AdminbaseAction {
 
     //显示栏目菜单列表 
     public function public_categorys() {
-        //管理员uid
-        $uid = AppframeAction::$Cache['uid'];
-        $cache_class_list = S("cache_class_list_$uid_" . C('AUTHCODE'));
-        if (!$cache_class_list) {
-            import('Tree');
-            $tree = new Tree();
-            //栏目权限 超级管理员例外
-            if (session(C("ADMIN_AUTH_KEY")) == "") {
-                $role_id = AppframeAction::$Cache['User']['role_id'];
-                $priv_result = M("Category_priv")->where(array("roleid" => $role_id, 'action' => 'init'))->select();
-                $priv_catids = array();
-                foreach ($priv_result as $_v) {
-                    $priv_catids[] = $_v['catid'];
-                }
+        $priv_catids = array();
+        //栏目权限 超级管理员例外
+        if (session(C("ADMIN_AUTH_KEY")) == "") {
+            $role_id = AppframeAction::$Cache['User']['role_id'];
+            $priv_result = M("Category_priv")->where(array("roleid" => $role_id, 'action' => 'init'))->select();
+            foreach ($priv_result as $_v) {
+                $priv_catids[] = $_v['catid'];
             }
-            if (!empty($this->categorys)) {
-                foreach ($this->categorys as $r) {
-                    if ($r['type'] == 2 && $r['child'] == 0)
-                        continue;
-                    //只显示有init权限的，超级管理员除外
-                    if (session(C("ADMIN_AUTH_KEY")) == "" && !in_array($r['catid'], $priv_catids)) {
-                        $arrchildid = explode(',', $r['arrchildid']);
-                        $array_intersect = array_intersect($priv_catids, $arrchildid);
-                        if (empty($array_intersect)) {
-                            continue;
-                        }
-                    }
-                    //单页模型
-                    if ($r['type'] == 1) {
-                        $r['icon_type'] = 'file';
-                        $r['add_icon'] = '';
-                        $r['type'] = '';
-                        $r['add_lists'] = "<a href='" . U("Contents/Content/add", array("catid" => $r['catid'])) . "' target='right' >" . $r['catname'] . "</a>";
-                    } else {
-                        $r['icon_type'] = $r['vs_show'] = '';
-                        $r['type'] = 'classlist';
-                        $r['add_icon'] = "<a target='right' href='" . U("Contents/Content/classlist", array("catid" => $r['catid'])) . "' onclick=javascript:openwinx('" . U("Contents/Content/add", array("catid" => $r['catid'])) . "','')><img src='" . AppframeAction::$Cache['Config']['siteurl'] . "statics/images/add_content.gif' alt='添加'></a> ";
-                        $r['add_lists'] = "<a href='" . U("Contents/Content/classlist", array("catid" => $r['catid'])) . "' target='right' >" . $r['catname'] . "</a>";
-                    }
-
-                    $categorys[$r['catid']] = $r;
-                }
-            }
-            if (!empty($categorys)) {
-                $tree->init($categorys);
-                $strs = "<span class='\$icon_type'>\$add_icon\$add_lists</span>";
-                $strs2 = "<span class='folder'>\$catname</span>";
-                $categorys = $tree->get_treeview(0, 'category_tree', $strs, $strs2, $ajax_show);
-            } else {
-                $categorys = "该站点下面还没有栏目，请先添加栏目";
-            }
-            //缓存
-            S("cache_class_list_$uid_" . C('AUTHCODE'), $categorys, 300);
-        } else {
-            $categorys = $cache_class_list;
         }
-        $this->assign("categorys", $categorys);
+        $json = array();
+        foreach ($this->categorys as $rs) {
+            if ($rs['type'] == 2 && $rs['child'] == 0) {
+                continue;
+            }
+            //只显示有init权限的，超级管理员除外
+            if (session(C("ADMIN_AUTH_KEY")) == "" && !in_array($rs['catid'], $priv_catids)) {
+                $arrchildid = explode(',', $rs['arrchildid']);
+                $array_intersect = array_intersect($priv_catids, $arrchildid);
+                if (empty($array_intersect)) {
+                    continue;
+                }
+            }
+            $data = array(
+                'catid' => $rs['catid'],
+                'parentid' => $rs['parentid'],
+                'catname' => $rs['catname'],
+                'type' => $rs['type'],
+            );
+            //终极栏目
+            if ($rs['child'] == 0) {
+                $data['target'] = "right";
+                $data['url'] = U("Contents/Content/classlist", array("catid" => $rs['catid']));
+                //设置图标 
+                $data['icon'] = CONFIG_SITEURL . "statics/js/zTree/zTreeStyle/img/diy/10.png";
+            } else {
+                $data['isParent'] = true;
+            }
+            //单页
+            if ($rs['type'] == 1) {
+                $data['url'] = U("Contents/Content/add", array("catid" => $rs['catid']));
+                //设置图标 
+                $data['icon'] = CONFIG_SITEURL . "statics/js/zTree/zTreeStyle/img/diy/2.png";
+            }
+            $json[] = $data;
+        }
+        $this->assign('json', json_encode($json));
         $this->display();
     }
 
