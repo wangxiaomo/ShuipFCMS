@@ -38,7 +38,7 @@ class IndexAction extends AdminbaseAction {
                                 foreach ($subdir as $path) {
                                     $dirName = str_replace(RUNTIME_PATH, '', $path);
                                     //忽略目录
-                                    if (in_array($dirName, array('Temp', 'Cache', 'Logs'))) {
+                                    if (in_array($dirName, array('Cache', 'Logs'))) {
                                         continue;
                                     }
                                     if (in_array($dirName, $dirList)) {
