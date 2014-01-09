@@ -21,17 +21,38 @@ class IndexAction extends AdminbaseAction {
             $Cache = new Cacheapi();
             $Dir = new Dir();
             $type = I('get.type');
+            set_time_limit(0);
             switch ($type) {
                 case "site":
                     //开始刷新缓存
                     $stop = I('get.stop', 0, 'intval');
                     if (empty($stop)) {
                         try {
+                            //已经清除过的目录
+                            $dirList = explode(',', I('get.dir', ''));
                             //删除缓存目录下的文件
                             $Dir->del(RUNTIME_PATH);
-                            //删除Data目录
-                            $Dir->delDir(RUNTIME_PATH . "Data/");
-                            $Dir->delDir(RUNTIME_PATH . "Temp/");
+                            //获取子目录
+                            $subdir = glob(RUNTIME_PATH . '*', GLOB_ONLYDIR | GLOB_NOSORT);
+                            if (is_array($subdir)) {
+                                foreach ($subdir as $path) {
+                                    $dirName = str_replace(RUNTIME_PATH, '', $path);
+                                    //忽略目录
+                                    if (in_array($dirName, array('Temp', 'Cache', 'Logs'))) {
+                                        continue;
+                                    }
+                                    if (in_array($dirName, $dirList)) {
+                                        continue;
+                                    }
+                                    $dirList[] = $dirName;
+                                    //删除目录
+                                    $Dir->delDir($path);
+                                    //防止超时，清理一个从新跳转一次
+                                    $this->assign("waitSecond", 200);
+                                    $this->success("清理缓存目录[{$dirName}]成功！", U('Index/public_cache', array('type' => 'site', 'dir' => implode(',', $dirList))));
+                                    exit;
+                                }
+                            }
                             //更新开启其他方式的缓存
                             Cache::getInstance()->clear();
                         } catch (Exception $exc) {
@@ -42,7 +63,7 @@ class IndexAction extends AdminbaseAction {
                         $modules = array(
                             array('name' => "菜单，模型，栏目缓存更新成功！", 'function' => 'site_cache', 'param' => ''),
                             array('name' => "模型字段缓存更新成功！", 'function' => 'model_field_cache', 'param' => ''),
-                            array('name' => "模型content处理类缓存更新成功！", 'function' => 'model_content_cache', 'param' => ''),
+                            array('name' => "模型Content字段处理类缓存更新成功！", 'function' => 'model_content_cache', 'param' => ''),
                             array('name' => "应用更新成功！", 'function' => 'appstart_cache', 'param' => ''),
                             array('name' => "敏感词缓存生成成功！", 'function' => 'censorword_cache', 'param' => ''),
                         );
