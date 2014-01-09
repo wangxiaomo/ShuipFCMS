@@ -166,7 +166,7 @@
                     </tr>
                     <tr>
                         <th width="140">子目录缓存:</th>
-                        <td><input name="DATA_CACHE_SUBDIR" type="radio" value="1" <if condition=" $addition['DATA_CACHE_SUBDIR'] ">checked</if>> 是 <input name="SESSION_AUTO_START" type="radio" value="0" <if condition=" !$addition['DATA_CACHE_SUBDIR'] ">checked</if>> 否
+                        <td><input name="DATA_CACHE_SUBDIR" type="radio" value="1" <if condition=" $addition['DATA_CACHE_SUBDIR'] ">checked</if>> 是 <input name="DATA_CACHE_SUBDIR" type="radio" value="0" <if condition=" !$addition['DATA_CACHE_SUBDIR'] ">checked</if>> 否
                     <span class="gray">使用子目录缓存 (自动根据缓存标识的哈希创建子目录)</span></td>
                     </tr>
                     <tr>
