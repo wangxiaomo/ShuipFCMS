@@ -12,7 +12,7 @@ class IndexAction extends BaseAction {
     protected function _initialize() {
         parent::_initialize();
         import('Url');
-        $this->url = new Url();
+        $this->url = get_instance_of('Url');
     }
 
     //首页
@@ -43,10 +43,16 @@ class IndexAction extends BaseAction {
         //获取栏目数据
         $category = $this->categorys[$catid];
         if (empty($category)) {
-            $this->error("该栏目不存在！");
+            send_http_status(404);
+            exit;
         }
         //栏目扩展配置信息反序列化
         $setting = unserialize($category['setting']);
+        //检查是否禁止访问动态页
+        if ($setting['listoffmoving']) {
+            send_http_status(404);
+            exit;
+        }
         //生成静态分页数
         $repagenum = (int) $setting['repagenum'];
         if ($repagenum && !$GLOBALS['dynamicRules']) {
@@ -110,16 +116,23 @@ class IndexAction extends BaseAction {
         //获取当前栏目数据
         $category = $this->categorys[$catid];
         if (empty($category)) {
-            $this->error('该栏目不存在！');
+            send_http_status(404);
+            exit;
         }
         //反序列化栏目配置
         $category['setting'] = unserialize($category['setting']);
+        //检查是否禁止访问动态页
+        if ($category['setting']['showoffmoving']) {
+            send_http_status(404);
+            exit;
+        }
         //模型ID
         $this->modelid = $category['modelid'];
         $this->db = ContentModel::getInstance($this->modelid);
         $data = $this->db->relation(true)->where(array("id" => $id, 'status' => 99))->find();
         if (empty($data)) {
-            $this->error("该信息不存在！");
+            send_http_status(404);
+            exit;
         }
         $this->db->dataMerger($data);
         //分页方式
@@ -192,7 +205,7 @@ class IndexAction extends BaseAction {
                 $pages = page($pagenumber, 1, $page, array(
                     'isrule' => true,
                     'rule' => $urlrules['page'],
-                ))->show("default");
+                        ))->show("default");
                 //判断[page]出现的位置是否在第一位 
                 if ($CONTENT_POS < 7) {
                     $content = $contents[$page];

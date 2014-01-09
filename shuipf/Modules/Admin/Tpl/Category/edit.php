@@ -75,6 +75,14 @@
               <th>栏目简介：</th>
               <td><textarea name="info[description]" maxlength="255" style="width:300px;height:60px;">{$data.description}</textarea></td>
             </tr>
+            <tr>
+              <th>关闭列表动态访问：</th>
+              <td><label><input name="setting[listoffmoving]" type="checkbox" value="1" <if condition="$data['setting']['listoffmoving']">checked</if>>关闭前台动态地址访问栏目列表</label></td>
+            </tr>
+            <tr>
+              <th>关闭内容页动态访问：</th>
+              <td><label><input name="setting[showoffmoving]" type="checkbox" value="1" <if condition="$data['setting']['showoffmoving']">checked</if>>关闭前台动态访问内容页</label></td>
+            </tr>
           </table>
         </div>
       </div>
