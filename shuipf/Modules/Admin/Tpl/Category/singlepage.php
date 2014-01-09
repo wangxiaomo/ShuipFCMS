@@ -68,6 +68,10 @@
               <th>栏目简介：</th>
               <td><textarea name="info[description]" maxlength="255" style="width:300px;height:60px;"></textarea></td>
             </tr>
+            <tr>
+              <th>关闭动态访问：</th>
+              <td><label><input name="setting[listoffmoving]" type="checkbox" value="1">关闭前台动态地址访问</label></td>
+            </tr>
           </table>
         </div>
       </div>
