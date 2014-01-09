@@ -112,7 +112,16 @@ class ConfigAction extends AdminbaseAction {
             $_POST['LOAD_EXT_FILE'] = trim($_POST['LOAD_EXT_FILE']);
             //默认分页模板
             $_POST['PAGE_TEMPLATE'] = str_replace("\n", "", trim($_POST['PAGE_TEMPLATE']));
-            
+
+            //**********************检测一些设置，会导致网站瘫痪的**********************
+            //缓存类型检测
+            if ($_POST['DATA_CACHE_TYPE'] == 'Memcache') {
+                if (class_exists('Memcache') == false) {
+                    $this->error('您的环境不支持Memcache，无法开启！');
+                }
+            }
+            //***********************END************************************
+
             file_exists($filename) or touch($filename);
             $return = var_export($_POST, TRUE);
             if ($return) {
