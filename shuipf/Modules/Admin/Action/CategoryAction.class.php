@@ -250,6 +250,8 @@ class CategoryAction extends AdminbaseAction {
             if ($status) {
                 //应用权限设置到子栏目
                 if ($_POST['priv_child']) {
+                    //子栏目
+                    $arrchildid = $Category->where(array('catid' => $catid))->getField('arrchildid');
                     $arrchildid_arr = explode(',', $arrchildid);
                     foreach ($arrchildid_arr as $arr_v) {
                         $this->update_priv($arr_v, $_POST['priv_roleid']);

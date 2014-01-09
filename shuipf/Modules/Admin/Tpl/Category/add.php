@@ -323,7 +323,7 @@
                       <label><input class="J_check" type="checkbox" data-yid="J_check_priv_roleid{$vo.id}" name="priv_roleid[]" <if condition=" $vo['id'] eq 1 "> disabled</if>  value="delete,{$vo.id}" ><span>删除</span></label>
                       <label><input class="J_check" type="checkbox" data-yid="J_check_priv_roleid{$vo.id}" name="priv_roleid[]" <if condition=" $vo['id'] eq 1 "> disabled</if>  value="listorder,{$vo.id}" ><span>排序</span></label>
                       <label><input class="J_check" type="checkbox" data-yid="J_check_priv_roleid{$vo.id}" name="priv_roleid[]" <if condition=" $vo['id'] eq 1 "> disabled</if>  value="push,{$vo.id}" ><span>推送</span></label>
-                      <label><input class="J_check" type="checkbox" data-yid="J_check_priv_roleid{$vo.id}" name="priv_roleid[]" <if condition=" $vo['id'] eq 1 "> disabled</if>  value="move,{$vo.id}" ><span>移动</span></label>
+                      <label><input class="J_check" type="checkbox" data-yid="J_check_priv_roleid{$vo.id}" name="priv_roleid[]" <if condition=" $vo['id'] eq 1 "> disabled</if>  value="remove,{$vo.id}" ><span>移动</span></label>
                     </dd>
                    </volist>
                   </dl>
