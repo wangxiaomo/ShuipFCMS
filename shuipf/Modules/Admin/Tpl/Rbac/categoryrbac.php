@@ -8,7 +8,7 @@
     <div class="table_full"> 
     <table width="100%">
         <tr>
-          <th width="25" align="center">全选</th>
+          <th width="50" align="center"><label>全选<input type="checkbox" onclick="select_all(0, this)"></label></th>
           <th align="left">栏目名称</th>
           <th width="35" align="center">查看</th>
           <th width="35" align="center">添加</th>
@@ -32,11 +32,29 @@
 <script src="{$config_siteurl}statics/js/common.js?v"></script>
 <script type="text/javascript">
 function select_all(name, obj) {
-	if (obj.checked) {
-		$("input[type='checkbox'][name='priv["+name+"][]']").attr('checked', 'checked');
-	} else {
-		$("input[type='checkbox'][name='priv["+name+"][]']").attr('checked', null);
-	}
+    if (obj.checked) {
+        if (name == 0) {
+			$.each($("input[type='checkbox']"),function(i,rs){
+				if($(this).attr('disabled') != 'disabled'){
+					$(this).attr('checked', 'checked');
+				}
+			});
+            //$("input[type='checkbox']").attr('checked', 'checked');
+        } else {
+			$.each($("input[type='checkbox'][name='priv[" + name + "][]']"),function(i,rs){
+				if($(this).attr('disabled') != 'disabled'){
+					$(this).attr('checked', 'checked');
+				}
+			});
+            //$("input[type='checkbox'][name='priv[" + name + "][]']").attr('checked', 'checked');
+        }
+    } else {
+        if (name == 0) {
+            $("input[type='checkbox']").attr('checked', null);
+        } else {
+            $("input[type='checkbox'][name='priv[" + name + "][]']").attr('checked', null);
+        }
+    }
 }
 </script>
 </body>
