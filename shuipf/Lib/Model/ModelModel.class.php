@@ -107,6 +107,8 @@ class ModelModel extends CommonModel {
         //数据验证
         $data = $this->create($data, 1);
         if ($data) {
+            //强制表名为小写
+            $data['tablename'] = strtolower($data['tablename']);
             //添加模型记录
             $modelid = $this->add($data);
             if ($modelid) {
@@ -152,6 +154,8 @@ class ModelModel extends CommonModel {
         //数据验证
         $data = $this->create($data, 2);
         if ($data) {
+            //强制表名为小写
+            $data['tablename'] = strtolower($data['tablename']);
             //是否更改表名
             if ($info['tablename'] != $data['tablename'] && !empty($data['tablename'])) {
                 //检查新表名是否存在
