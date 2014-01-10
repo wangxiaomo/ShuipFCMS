@@ -244,8 +244,6 @@ class AddonsModel extends CommonModel {
             foreach ($match[1] as $index => $version) {
                 //比较模块版本，仅处理小于或等于当前版本
                 if ($version && version_compare($version, $info['version'], '>=')) {
-                    //记录最后一个更新的版本号
-                    $upgradeVersion = $version;
                     $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
                     if (!empty($sql) && is_array($sql)) {
                         foreach ($sql as $sql_split) {
@@ -276,7 +274,7 @@ class AddonsModel extends CommonModel {
         $info = $obj->info;
         //更新版本号
         if ($info['version']) {
-            $this->where(array('name' => $addonName))->save(array('version' => $upgradeVersion));
+            $this->where(array('name' => $addonName))->save(array('version' => $info['version']));
         }
         return true;
     }
