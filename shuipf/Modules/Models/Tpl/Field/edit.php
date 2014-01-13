@@ -92,9 +92,9 @@
       </tr>
       <tr>
         <th><strong>值唯一</strong></th>
-        <td><input type="radio" name="isunique" value="1" id="field_allow_isunique1" <if condition="$data['isunique'] eq '1'"> checked</if> disabled>
+        <td><input type="radio" name="isunique" value="1" id="field_allow_isunique1" <if condition="$data['isunique'] eq '1'"> checked</if> >
           是
-          <input type="radio" name="isunique" value="0" id="field_allow_isunique0" <if condition="$data['isunique'] eq '0'"> checked</if> disabled>
+          <input type="radio" name="isunique" value="0" id="field_allow_isunique0" <if condition="$data['isunique'] eq '0'"> checked</if> >
           否</td>
       </tr>
       <tr>
@@ -107,9 +107,9 @@
       </tr>
       <tr>
         <th><strong>作为搜索条件</strong></th>
-        <td><input type="radio" name="issearch" value="1" id="field_allow_search1" <if condition="$data['issearch'] eq '1'"> checked</if> disabled>
+        <td><input type="radio" name="issearch" value="1" id="field_allow_search1" <if condition="$data['issearch'] eq '1'"> checked</if>>
           是
-          <input type="radio" name="issearch" value="0" id="field_allow_search0" <if condition="$data['issearch'] eq '0'"> checked</if> disabled>
+          <input type="radio" name="issearch" value="0" id="field_allow_search0" <if condition="$data['issearch'] eq '0'"> checked</if>>
           否</td>
       </tr>
       <tr>
@@ -121,9 +121,9 @@
       </tr>
       <tr>
         <th><strong>作为全站搜索信息</strong></th>
-        <td><input type="radio" name="isfulltext" value="1" id="field_allow_fulltext1" <if condition="$data['isfulltext'] eq '1'"> checked</if>  disabled/>
+        <td><input type="radio" name="isfulltext" value="1" id="field_allow_fulltext1" <if condition="$data['isfulltext'] eq '1'"> checked</if> />
           是
-          <input type="radio" name="isfulltext" value="0" id="field_allow_fulltext0" <if condition="$data['isfulltext'] eq '0'"> checked</if> disabled/>
+          <input type="radio" name="isfulltext" value="0" id="field_allow_fulltext0" <if condition="$data['isfulltext'] eq '0'"> checked</if>/>
           否</td>
       </tr>
       <tr> 
@@ -200,6 +200,11 @@ function field_setting(fieldtype) {
 
     });
 }
+
+$(function(){
+	//初始化
+	field_setting("{$data['formtype']}");
+});
 </script>
 </body>
 </html>
