@@ -10,6 +10,14 @@
 function omnipotent($field, $value, $fieldinfo) {
     $view = Think::instance('View');
     $setting = unserialize($fieldinfo['setting']);
+    //特殊处理
+    if (in_array($setting['fieldtype'], array('text', 'mediumtext', 'longtext'))) {
+        $_value = unserialize($value);
+        if ($value && $_value) {
+            $value = $_value;
+            $this->data[$field] = $value;
+        }
+    }
     $formtext = str_replace('{FIELD_VALUE}', $value, $setting["formtext"]);
     $formtext = str_replace('{MODELID}', $this->modelid, $formtext);
     $formtext = str_replace('{ID}', $this->id ? $this->id : 0, $formtext);

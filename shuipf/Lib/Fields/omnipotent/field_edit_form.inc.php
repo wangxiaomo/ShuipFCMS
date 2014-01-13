@@ -1,8 +1,13 @@
 <table cellpadding="2" cellspacing="1" width="98%">
     <tr> 
-        <td width="100">表单</td>
-        <td><textarea name="setting[formtext]" rows="2" cols="20" id="options" style="height:100px;width:400px;"><?php echo htmlspecialchars($setting['formtext']); ?></textarea><BR>
-            例如：&lt;input type='text' name='info[voteid]' id='voteid' value='{FIELD_VALUE}' style='50' &gt;</td>
+        <td width="50">表单</td>
+        <td><textarea name="setting[formtext]" rows="2" cols="20" id="options" style="height:100px;width:99%;"><?php echo htmlspecialchars($setting['formtext']); ?></textarea>
+            <br/>例如：&lt;input type='text' name='info[<font style="color: #F00">当前字段名</font>]' id='voteid' value='<font style="color: #F00">{FIELD_VALUE}</font>' style='50' &gt;
+            <br/><font style="color: #F00">{FIELD_VALUE}</font> 当前万能字段的值，<font style="color: #F00">{MODELID}</font> 当前模型ID，<font style="color: #F00">{ID}</font>当前信息ID，添加时为0。
+            <br/>除了以上特定标签外，可以直接使用 “<font style="color: #F00"><b>$</b>字段名</font>”的方式，获取其他字段的值。
+            <br/>在“表单”里可以直接使用<font style="color: #F00">php语法</font>或者<font style="color: #F00">模板标签</font>。
+            <br/>提示：在这里，你可以把表单需要的任何效果，做成HTML+JS甚至是配合php来实现~
+        </td>
     </tr>
     <tr> 
         <td>字段类型</td>
