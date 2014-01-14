@@ -99,7 +99,7 @@ class TagLibShuipf extends TagLib {
         } else {
             $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" ' . $target . '>".$_pre_r["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
         }
-        $parsestr .= ' ?> ';
+        $parsestr .= ' ?>';
         $_preParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
     }
@@ -144,7 +144,7 @@ class TagLibShuipf extends TagLib {
         } else {
             $parsestr .= ' echo $_pre_n?"<a class=\"pre_a\" href=\"".$_pre_n["url"]."\" ' . $target . '>".$_pre_n["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
         }
-        $parsestr .= ' ?> ';
+        $parsestr .= ' ?>';
         $_nextParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
     }
