@@ -161,7 +161,7 @@ function field_setting(fieldtype) {
         }
     });
 
-    $.getJSON(GV.DIMAUB + "index.php?g=Models&m=Field&a=public_field_setting&fieldtype=" + fieldtype, function (data) {
+    $.getJSON("{:U('Models/Field/public_field_setting')}",{fieldtype:fieldtype}, function (data) {
         if (data.field_basic_table == '1') {
             $('#field_basic_table0').attr("disabled", false);
             $('#field_basic_table1').attr("disabled", false);
@@ -200,10 +200,60 @@ function field_setting(fieldtype) {
 
     });
 }
+//字段相关初始化
+function init_field_setting(fieldtype) {
+    $('#formattribute').css('display', 'none');
+    $('#css').css('display', 'none');
+    if (fieldtype == "") {
+        return false;
+    }
+    $.each(['text', 'textarea', 'box', 'number', 'keyword', 'typeid'], function (i, n) {
+        if (fieldtype == n) {
+            $('#formattribute').css('display', '');
+            $('#css').css('display', '');
+        }
+    });
+
+    $.getJSON("{:U('Models/Field/public_field_setting')}",{fieldtype:fieldtype}, function (data) {
+        if (data.field_basic_table == '1') {
+            $('#field_basic_table0').attr("disabled", false);
+            $('#field_basic_table1').attr("disabled", false);
+        } else {
+            $('#field_basic_table0').attr("checked", true);
+            $('#field_basic_table0').attr("disabled", true);
+            $('#field_basic_table1').attr("disabled", true);
+        }
+        if (data.field_allow_search == '1') {
+            $('#field_allow_search0').attr("disabled", false);
+            $('#field_allow_search1').attr("disabled", false);
+        } else {
+            $('#field_allow_search0').attr("checked", true);
+            $('#field_allow_search0').attr("disabled", true);
+            $('#field_allow_search1').attr("disabled", true);
+        }
+        if (data.field_allow_fulltext == '1') {
+            $('#field_allow_fulltext0').attr("disabled", false);
+            $('#field_allow_fulltext1').attr("disabled", false);
+        } else {
+            $('#field_allow_fulltext0').attr("checked", true);
+            $('#field_allow_fulltext0').attr("disabled", true);
+            $('#field_allow_fulltext1').attr("disabled", true);
+        }
+        if (data.field_allow_isunique == '1') {
+            $('#field_allow_isunique0').attr("disabled", false);
+            $('#field_allow_isunique1').attr("disabled", false);
+        } else {
+            $('#field_allow_isunique0').attr("checked", true);
+            $('#field_allow_isunique0').attr("disabled", true);
+            $('#field_allow_isunique1').attr("disabled", true);
+        }
+
+    });
+}
 
 $(function(){
 	//初始化
-	field_setting("{$data['formtype']}");
+	init_field_setting("{$data['formtype']}");
 });
 </script>
 </body>

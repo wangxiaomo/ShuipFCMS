@@ -166,7 +166,7 @@ function field_setting(fieldtype) {
         }
     });
 
-    $.getJSON(GV.DIMAUB + "index.php?g=Models&m=Field&a=public_field_setting&fieldtype=" + fieldtype, function (data) {
+    $.getJSON("{:U('Models/Field/public_field_setting')}",{fieldtype:fieldtype}, function (data) {
         if (data.field_basic_table == '1') {
             $('#field_basic_table0').attr("disabled", false);
             $('#field_basic_table1').attr("disabled", false);
