@@ -972,10 +972,20 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
     if (!$width || !$height) {
         return $smallpic;
     }
-    // 解析URL
+    // 解析URLsitefileurl
     $imgParse = parse_url($imgurl);
     //图片路径
-    $imgPath = SITE_PATH . $imgParse['path'];
+    $imgPath = $_SERVER['DOCUMENT_ROOT'] . $imgParse['path'];
+    //取得文件名
+    $basename = basename($imgurl);
+    //取得文件存放目录
+    $imgPathDir = str_replace($basename, '', $imgPath);
+    //生成的缩略图文件名
+    $newFileName = "thumb_{$width}_{$height}_" . $basename;
+    //检查生成的缩略图是否已经生成过
+    if (file_exists($imgPathDir . $newFileName)) {
+        return str_replace($basename, $newFileName, $imgurl);
+    }
     //检查文件是否存在，如果是开启远程附件的，估计就通过不了，以后在考虑完善！
     if (!file_exists($imgPath)) {
         return $imgurl;
@@ -985,16 +995,6 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
     //判断生成的缩略图大小是否正常
     if ($width >= $width_t || $height >= $height_t) {
         return $imgurl;
-    }
-    //取得文件名
-    $basename = basename($imgPath);
-    //取得文件存放目录
-    $imgPathDir = str_replace($basename, '', $imgPath);
-    //生成的缩略图文件名
-    $newFileName = "thumb_{$width}_{$height}_" . $basename;
-    //检查生成的缩略图是否已经生成过
-    if (file_exists($imgPathDir . $newFileName)) {
-        return str_replace($basename, $newFileName, $imgurl);
     }
     //生成缩略图
     import('Image');
