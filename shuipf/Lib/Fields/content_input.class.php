@@ -178,14 +178,11 @@ class content_input {
                 }
             }
 
+            //除去已经处理过的字段
+            unset($data[$field]);
             //当没有返回时，或者为 null 时，等于空字符串，null有时会出现mysql 语法错误。
             if (is_null($value)) {
-                $value = '';
-            }
-            try {
-                unset($data[$field]);
-            } catch (Exception $exc) {
-                
+                continue;
             }
             //把系统字段和模型字段分开
             if ($issystem) {
@@ -206,6 +203,10 @@ class content_input {
         //如果$data还有存在模型字段以外的值，进行合并
         if (!empty($data)) {
             $this->infoData = array_merge($data, $this->infoData);
+        }
+        //如果副表没有字段，加个关联ID字段。不然不会在副表插入一条记录
+        if (!isset($this->infoData[$this->ContentModel->getRelationName()])) {
+            $this->infoData[$this->ContentModel->getRelationName()] = array('id' => 0);
         }
         return $this->infoData;
     }
