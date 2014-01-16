@@ -972,6 +972,13 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
     if (!$width || !$height) {
         return $smallpic;
     }
+    //当获取不到DOCUMENT_ROOT值时的操作！
+    if (empty($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['SCRIPT_FILENAME'])) {
+        $_SERVER['DOCUMENT_ROOT'] = str_replace('\\', '/', substr($_SERVER['SCRIPT_FILENAME'], 0, 0 - strlen($_SERVER['PHP_SELF'])));
+    }
+    if (empty($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['PATH_TRANSLATED'])) {
+        $_SERVER['DOCUMENT_ROOT'] = str_replace('\\', '/', substr(str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED']), 0, 0 - strlen($_SERVER['PHP_SELF'])));
+    }
     // 解析URLsitefileurl
     $imgParse = parse_url($imgurl);
     //图片路径
