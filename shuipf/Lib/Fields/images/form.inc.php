@@ -41,7 +41,7 @@ function images($field, $value, $fieldinfo) {
     //模块
     $module = ( in_array(GROUP_NAME, array("Contents", "contents")) ) ? 'Contents' : GROUP_NAME;
     //生成上传附件验证
-    $authkey = upload_key("{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']}");
-    $string .= $str . "<a herf='javascript:void(0);' onclick=\"javascript:flashupload('{$field}_images', '图片上传','{$field}',change_images,'{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']}','{$module}','$this->catid','{$authkey}')\" class=\"btn\"><span class=\"add\"></span>选择图片 </a>";
+    $authkey = upload_key("{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']},,,{$setting['watermark']}");
+    $string .= $str . "<a herf='javascript:void(0);' onclick=\"javascript:flashupload('{$field}_images', '图片上传','{$field}',change_images,'{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']},,,{$setting['watermark']}','{$module}','$this->catid','{$authkey}')\" class=\"btn\"><span class=\"add\"></span>选择图片 </a>";
     return $string;
 }
