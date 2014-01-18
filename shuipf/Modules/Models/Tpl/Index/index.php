@@ -29,7 +29,11 @@
         <else />
         <a href="{:U("Index/disabled",array("modelid"=>$vo['modelid'],"disabled"=>1))}"><font color="#FF0000">启用</font></a> | 
         </if>
-        <a class="J_ajax_del" href="{:U('Index/delete',array('modelid'=>$vo['modelid']) ) }">删除</a> </td>
+        <a class="J_ajax_del" href="{:U('Index/delete',array('modelid'=>$vo['modelid']) ) }">删除</a> 
+        <if condition=" isCompetence('Models/Index/export') ">
+         | <a href="{:U("Index/export",array("modelid"=>$vo['modelid'],))}">导出模型</a>
+        </if>
+        </td>
       </tr>
     </volist>
     </tbody>

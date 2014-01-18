@@ -12,6 +12,7 @@ class IndexAction extends AdminbaseAction {
     function _initialize() {
         parent::_initialize();
         $this->Model = D("Model");
+        load("@.adminfun");
     }
 
     //显示模型列表
@@ -103,6 +104,52 @@ class IndexAction extends AdminbaseAction {
         }
     }
 
-}
+    //模型导入
+    public function import() {
+        if (IS_POST) {
+            if (empty($_FILES['file'])) {
+                $this->error("请选择上传文件！");
+            }
+            $filename = $_FILES['file']['tmp_name'];
+            if (strtolower(substr($_FILES['file']['name'], -3, 3)) != 'txt') {
+                $this->error("上传的文件格式有误！");
+            }
+            //读取文件
+            $data = file_get_contents($filename);
+            //删除
+            @unlink($filename);
+            //模型名称
+            $name = I('post.name', NULL, 'trim');
+            //模型表键名
+            $tablename = I('post.tablename', NULL, 'trim');
+            //导入
+            $status = $this->Model->import($data, $tablename, $name);
+            if ($status) {
+                $this->success("模型导入成功，请及时更新缓存！");
+            } else {
+                $this->error($this->Model->getError() ? $this->Model->getError() : '模型导入失败！');
+            }
+        } else {
+            $this->display();
+        }
+    }
 
-?>
+    //模型导出
+    public function export() {
+        //需要导出的模型ID
+        $modelid = I('get.modelid', 0, 'intval');
+        if (empty($modelid)) {
+            $this->error('请指定需要导出的模型！');
+        }
+        //导出模型
+        $status = $this->Model->export($modelid);
+        if ($status) {
+            header("Content-type: application/octet-stream");
+            header("Content-Disposition: attachment; filename=spf_model_" . $modelid . '.txt');
+            echo $status;
+        } else {
+            $this->error($this->Model->getError() ? $this->Model->getError() : '模型导出失败！');
+        }
+    }
+
+}

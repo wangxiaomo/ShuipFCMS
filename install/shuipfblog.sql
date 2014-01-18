@@ -576,6 +576,7 @@ INSERT INTO `shuipfcms_menu` VALUES ('243', '242', 'Template', 'Customlist', 'ad
 INSERT INTO `shuipfcms_menu` VALUES ('244', '242', 'Template', 'Customlist', 'delete', '', '1', '0', '删除列表', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('245', '242', 'Template', 'Customlist', 'edit', '', '1', '0', '编辑列表', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('246', '242', 'Template', 'Customlist', 'generate', '', '1', '0', '生成列表', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('247', '58', 'Models', 'Index', 'import', '', '1', '1', '模型导入', '', '0');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_model`

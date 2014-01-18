@@ -260,6 +260,86 @@ class ModelModel extends CommonModel {
         return true;
     }
 
+    /**
+     * 模型导入
+     * @param type $data 数据
+     * @param type $tablename 导入的模型表名
+     * @param type $name 模型名称
+     * @return int|boolean
+     */
+    public function import($data, $tablename = '', $name = '') {
+        if (empty($data)) {
+            $this->error = '没有导入数据！';
+            return false;
+        }
+        //解析
+        $data = json_decode(base64_decode($data), true);
+        if (empty($data)) {
+            $this->error = '解析数据失败，无法进行导入！';
+            return false;
+        }
+        //取得模型数据
+        $model = $data['model'];
+        if (empty($model)) {
+            $this->error = '解析数据失败，无法进行导入！';
+            return false;
+        }
+        C('TOKEN_ON', false);
+        if ($name) {
+            $model['name'] = $name;
+        }
+        if ($tablename) {
+            $model['tablename'] = $tablename;
+        }
+        //导入
+        $modelid = $this->addModel($model);
+        if ($modelid) {
+            $ModelField = M('ModelField');
+            if (!empty($data['field'])) {
+                foreach ($data['field'] as $value) {
+                    $value['modelid'] = $modelid;
+                    $ModelField->add($value);
+                }
+            }
+            return $modelid;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 模型导出
+     * @param type $modelid 模型ID
+     * @return boolean
+     */
+    public function export($modelid) {
+        if (empty($modelid)) {
+            $this->error = '请指定需要导出的模型！';
+            return false;
+        }
+        //取得模型信息
+        $info = $this->where(array('modelid' => $modelid, 'type' => 0))->find();
+        if (empty($info)) {
+            $this->error = '该模型不存在，无法导出！';
+            return false;
+        }
+        unset($info['modelid']);
+        //数据
+        $data = array();
+        $data['model'] = $info;
+        //取得对应模型字段
+        $fieldList = M('ModelField')->where(array('modelid' => $modelid))->select();
+        if (empty($fieldList)) {
+            $fieldList = array();
+        }
+        //去除fieldid，modelid字段内容
+        foreach ($fieldList as $k => $v) {
+            unset($fieldList[$k]['fieldid'], $fieldList[$k]['modelid']);
+        }
+        $data['field'] = $fieldList;
+        return base64_encode(json_encode($data));
+    }
+
     //兼容方法...
     public function delete_model($modelid) {
         return $this->deleteModel($modelid);
