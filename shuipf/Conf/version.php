@@ -6,6 +6,6 @@
  */
 return array(
     "SHUIPF_APPNAME" => "ShuipFCMS_UTF8_Free", //产品名称
-    "SHUIPF_BUILD" => 20140117, //产品流水号
-    "SHUIPF_VERSION" => "1.4.1", //产品版本号
+    "SHUIPF_BUILD" => 20140118, //产品流水号
+    "SHUIPF_VERSION" => "1.4.2", //产品版本号
 );

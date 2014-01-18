@@ -8,16 +8,12 @@ class TagLibShuipf extends TagLib {
 
     // 数据库where表达式
     protected $comparisonShuipfcms = array(
-        '{notlike}' => 'NOT LIKE',
-        '{notin}' => 'NOT IN',
-        '{like}' => 'LIKE',
         '{eq}' => '=',
         '{neq}' => '<>',
         '{elt}' => '<=',
         '{egt}' => '>=',
         '{gt}' => '>',
         '{lt}' => '<',
-        '{in}' => 'IN',
     );
 
     /**
@@ -797,7 +793,7 @@ class TagLibShuipf extends TagLib {
         if ($page) {
             if ($table) {
                 $parseStr .= ' $cache = ' . $cache . ';';
-                $parseStr .= ' $cacheID = to_guid_string(array($_sql,' . $page . '));';
+                $parseStr .= ' $cacheID = to_guid_string(array('.self::arr_to_html($tableWhere).',' . $page . '));';
                 //缓存处理
                 $parseStr .= ' if($cache && $_return = S($cacheID)){ ';
                 $parseStr .= ' $count = $_return["count"];';
@@ -880,7 +876,7 @@ class TagLibShuipf extends TagLib {
             $parseStr .= ' } ';
         } else {
             $parseStr .= ' $cache = ' . $cache . ';';
-            $parseStr .= ' $cacheID = to_guid_string($_sql);';
+            $parseStr .= ' $cacheID = to_guid_string('.self::arr_to_html($tableWhere).');';
             $parseStr .= ' if(' . $cache . ' && $_return = S( $cacheID ) ){ ';
             $parseStr .= '      $' . $return . '=$_return;';
             $parseStr .= ' }else{ ';
