@@ -408,51 +408,51 @@ function initupload($module, $catid, $args, $userid, $groupid = 8, $isadmin = fa
     $flash_url = CONFIG_SITEURL_MODEL . 'statics/js/swfupload/swfupload.swf';
 
     $init = 'var swfu_' . $module . ' = \'\';
-	$(document).ready(function(){
-		Wind.use("swfupload",GV.DIMAUB+"statics/js/swfupload/handlers.js",function(){
-		      swfu_' . $module . ' = new SWFUpload({
-			flash_url:"' . $flash_url . '?"+Math.random(),
-			upload_url:"' . $upload_url . '",
-			file_post_name : "Filedata",
-			post_params:{
-                                    "sessid":"' . $sess_id . '",
-                                    "module":"' . $module . '",
-                                    "catid":"' . $catid . '",
-                                    "uid":"' . $userid . '",
-                                    "isadmin":"' . $isadmin . '",
-                                    "groupid":"' . $groupid . '",
-                                    "thumb_width":"' . intval($args[3]) . '",
-                                    "thumb_height":"' . intval($args[4]) . '",
-                                    "filetype_post":"' . $args[1] . '",
-                                    "swf_auth_key":"' . $swf_auth_key . '"
-			},
-			file_size_limit:"' . $file_size_limit . 'KB",
-			file_types:"' . $upload_allowext . '",
-			file_types_description:"All Files",
-			file_upload_limit:"' . $file_upload_limit . '",
-			custom_settings : {progressTarget : "fsUploadProgress",cancelButtonId : "btnCancel"},
-	 
-			button_image_url: "",
-			button_width: 75,
-			button_height: 28,
-			button_placeholder_id: "buttonPlaceHolder",
-			button_text_style: "",
-			button_text_top_padding: 3,
-			button_text_left_padding: 12,
-			button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
-			button_cursor: SWFUpload.CURSOR.HAND,
-
-			file_dialog_start_handler : fileDialogStart,
-			file_queued_handler : fileQueued,
-			file_queue_error_handler:fileQueueError,
-			file_dialog_complete_handler:fileDialogComplete,
-			upload_progress_handler:uploadProgress,
-			upload_error_handler:uploadError,
-			upload_success_handler:uploadSuccess,
-			upload_complete_handler:uploadComplete
-		      });
-		});
-	})';
+    $(document).ready(function(){
+        Wind.use("swfupload",GV.DIMAUB+"statics/js/swfupload/handlers.js",function(){
+            swfu_' . $module . ' = new SWFUpload({
+                flash_url:"' . $flash_url . '?"+Math.random(),
+                upload_url:"' . $upload_url . '",
+                file_post_name : "Filedata",
+                post_params:{
+                    "sessid":"' . $sess_id . '",
+                    "module":"' . $module . '",
+                    "catid":"' . $catid . '",
+                    "uid":"' . $userid . '",
+                    "isadmin":"' . $isadmin . '",
+                    "groupid":"' . $groupid . '",
+                    "watermark_enable":"' . intval($args[5]) . '",
+                    "thumb_width":"' . intval($args[3]) . '",
+                    "thumb_height":"' . intval($args[4]) . '",
+                    "filetype_post":"' . $args[1] . '",
+                    "swf_auth_key":"' . $swf_auth_key . '"
+                  },
+               file_size_limit:"' . $file_size_limit . 'KB",
+               file_types:"' . $upload_allowext . '",
+               file_types_description:"All Files",
+               file_upload_limit:"' . $file_upload_limit . '",
+               custom_settings : {progressTarget : "fsUploadProgress",cancelButtonId : "btnCancel"},
+               button_image_url: "",
+               button_width: 75,
+               button_height: 28,
+               button_placeholder_id: "buttonPlaceHolder",
+               button_text_style: "",
+               button_text_top_padding: 3,
+               button_text_left_padding: 12,
+               button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+               button_cursor: SWFUpload.CURSOR.HAND,
+               file_dialog_start_handler : fileDialogStart,
+               file_queued_handler : fileQueued,
+               file_queue_error_handler:fileQueueError,
+               file_dialog_complete_handler:fileDialogComplete,
+               upload_progress_handler:uploadProgress,
+               upload_error_handler:uploadError,
+               upload_success_handler:uploadSuccess,
+               upload_complete_handler:uploadComplete
+        });
+    });
+})
+';
     return $init;
 }
 
