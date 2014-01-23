@@ -492,10 +492,6 @@ class Content {
         //删除附件
         $Attachment = service("Attachment");
         $Attachment->api_delete('c-' . $this->catid . '-' . $id);
-        //删除对应的会员投稿记录信息
-        if (isModuleInstall('Member')) {
-            M("MemberContent")->where(array("content_id" => $id, "catid" => $catid))->delete();
-        }
         //删除全站搜索数据
         $this->search_api($id, $data, "delete");
         //删除推荐位的信息
