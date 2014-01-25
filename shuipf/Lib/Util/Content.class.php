@@ -610,8 +610,6 @@ class Content {
                         }
                     }
                 }
-                //生成该篇地址
-                $urls = $this->url->show($r);
                 //生成内容页
                 if ($content_ishtml && !$r['islink'] && $status == 99) {
                     import('Html');
@@ -620,13 +618,28 @@ class Content {
                     //生成上下篇
                     $this->related_content($catid, $id);
                 }
-                //如果是取消审核，则删除生成静态的文件
-                if ($content_ishtml && $status == 1) {
+                //如果是取消审核
+                if ($content_ishtml && $status != 99) {
+                    //则删除生成静态的文件
                     $this->deleteHtml($catid, $id, $r['inputtime'], $r['prefix'], $r);
                     //删除全站搜索数据
                     $this->search_api($id, $r, "delete");
+                    //删除tags
+                    D("Tags")->deleteAll($r['id'], $r['catid'], $this->modelid);
                 } elseif ($status == 99) {
+                    //更新全站搜索数据
                     $this->search_api($id, $r);
+                    //更新tags
+                    if (strpos($r['tags'], ',') === false) {
+                        $tags = explode(' ', $r['tags']);
+                    } else {
+                        $tags = explode(',', $r['tags']);
+                    }
+                    $tags = array_unique($tags);
+                    D("Tags")->updata($tags, $r['id'], $r['catid'], $this->modelid, array(
+                        "url" => $r['url'],
+                        "title" => $r['title'],
+                    ));
                 }
             }
         }

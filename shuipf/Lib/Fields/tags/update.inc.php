@@ -1,20 +1,20 @@
 <?php
 
 /**
- * TAGS整理，增加到TAG表
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
-
-/**
  * Tags处理回调
  * @param type $field 字段名
  * @param type $value 字段值
  */
 function tags($field, $value) {
     if (!empty($value)) {
-        $db = M("Tags");
-        $time = time();
+        //添加时如果是未审核，直接不处理
+        if (ACTION_NAME == 'add' && $this->data['status'] != 99) {
+            return false;
+        } else if (ACTION_NAME == 'edit' && $this->data['status'] != 99) {
+            //如果是编辑状态，且未审核，直接清除已有的tags
+            D("Tags")->deleteAll($this->data['id'], $this->data['catid'], $this->modelid);
+            return false;
+        }
         if (strpos($value, ',') === false) {
             $keyword = explode(' ', $value);
         } else {
