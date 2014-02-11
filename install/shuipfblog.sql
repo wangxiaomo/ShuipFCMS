@@ -304,64 +304,63 @@ CREATE TABLE `shuipfcms_comments_setting` (
 INSERT INTO `shuipfcms_comments_setting` VALUES ('1', '0', '0', '1', '1', 'date DESC', '400', '1', '60');
 
 -- ----------------------------
--- Table structure for `shuipfcms_config`
+-- Table structure for shuipfcms_config
 -- ----------------------------
 DROP TABLE IF EXISTS `shuipfcms_config`;
 CREATE TABLE `shuipfcms_config` (
-  `id` smallint(8) unsigned NOT NULL auto_increment,
-  `varname` varchar(20) NOT NULL default '',
-  `info` varchar(100) NOT NULL default '',
-  `groupid` tinyint(3) unsigned NOT NULL default '1',
+  `id` smallint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `varname` varchar(20) NOT NULL DEFAULT '',
+  `info` varchar(100) NOT NULL DEFAULT '',
+  `groupid` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `value` text NOT NULL,
-  `type` tinyint(1) unsigned NOT NULL default '1',
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `varname` (`varname`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shuipfcms_config
 -- ----------------------------
-INSERT INTO `shuipfcms_config` VALUES ('1', 'sitename', '网站名称', '2', 'ShuipFCMS内容管理系统', '2');
-INSERT INTO `shuipfcms_config` VALUES ('2', 'siteurl', '网站网址', '2', '/', '2');
-INSERT INTO `shuipfcms_config` VALUES ('3', 'sitefileurl', '附件地址', '2', '/d/file/', '2');
-INSERT INTO `shuipfcms_config` VALUES ('4', 'siteemail', '站点邮箱', '2', 'admin@abc3210.com', '2');
-INSERT INTO `shuipfcms_config` VALUES ('6', 'siteinfo', '网站介绍', '2', 'ShuipFCMS网站管理系统,是一款完全开源免费的PHP+MYSQL系统.核心采用了Thinkphp框架等众多开源软件,同时核心功能也作为开源软件发布', '2');
-INSERT INTO `shuipfcms_config` VALUES ('7', 'sitekeywords', '网站关键字', '2', '', '2');
-INSERT INTO `shuipfcms_config` VALUES ('8', 'uploadmaxsize', '允许上传附件大小', '2', '20240', '1');
-INSERT INTO `shuipfcms_config` VALUES ('9', 'uploadallowext', '允许上传附件类型', '2', 'jpg|jpeg|gif|bmp|png|doc|docx|xls|xlsx|ppt|pptx|pdf|txt|rar|zip|swf', '1');
-INSERT INTO `shuipfcms_config` VALUES ('10', 'qtuploadmaxsize', '前台允许上传附件大小', '2', '200', '1');
-INSERT INTO `shuipfcms_config` VALUES ('11', 'qtuploadallowext', '前台允许上传附件类型', '2', 'jpg|jpeg|gif', '1');
-INSERT INTO `shuipfcms_config` VALUES ('12', 'watermarkenable', '是否开启图片水印', '2', '1', '1');
-INSERT INTO `shuipfcms_config` VALUES ('13', 'watermarkminwidth', '水印-宽', '2', '300', '1');
-INSERT INTO `shuipfcms_config` VALUES ('14', 'watermarkminheight', '水印-高', '2', '100', '1');
-INSERT INTO `shuipfcms_config` VALUES ('15', 'watermarkimg', '水印图片', '2', '/statics/images/mark_bai.png', '1');
-INSERT INTO `shuipfcms_config` VALUES ('16', 'watermarkpct', '水印透明度', '2', '80', '1');
-INSERT INTO `shuipfcms_config` VALUES ('17', 'watermarkquality', 'JPEG 水印质量', '2', '85', '1');
-INSERT INTO `shuipfcms_config` VALUES ('18', 'watermarkpos', '水印位置', '2', '7', '1');
-INSERT INTO `shuipfcms_config` VALUES ('19', 'indextp', '首页模板', '2', 'index.php', '2');
-INSERT INTO `shuipfcms_config` VALUES ('20', 'theme', '主题风格', '2', 'Default', '2');
-INSERT INTO `shuipfcms_config` VALUES ('21', 'generate', '是否生成首页', '2', '1', '2');
-INSERT INTO `shuipfcms_config` VALUES ('22', 'tagurl', 'TagURL规则', '2', '8', '1');
-INSERT INTO `shuipfcms_config` VALUES ('23', 'ftpstatus', 'FTP上传', '2', '0', '2');
-INSERT INTO `shuipfcms_config` VALUES ('24', 'ftpuser', 'FTP用户名', '2', '', '2');
-INSERT INTO `shuipfcms_config` VALUES ('25', 'ftppassword', 'FTP密码', '2', '', '2');
-INSERT INTO `shuipfcms_config` VALUES ('26', 'ftphost', 'FTP服务器地址', '2', '', '2');
-INSERT INTO `shuipfcms_config` VALUES ('27', 'ftpport', 'FTP服务器端口', '2', '21', '2');
-INSERT INTO `shuipfcms_config` VALUES ('28', 'ftppasv', 'FTP是否开启被动模式', '2', '1', '2');
-INSERT INTO `shuipfcms_config` VALUES ('29', 'ftpssl', 'FTP是否使用SSL连接', '2', '0', '2');
-INSERT INTO `shuipfcms_config` VALUES ('30', 'ftptimeout', 'FTP超时时间', '2', '10', '2');
-INSERT INTO `shuipfcms_config` VALUES ('31', 'ftpuppat', 'FTP上传目录', '2', '/', '2');
-INSERT INTO `shuipfcms_config` VALUES ('32', 'mail_type', '邮件发送模式', '2', '1', '2');
-INSERT INTO `shuipfcms_config` VALUES ('33', 'mail_server', '邮件服务器', '2', 'smtp.qq.com', '2');
-INSERT INTO `shuipfcms_config` VALUES ('34', 'mail_port', '邮件发送端口', '2', '25', '2');
-INSERT INTO `shuipfcms_config` VALUES ('35', 'mail_from', '发件人地址', '2', 'admin@abc3210.com', '2');
-INSERT INTO `shuipfcms_config` VALUES ('36', 'mail_auth', 'AUTH LOGIN验证', '2', '1', '2');
-INSERT INTO `shuipfcms_config` VALUES ('37', 'mail_user', '邮箱用户名', '2', '', '2');
-INSERT INTO `shuipfcms_config` VALUES ('38', 'mail_password', '邮箱密码', '2', '', '2');
-INSERT INTO `shuipfcms_config` VALUES ('39', 'mail_fname', '发件人名称', '2', 'ShuipFCMS管理员', '2');
-INSERT INTO `shuipfcms_config` VALUES ('40', 'fileexclude', '远程下载过滤域名', '2', '', '2');
-INSERT INTO `shuipfcms_config` VALUES ('41', 'index_urlruleid', '首页URL规则', '2', '11', '2');
-INSERT INTO `shuipfcms_config` VALUES ('42', 'domainaccess', '指定域名访问', '2', '0', '2');
+INSERT INTO `shuipfcms_config` VALUES ('1', 'sitename', '网站名称', '1', 'ShuipFCMS内容管理系统');
+INSERT INTO `shuipfcms_config` VALUES ('2', 'siteurl', '网站网址', '1', '/');
+INSERT INTO `shuipfcms_config` VALUES ('3', 'sitefileurl', '附件地址', '1', '/d/file/');
+INSERT INTO `shuipfcms_config` VALUES ('4', 'siteemail', '站点邮箱', '1', 'admin@abc3210.com');
+INSERT INTO `shuipfcms_config` VALUES ('6', 'siteinfo', '网站介绍', '1', 'ShuipFCMS网站管理系统,是一款完全开源免费的PHP+MYSQL系统.核心采用了Thinkphp框架等众多开源软件,同时核心功能也作为开源软件发布');
+INSERT INTO `shuipfcms_config` VALUES ('7', 'sitekeywords', '网站关键字', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('8', 'uploadmaxsize', '允许上传附件大小', '1', '20240');
+INSERT INTO `shuipfcms_config` VALUES ('9', 'uploadallowext', '允许上传附件类型', '1', 'jpg|jpeg|gif|bmp|png|doc|docx|xls|xlsx|ppt|pptx|pdf|txt|rar|zip|swf');
+INSERT INTO `shuipfcms_config` VALUES ('10', 'qtuploadmaxsize', '前台允许上传附件大小', '1', '200');
+INSERT INTO `shuipfcms_config` VALUES ('11', 'qtuploadallowext', '前台允许上传附件类型', '1', 'jpg|jpeg|gif');
+INSERT INTO `shuipfcms_config` VALUES ('12', 'watermarkenable', '是否开启图片水印', '1', '1');
+INSERT INTO `shuipfcms_config` VALUES ('13', 'watermarkminwidth', '水印-宽', '1', '300');
+INSERT INTO `shuipfcms_config` VALUES ('14', 'watermarkminheight', '水印-高', '1', '100');
+INSERT INTO `shuipfcms_config` VALUES ('15', 'watermarkimg', '水印图片', '1', '/statics/images/mark_bai.png');
+INSERT INTO `shuipfcms_config` VALUES ('16', 'watermarkpct', '水印透明度', '1', '80');
+INSERT INTO `shuipfcms_config` VALUES ('17', 'watermarkquality', 'JPEG 水印质量', '1', '85');
+INSERT INTO `shuipfcms_config` VALUES ('18', 'watermarkpos', '水印位置', '1', '7');
+INSERT INTO `shuipfcms_config` VALUES ('19', 'indextp', '首页模板', '1', 'index.php');
+INSERT INTO `shuipfcms_config` VALUES ('20', 'theme', '主题风格', '1', 'Default');
+INSERT INTO `shuipfcms_config` VALUES ('21', 'generate', '是否生成首页', '1', '1');
+INSERT INTO `shuipfcms_config` VALUES ('22', 'tagurl', 'TagURL规则', '1', '8');
+INSERT INTO `shuipfcms_config` VALUES ('23', 'ftpstatus', 'FTP上传', '1', '0');
+INSERT INTO `shuipfcms_config` VALUES ('24', 'ftpuser', 'FTP用户名', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('25', 'ftppassword', 'FTP密码', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('26', 'ftphost', 'FTP服务器地址', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('27', 'ftpport', 'FTP服务器端口', '1', '21');
+INSERT INTO `shuipfcms_config` VALUES ('28', 'ftppasv', 'FTP是否开启被动模式', '1', '1');
+INSERT INTO `shuipfcms_config` VALUES ('29', 'ftpssl', 'FTP是否使用SSL连接', '1', '0');
+INSERT INTO `shuipfcms_config` VALUES ('30', 'ftptimeout', 'FTP超时时间', '1', '10');
+INSERT INTO `shuipfcms_config` VALUES ('31', 'ftpuppat', 'FTP上传目录', '1', '/');
+INSERT INTO `shuipfcms_config` VALUES ('32', 'mail_type', '邮件发送模式', '1', '1');
+INSERT INTO `shuipfcms_config` VALUES ('33', 'mail_server', '邮件服务器', '1', 'smtp.qq.com');
+INSERT INTO `shuipfcms_config` VALUES ('34', 'mail_port', '邮件发送端口', '1', '25');
+INSERT INTO `shuipfcms_config` VALUES ('35', 'mail_from', '发件人地址', '1', 'admin@abc3210.com');
+INSERT INTO `shuipfcms_config` VALUES ('36', 'mail_auth', 'AUTH LOGIN验证', '1', '1');
+INSERT INTO `shuipfcms_config` VALUES ('37', 'mail_user', '邮箱用户名', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('38', 'mail_password', '邮箱密码', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('39', 'mail_fname', '发件人名称', '1', 'ShuipFCMS管理员');
+INSERT INTO `shuipfcms_config` VALUES ('40', 'fileexclude', '远程下载过滤域名', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('41', 'index_urlruleid', '首页URL规则', '1', '11');
+INSERT INTO `shuipfcms_config` VALUES ('42', 'domainaccess', '指定域名访问', '1', '0');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_connect`
@@ -577,6 +576,7 @@ INSERT INTO `shuipfcms_menu` VALUES ('244', '242', 'Template', 'Customlist', 'de
 INSERT INTO `shuipfcms_menu` VALUES ('245', '242', 'Template', 'Customlist', 'edit', '', '1', '0', '编辑列表', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('246', '242', 'Template', 'Customlist', 'generate', '', '1', '0', '生成列表', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('247', '58', 'Models', 'Index', 'import', '', '1', '1', '模型导入', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('248', '10', 'Admin', 'Config', 'extend', '', '1', '1', '扩展配置', '', '0');
 
 -- ----------------------------
 -- Table structure for `shuipfcms_model`
@@ -1067,3 +1067,16 @@ CREATE TABLE `shuipfcms_customlist` (
   `createtime` int(10) NOT NULL COMMENT '添加时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='自定义列表';
+
+-- ----------------------------
+-- Table structure for shuipfcms_config_field
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_config_field`;
+CREATE TABLE `shuipfcms_config_field` (
+  `fid` smallint(6) NOT NULL AUTO_INCREMENT COMMENT '自增长id',
+  `fieldname` varchar(30) NOT NULL COMMENT '字段名',
+  `type` varchar(10) NOT NULL COMMENT '类型,input',
+  `setting` mediumtext NOT NULL COMMENT '其他',
+  `createtime` int(10) DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`fid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='网站配置，扩展字段列表';

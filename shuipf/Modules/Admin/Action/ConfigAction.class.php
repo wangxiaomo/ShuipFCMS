@@ -13,19 +13,16 @@ class ConfigAction extends AdminbaseAction {
         parent::_initialize();
         $this->Config = D("Config");
         import('Form');
-        $config = $this->Config->select();
-        foreach ($config as $key => $r) {
-            if ($r['groupid'] == 1)
-                $this->user_config[$r['varname']] = Input::forShow($r['value']);
-            if ($r['groupid'] == 2)
-                $this->site_config[$r['varname']] = Input::forShow($r['value']);
+        if (false == IS_POST) {
+            $config = $this->Config->select();
+            foreach ($config as $key => $r) {
+                $config[$r['varname']] = Input::forShow($r['value']);
+            }
+            $this->assign('Site', $config);
         }
-        $this->assign('Site', $this->site_config);
     }
 
-    /**
-     * 网站基本设置
-     */
+    //网站基本设置
     public function index() {
         if (IS_POST) {
             $this->dosite();
@@ -52,9 +49,7 @@ class ConfigAction extends AdminbaseAction {
         }
     }
 
-    /**
-     *  邮箱参数
-     */
+    //邮箱参数
     public function mail() {
         if (IS_POST) {
             $this->dosite();
@@ -63,21 +58,11 @@ class ConfigAction extends AdminbaseAction {
         }
     }
 
-    /**
-     *  附件参数
-     */
+    //附件参数
     public function attach() {
         if (IS_POST) {
             $this->dosite();
         } else {
-            $config = $this->Config->select();
-            foreach ($config as $key => $r) {
-                if ($r['groupid'] == 1)
-                    $this->user_config[$r['varname']] = Input::forShow($r['value']);
-                if ($r['groupid'] == 2)
-                    $this->site_config[$r['varname']] = Input::forShow($r['value']);
-            }
-            $this->assign('Site', $this->site_config);
             $this->display();
         }
     }
@@ -85,52 +70,15 @@ class ConfigAction extends AdminbaseAction {
     //高级配置
     public function addition() {
         if (IS_POST) {
-            //配置文件地址
-            $filename = SITE_PATH . '/shuipf/Conf/addition.php';
-            //检查文件是否可写
-            if (is_writable($filename) == false) {
-                $this->error("请检查[shuipf/Conf/addition.php]文件权限是否可写！");
+            if ($this->Config->addition($_POST)) {
+                $this->success("修改成功，即将更新缓存！", U("Admin/Index/public_cache", "type=site"));
+            } else {
+                $error = $this->Config->getError();
+                $this->error($error ? $error : "高级配置更新失败！");
             }
-            if (isset($_POST[C('TOKEN_NAME')])) {
-                unset($_POST[C('TOKEN_NAME')]);
-            }
-            //默认值
-            $_POST['DEFAULT_GROUP'] = $_POST['DEFAULT_GROUP'] ? $_POST['DEFAULT_GROUP'] : "Contents";
-            $_POST['TOKEN_ON'] = (int) $_POST['TOKEN_ON'] ? true : false;
-            $_POST['URL_MODEL'] = isset($_POST['URL_MODEL']) ? (int) $_POST['URL_MODEL'] : 0;
-            $_POST['DEFAULT_TIMEZONE'] = $_POST['DEFAULT_TIMEZONE'] ? $_POST['DEFAULT_TIMEZONE'] : "PRC";
-            $_POST['DATA_CACHE_TYPE'] = $_POST['DATA_CACHE_TYPE'] ? $_POST['DATA_CACHE_TYPE'] : "File";
-            $_POST['DEFAULT_LANG'] = $_POST['DEFAULT_LANG'] ? $_POST['DEFAULT_LANG'] : "zh-cn";
-            $_POST['DEFAULT_AJAX_RETURN'] = $_POST['DEFAULT_AJAX_RETURN'] ? $_POST['DEFAULT_AJAX_RETURN'] : "JSON";
-            $_POST['SESSION_OPTIONS'] = $_POST['SESSION_OPTIONS'] ? $_POST['SESSION_OPTIONS'] : array();
-            $_POST['URL_PATHINFO_DEPR'] = $_POST['URL_PATHINFO_DEPR'] ? $_POST['URL_PATHINFO_DEPR'] : "/";
-            //URL区分大小写设置
-            $_POST['URL_CASE_INSENSITIVE'] = (int) $_POST['URL_CASE_INSENSITIVE'] ? true : false;
-            //云平台开关
-            $_POST['CLOUD_ON'] = (int) $_POST['CLOUD_ON'] ? true : false;
-            //函数加载
-            $_POST['LOAD_EXT_FILE'] = trim($_POST['LOAD_EXT_FILE']);
-            //默认分页模板
-            $_POST['PAGE_TEMPLATE'] = str_replace("\n", "", trim($_POST['PAGE_TEMPLATE']));
-
-            //**********************检测一些设置，会导致网站瘫痪的**********************
-            //缓存类型检测
-            if ($_POST['DATA_CACHE_TYPE'] == 'Memcache') {
-                if (class_exists('Memcache') == false) {
-                    $this->error('您的环境不支持Memcache，无法开启！');
-                }
-            }
-            //***********************END************************************
-
-            file_exists($filename) or touch($filename);
-            $return = var_export($_POST, TRUE);
-            if ($return) {
-                file_put_contents($filename, "<?php \r\n return " . $return . ";");
-            }
-            $this->success("修改成功！", U("Admin/Index/public_cache", "type=site"));
         } else {
             $addition = include SITE_PATH . '/shuipf/Conf/addition.php';
-            if (!$addition) {
+            if (empty($addition) || !is_array($addition)) {
                 $addition = array();
             }
             $this->assign("addition", $addition);
@@ -138,17 +86,43 @@ class ConfigAction extends AdminbaseAction {
         }
     }
 
+    //扩展配置
+    public function extend() {
+        if (IS_POST) {
+            $action = I('post.action');
+            if ($action) {
+                //添加扩展项
+                if ($action == 'add') {
+                    $data = array(
+                        'fieldname' => trim(I('post.fieldname')),
+                        'type' => trim(I('post.type')),
+                        'setting' => I('post.setting'),
+                        C("TOKEN_NAME") => I('post.' . C("TOKEN_NAME")),
+                    );
+                    if ($this->Config->extendAdd($data) !== false) {
+                        $this->success('扩展配置项添加成功！', U('Config/extend'));
+                        return true;
+                    } else {
+                        $error = $this->Config->getError();
+                        $this->error($error ? $error : '添加失败！');
+                    }
+                }
+            } else {
+                //更新扩展项配置
+            }
+        } else {
+            $this->display();
+        }
+    }
+
     //更新配置
     protected function dosite() {
-        if (!$this->Config->autoCheckToken($_POST)) {
-            $this->error(L('_TOKEN_ERROR_'));
+        if ($this->Config->saveConfig($_POST)) {
+            $this->success("更新成功！");
+        } else {
+            $error = $this->Config->getError();
+            $this->error($error ? $error : "配置更新失败！");
         }
-        unset($_POST[C("TOKEN_NAME")]);
-        foreach ($_POST as $key => $value) {
-            $data["value"] = trim($value);
-            $this->Config->where(array("varname" => $key))->save($data);
-        }
-        $this->success("更新成功！");
     }
 
 }
