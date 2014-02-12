@@ -9,7 +9,8 @@ class ConfigAction extends AdminbaseAction {
 
     protected $site_config, $user_config, $Config;
 
-    function _initialize() {
+    //初始化
+    protected function _initialize() {
         parent::_initialize();
         $this->Config = D("Config");
         import('Form');
@@ -109,8 +110,30 @@ class ConfigAction extends AdminbaseAction {
                 }
             } else {
                 //更新扩展项配置
+                if ($this->Config->saveExtendConfig($_POST)) {
+                    $this->success("更新成功！");
+                } else {
+                    $error = $this->Config->getError();
+                    $this->error($error ? $error : "配置更新失败！");
+                }
             }
         } else {
+            $action = I('get.action');
+            $db = M('ConfigField');
+            if ($action) {
+                if ($action == 'delete') {
+                    $fid = I('get.fid', 0, 'intval');
+                    if ($this->Config->extendDel($fid)) {
+                        $this->success("扩展配置项删除成功！");
+                        return true;
+                    } else {
+                        $error = $this->Config->getError();
+                        $this->error($error ? $error : "扩展配置项删除失败！");
+                    }
+                }
+            }
+            $extendList = $db->order(array('fid' => 'DESC'))->select();
+            $this->assign('extendList', $extendList);
             $this->display();
         }
     }

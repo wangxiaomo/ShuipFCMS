@@ -31,7 +31,7 @@
           <td><input type="text" class="input length_4" name="setting[tips]" value=""></td>
         </tr>
         <tr>
-          <td>CSS样式:</td>
+          <td>样式:</td>
           <td><input type="text" class="input length_4" name="setting[style]" value=""></td>
         </tr>
         <tr class="setting_radio" style="display:none">
@@ -47,11 +47,32 @@
   <div class="table_full">
     <form method='post'   id="myform" class="J_ajaxForm"  action="{:U('Config/extend')}">
       <table width="100%"  class="table_form">
+        <volist name="extendList" id="vo">
+        <php>$setting = unserialize($vo['setting']);</php>
         <tr>
-          <th width="120">邮件发送模式</th>
-          <th class="y-bg"><input name="mail_type" checkbox="mail_type" value="1"  type="radio"  checked>
-            SMTP 函数发送 </th>
+          <th width="120">{$setting.title}</th>
+          <th class="y-bg">
+          <switch name="vo.type">
+             <case value="input">
+             <input type="text" class="input" style="{$setting.style}"  name="{$vo.fieldname}" value="{$Site[$vo['fieldname']]}">
+             </case>
+             <case value="textarea">
+             <textarea name="{$vo.fieldname}" style="{$setting.style}">{$Site[$vo['fieldname']]}</textarea>
+             </case>
+             <case value="radio">
+             <volist name="setting['option']" id="rs">
+             <input name="{$vo.fieldname}" value="{$rs.value}" type="radio"  <if condition=" $Site[$vo['fieldname']] == $rs['value'] ">checked</if>> {$rs.title}
+             </volist>
+             </case>
+             <case value="password">
+             <input type="password" class="input" style="{$setting.style}"  name="{$vo.fieldname}" value="{$Site[$vo['fieldname']]}">
+             </case>
+          </switch>
+           <span class="gray"> {$setting.tips}</span>
+           <br/><a href="{:U('Config/extend',array('fid'=>$vo['fid'],'action'=>'delete'))}" class="J_ajax_del">删除该项配置</a>
+          </th>
         </tr>
+        </volist>
       </table>
       <div class="btn_wrap">
         <div class="btn_wrap_pd">

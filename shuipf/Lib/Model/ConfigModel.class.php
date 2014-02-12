@@ -22,18 +22,49 @@ class ConfigModel extends CommonModel {
             $this->error = '名称不能为空！';
             return false;
         }
+        $data['fieldname'] = strtolower($data['fieldname']);
         $db = M('ConfigField');
         //验证规则
         $validate = array(
             array('fieldname', 'require', '键名不能为空！', 1, 'regex', 3),
+            array('fieldname', '', '该键名已经存在！', 0, 'unique', 1),
             array('type', 'require', '类型不能为空！', 1, 'regex', 3),
             array('fieldname', '/^[a-z_0-9]+$/i', '键名只支持英文、数字、下划线！', 0, 'regex', 3),
         );
         $data = $db->validate($validate)->create($data);
         if ($data) {
-            $data['setting'] = serialize($data['setting']);
+            //检查config表是否已经存在
+            if ($this->where(array('varname' => $data['fieldname']))->count()) {
+                $this->error = '该键名已经存在！';
+                return false;
+            }
+            $setting = $data['setting'];
+            if ($data['type'] == 'radio') {
+                $option = array();
+                $optionList = explode("\n", $setting['option']);
+                if (is_array($optionList)) {
+                    foreach ($optionList as $rs) {
+                        $rs = explode('|', $rs);
+                        if (!empty($rs)) {
+                            $option[] = array(
+                                'title' => $rs[0],
+                                'value' => $rs[1],
+                            );
+                        }
+                    }
+                    $setting['option'] = $option;
+                }
+            }
+            $data['setting'] = serialize($setting);
             $id = $db->add($data);
             if ($id) {
+                //增加配置项
+                $this->add(array(
+                    'varname' => $data['fieldname'],
+                    'info' => $setting['title'],
+                    'groupid' => 2,
+                    'value' => '',
+                ));
                 return $id;
             } else {
                 $this->error = '添加失败！';
@@ -43,6 +74,64 @@ class ConfigModel extends CommonModel {
             $this->error = $db->getError();
             return false;
         }
+    }
+
+    /**
+     * 删除扩展配置项
+     * @param type $fid 配置项ID
+     * @return boolean
+     */
+    public function extendDel($fid) {
+        if (empty($fid)) {
+            $this->error = '请指定需要删除的扩展配置项！';
+            return false;
+        }
+        $db = M('ConfigField');
+        //扩展字段详情
+        $info = $db->where(array('fid' => $fid))->find();
+        if (empty($info)) {
+            $this->error = '该扩展配置项不存在！';
+            return false;
+        }
+        //删除
+        if ($this->where(array('varname' => $info['fieldname']))->delete() !== false) {
+            $db->where(array('fid' => $fid))->delete();
+            return true;
+        } else {
+            $this->error = '删除失败！';
+            return false;
+        }
+    }
+
+    /**
+     * 更新扩展配置项
+     * @param type $data 数据
+     * @return boolean
+     */
+    public function saveExtendConfig($data) {
+        if (empty($data) || !is_array($data)) {
+            $this->error = '配置数据不能为空！';
+            return false;
+        }
+        //令牌验证
+        if (!$this->autoCheckToken($data)) {
+            $this->error = L('_TOKEN_ERROR_');
+            return false;
+        }
+        //去除token
+        unset($data[C("TOKEN_NAME")]);
+        foreach ($data as $key => $value) {
+            if (empty($key)) {
+                continue;
+            }
+            $saveData = array();
+            $saveData["value"] = trim($value);
+            if ($this->where(array("varname" => $key, 'groupid' => 2))->save($saveData) === false) {
+                $this->error = "更新到{$key}项时，更新失败！";
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
