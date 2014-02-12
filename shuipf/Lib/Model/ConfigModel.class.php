@@ -95,7 +95,7 @@ class ConfigModel extends CommonModel {
             return false;
         }
         //删除
-        if ($this->where(array('varname' => $info['fieldname']))->delete() !== false) {
+        if ($this->where(array('varname' => $info['fieldname'], 'groupid' => 2))->delete() !== false) {
             $db->where(array('fid' => $fid))->delete();
             return true;
         } else {
