@@ -33,6 +33,7 @@ class ConfigModel extends CommonModel {
         );
         $data = $db->validate($validate)->create($data);
         if ($data) {
+            $data['createtime'] = time();
             //检查config表是否已经存在
             if ($this->where(array('varname' => $data['fieldname']))->count()) {
                 $this->error = '该键名已经存在！';
