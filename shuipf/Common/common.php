@@ -572,8 +572,6 @@ function seo($catid = '', $title = '', $description = '', $keyword = '') {
         $keyword = str_replace(' ', ',', strip_tags($keyword));
     $site = F("Config");
     $cat = getCategory($catid);
-    $cat['setting'] = unserialize($cat['setting']);
-
     $seo['site_title'] = $site['sitename'];
     $titleKeywords = "";
     $seo['keyword'] = $keyword != $cat['setting']['meta_keywords'] ? (isset($keyword) && !empty($keyword) ? $keyword . (isset($cat['setting']['meta_keywords']) && !empty($cat['setting']['meta_keywords']) ? "," . $cat['setting']['meta_keywords'] : "") : $titleKeywords . (isset($cat['setting']['meta_keywords']) && !empty($cat['setting']['meta_keywords']) ? "," . $cat['setting']['meta_keywords'] : "")) : (isset($keyword) && !empty($keyword) ? $keyword : $cat['catname']);
