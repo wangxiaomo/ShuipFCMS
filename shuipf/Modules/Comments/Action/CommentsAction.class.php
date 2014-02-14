@@ -44,8 +44,6 @@ class CommentsAction extends AdminbaseAction {
             if (!empty($keyword) && isset($type[$searchtype])) {
                 $where[$type[$searchtype]] = array("LIKE", "%" . $keyword . "%");
             }
-            $Category = F("Category");
-            $Model = F("Model");
             $count = $this->db->where($where)->count();
             $page = $this->page($count, 20);
             $data = $this->db->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "DESC"))->select();
@@ -58,7 +56,7 @@ class CommentsAction extends AdminbaseAction {
                 //信息id
                 $id = $aid[2];
                 //取得对应文章信息
-                $title = M(ucwords($Model[$Category[$catid]['modelid']]["tablename"]))->where(array("id" => $id))->find();
+                $title = M(ucwords(getModel(getCategory($catid,'modelid'),'tablename')))->where(array("id" => $id))->find();
                 $title['article_id'] = $title['id'];
                 unset($title['id']);
                 //替换表情
@@ -88,8 +86,6 @@ class CommentsAction extends AdminbaseAction {
         } else {
             //查看单条评论
             $id = I('get.id', 0, 'intval');
-            $Category = F("Category");
-            $Model = F("Model");
             if ($id) {
                 
             } else {
@@ -107,7 +103,7 @@ class CommentsAction extends AdminbaseAction {
                     //信息id
                     $id = $aid[2];
                     //取得对应文章信息
-                    $title = M(ucwords($Model[$Category[$catid]['modelid']]["tablename"]))->where(array("id" => $id))->find();
+                    $title = M(ucwords(getModel(getCategory($catid,'modelid'),'tablename')))->where(array("id" => $id))->find();
                     $title['article_id'] = $title['id'];
                     unset($title['id']);
                     //替换表情

@@ -38,7 +38,6 @@ class content_form {
             return false;
         }
         $this->catid = $catid;
-        $this->categorys = F('Category');
         $this->fields = F("Model_field_" . $this->modelid);
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }

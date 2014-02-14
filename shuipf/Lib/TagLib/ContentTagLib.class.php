@@ -7,12 +7,7 @@
  */
 class ContentTagLib {
 
-    public $db, $table_name, $category, $model, $modelid, $where;
-
-    function __construct() {
-        $this->category = F("Category");
-        $this->model = F("Model");
-    }
+    public $db, $table_name, $modelid, $where;
 
     /**
      * 组合查询条件
@@ -28,8 +23,8 @@ class ContentTagLib {
         //栏目id条件
         if (isset($attr['catid']) && (int) $attr['catid']) {
             $catid = (int) $attr['catid'];
-            if ($this->category[$catid]['child']) {
-                $catids_str = $this->category[$catid]['arrchildid'];
+            if (getCategory($catid, 'child')) {
+                $catids_str = getCategory($catid, 'arrchildid');
                 $pos = strpos($catids_str, ',') + 1;
                 $catids_str = substr($catids_str, $pos);
                 $where['catid'] = array("IN", $catids_str);
@@ -58,12 +53,12 @@ class ContentTagLib {
      */
     public function set_modelid($catid = 0, $tablename = false) {
         if ($catid) {
-            if ($this->category[$catid]['type'] && $this->category[$catid]['type'] != 0) {
+            if (getCategory($catid, 'type') && getCategory($catid, 'type') != 0) {
                 return false;
             }
-            $this->modelid = $this->category[$catid]['modelid'];
+            $this->modelid = getCategory($catid, 'modelid');
             if (empty($tablename)) {
-                $tablename = ucwords($this->model[$this->modelid]['tablename']);
+                $tablename = ucwords(getModel($this->modelid, 'tablename'));
             }
         }
         $this->table_name = $tablename;
@@ -186,7 +181,7 @@ class ContentTagLib {
         //初始化模型
         if ($modelid) {
             $this->modelid = $modelid;
-            $tablename = ucwords($this->model[$this->modelid]['tablename']);
+            $tablename = ucwords(getModel($this->modelid, 'tablename'));
             $this->table_name = $tablename;
             $this->db = M($this->table_name);
         } elseif ($catid) {
@@ -215,8 +210,8 @@ class ContentTagLib {
             $where['catid'] = array("EQ", $catid);
         }
         //如果调用的栏目是存在子栏目的情况下
-        if ($catid && $this->category[$catid]['child']) {
-            $catids_str = $this->category[$catid]['arrchildid'];
+        if ($catid && getCategory($catid, 'child')) {
+            $catids_str = getCategory($catid, 'arrchildid');
             $pos = strpos($catids_str, ',') + 1;
             $catids_str = substr($catids_str, $pos);
             $where['catid'] = array("IN", $catids_str);
@@ -348,7 +343,7 @@ class ContentTagLib {
         if ($data['nid']) {
             unset($key_array[$data['nid']]);
         }
-        
+
         //差额补齐
         if (count($key_array) < $data['num']) {
             $difference = $data['num'] - count($key_array);
@@ -356,14 +351,14 @@ class ContentTagLib {
                 $where['catid'] = $catid;
                 //进行随机读取
                 $count = $this->db->where($where)->count();
-                $rand = mt_rand(1, $count - 1 < 1?1:$count - 1);
-                $differenceList = $this->db->where($where)->limit($rand,$difference)->select();
-                foreach($differenceList as $r){
+                $rand = mt_rand(1, $count - 1 < 1 ? 1 : $count - 1);
+                $differenceList = $this->db->where($where)->limit($rand, $difference)->select();
+                foreach ($differenceList as $r) {
                     $key_array[$r['id']] = $r;
                 }
             }
         }
-        
+
         //结果进行缓存
         if ($cache) {
             S($cacheID, $key_array, $cache);
@@ -400,9 +395,9 @@ class ContentTagLib {
             $where['_string'] = $data['where'];
         }
         $db = M("Category");
-        $categorys = $this->category;
         $num = (int) $data['num'];
-        if ($data['catid'] > 0) {
+        if (isset($data['catid'])) {
+            $where['ismenu'] = array("EQ", 1);
             $where['parentid'] = array("EQ", $data['catid']);
         }
         //如果条件不为空，进行查库
@@ -413,19 +408,11 @@ class ContentTagLib {
                 $categorys = $db->where($where)->order($data['order'])->select();
             }
         }
-        foreach ($categorys as $catid => $cat) {
-            if (!$cat['ismenu']) {
-                continue;
-            }
-            if ($cat['parentid'] == $data['catid']) {
-                $array[$catid] = $cat;
-            }
-        }
         //结果进行缓存
         if ($cache) {
-            S($cacheID, $array, $cache);
+            S($cacheID, $categorys, $cache);
         }
-        return $array;
+        return $categorys;
     }
 
 }

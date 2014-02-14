@@ -570,11 +570,8 @@ function seo($catid = '', $title = '', $description = '', $keyword = '') {
         $description = strip_tags($description);
     if (!empty($keyword))
         $keyword = str_replace(' ', ',', strip_tags($keyword));
-
     $site = F("Config");
-
-    $categorys = F("Category");
-    $cat = $categorys[$catid];
+    $cat = getCategory($catid);
     $cat['setting'] = unserialize($cat['setting']);
 
     $seo['site_title'] = $site['sitename'];
@@ -848,9 +845,7 @@ function get_avatar($id_or_email, $size = '96', $default = '', $alt = false) {
  * @return type
  */
 function hits($catid, $id) {
-    $Category = F("Category");
-    $Model = F("Model");
-    $tab = ucwords($Model[$Category[$catid]['modelid']]['tablename']);
+    $tab = ucwords(getModel(getCategory($catid, 'modelid'), 'tablename'));
     return M($tab)->where(array("id" => $id))->getField("views");
 }
 
@@ -861,9 +856,7 @@ function hits($catid, $id) {
  * @return type 链接地址
  */
 function titleurl($catid, $id) {
-    $Category = F("Category");
-    $Model = F("Model");
-    $tab = ucwords($Model[$Category[$catid]['modelid']]['tablename']);
+    $tab = ucwords(getModel(getCategory($catid, 'modelid'), 'tablename'));
     return M($tab)->where(array("id" => $id))->getField("url");
 }
 
@@ -1064,4 +1057,74 @@ function unescape($str) {
             $ret .= $str[$i];
     }
     return $ret;
+}
+
+/**
+ * 获取栏目相关信息
+ * @param type $catid 栏目id
+ * @param type $field 返回的字段，默认返回全部，数组
+ * @param type $newCache 是否强制刷新
+ * @return boolean
+ */
+function getCategory($catid, $field = '', $newCache = false) {
+    if (empty($catid)) {
+        return false;
+    }
+    $key = 'getCategory_' . $catid;
+    //强制刷新缓存
+    if ($newCache) {
+        S($key, NULL);
+    }
+    $cache = S($key);
+    if ($cache === 'false') {
+        return false;
+    }
+    if (empty($cache)) {
+        //读取数据
+        $cache = M('Category')->where(array('catid' => $catid))->find();
+        if (empty($cache)) {
+            S($key, 'false', 60);
+            return false;
+        } else {
+            $cache['setting'] = unserialize($cache['setting']);
+            S($key, $cache, 3600);
+        }
+    }
+    if ($field) {
+        return $cache[$field];
+    } else {
+        return $cache;
+    }
+}
+
+/**
+ * 获取模型数据
+ * @param type $modelid 模型ID
+ * @param type $field 返回的字段，默认返回全部，数组
+ * @return boolean
+ */
+function getModel($modelid, $field = '') {
+    if (empty($modelid)) {
+        return false;
+    }
+    $key = 'getModel_' . $modelid;
+    $cache = S($key);
+    if ($cache === 'false') {
+        return false;
+    }
+    if (empty($cache)) {
+        //读取数据
+        $cache = M('Model')->where(array('modelid' => $modelid))->find();
+        if (empty($cache)) {
+            S($key, 'false', 60);
+            return false;
+        } else {
+            S($key, $cache, 3600);
+        }
+    }
+    if ($field) {
+        return $cache[$field];
+    } else {
+        return $cache;
+    }
 }

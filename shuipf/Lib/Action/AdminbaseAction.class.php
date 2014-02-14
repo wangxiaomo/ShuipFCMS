@@ -28,8 +28,6 @@ class AdminbaseAction extends AppframeAction {
         }
         //初始化当前登录用户信息
         $this->initAdminUser();
-        //初始化模型
-        $this->initModel();
         $this->initMenu();
     }
 

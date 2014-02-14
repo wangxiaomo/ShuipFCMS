@@ -128,7 +128,7 @@ class CategoryAction extends AdminbaseAction {
                     $this->error('请填写需要添加的栏目！');
                 }
                 //关闭表单令牌验证
-                C('TOKEN_ON',false);
+                C('TOKEN_ON', false);
                 foreach ($batch_add as $rs) {
                     $cat = explode('|', $rs, 2);
                     if ($cat[0] && $cat[1]) {
@@ -287,8 +287,8 @@ class CategoryAction extends AdminbaseAction {
                     $array[$k]['disabled'] = "";
                 }
             }
-            $data = $array[$catid];
-            $setting = $data['setting'] = unserialize($data['setting']);
+            $data = getCategory($catid);
+            $setting = $data['setting'];
             $models = F("ModelType_0");
             $tree->init($array);
             $categorydata = $tree->get_tree(0, $str, $data['parentid']);
@@ -342,25 +342,51 @@ class CategoryAction extends AdminbaseAction {
 
     //更新栏目缓存并修复
     public function public_cache() {
-        $this->repair();
-        $this->cache();
-        $this->success("缓存更新成功！", U("Category/index"));
+        $db = D("Category");
+        //当前
+        $number = I('get.number', 1, 'intval');
+        //每次处理多少栏目
+        $handlesum = 100;
+        //计算栏目总数
+        $count = I('get.count', $db->count(), 'intval');
+        //需要处理几次
+        $handlecount = ceil($count / $handlesum);
+        if ($number > $handlecount) {
+            $this->cache();
+            $this->success("缓存更新成功！", U("Category/index"));
+            return true;
+        }
+        $page = $this->page($count, $handlesum, $number);
+        //取出需要处理的栏目数据
+        $data = $db->order(array('catid' => 'ASC'))->limit($page->firstRow . ',' . $page->listRows)->select();
+        if (empty($data)) {
+            $this->cache();
+            $this->success("缓存更新成功！", U("Category/index"));
+            return true;
+        }
+        $categorys = array();
+        foreach ($data as $v) {
+            $categorys[$v['catid']] = $v;
+        }
+        $this->repair($categorys);
+        $this->assign("waitSecond", 200);
+        //跳转到下一轮
+        $this->success("栏目总数:<font color=\"#FF0000\">{$count}</font>,每次处理:<font color=\"#FF0000\">{$handlesum}</font>,进度:<font color=\"#FF0000\">{$number}/{$handlecount}</font>,栏目缓存更新中...", U('public_cache', array('count' => $count, 'number' => $number + 1)));
     }
 
-    //更新栏目缓存
+    /**
+     * 更新F('Category')栏目缓存
+     */
     protected function cache() {
         D("Category")->category_cache();
     }
 
-    //修复栏目数据
-    protected function repair() {
-        $this->categorys = $categorys = array();
-        //栏目数据
-        $categorysdata = M("Category")->select();
-        foreach ($categorysdata as $v) {
-            $categorys[$v['catid']] = $v;
-        }
-        unset($categorysdata);
+    /**
+     * 修复栏目数据
+     * @param type $categorys 需要修复的栏目数组
+     * @return boolean
+     */
+    protected function repair($categorys) {
         $this->categorys = $categorys;
         if (is_array($this->categorys)) {
             foreach ($this->categorys as $catid => $cat) {
@@ -388,7 +414,7 @@ class CategoryAction extends AdminbaseAction {
                 //取得栏目相关地址和分页规则
                 $category_url = $this->Url->category_url($catid);
                 if (false == $category_url) {
-                    $this->error("出现错误，请更新缓存后再试！");
+                    return false;
                 }
                 $url = $category_url['url'];
                 //更新数据
@@ -404,12 +430,6 @@ class CategoryAction extends AdminbaseAction {
                 if (count($save) > 0) {
                     D("Category")->where(array('catid' => $catid))->save($save);
                 }
-            }
-        }
-        //删除在非正常显示的栏目
-        foreach ($this->categorys as $catid => $cat) {
-            if ($cat['parentid'] != 0 && !isset($this->categorys[$cat['parentid']])) {
-                M("Category")->where(array('catid' => $catid))->delete();
             }
         }
         return true;

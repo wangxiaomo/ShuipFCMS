@@ -19,9 +19,7 @@ class RssAction extends BaseAction {
                 echo $data;
                 exit;
             }
-            $Category = F("Category");
-            $Model = F("Model");
-            $Cat = $Category[$rssid];
+            $Cat = getCategory($rssid);
             //检查栏目是否存在
             if (empty($Cat)) {
                 $this->error('该栏目不存在！');
@@ -32,23 +30,23 @@ class RssAction extends BaseAction {
             }
             $where['status'] = array("EQ", 99);
             //判断是否有子栏目
-            if ($Category[$rssid]['child']) {
-                $where['catid'] = array("IN", $Category[$rssid]['arrchildid']);
+            if (getCategory($rssid, 'child')) {
+                $where['catid'] = array("IN", getCategory($rssid, 'arrchildid'));
             } else {
                 $where['catid'] = array("EQ", $rssid);
             }
             //模型ID
-            $modelid = $Category[$rssid]['modelid'];
+            $modelid = getCategory($rssid, 'modelid');
             //获取表名
-            $tablename = ucwords($Model[$modelid]['tablename']);
+            $tablename = ucwords(getModel($modelid, 'tablename'));
             if (empty($tablename)) {
                 $this->error('出现错误！');
             }
             //栏目配置
-            $setting = unserialize($Category[$rssid]['setting']);
+            $setting = getCategory($rssid, 'setting');
             $data = M($tablename)->where($where)->order(array("updatetime" => "DESC", "id" => "DESC"))->limit(50)->select();
             import('@.ORG.Rss');
-            $Rss = new Rss($this->XMLstr($Category[$rssid]['catname'] . ' - ' . CONFIG_SITENAME), $this->XMLstr($Category[$rssid]['url']), $this->XMLstr($Category[$rssid]['description']), $this->XMLstr($Category[$rssid]['image']));
+            $Rss = new Rss($this->XMLstr(getCategory($rssid, 'catname') . ' - ' . CONFIG_SITENAME), $this->XMLstr(getCategory($rssid, 'url')), $this->XMLstr(getCategory($rssid, 'description')), $this->XMLstr(getCategory($rssid, 'image')));
             foreach ($data as $k => $v) {
                 $v = $this->XMLstr($v);
                 $Rss->AddItem($v['title'], $v['url'], $v['description'], date("Y-m-d H:i:s A", $v['updatetime']));

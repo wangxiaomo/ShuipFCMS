@@ -20,8 +20,6 @@ class Content {
      * 构造函数
      */
     function __construct() {
-        $this->categorys = F("Category");
-        $this->model = F("Model");
         import('Url');
         $this->url = get_instance_of('Url');
     }
@@ -41,19 +39,19 @@ class Content {
      */
     public function add($data) {
         $this->catid = (int) $data['catid'];
-        $this->modelid = $this->categorys[$this->catid]['modelid'];
+        $this->modelid = getCategory($this->catid,'modelid');
         //取得表单令牌验证码
         $data[C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
         //标签
         tag("content_add_begin", $data);
         //栏目数据
-        $catidinfo = $this->categorys[$this->catid];
+        $catidinfo = getCategory($this->catid);
         if (empty($catidinfo)) {
             $this->error = '获取不到栏目数据！';
             return false;
         }
         //setting配置
-        $catidsetting = unserialize($catidinfo['setting']);
+        $catidsetting = $catidinfo['setting'];
         //前台投稿状态判断
         if (defined('IN_ADMIN') && IN_ADMIN == false) {
             //前台投稿，根据栏目配置和用户配置
@@ -265,19 +263,19 @@ class Content {
     public function edit($data, $id) {
         $data['id'] = $id;
         $this->catid = (int) $data['catid'];
-        $this->modelid = $this->categorys[$this->catid]['modelid'];
+        $this->modelid = getCategory($this->catid,'modelid');
         //取得表单令牌验证码
         $data[C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
         //标签
         tag("content_edit_begin", $data);
         //栏目数据
-        $catidinfo = $this->categorys[$this->catid];
+        $catidinfo = getCategory($this->catid);
         if (empty($catidinfo)) {
             $this->error = '获取不到栏目数据！';
             return false;
         }
         //setting配置
-        $catidsetting = unserialize($catidinfo['setting']);
+        $catidsetting = $catidinfo['setting'];
         //前台投稿状态判断
         if (defined('IN_ADMIN') && IN_ADMIN == false) {
             //前台投稿编辑是否需要审核
@@ -461,13 +459,13 @@ class Content {
         require_cache(RUNTIME_PATH . 'content_delete.class.php');
         $this->catid = (int) $catid;
         //模型ID
-        $this->modelid = $this->categorys[$this->catid]['modelid'];
-        if (empty($this->categorys[$this->catid])) {
+        $this->modelid = getCategory($this->catid,'modelid');
+        if (getCategory($this->catid) == false) {
             $this->error = '获取不到栏目信息！';
             return false;
         }
         //栏目配置信息
-        $setting = unserialize($this->categorys[$this->catid]['setting']);
+        $setting = getCategory($this->catid,'setting');
         //内容页是否生成静态
         $content_ishtml = $setting['content_ishtml'];
         $this->contentModel = ContentModel::getInstance($this->modelid);
@@ -527,12 +525,11 @@ class Content {
         //循环需要同步发布的栏目
         foreach ($othor_catid as $cid) {
             //获取需要同步栏目所属模型ID
-            $mid = $this->categorys[$cid]['modelid'];
+            $mid = getCategory($cid,'modelid');
             //判断模型是否相同
             if ($modelid == $mid) {//相同
                 $data['catid'] = $cid;
-                $_categorys = $this->categorys[$data['catid']];
-                $_categorys['setting'] = unserialize($_categorys['setting']);
+                $_categorys = getCategory($data['catid']);
                 //修复当被推送的文章是推荐位的文章时，推送后会把相应属性也推送过去
                 $data['posid'] = 0;
                 $newid = $this->contentModel->relation(true)->add($data);
@@ -588,11 +585,11 @@ class Content {
     public function check($catid, $id, $status = 99) {
         C('TOKEN_ON', false);
         //模型ID
-        $this->modelid = $this->categorys[$catid]['modelid'];
+        $this->modelid = getCategory($catid,'modelid');
         //是否生成HTML
-        $sethtml = $this->categorys[$catid]['sethtml'];
+        $sethtml = getCategory($catid,'sethtml');
         //栏目配置信息
-        $setting = unserialize($this->categorys[$catid]['setting']);
+        $setting = $this->categorys[$catid]['setting'];
         $content_ishtml = $setting['content_ishtml'];
         $this->Content = ContentModel::getInstance($this->modelid);
         $r = $this->Content->relation(true)->where(array('id' => $id, 'catid' => $catid))->find();
@@ -658,7 +655,7 @@ class Content {
     public function deleteHtml($catid, $id, $inputtime, $prefix = '', $data = false) {
         if ($data == false) {
             //模型ID
-            $this->modelid = $this->categorys[$catid]['modelid'];
+            $this->modelid = getCategory($catid,'modelid');
             $this->Content = ContentModel::getInstance($this->modelid);
             $data = $this->Content->relation(true)->where(array('id' => $id, 'catid' => $catid))->find();
             $this->Content->dataMerger($data);
@@ -690,8 +687,7 @@ class Content {
         if (!$catid || !$id) {
             return;
         }
-        $categorys = $this->categorys;
-        $modelid = $this->categorys[$catid]['modelid'];
+        $modelid = getCategory($catid,'modelid');
         $db = ContentModel::getInstance($modelid);
         $where = array();
         $where['catid'] = $catid;
@@ -708,7 +704,7 @@ class Content {
             if ($r['islink'] || empty($r['id']))
                 continue;
             $db->dataMerger($r);
-            $setting = unserialize($categorys[$r['catid']]['setting']);
+            $setting = getCategory($r['catid'],'setting');
             $content_ishtml = $setting['content_ishtml'];
             if (!$content_ishtml) {
                 continue;

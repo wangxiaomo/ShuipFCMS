@@ -3,8 +3,7 @@
 //全局变量
 var GV = {
     DIMAUB: "{$config_siteurl}",
-    JS_ROOT: "statics/js/",
-    TOKEN: "{$__token__}"
+    JS_ROOT: "statics/js/"
 };
 </script>
 <script src="{$config_siteurl}statics/js/wind.js"></script>

@@ -89,7 +89,7 @@ class TagLibShuipf extends TagLib {
         }
 
         $parsestr = '<?php ';
-        $parsestr .= ' $_pre_r = M(ucwords($Model[$Categorys[' . $tag['catid'] . '][\'modelid\']][\'tablename\']))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("LT",' . $tag['id'] . ')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
+        $parsestr .= ' $_pre_r = M(ucwords(getModel(getCategory(' . $tag['catid'] . ',"modelid"),"tablename")))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("LT",' . $tag['id'] . ')))->order(array("id" => "DESC"))->field("id,title,url")->find(); ';
         if ($field) {
             $parsestr .= ' echo $_pre_r?$_pre_r["' . $field . '"]:""';
         } else {
@@ -134,7 +134,7 @@ class TagLibShuipf extends TagLib {
         }
 
         $parsestr = '<?php ';
-        $parsestr .= ' $_pre_n = M(ucwords($Model[$Categorys[' . $tag['catid'] . '][\'modelid\']][\'tablename\']))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("GT",' . $tag['id'] . ')))->order(array("id" => "ASC"))->field("id,title,url")->find(); ';
+        $parsestr .= ' $_pre_n = M(ucwords(getModel(getCategory(' . $tag['catid'] . ',"modelid"),"tablename")))->where(array("catid"=>' . $tag['catid'] . ',"status"=>99,"id"=>array("GT",' . $tag['id'] . ')))->order(array("id" => "ASC"))->field("id,title,url")->find(); ';
         if ($field) {
             $parsestr .= ' echo $_pre_n?$_pre_n["' . $field . '"]:""';
         } else {
@@ -182,27 +182,21 @@ class TagLibShuipf extends TagLib {
         //如果传入的是纯数字
         if (is_numeric($catid)) {
             $catid = (int) $catid;
-            //获取模板中的Categorys变量
-            $Categorys = $this->tpl->get('Categorys');
-            if (!$Categorys) {
-                $Categorys = F('Category');
-            }
-            if (!$Categorys[$catid]) {
+            if (getCategory($catid) == false) {
                 return '';
             }
             //获取当前栏目的 父栏目列表
-            $arrparentid = array_filter(explode(',', $Categorys[$catid]['arrparentid'] . ',' . $catid));
+            $arrparentid = array_filter(explode(',', getCategory($catid,'arrparentid') . ',' . $catid));
             foreach ($arrparentid as $cid) {
-                $parsestr[] = '<a href="' . $Categorys[$cid]['url'] . '" ' . $target . '>' . $Categorys[$cid]['catname'] . '</a>';
+                $parsestr[] = '<a href="' . getCategory($cid,'url') . '" ' . $target . '>' . getCategory($cid,'catname') . '</a>';
             }
-            unset($Categorys);
             $parsestr = implode($space, $parsestr);
         } else {
             $parsestr = '';
             $parsestr .= '<?php';
-            $parsestr .= '  $arrparentid = array_filter(explode(\',\', $Categorys[' . $catid . '][\'arrparentid\'] . \',\' . ' . $catid . ')); ';
+            $parsestr .= '  $arrparentid = array_filter(explode(\',\', getCategory(' . $catid . ',"arrparentid") . \',\' . ' . $catid . ')); ';
             $parsestr .= '  foreach ($arrparentid as $cid) {';
-            $parsestr .= '      $parsestr[] = \'<a href="\' . $Categorys[$cid][\'url\'] . \'" ' . $target . '>\' . $Categorys[$cid][\'catname\'] . \'</a>\';';
+            $parsestr .= '      $parsestr[] = \'<a href="\' . getCategory($cid,\'url\')  . \'" ' . $target . '>\' . getCategory($cid,\'catname\') . \'</a>\';';
             $parsestr .= '  }';
             $parsestr .= '  echo  implode("' . $space . '", $parsestr);';
             $parsestr .= '?>';

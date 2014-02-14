@@ -7,17 +7,14 @@
  */
 class Html extends BaseAction {
 
-    private $url, $categorys;
+    private $url;
 
     public function _initialize() {
         //关闭由于启用域名绑定造成的前台域名出错
         define("APP_SUB_DOMAIN_NO", 1);
         parent::_initialize();
         import('Url');
-        //栏目缓存
-        $this->categorys = F("Category");
         $this->url = get_instance_of('Url');
-        $this->Model = F("Model");
         define('HTML', true);
         C('HTML_FILE_SUFFIX', "");
     }
@@ -39,9 +36,7 @@ class Html extends BaseAction {
         //栏目ID
         $catid = $data['catid'];
         //获取当前栏目数据
-        $category = $this->categorys[$catid];
-        //反序列化栏目配置
-        $category['setting'] = unserialize($category['setting']);
+        $category = getCategory($catid);
         //模型ID
         $this->modelid = $category['modelid'];
         //分页方式
@@ -189,14 +184,12 @@ class Html extends BaseAction {
             return false;
         }
         //获取栏目数据
-        $category = $this->categorys[$catid];
+        $category = getCategory($catid);
         if (empty($category)) {
             return false;
         }
-        //栏目扩展配置信息反序列化
-        $setting = unserialize($category['setting']);
         //检查是否生成列表
-        if (!$category['ishtml']) {
+        if (!$category['sethtml']) {
             return true;
         }
         //初始化一些模板分配变量
@@ -350,7 +343,7 @@ class Html extends BaseAction {
             $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : $GLOBALS["Total_Pages"];
         } while ($j <= $total_number && $j < 7);
         //检查当前栏目的父栏目，如果存在则生成
-        $arrparentid = $this->categorys[$catid]['arrparentid'];
+        $arrparentid = getCategory($catid,'arrparentid');
         if ($arrparentid) {
             $arrparentid = explode(',', $arrparentid);
             foreach ($arrparentid as $catid) {

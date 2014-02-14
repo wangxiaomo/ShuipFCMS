@@ -48,8 +48,7 @@ class PositionTagLib {
             $where['thumb'] = array("EQ", 1);
         }
         if ($catid > 0) {
-            $Category = F("Category");
-            $cat = $Category[$catid];
+            $cat = getCategory($catid);
             if ($cat) {
                 //是否包含子栏目
                 if ($cat['child']) {
@@ -60,10 +59,9 @@ class PositionTagLib {
             }
         }
         $data = $db->where($where)->order($order)->limit($num)->select();
-        $Model = F("Model");
         foreach ($data as $k => $v) {
             $data[$k]['data'] = unserialize($v['data']);
-            $tab = ucwords($Model[$v['modelid']]['tablename']);
+            $tab = ucwords(getModel($v['modelid'], 'tablename'));
             $data[$k]['data']['url'] = M($tab)->where(array("id" => $v['id']))->getField("url");
         }
         //结果进行缓存
@@ -74,5 +72,3 @@ class PositionTagLib {
     }
 
 }
-
-?>

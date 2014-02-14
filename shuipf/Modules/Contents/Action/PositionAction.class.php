@@ -9,12 +9,10 @@ class PositionAction extends AdminbaseAction {
 
     public function index() {
         $db = M("Position");
-        $Model = F("Model");
-        $Category = F("Category");
         $data = $db->order(array("listorder" => "ASC", "posid" => "DESC"))->select();
         foreach ($data as $k => $v) {
-            $data[$k]['catid'] = $v['catid'] == 0 ? "所有栏目" : $Category[$v['catid']]['catname'];
-            $data[$k]['modelid'] = $v['modelid'] == 0 ? "所有模型" : $Model[$v['modelid']]['name'];
+            $data[$k]['catid'] = $v['catid'] == 0 ? "所有栏目" : getCategory($v['catid'], 'catname');
+            $data[$k]['modelid'] = $v['modelid'] == 0 ? "所有模型" : getModel($v['modelid'], 'name');
         }
         $this->assign("data", $data);
         $this->display();
@@ -38,7 +36,6 @@ class PositionAction extends AdminbaseAction {
             $posid = $this->_get("posid");
             $db = M("Position_data");
             $Category = F("Category");
-            $Model = F("Model");
             $where = array();
             $where['posid'] = array("EQ", $posid);
             $count = $db->where($where)->count();
@@ -46,7 +43,7 @@ class PositionAction extends AdminbaseAction {
             $data = $db->where($where)->order(array("listorder" => "DESC", "id" => "DESC"))->limit($page->firstRow . ',' . $page->listRows)->select();
             foreach ($data as $k => $v) {
                 $data[$k]['data'] = unserialize($v['data']);
-                $tab = ucwords($Model[$Category[$v['catid']]['modelid']]['tablename']);
+                $tab = ucwords(getModel(getCategory($v['catid'],'modelid'),'tablename'));
                 $data[$k]['data']['url'] = M($tab)->where(array("id" => $v['id']))->getField("url");
             }
 
@@ -161,10 +158,10 @@ class PositionAction extends AdminbaseAction {
     public function public_item_manage() {
         $db = D("Position_data");
         if (IS_POST) {
-            if($_POST['thumb']){
+            if ($_POST['thumb']) {
                 $_POST['data']['thumb'] = $_POST['thumb'];
                 $_POST['thumb'] = 1;
-            }else{
+            } else {
                 $_POST['thumb'] = 0;
             }
             if ($db->Position_edit($_POST)) {

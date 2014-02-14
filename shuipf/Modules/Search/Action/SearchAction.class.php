@@ -63,16 +63,16 @@ class SearchAction extends AdminbaseAction {
         unset($_GET['_URL_']);
         if (isset($_GET['start'])) {
             //每轮更新数
-            $pagesize = (int) $this->_get("pagesize");
+            $pagesize = I('get.pagesize', 0, 'intval');
             $_GET['pagesize'] = $pagesize = $pagesize > 1 ? $pagesize : 100;
             //模型
-            $_GET['modelid'] = $modelid = (int) $this->_get("modelid");
+            $_GET['modelid'] = $modelid = I('get.modelid', 0, 'intval');
             //第几轮更新
-            $page = $_GET['start'] = (int) $this->_get("start");
+            $page = $_GET['start'] = I('get.start', 0, 'intval');
             //总共几轮
-            $pages = (int) $this->_get("pages");
+            $pages = I('get.pages', 0, 'intval');
             //信息总数
-            $total = (int) $this->_get("total");
+            $total = I('get.total', 0, 'intval');
 
             $model = F("Model");
             //如果是重建所有模型

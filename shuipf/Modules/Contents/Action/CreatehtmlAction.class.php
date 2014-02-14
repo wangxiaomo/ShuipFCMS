@@ -13,7 +13,6 @@ class CreatehtmlAction extends AdminbaseAction {
 
     function _initialize() {
         parent::_initialize();
-        $this->categorys = F("Category");
         $this->model = F("ModelType_0");
         import('Url');
         $this->url = get_instance_of('Url');
@@ -39,13 +38,14 @@ class CreatehtmlAction extends AdminbaseAction {
             //模型id
             $modelid = intval($_POST['modelid']);
             if (!isset($set_catid)) {
+                //加载栏目缓存
+                $this->categorys = F("Category");
                 if ($catids[0] != 0) {//指定栏目
                     $update_url_catids = $catids;
                 } else {
                     //栏目不限
                     foreach ($this->categorys as $catid => $cat) {
-                        $setting = unserialize($cat['setting']);
-                        if ($cat['type'] == 2 || !$setting['ishtml'])
+                        if ($cat['type'] == 2 || !$cat['sethtml'])
                             continue;
                         //如果限制模型，进行模型判断
                         if ($modelid && ($modelid != $cat['modelid']))
@@ -69,7 +69,7 @@ class CreatehtmlAction extends AdminbaseAction {
 
             //判断是否更新结束
             if (!isset($catid_arr[$autoid])) {
-                if (!empty($referer) && $this->categorys[$catid_arr[0]]['type'] != 1) {
+                if (!empty($referer) && getCategory($catid_arr[0], 'type') != 1) {
                     $referer = urldecode($referer);
                     $this->success("更新完成！ ...", $referer);
                     exit;
@@ -94,14 +94,14 @@ class CreatehtmlAction extends AdminbaseAction {
 
             if ($page <= $total_number) {
                 $endpage = intval($page + $pagesize);
-                $message = "正在更新" . $this->categorys[$catid]['catname'] . " 第<font color=\"red\">{$page}</font>页 - 当前进度：" . (round($page / $total_number, 2) * 100) . "% - 总共" . ceil($total_number / $pagesize) . "轮";
+                $message = "正在更新" . getCategory($catid, 'catname') . " 第<font color=\"red\">{$page}</font>页 - 当前进度：" . (round($page / $total_number, 2) * 100) . "% - 总共" . ceil($total_number / $pagesize) . "轮";
                 $forward = U("Contents/Createhtml/category", "set_catid=1&pagesize=$pagesize&dosubmit=1&autoid=$autoid&page=$page&total_number=$total_number&modelid=$modelid&referer=$referer");
                 $this->assign("waitSecond", 200);
                 $this->success($message, $forward);
                 exit;
             } else {
                 $autoid++;
-                $message = $this->categorys[$catid]['catname'] . "更新完成！ ...";
+                $message = getCategory($catid, 'catname') . "更新完成！ ...";
                 $forward = U("Contents/Createhtml/category", "set_catid=1&pagesize=$pagesize&dosubmit=1&autoid=$autoid&modelid=$modelid&referer=$referer");
                 $this->assign("waitSecond", 200);
                 $this->success($message, $forward);
@@ -110,6 +110,8 @@ class CreatehtmlAction extends AdminbaseAction {
         } else {
             import('Tree');
             import('Form');
+            //加载栏目缓存
+            $this->categorys = F("Category");
             $modelid = isset($_GET['modelid']) ? intval($_GET['modelid']) : 0;
             $tree = new Tree();
             $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
@@ -122,7 +124,7 @@ class CreatehtmlAction extends AdminbaseAction {
                     if ($modelid && $modelid != $r['modelid'])
                         continue;
                     if ($r['child'] == 0) {
-                        if (!$r['ishtml'])
+                        if (!$r['sethtml'])
                             continue;
                     }
                     $categorys[$catid] = $r;
@@ -145,7 +147,7 @@ class CreatehtmlAction extends AdminbaseAction {
     public function categoryhtml() {
         $catid = (int) $this->_get("catid");
         if ($catid) {
-            $setting = unserialize($this->categorys[$catid]['setting']);
+            $setting = getCategory($catid, 'setting');
             if (!$setting['ishtml']) {
                 $this->error("该栏目无须生成！");
             }
@@ -286,6 +288,8 @@ class CreatehtmlAction extends AdminbaseAction {
                     if ($catids[0] != 0) {
                         $update_url_catids = $catids;
                     } else {
+                        //加载栏目缓存
+                        $this->categorys = F("Category");
                         foreach ($this->categorys as $catid => $cat) {
                             if ($cat['child'] || $cat['type'] != 0)
                                 continue;
@@ -307,7 +311,7 @@ class CreatehtmlAction extends AdminbaseAction {
                 }
 
                 $catid = $catid_arr[$autoid];
-                $modelid = $this->categorys[$catid]['modelid'];
+                $modelid = getCategory($catid, 'modelid');
 
                 //主表名
                 $table_name = ucwords($this->model[$modelid]['tablename']);
@@ -344,7 +348,7 @@ class CreatehtmlAction extends AdminbaseAction {
                     $http_url = __SELF__;
                     $creatednum = $offset + count($data);
                     $percent = round($creatednum / $total, 2) * 100;
-                    $message = "【" . $this->categorys[$catid]['catname'] . "】 有 <font color=\"red\">{$total}</font> 条信息 - 已完成 <font color=\"red\">{$creatednum}</font> 条（<font color=\"red\">{$percent}%</font>）";
+                    $message = "【" . getCategory($catid, 'catname') . "】 有 <font color=\"red\">{$total}</font> 条信息 - 已完成 <font color=\"red\">{$creatednum}</font> 条（<font color=\"red\">{$percent}%</font>）";
                     $forward = $start ? U("Contents/Createhtml/update_urls", "type=$type&dosubmit=1&first=$first&fromid=$fromid&toid=$toid&fromdate=$fromdate&todate=$todate&pagesize=$pagesize&page=$page&pages=$pages&total=$total&autoid=$autoid&set_catid=1") : preg_replace("/&page=([0-9]+)&pages=([0-9]+)&total=([0-9]+)/", "&page=$page&pages=$pages&total=$total", $http_url);
                     $this->assign("waitSecond", 200);
                     $this->success($message, $forward);
@@ -352,12 +356,14 @@ class CreatehtmlAction extends AdminbaseAction {
                     $autoid++;
                     $forward = U("Contents/Createhtml/update_urls", "set_catid=1&pagesize=$pagesize&dosubmit=1&autoid=$autoid");
                     $this->assign("waitSecond", 200);
-                    $this->success("开始更新 .." . $this->categorys[$catid]['catname'] . " ...", $forward);
+                    $this->success("开始更新 .." . getCategory($catid, 'catname') . " ...", $forward);
                 }
             }
         } else {
             import('Tree');
             import('Form');
+            //加载栏目缓存
+            $this->categorys = F("Category");
             $modelid = isset($_GET['modelid']) ? intval($_GET['modelid']) : 0;
             $tree = new Tree();
             $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
@@ -436,11 +442,13 @@ class CreatehtmlAction extends AdminbaseAction {
                     $where['catid'] = array("IN", $catids);
                     $first = 1;
                 } elseif (count($catids) == 1 && $catids[0] == 0) {//不限制栏目
+                    //加载栏目缓存
+                    $this->categorys = F("Category");
                     $catids = array();
                     foreach ($this->categorys as $catid => $cat) {
                         if ($cat['child'] || $cat['type'] != 0)
                             continue;
-                        $setting = unserialize($cat['setting']);
+                        $setting = getCategory($cat['catid'], 'setting');
                         if (!$setting['content_ishtml'])
                             continue;
                         $catids[] = $catid;
@@ -527,21 +535,23 @@ class CreatehtmlAction extends AdminbaseAction {
                     $this->success("更新完成！ ...", U("Contents/Createhtml/update_show"));
                 }
             } else {
-
                 //当没有选择模型时，需要按照栏目来更新
                 if (!isset($set_catid)) {
                     if ($catids[0] != 0) {
                         $update_url_catids = $catids;
                     } else {
+                        //加载栏目缓存
+                        $this->categorys = F("Category");
                         foreach ($this->categorys as $catid => $cat) {
                             if ($cat['child'] || $cat['type'] != 0)
                                 continue;
-                            $setting = unserialize($cat['setting']);
+                            $setting = getCategory($cat['catid'], 'setting');
                             if (!$setting['content_ishtml'])
                                 continue;
                             $update_url_catids[] = $catid;
                         }
                     }
+                    
                     //生成需要更新生成的栏目ID缓存
                     F("update_html_catid" . AppframeAction::$Cache["uid"], $update_url_catids);
                     $this->assign("waitSecond", 200);
@@ -563,7 +573,7 @@ class CreatehtmlAction extends AdminbaseAction {
                 }
 
                 $catid = $catid_arr[$autoid];
-                $modelid = $this->categorys[$catid]['modelid'];
+                $modelid = getCategory($catid, 'modelid');
 
                 //主表名
                 $table_name = ucwords($this->model[$modelid]['tablename']);
@@ -604,7 +614,7 @@ class CreatehtmlAction extends AdminbaseAction {
                     $http_url = __SELF__;
                     $creatednum = $offset + count($data);
                     $percent = round($creatednum / $total, 2) * 100;
-                    $message = "【" . $this->categorys[$catid]['catname'] . "】 有 <font color=\"red\">{$total}</font> 条信息 - 已完成 <font color=\"red\">{$creatednum}</font> 条（<font color=\"red\">{$percent}%</font>）";
+                    $message = "【" . getCategory($catid, 'catname') . "】 有 <font color=\"red\">{$total}</font> 条信息 - 已完成 <font color=\"red\">{$creatednum}</font> 条（<font color=\"red\">{$percent}%</font>）";
                     $forward = $start ? U("Contents/Createhtml/update_show", "type=$type&dosubmit=1&first=$first&fromid=$fromid&toid=$toid&fromdate=$fromdate&todate=$todate&pagesize=$pagesize&page=$page&pages=$pages&total=$total&autoid=$autoid&set_catid=1") : preg_replace("/&page=([0-9]+)&pages=([0-9]+)&total=([0-9]+)/", "&page=$page&pages=$pages&total=$total", $http_url);
                     $this->assign("waitSecond", 200);
                     $this->success($message, $forward);
@@ -612,12 +622,14 @@ class CreatehtmlAction extends AdminbaseAction {
                     $autoid++;
                     $forward = U("Contents/Createhtml/update_show", "set_catid=1&pagesize=$pagesize&dosubmit=1&autoid=$autoid");
                     $this->assign("waitSecond", 200);
-                    $this->success("开始更新 .." . $this->categorys[$catid]['catname'] . " ...", $forward);
+                    $this->success("开始更新 .." . getCategory($catid, 'catname') . " ...", $forward);
                 }
             }
         } else {
             import('Tree');
             import('Form');
+            //加载栏目缓存
+            $this->categorys = F("Category");
             $modelid = isset($_GET['modelid']) ? intval($_GET['modelid']) : 0;
             $tree = new Tree();
             $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
@@ -630,7 +642,7 @@ class CreatehtmlAction extends AdminbaseAction {
                     if ($modelid && $modelid != $r['modelid'])
                         continue;
                     if ($r['child'] == 0) {
-                        $setting = unserialize($r['setting']);
+                        $setting = getCategory($r['catid'], 'setting');
                         if (!$setting['content_ishtml'])
                             continue;
                     }
@@ -658,8 +670,8 @@ class CreatehtmlAction extends AdminbaseAction {
             if (!$catid) {
                 $this->error("栏目ID不能为空！");
             }
-            $modelid = $this->categorys[$catid]['modelid'];
-            $setting = unserialize($this->categorys[$catid]['setting']);
+            $modelid = getCategory($catid, 'modelid');
+            $setting = getCategory($catid, 'setting');
             $content_ishtml = $setting['content_ishtml'];
             if ($content_ishtml) {
                 //主表名
@@ -696,8 +708,8 @@ class CreatehtmlAction extends AdminbaseAction {
             if (!$catid) {
                 $this->error("栏目ID不能为空！");
             }
-            $modelid = $this->categorys[$catid]['modelid'];
-            $setting = unserialize($this->categorys[$catid]['setting']);
+            $modelid = getCategory($catid, 'modelid');
+            $setting = getCategory($catid, 'setting');
             $content_ishtml = $setting['content_ishtml'];
             if ($content_ishtml) {
                 //主表名
@@ -735,5 +747,3 @@ class CreatehtmlAction extends AdminbaseAction {
     }
 
 }
-
-?>

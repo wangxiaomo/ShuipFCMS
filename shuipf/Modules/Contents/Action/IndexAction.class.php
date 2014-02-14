@@ -39,15 +39,14 @@ class IndexAction extends BaseAction {
         $catid = I('get.catid', 0, 'intval');
         //分页
         $page = isset($_GET[C("VAR_PAGE")]) ? $_GET[C("VAR_PAGE")] : 1;
-        $this->categorys = F("Category");
         //获取栏目数据
-        $category = $this->categorys[$catid];
+        $category = getCategory($catid);
         if (empty($category)) {
             send_http_status(404);
             exit;
         }
-        //栏目扩展配置信息反序列化
-        $setting = unserialize($category['setting']);
+        //栏目扩展配置信息
+        $setting = $category['setting'];
         //检查是否禁止访问动态页
         if ($setting['listoffmoving']) {
             send_http_status(404);
@@ -112,15 +111,14 @@ class IndexAction extends BaseAction {
         $id = I('get.id', 0, 'intval');
         $page = intval($_GET[C("VAR_PAGE")]);
         $page = max($page, 1);
-        $this->categorys = F("Category");
         //获取当前栏目数据
-        $category = $this->categorys[$catid];
+        $category = getCategory($catid);
         if (empty($category)) {
             send_http_status(404);
             exit;
         }
         //反序列化栏目配置
-        $category['setting'] = unserialize($category['setting']);
+        $category['setting'] = $category['setting'];
         //检查是否禁止访问动态页
         if ($category['setting']['showoffmoving']) {
             send_http_status(404);
@@ -146,10 +144,11 @@ class IndexAction extends BaseAction {
             $paginationtype = 0;
         }
         //载入字段数据处理类
-        if (!file_exists(RUNTIME_PATH . 'content_output.class.php')) {
-            $this->error("请更新缓存后再操作！");
+        if (false == require_cache(RUNTIME_PATH . 'content_output.class.php')) {
+            D("Category")->category_cache();
+            D("Content_cache")->model_content_cache();
+            require RUNTIME_PATH . 'content_output.class.php';
         }
-        require_cache(RUNTIME_PATH . 'content_output.class.php');
         $content_output = new content_output($this->modelid);
         //获取字段类型处理以后的数据
         $output_data = $content_output->get($data);

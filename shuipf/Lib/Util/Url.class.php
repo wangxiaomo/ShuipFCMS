@@ -7,15 +7,9 @@
  */
 class Url {
 
-    private $urlrules, $categorys;
+    private $urlrules;
 
     function __construct() {
-        //栏目缓存
-        $this->categorys = F("Category");
-        if (!$this->categorys) {
-            D("Category")->category_cache();
-            $this->categorys = F("Category");
-        }
         //获取URL生成规则缓存
         $this->urlrules = F("urlrules");
         if (!$this->urlrules) {
@@ -68,8 +62,8 @@ class Url {
         }
 
         //把生成路径中的分页标签替换
-        $url['path'] = str_replace('{$page}',$page,$url['path']);
-        
+        $url['path'] = str_replace('{$page}', $page, $url['path']);
+
         return $url;
     }
 
@@ -108,9 +102,9 @@ class Url {
             $time = (int) $data['inputtime'];
         }
         //当前栏目信息
-        $category = $this->categorys[$catid];
-        //当前栏目setting配置信息
-        $setting = unserialize($category['setting']);
+        $category = getCategory($catid);
+        //扩展配置
+        $setting = $category['setting'];
         //是否生成内容静态
         $content_ishtml = $setting['content_ishtml'];
         //内容规则ID
@@ -190,7 +184,7 @@ class Url {
             $domain_dir = '';
             //循环查询父栏目是否设置了二级域名
             foreach ($parentids as $pid) {
-                $r = $this->categorys[$pid];
+                $r = getCategory($pid);
                 if (!$r) {
                     continue;
                 }
@@ -199,7 +193,7 @@ class Url {
                     //二级域名
                     $domain = $r['domain'];
                     //得到二级域名的目录
-                    $domain_dir = $this->get_categorydir($pid) . $this->categorys[$pid]['catdir'] . '/';
+                    $domain_dir = $this->get_categorydir($pid) . getCategory($pid, 'catdir') . '/';
                 }
             }
         }
@@ -253,9 +247,9 @@ class Url {
         if (strpos($url["url"], '://') === false) {
             $url["url"] = str_replace('//', '/', $url["url"]);
         }
-        
+
         //把生成路径中的分页标签替换
-        $url['path'] = str_replace('{$page}',$page,$url['path']);
+        $url['path'] = str_replace('{$page}', $page, $url['path']);
 
         return $url;
     }
@@ -275,18 +269,18 @@ class Url {
      *   )
      *  )
      */
-    public function category_url($catid, $page = 1,$category_ruleid = false) {
+    public function category_url($catid, $page = 1, $category_ruleid = false) {
         //栏目数据
-        $category = $this->categorys[$catid];
+        $category = getCategory($catid);
         //外部链接直接返回外部地址
         if ($category['type'] == 2)
             return $category['url'];
         //页码
         $page = max(intval($page), 1);
-        //栏目扩展配置信息反序列化
-        $setting = unserialize($category['setting']);
+        //栏目扩展配置信息
+        $setting = $category['setting'];
         //栏目URL生成规则ID
-        $category_ruleid = $category_ruleid?$category_ruleid:(int)$setting['category_ruleid'];
+        $category_ruleid = $category_ruleid ? $category_ruleid : (int) $setting['category_ruleid'];
         //取得规则
         $urlrule = $this->urlrules[$category_ruleid];
 
@@ -330,7 +324,7 @@ class Url {
             $domain_dir = '';
             //循环查询父栏目是否设置了二级域名
             foreach ($parentids as $pid) {
-                $r = $this->categorys[$pid];
+                $r = getCategory($pid);
                 if (!$r) {
                     continue;
                 }
@@ -339,7 +333,7 @@ class Url {
                     //二级域名
                     $domain = $r['domain'];
                     //得到二级域名的目录
-                    $domain_dir = $this->get_categorydir($pid) . $this->categorys[$pid]['catdir'] . '/';
+                    $domain_dir = $this->get_categorydir($pid) . getCategory($pid, 'catdir') . '/';
                 }
             }
 
@@ -395,9 +389,9 @@ class Url {
         }
 
         $url["url"] = str_replace('{$page}', $page, $url["url"]);
-        
+
         //把生成路径中的分页标签替换
-        $url['path'] = str_replace('{$page}',$page,$url['path']);
+        $url['path'] = str_replace('{$page}', $page, $url['path']);
 
         return $url;
     }
@@ -409,10 +403,10 @@ class Url {
      */
     public function get_categorydir($catid, $dir = '') {
         //检查这个栏目是否有父栏目ID
-        if ($this->categorys[$catid]['parentid']) {
+        if (getCategory($catid, 'parentid')) {
             //取得父栏目目录
-            $dir = $this->categorys[$this->categorys[$catid]['parentid']]['catdir'] . '/' . $dir;
-            return $this->get_categorydir($this->categorys[$catid]['parentid'], $dir);
+            $dir = getCategory(getCategory($catid, 'parentid'), 'catdir') . '/' . $dir;
+            return $this->get_categorydir(getCategory($catid, 'parentid'), $dir);
         } else {
             return $dir;
         }
@@ -432,5 +426,3 @@ class Url {
     }
 
 }
-
-?>

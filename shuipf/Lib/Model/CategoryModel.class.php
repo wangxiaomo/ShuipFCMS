@@ -232,18 +232,16 @@ class CategoryModel extends CommonModel {
             }
         }
         //检查是否存在数据，存在数据不执行删除
-        $Model = F("Model");
-        $Category = F('Category');
         if (is_array($catid)) {
             $modeid = array();
             foreach ($catid as $cid) {
-                $catinfo = $Category[$cid];
+                $catinfo = getCategory($cid);
                 if ($catinfo['modelid'] && $catinfo['type'] == 0) {
                     $modeid[$catinfo['modelid']] = $catinfo['modelid'];
                 }
             }
             foreach ($modeid as $mid) {
-                $tbname = ucwords($Model[$mid]['tablename']);
+                $tbname = ucwords(getModel($mid, 'tablename'));
                 if (!$tbname) {
                     return false;
                 }
@@ -252,8 +250,8 @@ class CategoryModel extends CommonModel {
                 }
             }
         } else {
-            $catinfo = $Category[$catid];
-            $tbname = ucwords($Model[$catInfo['modelid']]['tablename']);
+            $catinfo = getCategory($catid);
+            $tbname = ucwords(getModel($catInfo['modelid'], 'tablename'));
             if (!$tbname && $catinfo['type'] == 0) {
                 return false;
             }
@@ -396,52 +394,28 @@ class CategoryModel extends CommonModel {
      * 生成缓存，以栏目ID为数组下标，以排序字段listorder ASC排序
      */
     public function category_cache() {
-        $models = F("Model");
         $data = $this->order("listorder ASC")->select();
         $categorys = array();
         foreach ($data as $r) {
-            unset($r['module']);
-            $setting = unserialize($r['setting']);
-            //栏目生成Html
-            $r['ishtml'] = $setting['ishtml'];
-            //内容页生成Html
-            $r['content_ishtml'] = $setting['content_ishtml'];
-            //栏目页URL规则
-            $r['category_ruleid'] = $setting['category_ruleid'];
-            //内容也URL规则
-            $r['show_ruleid'] = $setting['show_ruleid'];
-            $r['isdomain'] = '0';
-            $categorys[$r['catid']] = $r;
+            //更新缓存
+            getCategory($r['catid'],'',true);
+            $categorys[$r['catid']] = array(
+                'catid' => $r['catid'],
+                'parentid' => $r['parentid'],
+                'arrparentid' => $r['arrparentid'],
+                'child' => $r['child'],
+                'arrchildid' => $r['arrchildid'],
+                'type' => $r['type'],
+                'modelid' => $r['modelid'],
+                'catname' => $r['catname'],
+                'url' => $r['url'],
+                'catdir' => $r['catdir'],
+                'ismenu' => $r['ismenu'],
+                'sethtml' => $r['sethtml'],
+            );
         }
         F("Category", $categorys);
         return true;
-    }
-
-    /**
-     * 后台有更新/编辑则删除缓存
-     * @param type $data
-     */
-    public function _before_write($data) {
-        parent::_before_write($data);
-        F("Category", NULL);
-    }
-
-    //删除操作时删除缓存
-    public function _after_delete($data, $options) {
-        parent::_after_delete($data, $options);
-        $this->category_cache();
-    }
-
-    //更新数据后更新缓存
-    public function _after_update($data, $options) {
-        parent::_after_update($data, $options);
-        $this->category_cache();
-    }
-
-    //插入数据后更新缓存
-    public function _after_insert($data, $options) {
-        parent::_after_insert($data, $options);
-        $this->category_cache();
     }
 
 }

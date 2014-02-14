@@ -72,10 +72,9 @@ class PositionModel extends CommonModel {
         if (empty($real_posid)) {
             return false;
         }
-        $Category = F("Category");
         $where = array();
         $where['catid'] = array("EQ", $catid);
-        $where['modelid'] = $Category[$catid]['modelid'];
+        $where['modelid'] = getCategory($catid,'modelid');
         $where['id'] = array("EQ", $id);
         $where['posid'] = array("IN", $real_posid);
         $status = $pos_data->where($where)->delete();

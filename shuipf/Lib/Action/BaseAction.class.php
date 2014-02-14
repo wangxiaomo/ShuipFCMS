@@ -9,6 +9,7 @@ class BaseAction extends AppframeAction {
 
     public $TemplatePath, $Theme, $ThemeDefault;
 
+    //初始化
     protected function _initialize() {
         //定义是前台
         define('IN_ADMIN', false);
@@ -16,26 +17,7 @@ class BaseAction extends AppframeAction {
         //前台关闭表单令牌
         C("TOKEN_ON", false);
         $this->initUser();
-        //初始化模型
-        $this->initModel();
-        $this->tmpinit();
-        //============全局模板变量==============
-        //栏目数组
-        $this->assign("Categorys", F("Category"));
-        //模型数组
-        $this->assign("Model", F("Model"));
-        //推荐位数组
-        $this->assign("Position", F("Position"));
-        //URL规则数组
-        $this->assign("Urlrules", F("urlrules"));
-        //模块静态资源目录，例如CSS JS等
-        $this->assign('model_extresdir', CONFIG_SITEURL_MODEL . MODEL_EXTRESDIR);
-    }
-
-    /**
-     * 模板配置初始化 
-     */
-    final private function tmpinit() {
+        //=====模板配置初始化=====
         //模板路径
         $this->TemplatePath = TEMPLATE_PATH;
         //默认主题风格
@@ -43,12 +25,14 @@ class BaseAction extends AppframeAction {
         //主题风格
         $this->Theme = empty(AppframeAction::$Cache["Config"]['theme']) ? $this->ThemeDefault : AppframeAction::$Cache["Config"]['theme'];
         //设置前台提示信息模板
-        if (file_exists_case($this->TemplatePath . $this->Theme . "/" . "error" . C("TMPL_TEMPLATE_SUFFIX")) && IN_ADMIN == false) {
+        if (is_file($this->TemplatePath . $this->Theme . "/" . "error" . C("TMPL_TEMPLATE_SUFFIX")) && IN_ADMIN == false) {
             C("TMPL_ACTION_ERROR", $this->TemplatePath . $this->Theme . "/" . "error" . C("TMPL_TEMPLATE_SUFFIX"));
         }
-        if (file_exists_case($this->TemplatePath . $this->Theme . "/" . "success" . C("TMPL_TEMPLATE_SUFFIX")) && IN_ADMIN == false) {
+        if (is_file($this->TemplatePath . $this->Theme . "/" . "success" . C("TMPL_TEMPLATE_SUFFIX")) && IN_ADMIN == false) {
             C("TMPL_ACTION_SUCCESS", $this->TemplatePath . $this->Theme . "/" . "success" . C("TMPL_TEMPLATE_SUFFIX"));
         }
+        //模块静态资源目录，例如CSS JS等
+        $this->assign('model_extresdir', CONFIG_SITEURL_MODEL . MODEL_EXTRESDIR);
     }
 
     /**
@@ -84,7 +68,7 @@ class BaseAction extends AppframeAction {
      * @param type $templateFile
      * @return boolean|string 
      */
-    private function parseTemplateFile($templateFile = '') {
+    protected function parseTemplateFile($templateFile = '') {
         $templateFile = parseTemplateFile($templateFile);
         if (false === $templateFile) {
             if (APP_DEBUG) {

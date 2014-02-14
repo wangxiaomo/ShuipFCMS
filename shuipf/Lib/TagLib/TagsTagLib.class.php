@@ -89,11 +89,9 @@ class TagsTagLib {
         }
         $db = M('TagsContent');
         $return = $db->where($this->where)->order($data['order'])->limit($data['limit'])->select();
-
-        $Model = F("Model");
         //读取文章信息
         foreach ($return as $k => $v) {
-            $tablename = ucwords($Model[$v['modelid']]['tablename']);
+            $tablename = ucwords(getModel($v['modelid'], 'tablename'));
             $r = M($tablename)->where(array("id" => $v['contentid']))->find();
             if ($r) {
                 $return[$k] = array_merge($v, $r);
@@ -121,7 +119,7 @@ class TagsTagLib {
         }
         $num = $data['num'] ? $data['num'] : 10;
         $order = array("hits" => "DESC");
-        if($data['order']){
+        if ($data['order']) {
             $order = $data['order'];
         }
         $where = array();
@@ -131,7 +129,7 @@ class TagsTagLib {
         }
         $return = $this->db->where($where)->order($order)->limit($num)->select();
         //增加访问路径
-        foreach($return as $k=>$v){
+        foreach ($return as $k => $v) {
             $return[$k]['url'] = getTagsUrl($v['tagid'], $v['tag']);
         }
         if ($cache) {
@@ -141,5 +139,3 @@ class TagsTagLib {
     }
 
 }
-
-?>

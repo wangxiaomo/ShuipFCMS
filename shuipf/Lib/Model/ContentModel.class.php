@@ -325,10 +325,9 @@ class ContentModel extends RelationModel {
         if (empty($catid)) {
             return false;
         }
-        $Category = F("Category");
-        if (empty($Category[$catid])) {
+        if (getCategory($catid) == false) {
             return false;
-        } else if ($Category[$catid]['child']) {
+        } else if (getCategory($catid,'child')) {
             return false;
         } else {
             return true;

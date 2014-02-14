@@ -125,15 +125,13 @@ class CommentTagLib {
         $data = $db->field(array('*','count(*)'=>'total'))->group('comment_id')->order(array('total'=>'DESC'))->limit($num)->select();
         //数据处理
         $return = array();
-        $Category = F("Category");
-        $Model = F("Model");
         foreach($data as $r){
             list($m,$catid,$id) = explode('-',$r['comment_id']);
-             if ($Category[$catid]['type'] && $Category[$catid]['type'] != 0) {
+             if (getCategory($catid,'type') && getCategory($catid,'type') != 0) {
                  continue;
              }
-            $modeid = $Category[$catid]['modelid'];
-            $tablename = ucwords($Model[$modeid]['tablename']);
+            $modeid = getCategory($catid,'modelid');
+            $tablename = ucwords(getModel($modeid,'tablename'));
             $return[$id] = M($tablename)->where(array('id'=>$id))->find();
             $return[$id]['comment_total'] = $r['total'];
         }
@@ -145,5 +143,3 @@ class CommentTagLib {
     }
 
 }
-
-?>

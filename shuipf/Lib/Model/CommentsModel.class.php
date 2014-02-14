@@ -491,16 +491,14 @@ class CommentsModel extends CommonModel {
         if (!$catid || !$id) {
             return false;
         }
-        $model = F("Model");
-        $category = F("Category");
-        if (empty($category[$catid])) {
+        if (getCategory($catid) == false) {
             return false;
         }
-        $modelid = $category[$catid]['modelid'];
-        if (empty($model[$modelid])) {
+        $modelid = getCategory($catid,'modelid');
+        $tablename = ucwords(getModel($modelid,'tablename'));
+        if (empty($tablename)) {
             return false;
         }
-        $tablename = ucwords($model[$modelid]['tablename']);
         $db = M($tablename . "_data");
         $allow_comment = $db->where(array("id" => $id))->getField("allow_comment");
         if ((int) $allow_comment <= 0) {

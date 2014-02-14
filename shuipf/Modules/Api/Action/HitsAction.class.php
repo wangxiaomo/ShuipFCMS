@@ -9,16 +9,6 @@ class HitsAction extends Action {
 
     //内容模型
     protected $db;
-    //模型缓存
-    protected $cacheModel;
-    //栏目缓存
-    protected $cacheCategorys;
-
-    //初始化
-    protected function _initialize() {
-        $this->cacheModel = F('Model');
-        $this->cacheCategorys = F('Category');
-    }
 
     //获取点击数
     public function index() {
@@ -27,9 +17,9 @@ class HitsAction extends Action {
         //信息ID
         $id = I('get.id', 0, 'intval');
         //模型ID
-        $modelid = (int) $this->cacheCategorys[$catid]['modelid'];
+        $modelid = (int) getCategory($catid, 'modelid');
         //获取表名
-        $tablename = $this->cacheModel[$modelid]['tablename'];
+        $tablename = getModel($modelid, 'tablename');
         if (empty($tablename)) {
             exit;
         }

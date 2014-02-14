@@ -10,40 +10,12 @@ class AppframeAction extends Action {
     //各种缓存 比如当前登陆用户信息等
     public static $Cache = array();
 
+    //初始化
     protected function _initialize() {
         //初始化站点配置信息
         $this->initSite();
         //跳转时间
         $this->assign("waitSecond", 2000);
-        $this->assign("__token__", $this->getToken());
-    }
-
-    /**
-     * 获取表单令牌
-     * @return String 表单
-     */
-    protected function getToken() {
-        $token_on = C("TOKEN_ON");
-        if (!$token_on) {
-            return "";
-        }
-        $tokenName = C('TOKEN_NAME');
-        $tokenType = C('TOKEN_TYPE');
-        if (!isset($_SESSION[$tokenName])) {
-            $_SESSION[$tokenName] = array();
-        }
-        // 标识当前页面唯一性
-        $tokenKey = md5($_SERVER['REQUEST_URI']);
-        if (isset($_SESSION[$tokenName][$tokenKey])) {// 相同页面不重复生成session
-            $tokenValue = $_SESSION[$tokenName][$tokenKey];
-        } else {
-            $tokenValue = $tokenType(microtime(TRUE));
-            $_SESSION[$tokenName][$tokenKey] = $tokenValue;
-        }
-        $tokenAray = session($tokenName);
-        //获取令牌
-        $tokenValue = $tokenAray[$tokenKey];
-        return $tokenKey . '_' . $tokenValue;
     }
 
     /**
@@ -114,8 +86,6 @@ class AppframeAction extends Action {
         }
         self::$Cache['uid'] = (int) $userInfo['userid'];
         self::$Cache['username'] = $userInfo['username'];
-        $this->assign("uid", self::$Cache['uid']);
-        $this->assign("username", self::$Cache['username']);
         self::$Cache['User'] = $userInfo;
         $this->assign("User", self::$Cache['User']);
         return $userInfo;
@@ -142,31 +112,8 @@ class AppframeAction extends Action {
             define("CONFIG_SITEURL_MODEL", $config_siteurl);
             $this->assign("config_siteurl", $config_siteurl);
         }
-        //去除敏感信息
-        unset($Config['mail_password'], $Config['ftphost'], $Config['ftpuppat'], $Config['ftpuser'], $Config['ftppassword']);
         self::$Cache['Config'] = $Config;
         $this->assign("Config", $Config);
-        return $Config;
-    }
-
-    /**
-     * 初始化模型 
-     * @return 没有返回值
-     */
-    final protected function initModel() {
-        //模型缓存
-        if (false == F("Model")) {
-            D("Model")->model_cache();
-        }
-        //栏目缓存
-        if (false == F("Category")) {
-            D("Category")->category_cache();
-        }
-        //20120615 增加
-        if (!is_file(RUNTIME_PATH . "content_output.class.php")) {
-            D("Content_cache")->model_content_cache();
-            D("Position")->position_cache();
-        }
     }
 
     /**
