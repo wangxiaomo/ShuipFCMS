@@ -12,7 +12,7 @@
 </style>
 <div class="wrap">
   <div class="h_a">搜索</div>
-  <form name="searchform" action="{:U("Contents/Content/public_relationlist")}" method="get" >
+  <form name="searchform" action="{:U("Contents/Content/public_relationlist")}" method="get"  onsubmit="return search();">
     <input type="hidden" value="Contents" name="g">
     <input type="hidden" value="Content" name="m">
     <input type="hidden" value="public_relationlist" name="a">
@@ -48,7 +48,7 @@
           <tr>
             <td>ID</td>
             <td>标题</td>
-            <td>点击量</td>
+            <td align="center">点击量</td>
             <td>发布人</td>
             <td><span>发帖时间</span></td>
           </tr>
@@ -64,7 +64,7 @@
               <if condition=" $vo['thumb']!='' "> <img src="{$config_siteurl}statics/images/icon/small_img.gif" title="标题图片"> </if>
               <if condition=" $vo['posids'] "> <img src="{$config_siteurl}statics/images/icon/small_elite.gif" title="推荐位"> </if>
               <if condition=" $vo['islink'] "> <img src="{$config_siteurl}statics/images/icon/link.png" title="转向地址"> </if></td>
-            <td><?php echo hits("c-".$vo['catid']."-".$vo['id']);?></td>
+            <td align="center">{$vo.views}</td>
             <td><if condition=" $vo['sysadd'] ">{$vo.username}
                 <else />
                 <font color="#FF0000">{$vo.username}</font><img src="{$config_siteurl}statics/images/icon/contribute.png" title="会员投稿"></if></td>
@@ -108,6 +108,13 @@ function select_list(obj, title, id) {
             window.top.$('#relation').val(relation_ids);
         }
     }
+}
+function search(){
+	if($('select[name="catid"]').val() == 0){
+		alert('请选择栏目ID！');
+		return false;
+	}
+	return true;
 }
 </script>
 </body>
