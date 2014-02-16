@@ -365,6 +365,8 @@ class UploadFile {//类定义开始
                 $saveName = $rule . "." . $filename['extension'];
             }
         }
+        //强制转换为小写
+        $saveName = strtolower($saveName);
         if ($this->autoSub) {
             // 使用子目录保存文件
             $filename['savename'] = $saveName;
@@ -479,7 +481,7 @@ class UploadFile {//类定义开始
     private function checkExt($ext) {
         if (!empty($this->allowExts)) {
             //强制危险后缀过滤
-            if (in_array(strtolower($ext), array("php", "php4", "asp", "phtml", "php3", "exe", "dll", "cer", "asa",  "aspx", "asax", "cgi", "fcgi", "pl"))) {
+            if (in_array(strtolower($ext), array("php", "php4", "asp", "phtml", "php3", "exe", "dll", "cer", "asa", "aspx", "asax", "cgi", "fcgi", "pl"))) {
                 return false;
             }
             return in_array(strtolower($ext), $this->allowExts, true);
