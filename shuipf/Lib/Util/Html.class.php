@@ -137,7 +137,7 @@ class Html extends BaseAction {
                     $pages = page($pagenumber, 1, $page, array(
                         'isrule' => true,
                         'rule' => $pageurl,
-                    ))->show("default");
+                            ))->show("default");
                     //判断[page]出现的位置是否在第一位 
                     if ($CONTENT_POS < 7) {
                         $content = $contents[$page];
@@ -188,6 +188,7 @@ class Html extends BaseAction {
         if (empty($category)) {
             return false;
         }
+        $setting = $category['setting'];
         //检查是否生成列表
         if (!$category['sethtml']) {
             return true;
@@ -343,7 +344,7 @@ class Html extends BaseAction {
             $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : $GLOBALS["Total_Pages"];
         } while ($j <= $total_number && $j < 7);
         //检查当前栏目的父栏目，如果存在则生成
-        $arrparentid = getCategory($catid,'arrparentid');
+        $arrparentid = getCategory($catid, 'arrparentid');
         if ($arrparentid) {
             $arrparentid = explode(',', $arrparentid);
             foreach ($arrparentid as $catid) {
