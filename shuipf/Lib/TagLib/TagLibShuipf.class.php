@@ -53,7 +53,36 @@ class TagLibShuipf extends TagLib {
         'pre' => array('attr' => 'catid,id,target,msg,field', 'close' => 0),
         //下一篇
         'next' => array('attr' => 'catid,id,target,msg,field', 'close' => 0),
+        //区块缓存
+        'blockcache' => array('attr' => 'cache', 'level' => 1),
     );
+    
+    /**
+     * 区块内容缓存标签
+     * @param type $attr
+     * @param type $content
+     * @return type
+     */
+    public function _blockcache($attr, $content){
+        $cacheIterateId = md5($attr . $content);
+        $cache = S($cacheIterateId);
+        if ($cache) {
+            return $cache;
+        }
+        //参数
+        $tag = $this->parseXmlAttr($attr, 'blockcache');
+        //缓存时间
+        $cache = $tag['cache'];
+        ob_start();
+        ob_implicit_flush(0);
+        //编译成内容
+        $this->tpl->fetch($content);
+        $html = ob_get_clean();
+        if($html){
+            S($cacheIterateId,$html,$cache);
+        }
+        return $html;
+    }
 
     /**
      * 获取上一篇标签
