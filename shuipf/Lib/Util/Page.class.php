@@ -281,10 +281,12 @@ class Page {
             if ($this->Static && ($cfg['pageindex'] - 1) == 1) {
                 $pPrev = '<a href="' . $this->pageRule['index'] . '">' . $cfg ['prev'] . '</a> '; //显示首页
             } else {
+                //显示上一页
                 if ($this->Static_Size && $cfg['pageindex'] - 1 <= $this->Static_Size) {
-                    $cfg['link'] = $this->urlParameters($_GET);
+                    $pPrev = '<a href="' . str_replace('*', $cfg['pageindex'] - 1, $this->urlParameters($_GET)) . '">' . $cfg['prev'] . '</a>';
+                } else {
+                    $pPrev = '<a href="' . str_replace('*', $cfg['pageindex'] - 1, $cfg['link']) . '">' . $cfg['prev'] . '</a>';
                 }
-                $pPrev = '<a href="' . str_replace('*', $cfg['pageindex'] - 1, $cfg['link']) . '">' . $cfg['prev'] . '</a>'; //显示上一页
             }
         }
 
@@ -295,11 +297,10 @@ class Page {
             //下一页
             //如果下一页还是在生成静态页访问内
             if ($this->Static_Size && $cfg['pageindex'] + 1 <= $this->Static_Size) {
-                $cfg['link'] = $this->urlParameters($_GET);
+                $pNext = '<a href="' . str_replace('*', $cfg['pageindex'] + 1, $this->urlParameters($_GET)) . '">' . $cfg['next'] . '</a>';
             } else {
-                $cfg['link'] = $GLOBALS['dynamicRules'] ? $GLOBALS['dynamicRules'] : $this->urlParameters($_GET);
+                $pNext = '<a href="' . str_replace('*', $cfg['pageindex'] + 1, $cfg['link']) . '">' . $cfg['next'] . '</a>';
             }
-            $pNext = '<a href="' . str_replace('*', $cfg['pageindex'] + 1, $cfg['link']) . '">' . $cfg['next'] . '</a>';
         }
 
         //快捷跳转方式
