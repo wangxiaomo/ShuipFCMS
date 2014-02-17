@@ -56,14 +56,14 @@ class TagLibShuipf extends TagLib {
         //区块缓存
         'blockcache' => array('attr' => 'cache', 'level' => 1),
     );
-    
+
     /**
      * 区块内容缓存标签
      * @param type $attr
      * @param type $content
      * @return type
      */
-    public function _blockcache($attr, $content){
+    public function _blockcache($attr, $content) {
         $cacheIterateId = md5($attr . $content);
         $cache = S($cacheIterateId);
         if ($cache) {
@@ -72,14 +72,14 @@ class TagLibShuipf extends TagLib {
         //参数
         $tag = $this->parseXmlAttr($attr, 'blockcache');
         //缓存时间
-        $cache = $tag['cache'];
+        $cache = (int) $tag['cache'];
         ob_start();
         ob_implicit_flush(0);
         //编译成内容
         $this->tpl->fetch($content);
         $html = ob_get_clean();
-        if($html){
-            S($cacheIterateId,$html,$cache);
+        if ($html) {
+            S($cacheIterateId, $html, $cache ? $cache : 300);
         }
         return $html;
     }
@@ -215,9 +215,9 @@ class TagLibShuipf extends TagLib {
                 return '';
             }
             //获取当前栏目的 父栏目列表
-            $arrparentid = array_filter(explode(',', getCategory($catid,'arrparentid') . ',' . $catid));
+            $arrparentid = array_filter(explode(',', getCategory($catid, 'arrparentid') . ',' . $catid));
             foreach ($arrparentid as $cid) {
-                $parsestr[] = '<a href="' . getCategory($cid,'url') . '" ' . $target . '>' . getCategory($cid,'catname') . '</a>';
+                $parsestr[] = '<a href="' . getCategory($cid, 'url') . '" ' . $target . '>' . getCategory($cid, 'catname') . '</a>';
             }
             $parsestr = implode($space, $parsestr);
         } else {
@@ -816,7 +816,7 @@ class TagLibShuipf extends TagLib {
         if ($page) {
             if ($table) {
                 $parseStr .= ' $cache = ' . $cache . ';';
-                $parseStr .= ' $cacheID = to_guid_string(array('.self::arr_to_html($tableWhere).',' . $page . '));';
+                $parseStr .= ' $cacheID = to_guid_string(array(' . self::arr_to_html($tableWhere) . ',' . $page . '));';
                 //缓存处理
                 $parseStr .= ' if($cache && $_return = S($cacheID)){ ';
                 $parseStr .= ' $count = $_return["count"];';
@@ -899,7 +899,7 @@ class TagLibShuipf extends TagLib {
             $parseStr .= ' } ';
         } else {
             $parseStr .= ' $cache = ' . $cache . ';';
-            $parseStr .= ' $cacheID = to_guid_string('.self::arr_to_html($tableWhere).');';
+            $parseStr .= ' $cacheID = to_guid_string(' . self::arr_to_html($tableWhere) . ');';
             $parseStr .= ' if(' . $cache . ' && $_return = S( $cacheID ) ){ ';
             $parseStr .= '      $' . $return . '=$_return;';
             $parseStr .= ' }else{ ';
