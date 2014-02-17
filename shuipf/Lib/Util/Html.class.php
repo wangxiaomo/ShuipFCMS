@@ -49,12 +49,12 @@ class Html extends BaseAction {
             //默认不分页
             $paginationtype = 0;
         }
-
         //载入字段数据处理类
-        if (!file_exists(RUNTIME_PATH . 'content_output.class.php')) {
-            $this->error("请更新缓存后再操作！");
+        if (false == require_cache(RUNTIME_PATH . 'content_output.class.php')) {
+            D("Category")->category_cache();
+            D("Content_cache")->model_content_cache();
+            require RUNTIME_PATH . 'content_output.class.php';
         }
-        require_cache(RUNTIME_PATH . 'content_output.class.php');
         $content_output = new content_output($this->modelid);
         //获取字段类型处理以后的数据
         $output_data = $content_output->get($data);
@@ -188,6 +188,7 @@ class Html extends BaseAction {
         if (empty($category)) {
             return false;
         }
+        //栏目扩展配置信息
         $setting = $category['setting'];
         //检查是否生成列表
         if (!$category['sethtml']) {
