@@ -71,18 +71,18 @@ class TagLibShuipf extends TagLib {
         $cache = (int) $tag['cache'] ? (int) $tag['cache'] : 300;
 
         $parsestr = '<?php ';
-        $parsestr .= ' $cache = S("' . $cacheIterateId . '"); ';
-        $parsestr .= ' if ($cache) { ';
-        $parsestr .= '    echo $cache;';
+        $parsestr .= ' $_cache = S("' . $cacheIterateId . '"); ';
+        $parsestr .= ' if ($_cache) { ';
+        $parsestr .= '    echo $_cache;';
         $parsestr .= ' }else{ ';
         $parsestr .= ' ob_start(); ';
         $parsestr .= ' ob_implicit_flush(0); ';
         $parsestr .= ' ?> ';
         $parsestr .= $content;
         $parsestr .= ' <?php';
-        $parsestr .= ' $html = ob_get_clean(); ';
-        $parsestr .= ' if ($html) { S("' . $cacheIterateId . '", $html, ' . $cache . ');}';
-        $parsestr .= ' echo $html; ';
+        $parsestr .= ' $_html = ob_get_clean(); ';
+        $parsestr .= ' if ($_html) { S("' . $cacheIterateId . '", $html, ' . $cache . ');}';
+        $parsestr .= ' echo $_html; ';
         $parsestr .= ' } ';
         $parsestr .= ' ?>';
         return $parsestr;
