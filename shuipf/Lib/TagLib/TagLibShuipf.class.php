@@ -81,7 +81,7 @@ class TagLibShuipf extends TagLib {
         $parsestr .= $content;
         $parsestr .= ' <?php';
         $parsestr .= ' $_html = ob_get_clean(); ';
-        $parsestr .= ' if ($_html) { S("' . $cacheIterateId . '", $html, ' . $cache . ');}';
+        $parsestr .= ' if ($_html) { S("' . $cacheIterateId . '", $_html, ' . $cache . ');}';
         $parsestr .= ' echo $_html; ';
         $parsestr .= ' } ';
         $parsestr .= ' ?>';
