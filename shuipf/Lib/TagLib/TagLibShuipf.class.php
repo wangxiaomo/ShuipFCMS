@@ -65,23 +65,27 @@ class TagLibShuipf extends TagLib {
      */
     public function _blockcache($attr, $content) {
         $cacheIterateId = md5($attr . $content);
-        $cache = S($cacheIterateId);
-        if ($cache) {
-            return $cache;
-        }
         //参数
         $tag = $this->parseXmlAttr($attr, 'blockcache');
         //缓存时间
-        $cache = (int) $tag['cache'];
-        ob_start();
-        ob_implicit_flush(0);
-        //编译成内容
-        $this->tpl->fetch($content);
-        $html = ob_get_clean();
-        if ($html) {
-            S($cacheIterateId, $html, $cache ? $cache : 300);
-        }
-        return $html;
+        $cache = (int) $tag['cache'] ? (int) $tag['cache'] : 300;
+
+        $parsestr = '<?php ';
+        $parsestr .= ' $cache = S("' . $cacheIterateId . '"); ';
+        $parsestr .= ' if ($cache) { ';
+        $parsestr .= '    echo $cache;';
+        $parsestr .= ' }else{ ';
+        $parsestr .= ' ob_start(); ';
+        $parsestr .= ' ob_implicit_flush(0); ';
+        $parsestr .= ' ?> ';
+        $parsestr .= $content;
+        $parsestr .= ' <?php';
+        $parsestr .= ' $html = ob_get_clean(); ';
+        $parsestr .= ' if ($html) { S("' . $cacheIterateId . '", $html, ' . $cache . ');}';
+        $parsestr .= ' echo $html; ';
+        $parsestr .= ' } ';
+        $parsestr .= ' ?>';
+        return $parsestr;
     }
 
     /**
