@@ -1089,7 +1089,13 @@ function getCategory($catid, $field = '', $newCache = false) {
         }
     }
     if ($field) {
-        return $cache[$field];
+        //支持var.property，不过只支持一维数组
+        if (false !== strpos($field, '.')) {
+            $vars = explode('.', $field);
+            return $cache[$vars[0]][$vars[1]];
+        } else {
+            return $cache[$field];
+        }
     } else {
         return $cache;
     }
