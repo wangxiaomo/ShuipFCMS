@@ -96,6 +96,7 @@ class AttachmentFtp extends AttachmentService {
         }
         // 远程存放地址
         $remote = str_replace(SITE_PATH, $this->options['ftpuppat'], $file);
+        $remote = str_replace('//','/',$remote);
         //FTP上传
         if ($this->handler->put($remote, $upfile) == false) {
             $this->error = '远程附件上传失败！' . $this->handler->get_error();
