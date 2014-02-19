@@ -65,7 +65,7 @@
                   <volist name="tp_list" id="vo">
                     <option value="{$vo}">{$vo}</option>
                   </volist>
-                </select> <span class="gray">新增模板以show_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span> </td>
+                </select> </td>
           </tr>
           <tr id="template">
             <th>模板内容</th>

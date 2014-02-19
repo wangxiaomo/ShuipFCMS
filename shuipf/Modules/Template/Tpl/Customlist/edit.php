@@ -65,7 +65,7 @@
                   <volist name="tp_list" id="vo">
                     <option value="{$vo}" <if condition=" $vo eq $info['listpath'] ">selected</if>>{$vo}</option>
                   </volist>
-                </select> <span class="gray">新增模板以show_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span> </td>
+                </select> </td>
           </tr>
           <tr id="template" <if condition=" !empty($info['listpath'])  ">style="display:none"</if>>
             <th>模板内容</th>
