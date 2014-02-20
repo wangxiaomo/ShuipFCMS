@@ -7,20 +7,15 @@
  */
 class DownloadAction extends BaseAction {
 
-    //模型缓存
-    protected $modelCache = NULL;
-    //栏目缓存
-    protected $categoryCache = NULL;
     //信息ID
     public $id = 0, $catid = 0;
     //用户相关信息
     protected $userid = 0;
     protected $groupid = 8;
 
+    //初始化
     protected function _initialize() {
         parent::_initialize();
-        $this->modelCache = F('Model');
-        $this->categoryCache = F('Category');
         $this->id = I('get.id', 0, 'intval');
         $this->catid = I('get.catid', 0, 'intval');
         $this->userid = AppframeAction::$Cache['uid'];
@@ -37,7 +32,7 @@ class DownloadAction extends BaseAction {
             $this->error("参数有误！");
         }
         //模型ID
-        $modelid = $this->categoryCache[$this->catid]['modelid'];
+        $modelid = getCategory($this->catid, 'modelid');
         $Model_field = F("Model_field_" . $modelid);
         //判断字段类型
         if (!in_array($Model_field[$f]['formtype'], array('downfiles', 'downfile'))) {
@@ -108,7 +103,7 @@ class DownloadAction extends BaseAction {
         //字段名称
         $f = $key[4];
         //模型ID
-        $modelid = $this->categoryCache[$this->catid]['modelid'];
+        $modelid = getCategory($this->catid, 'modelid');
         $Model_field = F("Model_field_" . $modelid);
         //判断字段类型
         if (!in_array($Model_field[$f]['formtype'], array('downfiles', 'downfile'))) {
@@ -116,9 +111,9 @@ class DownloadAction extends BaseAction {
         }
         //主表名称
         if ((int) $Model_field[$f]['issystem'] == 1) {
-            $tablename = ucwords($this->modelCache[$modelid]['tablename']);
+            $tablename = ucwords(getModel($modelid, 'tablename'));
         } else {
-            $tablename = ucwords($this->modelCache[$modelid]['tablename']) . "_data";
+            $tablename = ucwords(getModel($modelid, 'tablename')) . "_data";
         }
         //字段配置
         $setting = unserialize($Model_field[$f]['setting']);
@@ -155,13 +150,13 @@ class DownloadAction extends BaseAction {
                 $fileurl = $downfiles;
                 $info = array();
                 $info['filename'] = basename($fileurl);
-                $info['filename'] = str_replace('.'.fileext($info['filename']),'',$info['filename']);
+                $info['filename'] = str_replace('.' . fileext($info['filename']), '', $info['filename']);
             }
 
             //下载统计+1
             if (!empty($setting['statistics'])) {
                 $statistics = trim($setting['statistics']);
-                M(ucwords($this->modelCache[$modelid]['tablename']))->where(array("id" => $this->id))->setInc($statistics);
+                M(ucwords(getModel($modelid, 'tablename')))->where(array("id" => $this->id))->setInc($statistics);
             }
 
             if (!urlDomain(CONFIG_SITEURL)) {
