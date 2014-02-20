@@ -18,6 +18,6 @@ function catid($field, $value, $fieldinfo) {
         $publish_str = "<a href='javascript:;' onclick=\"omnipotent('selectid','" . U("Contents/Content/public_othors", array("catid" => $this->catid)) . "','同时发布到其他栏目',1);return false;\" style='color:#B5BFBB'>[同时发布到其他栏目]</a>
             <ul class='three_list cc' id='add_othors_text'></ul>";
     }
-    $publish_str = '<input type="hidden" name="info[' . $field . ']" value="' . $value . '"/>' . $this->categorys[$value]['catname'] . $publish_str;
+    $publish_str = '<input type="hidden" name="info[' . $field . ']" value="' . $value . '"/>' . getCategory($value, 'catname') . $publish_str;
     return $publish_str;
 }
