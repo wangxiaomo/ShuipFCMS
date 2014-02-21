@@ -54,6 +54,7 @@ class CategoryAction extends AdminbaseAction {
         $types = array(0 => '内部栏目', 1 => '<font color="blue">单网页</font>', 2 => '<font color="red">外部链接</font>');
         if (!empty($result)) {
             foreach ($result as $r) {
+                $r = getCategory($r['catid']);
                 $r['modelname'] = $models[$r['modelid']]['name'];
                 $r['str_manage'] = '';
                 if ($r['child']) {
