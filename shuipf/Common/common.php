@@ -1084,7 +1084,10 @@ function getCategory($catid, $field = '', $newCache = false) {
             S($key, 'false', 60);
             return false;
         } else {
+            //扩展配置
             $cache['setting'] = unserialize($cache['setting']);
+            //栏目扩展字段
+            $cache['extend'] = $cache['setting']['extend'];
             S($key, $cache, 3600);
         }
     }

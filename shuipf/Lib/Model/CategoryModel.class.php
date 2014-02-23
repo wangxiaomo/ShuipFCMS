@@ -95,6 +95,10 @@ class CategoryModel extends CommonModel {
                     //更新附件状态，把相关附件和文章进行管理
                     service("Attachment")->api_update('', 'catid-' . $catid, 1);
                 }
+                //扩展字段处理
+                if ($post['extend']) {
+                    $this->extendField($catid, $post);
+                }
                 return $catid;
             } else {
                 $this->error = '栏目添加失败！';
@@ -187,6 +191,10 @@ class CategoryModel extends CommonModel {
                     //更新附件状态，把相关附件和文章进行管理
                     service("Attachment")->api_update('', 'catid-' . $catid, 1);
                 }
+                //扩展字段处理
+                if ($post['extend']) {
+                    $this->extendField($catid, $post);
+                }
                 return true;
             } else {
                 $this->error = '栏目修改失败！';
@@ -261,6 +269,7 @@ class CategoryModel extends CommonModel {
         }
         $status = $this->where($where)->delete();
         if (false !== $status) {
+            $this->extendFieldDel($where);
             //删除对应栏目的权限列表
             M("Category_priv")->where($where)->delete();
             if (is_array($catid)) {
@@ -398,7 +407,7 @@ class CategoryModel extends CommonModel {
         $categorys = array();
         foreach ($data as $r) {
             //更新缓存
-            getCategory($r['catid'],'',true);
+            getCategory($r['catid'], '', true);
             $categorys[$r['catid']] = array(
                 'catid' => $r['catid'],
                 'parentid' => $r['parentid'],
@@ -416,6 +425,123 @@ class CategoryModel extends CommonModel {
         }
         F("Category", $categorys);
         return true;
+    }
+
+    /**
+     * 获取扩展字段
+     * @param type $catid 栏目ID
+     * @return boolean
+     */
+    public function getExtendField($catid) {
+        if (empty($catid)) {
+            return false;
+        }
+        $extendFieldLisr = M('CategoryField')->where(array('catid' => $catid))->select();
+        foreach ($extendFieldLisr as $k => $rs) {
+            $extendFieldLisr[$k]['setting'] = unserialize($rs['setting']);
+        }
+        return $extendFieldLisr;
+    }
+
+    /**
+     * 删除某栏目下的扩展字段
+     * @param type $where 删除条件
+     * @return boolean
+     */
+    protected function extendFieldDel($where) {
+        if (empty($where)) {
+            return false;
+        }
+        return M('CategoryField')->where($where)->delete();
+    }
+
+    /**
+     * 扩展字段处理
+     * @param type $catid 栏目ID
+     * @param type $post 数据
+     * @return boolean
+     */
+    protected function extendField($catid, $post) {
+        if (empty($catid) || intval($catid) < 1 || empty($post)) {
+            return false;
+        }
+        C('TOKEN_ON', false);
+        //时间
+        $time = time();
+        //栏目信息
+        $info = $this->where(array('catid' => $catid))->find();
+        if (empty($info)) {
+            return false;
+        }
+        $info['setting'] = unserialize($info['setting']);
+        //删除不存在的选项
+        if (!empty($post['extenddelete'])) {
+            $extenddelete = explode('|', $post['extenddelete']);
+            M('CategoryField')->where(array('fid' => array('IN', $extenddelete)))->delete();
+        }
+        //查询出该栏目扩展字段列表
+        $extendFieldLisr = array();
+        foreach (M('CategoryField')->where(array('catid' => $catid))->field('fieldname')->select() as $rs) {
+            $extendFieldLisr[] = $rs['fieldname'];
+        }
+        //检查是否有新怎字段
+        if (!empty($post['extend_config']) && is_array($post['extend_config'])) {
+            $validate = array(
+                array('catid', 'require', '栏目ID不能为空！', 1, 'regex', 3),
+                array('fieldname', 'require', '键名不能为空！', 1, 'regex', 3),
+                array('type', 'require', '类型不能为空！', 1, 'regex', 3),
+                array('fieldname', '/^[a-z_0-9]+$/i', '键名只支持英文、数字、下划线！', 0, 'regex', 3),
+            );
+            foreach ($post['extend_config'] as $field => $rs) {
+                //如果已经存在则跳过
+                if (in_array($field, $extendFieldLisr)) {
+                    continue;
+                }
+                $rs['catid'] = $catid;
+                $data = M('CategoryField')->validate($validate)->create($rs);
+                if ($data) {
+                    $data['createtime'] = $time;
+                    $setting = $data['setting'];
+                    if ($data['type'] == 'radio' || $data['type'] == 'checkbox') {
+                        $option = array();
+                        $optionList = explode("\n", $setting['option']);
+                        if (is_array($optionList)) {
+                            foreach ($optionList as $rs) {
+                                $rs = explode('|', $rs);
+                                if (!empty($rs)) {
+                                    $option[] = array(
+                                        'title' => $rs[0],
+                                        'value' => $rs[1],
+                                    );
+                                }
+                            }
+                            $setting['option'] = $option;
+                        }
+                    }
+                    $data['setting'] = serialize($setting);
+                    $fieldId = M('CategoryField')->add($data);
+                    if ($fieldId) {
+                        $extendFieldLisr[] = $field;
+                    }
+                } else {
+                    continue;
+                }
+            }
+        }
+        //值更新
+        $extend = array();
+        if (!empty($post['extend']) || is_array($post['extend'])) {
+            foreach ($post['extend'] as $field => $value) {
+                if (in_array($field, $extendFieldLisr)) {
+                    $extend[$field] = $value;
+                }
+            }
+            $info['setting']['extend'] = $extend;
+        }
+        //更新栏目
+        return $this->where(array('catid' => $catid))->save(array(
+                    'setting' => serialize($info['setting']),
+        ));
     }
 
 }

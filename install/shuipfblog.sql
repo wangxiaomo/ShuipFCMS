@@ -175,6 +175,20 @@ CREATE TABLE `shuipfcms_category` (
 
 
 -- ----------------------------
+-- Table structure for shuipfcms_category_field
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_category_field`;
+CREATE TABLE `shuipfcms_category_field` (
+  `fid` smallint(6) NOT NULL AUTO_INCREMENT COMMENT '自增长id',
+  `catid` smallint(5) DEFAULT NULL COMMENT '栏目ID',
+  `fieldname` varchar(30) NOT NULL COMMENT '字段名',
+  `type` varchar(10) NOT NULL COMMENT '类型,input',
+  `setting` mediumtext NOT NULL COMMENT '其他',
+  `createtime` int(10) DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`fid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='栏目扩展字段列表';
+
+-- ----------------------------
 -- Table structure for `shuipfcms_category_priv`
 -- ----------------------------
 DROP TABLE IF EXISTS `shuipfcms_category_priv`;

@@ -7,7 +7,6 @@
  */
 class CategoryAction extends AdminbaseAction {
 
-    protected $categorys;
     //模板文件夹
     private $filepath;
     //频道模板路径
@@ -21,7 +20,8 @@ class CategoryAction extends AdminbaseAction {
     //评论模板路径
     protected $tp_comment;
 
-    function _initialize() {
+    //初始化
+    protected function _initialize() {
         parent::_initialize();
         //取得当前内容模型模板存放目录
         $this->filepath = TEMPLATE_PATH . (empty(AppframeAction::$Cache["Config"]['theme']) ? "Default" : AppframeAction::$Cache["Config"]['theme']) . DIRECTORY_SEPARATOR . "Contents" . DIRECTORY_SEPARATOR; //
@@ -180,10 +180,10 @@ class CategoryAction extends AdminbaseAction {
             }
 
             //输出可用模型
-            $modelsdata = F("ModelType_0");
+            $modelsdata = F("Model");
             $models = array();
             foreach ($modelsdata as $v) {
-                if ($v['disabled'] == 0) {
+                if ($v['disabled'] == 0 && $v['type'] == 0) {
                     $models[] = $v;
                 }
             }
@@ -290,7 +290,14 @@ class CategoryAction extends AdminbaseAction {
             }
             $data = getCategory($catid);
             $setting = $data['setting'];
-            $models = F("ModelType_0");
+            //输出可用模型
+            $modelsdata = F("Model");
+            $models = array();
+            foreach ($modelsdata as $v) {
+                if ($v['disabled'] == 0 && $v['type'] == 0) {
+                    $models[] = $v;
+                }
+            }
             $tree->init($array);
             $categorydata = $tree->get_tree(0, $str, $data['parentid']);
 
@@ -314,6 +321,8 @@ class CategoryAction extends AdminbaseAction {
                 //会员组
                 $this->assign("Member_group", F("Member_group"));
             }
+            //栏目扩展字段
+            $this->assign('extendList', D("Category")->getExtendField($catid));
             //角色组
             $this->assign("Role_group", M("Role")->order(array("id" => "ASC"))->select());
             $this->assign("big_menu", array(U("Category/index"), "栏目管理"));
@@ -388,9 +397,8 @@ class CategoryAction extends AdminbaseAction {
      * @return boolean
      */
     protected function repair($categorys) {
-        $this->categorys = $categorys;
-        if (is_array($this->categorys)) {
-            foreach ($this->categorys as $catid => $cat) {
+        if (is_array($categorys)) {
+            foreach ($categorys as $catid => $cat) {
                 //外部栏目无需修复
                 if ($cat['type'] == 2) {
                     continue;
