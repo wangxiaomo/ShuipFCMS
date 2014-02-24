@@ -71,9 +71,39 @@ body fieldset legend {
                </th>
               <td><input type="text" name="info[keywords]" id="keywords" value="{$info.keywords}" style="width:280px" class="input" placeholder="请输入关键字"> 多关键词之间用空格隔开</td>
             </tr>
+            <volist name="extendList" id="vo">
             <tr>
               <th width="80">
-                关键词 
+                {$vo.setting.title}
+               </th>
+              <td>
+              <switch name="vo.type">
+                 <case value="input">
+                 <input type="text" class="input" style="{$vo.setting.style}"  name="extend[{$vo.fieldname}]" value="{$extend[$vo['fieldname']]}" placeholder="{$vo.setting.tips}">
+                 </case>
+                 <case value="textarea">
+                 <textarea name="extend[{$vo.fieldname}]" style="{$vo.setting.style}" placeholder="{$vo.setting.tips}">{$extend[$vo['fieldname']]}</textarea>
+                 </case>
+                 <case value="password">
+                 <input type="password" class="input" style="{$vo.setting.style}"  name="extend[{$vo.fieldname}]" value="{$extend[$vo['fieldname']]}" placeholder="{$vo.setting.tips}">
+                 </case>
+                 <case value="radio">
+                 <volist name="vo['setting']['option']" id="rs">
+                 <label><input name="extend[{$vo.fieldname}]" value="{$rs.value}" type="radio"  <if condition=" $extend[$vo['fieldname']] == $rs['value'] ">checked</if>> {$rs.title}</label>
+                 </volist>
+                 </case>
+                 <case value="checkbox">
+                 <volist name="vo['setting']['option']" id="rs">
+                 <label><input name="extend[{$vo.fieldname}][]" value="{$rs.value}" type="checkbox"  <if condition=" in_array($rs['value'],$extend[$vo['fieldname']]) ">checked</if>> {$rs.title}</label>
+                 </volist>
+                 </case>
+              </switch>
+              </td>
+            </tr>
+            </volist>
+            <tr>
+              <th width="80">
+                内容正文 
                </th>
               <td><span class="must_red">*</span><div id='content_tip'></div><script type="text/plain" id="content" name="info[content]">{$info.content}</script><?php echo Form::editor('content','full','contents',$catid,1); ?></td>
             </tr>

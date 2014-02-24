@@ -461,7 +461,7 @@ class CategoryModel extends CommonModel {
      * @param type $post 数据
      * @return boolean
      */
-    protected function extendField($catid, $post) {
+    public function extendField($catid, $post) {
         if (empty($catid) || intval($catid) < 1 || empty($post)) {
             return false;
         }

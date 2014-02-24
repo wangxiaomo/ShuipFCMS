@@ -93,6 +93,7 @@ class IndexAction extends BaseAction {
             unset($tpar);
             $GLOBALS['URLRULE'] = $urls;
             $info = $db->getPage($catid);
+            $this->assign($category['setting']['extend']);
             $this->assign($info);
         }
         //把分页分配到模板

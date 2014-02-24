@@ -32,6 +32,7 @@
       <li class=""><a href="javascript:;;">模板设置</a></li>
       <li class=""><a href="javascript:;;">生成设置</a></li>
       <li class=""><a href="javascript:;;">权限设置</a></li>
+      <li class=""><a href="javascript:;;">扩展字段</a></li>
     </ul>
   </div>
   <form class="J_ajaxForms" name="myform" id="myform" action="{:U("Category/add")}" method="post">
@@ -193,6 +194,53 @@
           </table>
         </div>
       </div>
+      <div style="display:none;">
+        <div class="h_a">添加字段</div>
+        <div class="table_full">
+        <table cellpadding="0" cellspacing="0" class="table_form" width="100%">
+          <tbody>
+            <tr>
+              <td width="50">键名:</td>
+              <td><input type="text" class="input" name="extend_add[fieldname]" value="">
+                注意：只允许英文、数组、下划线</td>
+            </tr>
+            <tr>
+              <td>名称:</td>
+              <td><input type="text" class="input" name="extend_add[setting][title]" value=""></td>
+            </tr>
+            <tr>
+              <td>类型:</td>
+              <td><select name="extend_add[type]" onChange="extend_type(this.value)">
+                  <option value="input" >单行文本框</option>
+                  <option value="textarea" >多行文本框</option>
+                  <option value="password" >密码输入框</option>
+                  <option value="radio" >单选框</option>
+                  <option value="checkbox" >多选框</option>
+                </select></td>
+            </tr>
+            <tr>
+              <td>提示:</td>
+              <td><input type="text" class="input length_4" name="extend_add[setting][tips]" value=""></td>
+            </tr>
+            <tr>
+              <td>样式:</td>
+              <td><input type="text" class="input length_4" name="extend_add[setting][style]" value=""></td>
+            </tr>
+            <tr class="setting_radio" style="display:none">
+              <td>选项:</td>
+              <td><textarea name="extend_add[setting][option]" disabled="true" style="width:380px; height:150px;">选项名称1|选项值1</textarea>
+                注意：每行一个选项</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="btn_wrap_pd add_extend"><a href="javascript:;;">添加字段</a></div>
+        <div class="h_a">扩展字段列表(提示：请使用 <b>getCategory(栏目ID,'extend.<font color="#FF0000">键名</font>')</b> 的方式获取该值)</div>
+        <div class="table_full">
+        <table width="100%"  class="table_form extend_list">
+        </table>
+        </div>
+      </div>
     </div>
     <div class="btn_wrap">
       <div class="btn_wrap_pd">
@@ -205,7 +253,145 @@
 <script type="text/javascript" src="{$config_siteurl}statics/js/common.js?v"></script>
 <script type="text/javascript" src="{$config_siteurl}statics/js/content_addtop.js"></script>
 <script type="text/javascript">
+//扩展字段处理
+function extend_type(type){
+	if(type == 'radio' || type == 'checkbox'){
+		$('.setting_radio').show();
+		$('.setting_radio textarea').attr('disabled',false);
+	}else{
+		$('.setting_radio').hide();
+		$('.setting_radio textarea').attr('disabled',true);
+	}
+}
 $(function(){
+	//添加扩展字段
+	$('.add_extend a').click(function(){
+		var fieldname = $('input[name="extend_add[fieldname]"]').val();
+		var type = $('select[name="extend_add[type]"]').val();
+		var setting = {};
+		setting.title = $('input[name="extend_add[setting][title]"]').val();
+		setting.tips = $('input[name="extend_add[setting][tips]"]').val();
+		setting.style = $('input[name="extend_add[setting][style]"]').val();
+		setting.option = $('textarea[name="extend_add[setting][option]"]').val();
+		
+		if(fieldname == ''){
+			alert("键名不能为空！");
+			return false;
+		}else{
+			if(fieldname.replace(/^[0-9a-zA-Z_]{1,}$/g) != 'undefined'){
+				alert("键名只允许数字，字母，下划线！");
+				return false;
+			}
+		}
+		if(type == ''){
+			alert("类型不能为空！");
+			return false;
+		}
+		if(setting.title == ''){
+			alert("名称不能为空！");
+			return false;
+		}
+		
+		//单选框
+		if(type == 'input'){
+			$('.extend_list').append('<tr>\
+          <th width="120">'+setting.title+'(<a href="javascript:;;" class="extend_del">删除</a>)</th>\
+          <th class="y-bg">\
+          <input type="text" class="input" style="'+setting.style+'"  name="extend['+fieldname+']" value="" placeholder="'+setting.tips+'">\
+		  <input type="hidden" name="extend_config['+fieldname+'][fieldname]" value="'+fieldname+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][type]" value="'+type+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][title]" value="'+setting.title+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][tips]" value="'+setting.tips+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][style]" value="'+setting.style+'"/>\
+		  <textarea name="extend_config['+fieldname+'][setting][option]" style="display:none;">'+setting.option+'</textarea>\
+          </th>\
+         </tr>');
+		}else if(type == 'textarea'){
+			//多行文本框
+			$('.extend_list').append('<tr>\
+          <th width="120">'+setting.title+'(<a href="javascript:;;" class="extend_del">删除</a>)</th>\
+          <th class="y-bg">\
+          <textarea name="extend['+fieldname+']" style="'+setting.style+'" placeholder="'+setting.tips+'"></textarea>\
+		  <input type="hidden" name="extend_config['+fieldname+'][fieldname]" value="'+fieldname+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][type]" value="'+type+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][title]" value="'+setting.title+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][tips]" value="'+setting.tips+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][style]" value="'+setting.style+'"/>\
+		  <textarea name="extend_config['+fieldname+'][setting][option]" style="display:none;">'+setting.option+'</textarea>\
+          </th>\
+         </tr>');
+		}else if(type == 'password'){
+			//密码框
+			$('.extend_list').append('<tr>\
+          <th width="120">'+setting.title+'(<a href="javascript:;;" class="extend_del">删除</a>)</th>\
+          <th class="y-bg">\
+          <input type="password" class="input" style="'+setting.style+'"  name="extend['+fieldname+']" value="" placeholder="'+setting.tips+'">\
+		  <input type="hidden" name="extend_config['+fieldname+'][fieldname]" value="'+fieldname+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][type]" value="'+type+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][title]" value="'+setting.title+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][tips]" value="'+setting.tips+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][style]" value="'+setting.style+'"/>\
+		  <textarea name="extend_config['+fieldname+'][setting][option]" style="display:none;">'+setting.option+'</textarea>\
+          </th>\
+         </tr>');
+		}else if(type == 'radio'){
+			//单选框
+			if(setting.option == ''){
+				alert('选项不能为空！');
+				return false;
+			}
+			var html = '';
+			var op = setting.option.split("\n");
+			$.each(op,function(i,rs){
+				var at = rs.split("|");
+				html += '<label><input name="extend['+fieldname+']" value="'+at[1]+'" type="radio" > '+at[0]+'</label>';
+			});
+			$('.extend_list').append('<tr>\
+          <th width="120">'+setting.title+'(<a href="javascript:;;" class="extend_del">删除</a>)</th>\
+          <th class="y-bg">'+html+'\
+		  <input type="hidden" name="extend_config['+fieldname+'][fieldname]" value="'+fieldname+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][type]" value="'+type+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][title]" value="'+setting.title+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][tips]" value="'+setting.tips+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][style]" value="'+setting.style+'"/>\
+		  <textarea name="extend_config['+fieldname+'][setting][option]" style="display:none;">'+setting.option+'</textarea>\
+          </th>\
+         </tr>');
+		}else if(type == 'checkbox'){
+			//复选框
+			if(setting.option == ''){
+				alert('选项不能为空！');
+				return false;
+			}
+			var html = '';
+			var op = setting.option.split("\n");
+			$.each(op,function(i,rs){
+				var at = rs.split("|");
+				html += '<label><input name="extend['+fieldname+'][]" value="'+at[1]+'" type="checkbox" > '+at[0]+'</label>';
+			});
+			$('.extend_list').append('<tr>\
+          <th width="120">'+setting.title+'(<a href="javascript:;;" class="extend_del">删除</a>)</th>\
+          <th class="y-bg">'+html+'\
+		  <input type="hidden" name="extend_config['+fieldname+'][fieldname]" value="'+fieldname+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][type]" value="'+type+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][title]" value="'+setting.title+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][tips]" value="'+setting.tips+'"/>\
+		  <input type="hidden" name="extend_config['+fieldname+'][setting][style]" value="'+setting.style+'"/>\
+		  <textarea name="extend_config['+fieldname+'][setting][option]" style="display:none;">'+setting.option+'</textarea>\
+          </th>\
+         </tr>');
+		}
+		//清空
+		$('input[name="extend_add[fieldname]"]').val('');
+		$('select[name="extend_add[type]"]').val('');
+		$('input[name="extend_add[setting][title]"]').val('');
+		$('input[name="extend_add[setting][tips]"]').val('');
+		$('input[name="extend_add[setting][style]"]').val('');
+		//删除扩展字段
+		$('.extend_list .extend_del').click(function(){
+			$(this).parent('th').parent('tr').remove();
+		});
+	});
     Wind.use('validate', 'ajaxForm', 'artDialog', function () {
         var form = $('form.J_ajaxForms');
         //ie处理placeholder提交问题

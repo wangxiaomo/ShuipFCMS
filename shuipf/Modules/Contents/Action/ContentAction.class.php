@@ -7,8 +7,6 @@
  */
 class ContentAction extends AdminbaseAction {
 
-    //栏目缓存
-    protected $categorys = array();
     //模型缓存
     protected $model = array();
     //当前栏目ID
@@ -22,7 +20,6 @@ class ContentAction extends AdminbaseAction {
         C('HTML_FILE_SUFFIX', "");
         //跳转时间
         $this->assign("waitSecond", 2000);
-        $this->categorys = F("Category");
         $this->model = F("Model");
         //栏目ID
         $this->catid = I('request.catid', 0, 'intval');
@@ -34,7 +31,7 @@ class ContentAction extends AdminbaseAction {
             //如果是public_开头的方法通过验证
             if (strpos(ACTION_NAME, 'public_') === false && ACTION_NAME != "index") {
                 //操作
-                $action = $this->categorys[$this->catid]['type'] == 0 ? ACTION_NAME : 'init';
+                $action = getCategory($this->catid, 'type') == 0 ? ACTION_NAME : 'init';
                 if ($action == "classlist") {
                     $action = "init";
                 }
@@ -45,7 +42,7 @@ class ContentAction extends AdminbaseAction {
             }
         }
         import('Form');
-        if (isset($_GET['catid']) && empty($this->model[$this->categorys[$this->catid]['modelid']]) && $this->categorys[$this->catid]['type'] == 0) {
+        if (isset($_GET['catid']) && empty($this->model[getCategory($this->catid, 'modelid')]) && getCategory($this->catid, 'type') == 0) {
             $this->error("模型或者栏目不存在！！");
         }
     }
@@ -57,14 +54,14 @@ class ContentAction extends AdminbaseAction {
 
     //显示对应栏目信息列表 
     public function classlist() {
-        $catInfo = $this->categorys[$this->catid];
+        $catInfo = getCategory($this->catid);
         //是否搜索
         $search = I('get.search');
         $where = array();
         $where["catid"] = array("EQ", $this->catid);
         if (!empty($catInfo)) {
             //栏目扩展配置
-            $setting = unserialize($catInfo['setting']);
+            $setting = $catInfo['setting'];
             //检查模型是否被禁用
             if ($this->model[$catInfo['modelid']]['disabled'] == 1) {
                 $this->error("模型被禁用！");
@@ -152,17 +149,17 @@ class ContentAction extends AdminbaseAction {
                 $this->error("标题不能为空！");
             }
             //获取当前栏目配置
-            $category = $this->categorys[$catid];
+            $category = getCategory($this->catid);
             //栏目类型为0
             if ($category['type'] == 0) {
                 //模型ID
-                $this->modelid = $this->categorys[$catid]['modelid'];
+                $this->modelid = getCategory($this->catid, 'modelid');
                 //检查模型是否被禁用
                 if ($this->model[$this->modelid]['disabled'] == 1) {
                     $this->error("模型被禁用！");
                 }
                 //setting 配置
-                $setting = unserialize($category['setting']);
+                $setting = $category['setting'];
                 import('Content');
                 $Content = get_instance_of('Content');
                 $status = $Content->add($_POST['info']);
@@ -174,6 +171,12 @@ class ContentAction extends AdminbaseAction {
             } else if ($category['type'] == 1) {//单页栏目
                 $db = D('Page');
                 if ($db->savePage($_POST)) {
+                    //扩展字段处理
+                    if ($_POST['extend']) {
+                        D("Category")->extendField($catid, $_POST);
+                        //更新缓存
+                        getCategory($this->catid, '', true);
+                    }
                     import('Html');
                     $html = get_instance_of('Html');
                     $html->category($catid);
@@ -187,7 +190,7 @@ class ContentAction extends AdminbaseAction {
             }
         } else {
             //取得对应模型
-            $category = $this->categorys[$this->catid];
+            $category = getCategory($this->catid);
             if (empty($category)) {
                 $this->error("该栏目不存在！");
             }
@@ -215,7 +218,7 @@ class ContentAction extends AdminbaseAction {
                 //js
                 $formJavascript = $content_form->formJavascript;
                 //取得当前栏目setting配置信息
-                $setting = unserialize($category['setting']);
+                $setting = $category['setting'];
                 //var_dump($category);exit;
                 $this->assign("catid", $this->catid);
                 $this->assign("uploadurl", CONFIG_SITEFILEURL);
@@ -236,12 +239,16 @@ class ContentAction extends AdminbaseAction {
                         $info['style_font_weight'] = $style[1];
                     }
                 }
+                $extend = $category['setting']['extend'];
 
                 $this->assign("catid", $this->catid);
                 $this->assign("uploadurl", CONFIG_SITEFILEURL);
                 $this->assign("setting", $setting);
+                $this->assign('extend', $extend);
                 $this->assign('info', $info);
                 $this->assign("category", $category);
+                //栏目扩展字段
+                $this->assign('extendList', D("Category")->getExtendField($this->catid));
                 $this->display('singlepage');
             }
         }
@@ -252,12 +259,12 @@ class ContentAction extends AdminbaseAction {
         $this->catid = empty($this->catid) ? (int) $_POST['info']['catid'] : $this->catid;
         //信息ID
         $id = I('request.id', 0, 'intval');
-        $Categorys = $this->categorys[$this->catid];
+        $Categorys = getCategory($this->catid);
         if (empty($Categorys)) {
             $this->error("该栏目不存在！");
         }
         //栏目setting配置
-        $cat_setting = unserialize($Categorys['setting']);
+        $cat_setting = $Categorys['setting'];
         //模型ID
         $modelid = $Categorys['modelid'];
         //检查模型是否被禁用
@@ -339,7 +346,7 @@ class ContentAction extends AdminbaseAction {
     public function delete() {
         if (IS_POST) {
             $this->catid = I('get.catid', 0, 'intval');
-            $Categorys = $this->categorys[$this->catid];
+            $Categorys = getCategory($this->catid);
             if (empty($Categorys)) {
                 $this->error("该栏目不存在！");
             }
@@ -362,7 +369,7 @@ class ContentAction extends AdminbaseAction {
         } else {
             $this->catid = I('get.catid', 0, 'intval');
             $id = I('get.id', 0, 'intval');
-            $Categorys = $this->categorys[$this->catid];
+            $Categorys = getCategory($this->catid);
             if (empty($Categorys)) {
                 $this->error("该栏目不存在！");
             }
@@ -439,7 +446,7 @@ class ContentAction extends AdminbaseAction {
     public function listorder() {
         $listorders = $_POST['listorders'];
         if (is_array($listorders)) {
-            $category = $this->categorys[$this->catid];
+            $category = getCategory($this->catid);
             $modelid = $category['modelid'];
             $table_name = ucwords($this->model[$modelid]['tablename']);
             $db = M($table_name);
@@ -464,7 +471,8 @@ class ContentAction extends AdminbaseAction {
             }
         }
         $json = array();
-        foreach ($this->categorys as $rs) {
+        $categorys = F("Category");
+        foreach ($categorys as $rs) {
             if ($rs['type'] == 2 && $rs['child'] == 0) {
                 continue;
             }
@@ -516,7 +524,7 @@ class ContentAction extends AdminbaseAction {
             $this->ajaxReturn("", "标题没有重复！", true);
             return false;
         }
-        $tablename = ucwords($this->model[$this->categorys[$catid]['modelid']]['tablename']);
+        $tablename = ucwords($this->model[getCategory($catid, 'modelid')]['tablename']);
         $count = M($tablename)->where(array("title" => $title))->count();
         if ($count > 0) {
             $this->ajaxReturn("", "标题有重复！", false);
@@ -598,8 +606,8 @@ class ContentAction extends AdminbaseAction {
             if (empty($priv_catids))
                 return '';
         }
-
-        foreach ($this->categorys as $r) {
+        $categorysList = F("Category");
+        foreach ($categorysList as $r) {
             if ($r['type'] != 0)
                 continue;
             if (session("roleid") != 1 && !in_array($r['catid'], $priv_catids)) {
@@ -674,7 +682,7 @@ class ContentAction extends AdminbaseAction {
                         if ($tocatid == $catid) {
                             $this->error("目标栏目和当前栏目是同一个栏目！");
                         }
-                        $modelid = $this->categorys[$tocatid]['modelid'];
+                        $modelid = getCategory($catid, 'modelid');
                         if (!$modelid) {
                             $this->error("该模型不存在！");
                         }
@@ -707,7 +715,7 @@ class ContentAction extends AdminbaseAction {
                     }
                     $where = array();
                     $where['catid'] = array("IN", $fromid);
-                    $modelid = $this->categorys[$catid]['modelid'];
+                    $modelid = getCategory($catid, 'modelid');
                     if (!$modelid) {
                         $this->error("该模型不存在！");
                     }
@@ -730,13 +738,14 @@ class ContentAction extends AdminbaseAction {
             if (!$catid) {
                 $this->error("请指定栏目！");
             }
-            $modelid = $this->categorys[$catid]['modelid'];
+            $modelid = getCategory($catid, 'modelid');
             import("Tree");
             $tree = new Tree();
             $tree->icon = array('&nbsp;&nbsp;│ ', '&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;└─ ');
             $tree->nbsp = '&nbsp;&nbsp;';
             $categorys = array();
-            foreach ($this->categorys as $cid => $r) {
+            $categorysList = F("Category");
+            foreach ($categorysList as $cid => $r) {
                 if ($r['type'])
                     continue;
                 if ($modelid && $modelid != $r['modelid'])
@@ -871,7 +880,7 @@ class ContentAction extends AdminbaseAction {
                     if (!empty($position)) {
                         $array = array();
                         foreach ($position as $_key => $_value) {
-                            if ($_value['modelid'] && ($_value['modelid'] != $modelid) || ($_value['catid'] && strpos(',' . $this->categorys[$_value['catid']]['arrchildid'] . ',', ',' . $catid . ',') === false)) {
+                            if ($_value['modelid'] && ($_value['modelid'] != $modelid) || ($_value['catid'] && strpos(',' . getCategory($_value['catid'], 'arrchildid') . ',', ',' . $catid . ',') === false)) {
                                 continue;
                             }
                             $array[$_key] = $_value['name'];
