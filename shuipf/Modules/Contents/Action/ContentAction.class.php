@@ -149,11 +149,11 @@ class ContentAction extends AdminbaseAction {
                 $this->error("标题不能为空！");
             }
             //获取当前栏目配置
-            $category = getCategory($this->catid);
+            $category = getCategory($catid);
             //栏目类型为0
             if ($category['type'] == 0) {
                 //模型ID
-                $this->modelid = getCategory($this->catid, 'modelid');
+                $this->modelid = getCategory($catid, 'modelid');
                 //检查模型是否被禁用
                 if ($this->model[$this->modelid]['disabled'] == 1) {
                     $this->error("模型被禁用！");
@@ -682,7 +682,7 @@ class ContentAction extends AdminbaseAction {
                         if ($tocatid == $catid) {
                             $this->error("目标栏目和当前栏目是同一个栏目！");
                         }
-                        $modelid = getCategory($catid, 'modelid');
+                        $modelid = getCategory($tocatid, 'modelid');
                         if (!$modelid) {
                             $this->error("该模型不存在！");
                         }
