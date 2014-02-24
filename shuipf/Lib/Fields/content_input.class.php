@@ -142,10 +142,8 @@ class content_input {
                         //判断是入库执行类型
                         if ((int) $setting['backstagefun_type'] == 1 || (int) $setting['backstagefun_type'] == 3) {
                             //调用自定义函数，参数传入：模型id，栏目ID，信息ID，字段内容，字段名，操作类型，附加参数
-                            // 例子 demo($modelid ,$value , $catid , $id, $field ,$action ,$param){}
-                            $id = 0;
                             try {
-                                $value = call_user_func($usfun, $this->modelid, $this->catid, $id, $value, $field, ACTION_NAME, $usparam);
+                                $value = call_user_func($usfun, $this->modelid, $this->catid, 0, $value, $field, ACTION_NAME, $usparam);
                             } catch (Exception $exc) {
                                 //记录日志
                                 Log::write("模型id:" . $this->modelid . ",错误信息：调用自定义函数" . $usfun . "出现错误！");
@@ -164,10 +162,8 @@ class content_input {
                             //判断是入库执行类型
                             if ((int) $setting['backstagefun_type'] == 1 || (int) $setting['backstagefun_type'] == 3) {
                                 //调用自定义函数，参数传入：模型id，栏目ID，信息ID，字段内容，字段名，操作类型，附加参数
-                                // 例子 demo($modelid ,$value , $catid , $id, $field ,$action ,$param){}
-                                $id = 0;
                                 try {
-                                    $value = call_user_func($usfun, $this->modelid, $this->catid, $id, $value, $field, ACTION_NAME, $usparam);
+                                    $value = call_user_func($usfun, $this->modelid, $this->catid, 0, $value, $field, ACTION_NAME, $usparam);
                                 } catch (Exception $exc) {
                                     //记录日志
                                     Log::write("模型id:" . $this->modelid . ",错误信息：调用自定义函数" . $usfun . "出现错误！");
