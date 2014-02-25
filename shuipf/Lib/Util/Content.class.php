@@ -119,7 +119,7 @@ class Content {
             $content = $isContent ? $data['content'] : $data[$getRelationName]['content'];
             $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
-                $data['thumb'] = $matches[3][$auto_thumb_no];
+                $oldata['thumb'] = $data['thumb'] = $matches[3][$auto_thumb_no];
             }
         }
         //插入成功返回ID
@@ -336,7 +336,7 @@ class Content {
             $content = $isContent ? $data['content'] : $data[$getRelationName]['content'];
             $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
-                $data['thumb'] = $matches[3][$auto_thumb_no];
+                $oldata['thumb'] = $data['thumb'] = $matches[3][$auto_thumb_no];
             }
         }
         //数据修改，这里使用关联操作
