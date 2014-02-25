@@ -51,10 +51,6 @@ body fieldset legend {
       <li class="current"><a href="{:U('Content/classlist', array('catid'=>$catid)  )}">{$category.catname}列表</a></li>
     </ul>
   </div>
-  <div class="h_a">温馨提示</div>
-  <div class="prompt_text"> 
-    <p>请不要发布违反法律不允许的内容！</p>
-   </div>
   <form name="myform" id="myform" action="{:U("Contents/Content/edit")}" method="post" class="J_ajaxForms" enctype="multipart/form-data">
   <div class="col-right">
     <div class="table_full">
