@@ -53,7 +53,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
         </div>
         <!--index_slider end-->
         <div class="software">
-          <h2><span class="more right"><a href="{$Categorys[9]['url']}" target="_blank">更多>></a></span><span class="h2_txt">常用软件</span></h2>
+          <h2><span class="more right"><a href="{:getCategory(9,'url')}" target="_blank">更多>></a></span><span class="h2_txt">常用软件</span></h2>
           <ul>
             <li><a href="{$config_siteurl}2013/software_06/31.html" title="photoshop CS5绿化破解版免费下载"><img src="{$config_siteurl}statics/default/images/ps_ico.png" alt="PS软件"/></a></li>
             <li><a href="{$config_siteurl}2013/software_06/32.html" title="Adobe Dreamweaver cs6汉化破解版免费下载"><img src="{$config_siteurl}statics/default/images/dw_ico.png" alt="Dreamweaver软件"/></a></li>
@@ -88,7 +88,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
         
         <!--首页头条end-->
         <div class="top_info">
-          <h2><span class="more right"><a href="{$Categorys[7]['url']}" target="_blank">更多&gt;&gt;</a></span><span class="h2_txt">站长推荐</span></h2>
+          <h2><span class="more right"><a href="{:getCategory(7,'url')}" target="_blank">更多&gt;&gt;</a></span><span class="h2_txt">站长推荐</span></h2>
           <div id="ztlist1" class="ztlist" style="display:block">
           <position action="position" posid="3">
           <volist name="data" id="vo">
@@ -110,8 +110,8 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     <div class="index_tab">
       <h2 class="h2">网页特效</h2>
       <ul class="tabs" id="tabs">
-        <li><a href="{$Categorys[16]['url']}" tab="tab1" hidefocus="true" title="焦点幻灯片">JS幻灯片</a></li>
-        <li><a href="{$Categorys[17]['url']}" tab="tab2" hidefocus="true" title="导航菜单">导航菜单</a></li>
+        <li><a href="{:getCategory(16,'url')}" tab="tab1" hidefocus="true" title="焦点幻灯片">JS幻灯片</a></li>
+        <li><a href="{:getCategory(17,'url')}" tab="tab2" hidefocus="true" title="导航菜单">导航菜单</a></li>
       </ul>
       <div style="clear:both"></div>
       <ul class="tab_conbox">
@@ -121,7 +121,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
           <dl>
             <dt><a href="{$vo.url}"><img src="{$vo.thumb}" alt="{$vo.title}"/></a></dt>
             <dd class="span1"><a href="{$vo.url}"  title="{$vo.title}">{$vo.title|str_cut=###,15}</a></dd>
-            <dd class="span2"><a href="{$Categorys[16]['url']}" title="JS幻灯片">JS幻灯片</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d",###} </dd>
+            <dd class="span2"><a href="{:getCategory(16,'url')}" title="JS幻灯片">JS幻灯片</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d",###} </dd>
           </dl>
         </volist>
         </content>
@@ -133,7 +133,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
           <dl>
             <dt><a href="{$vo.url}"><img src="{$vo.thumb}" alt="{$vo.title}"/></a></dt>
             <dd class="span1"><a href="{$vo.url}"  title="{$vo.title}">{$vo.title|str_cut=###,15}</a></dd>
-            <dd class="span2"><a href="{$Categorys[17]['url']}" title="导航菜单">导航菜单</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d",###} </dd>
+            <dd class="span2"><a href="{:getCategory(17,'url')}" title="导航菜单">导航菜单</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d",###} </dd>
           </dl>
          </volist>
         </content>
@@ -146,8 +146,8 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     <div class="index_tab">
       <h2 class="h2">建站素材</h2>
       <ul class="tabs" id="tabss">
-        <li><a href="{$Categorys[18]['url']}" tab="tab1s" hidefocus="true">PNG图标</a></li>
-        <li><a href="{$Categorys[19]['url']}" tab="tab2s" hidefocus="true">GIF图标</a></li>
+        <li><a href="{:getCategory(18,'url')}" tab="tab1s" hidefocus="true">PNG图标</a></li>
+        <li><a href="{:getCategory(19,'url')}" tab="tab2s" hidefocus="true">GIF图标</a></li>
       </ul>
       <div style="clear:both"></div>
       <ul class="tab_conbox">
@@ -157,7 +157,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
           <dl>
             <dt><a href="{$vo.url}"><img src="{$vo.thumb}" alt="{$vo.title}"/></a></dt>
             <dd class="span1"><a href="{$vo.url}"  title="{$vo.title}">{$vo.title|str_cut=###,15}</a></dd>
-            <dd class="span2"><a href="{$Categorys[18]['url']}" title="PNG图标">PNG图标</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d",###} </dd>
+            <dd class="span2"><a href="{:getCategory(18,'url')}" title="PNG图标">PNG图标</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d",###} </dd>
           </dl>
         </volist>
         </content>
@@ -169,7 +169,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
           <dl>
             <dt><a href="{$vo.url}"><img src="{$vo.thumb}" alt="{$vo.title}"/></a></dt>
             <dd class="span1"><a href="{$vo.url}"  title="{$vo.title}">{$vo.title|str_cut=###,15}</a></dd>
-            <dd class="span2"><a href="{$Categorys[19]['url']}" title="GIF图标">GIF图标</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d",###} </dd>
+            <dd class="span2"><a href="{:getCategory(19,'url')}" title="GIF图标">GIF图标</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d",###} </dd>
           </dl>
          </volist>
         </content>
@@ -186,9 +186,9 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
         <li><a href="http://www.css88.com/jqapi-1.9/" title="jquery1.9在线手册"><img  src="{$config_siteurl}statics/default/images/jq.png"/ alt="jquery1.8.3在线手册"><span>jquery手册</span></a></li>
         <li><a href="http://www.css88.com/book/css/" title="CSS3在线手册"><img  src="{$config_siteurl}statics/default/images/3.gif"/ alt="CSS3在线手册"><span>CSS3手册</span></a></li>
         <li><a title="字体专区"><img  src="{$config_siteurl}statics/default/images/1.gif" alt="字体专区"/><span>字体专区</span></a></li>
-        <li><a href="{$Categorys[9]['url']}" title="常用软件"><img  src="{$config_siteurl}statics/default/images/4.gif" alt="软件专区"/><span>软件专区</span></a></li>
-        <li><a href="{$Categorys[3]['url']}" title="PS专区"><img  src="{$config_siteurl}statics/default/images/5.gif" alt="在线P图"/><span>在线PS</span></a></li>
-        <li><a href="{$Categorys[7]['url']}" title="站长快迅"><img  src="{$config_siteurl}statics/default/images/2.gif" alt="站长快讯"/><span>站长快讯</span></a></li>
+        <li><a href="{:getCategory(9,'url')}" title="常用软件"><img  src="{$config_siteurl}statics/default/images/4.gif" alt="软件专区"/><span>软件专区</span></a></li>
+        <li><a href="{:getCategory(3,'url')}" title="PS专区"><img  src="{$config_siteurl}statics/default/images/5.gif" alt="在线P图"/><span>在线PS</span></a></li>
+        <li><a href="{:getCategory(7,'url')}" title="站长快迅"><img  src="{$config_siteurl}statics/default/images/2.gif" alt="站长快讯"/><span>站长快讯</span></a></li>
         <div style="clear:both;"></div>
       </ul>
     </div>
@@ -202,7 +202,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
       <ul id="update">
       <get sql="SELECT * FROM shuipfcms_article  WHERE status=99 ORDER BY inputtime DESC" num="9">
       <volist name="data" id="vo">
-        <li>[<a href='{$Categorys[$vo['catid']]['url']}'>{$Categorys[$vo['catid']]['catname']}</a>] <a href="{$vo.url}" title="{$vo.title}">{$vo.title}</a></li>
+        <li>[<a href='{:getCategory($vo['catid'],'url')}'>{:getCategory($vo['catid'],'catname')}</a>] <a href="{$vo.url}" title="{$vo.title}">{$vo.title}</a></li>
       </volist>
       </get>
       </ul>
@@ -234,7 +234,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
 <!--top part end-->
 <div class="w972s margin8">
   <div class="web_jc">
-    <h2><span class="more right"><a href="{$Categorys[1]['url']}" target="_blank">更多>></a></span><span class="h2_txt">网页教程</span></h2>
+    <h2><span class="more right"><a href="{:getCategory(1,'url')}" target="_blank">更多>></a></span><span class="h2_txt">网页教程</span></h2>
     <content action="hits" catid="1"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
@@ -254,7 +254,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     </ul>
   </div>
   <div class="web_jc" style="margin-left:8px;">
-    <h2><span class="more right"><a href="{$Categorys[2]['url']}" target="_blank">更多>></a></span><span class="h2_txt">前端开发</span></h2>
+    <h2><span class="more right"><a href="{:getCategory(2,'url')}" target="_blank">更多>></a></span><span class="h2_txt">前端开发</span></h2>
     <content action="hits" catid="2"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
@@ -274,7 +274,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     </ul>
   </div>
   <div class="web_jc" style="margin-left:7px;">
-    <h2><span class="more right"><a href="{$Categorys[3]['url']}" target="_blank">更多>></a></span><span class="h2_txt">PS教程</span></h2>
+    <h2><span class="more right"><a href="{:getCategory(3,'url')}" target="_blank">更多>></a></span><span class="h2_txt">PS教程</span></h2>
     <content action="hits" catid="3"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
@@ -300,7 +300,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
 </div>
 <div class="w972s margin8">
   <div class="web_jc">
-    <h2><span class="more right"><a href="{$Categorys[6]['url']}" target="_blank">更多>></a></span><span class="h2_txt">SEO优化</span></h2>
+    <h2><span class="more right"><a href="{:getCategory(6,'url')}" target="_blank">更多>></a></span><span class="h2_txt">SEO优化</span></h2>
     <content action="hits" catid="6"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
@@ -320,7 +320,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     </ul>
   </div>
   <div class="web_jc" style="margin-left:8px;">
-    <h2><span class="more right"><a href="{$Categorys[7]['url']}" target="_blank">更多>></a></span><span class="h2_txt">站长杂谈</span></h2>
+    <h2><span class="more right"><a href="{:getCategory(7,'url')}" target="_blank">更多>></a></span><span class="h2_txt">站长杂谈</span></h2>
     <content action="hits" catid="7"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
@@ -340,7 +340,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
     </ul>
   </div>
   <div class="web_jc" style="margin-left:7px;">
-    <h2><span class="more right"><a href="{$Categorys[9]['url']}" target="_blank">更多>></a></span><span class="h2_txt">常用软件</span></h2>
+    <h2><span class="more right"><a href="{:getCategory(9,'url')}" target="_blank">更多>></a></span><span class="h2_txt">常用软件</span></h2>
     <content action="hits" catid="9"  order="weekviews DESC" num="1">
     <volist name="data" id="vo">
     <dl>
@@ -365,7 +365,7 @@ jQuery(".focusBox").slide({ titCell:".num li", mainCell:".pic",effect:"fold", au
   <img src="http://lorempixel.com/970/102" />
 </div>
 <div class="art_pic">
-  <h2><span class="more right"><a href="{$Categorys[8]['url']}">更多>></a></span><span class="h2_txt">设计欣赏/artist</span></h2>
+  <h2><span class="more right"><a href="{:getCategory(8,'url')}">更多>></a></span><span class="h2_txt">设计欣赏/artist</span></h2>
   <ul>
     <content action="lists" catid="8"  order="id DESC" num="4">
     <volist name="data" id="vo">

@@ -124,7 +124,7 @@ var GV = {
     <div class="fenlei">
       <h2><span class="h2_txt">分类栏目</span></h2>
       <ul>
-      <content action="category" catid="$Categorys[$catid]['parentid']"  order="listorder ASC" >
+      <content action="category" catid="getCategory($catid,'parentid')"  order="listorder ASC" >
       <volist name="data" id="vo">
         <li><a href='{$vo.url}' <if condition=" $catid eq $vo['catid'] "> class='thisclass'</if>  title="{$vo.catname}">{$vo.catname}</a></li>
       </volist>

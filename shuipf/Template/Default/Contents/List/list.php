@@ -23,13 +23,13 @@
   <div class="article_list_left left">
     <content action="lists" catid="$catid" order="id DESC" num="7" page="$page">
     <div class="article_lanmu">
-      <h2><span class="h2_text">{$Categorys[$catid]['catname']}</span></h2>
+      <h2><span class="h2_text">{:getCategory($catid,'catname')}</span></h2>
       <volist name="data" id="vo">
       <dl>
         <dt><a href='{$vo.url}' title='{$vo.title}'><img src='<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>' alt='{$vo.title}'/></a></dt>
         <dd class="arc_title"><a href="{$vo.url}" title="{$vo.title}">{$vo.title}</a></dd>
         <dd class="arc_desc">{$vo.description}...</dd>
-        <dd class="arc_info"><span>所属栏目：<a href='{$Categorys[$catid]['url']}'>{$Categorys[$catid]['catname']}</a></span> <span>更新日期：{$vo.updatetime|date="m-d H:i:s",###}</span> <span>阅读次数：{$vo.views}</span></dd>
+        <dd class="arc_info"><span>所属栏目：<a href='{:getCategory($catid,'url')}'>{:getCategory($catid,'catname')}</a></span> <span>更新日期：{$vo.updatetime|date="m-d H:i:s",###}</span> <span>阅读次数：{$vo.views}</span></dd>
         <div style="clear:both"></div>
       </dl>
       </volist>

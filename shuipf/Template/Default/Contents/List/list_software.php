@@ -23,13 +23,13 @@
   <div class="article_list_left left">
     <content action="lists" catid="$catid" order="id DESC" num="18" page="$page">
     <div class="jslanmu">
-      <h2><span class="h2_text">{$Categorys[$catid]['catname']}</span></h2>
+      <h2><span class="h2_text">{:getCategory($catid,'catname')}</span></h2>
       <div style="clear:both"></div>
       <volist name="data" id="vo">
       <dl>
         <dt><a href="{$vo.url}" target="_blank" title="{$vo.title}"><img src="<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>" alt="{$vo.title}"/></a></dt>
         <dd class="span1"><a href="{$vo.url}" title="{$vo.title}" target="_blank">{$vo.title}</a></dd>
-        <dd class="span2"><a href="{$Categorys[$catid]['url']}" title="{$Categorys[$catid]['catname']}">{$Categorys[$catid]['catname']}</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d H:i:s",###} </dd>
+        <dd class="span2"><a href="{:getCategory($catid,'url')}" title="{:getCategory($catid,'catname')}">{:getCategory($catid,'catname')}</a>&nbsp;/&nbsp;{$vo.updatetime|date="m-d H:i:s",###} </dd>
       </dl>
       </volist>
       <div style="clear:both"></div>
