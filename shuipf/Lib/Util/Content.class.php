@@ -117,7 +117,7 @@ class Content {
         //自动提取缩略图，从content 中提取
         if (empty($data['thumb'])) {
             $content = $isContent ? $data['content'] : $data[$getRelationName]['content'];
-            $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
+            $auto_thumb_no = I('.auto_thumb_no', 1, 'intval')- 1;
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
                 $oldata['thumb'] = $data['thumb'] = $matches[3][$auto_thumb_no];
             }
@@ -334,7 +334,7 @@ class Content {
         //自动提取缩略图，从content 中提取
         if (empty($data['thumb'])) {
             $content = $isContent ? $data['content'] : $data[$getRelationName]['content'];
-            $auto_thumb_no = intval($_POST['auto_thumb_no']) - 1;
+            $auto_thumb_no = I('.auto_thumb_no', 1, 'intval')- 1;
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
                 $oldata['thumb'] = $data['thumb'] = $matches[3][$auto_thumb_no];
             }
