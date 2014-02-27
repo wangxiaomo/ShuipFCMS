@@ -201,7 +201,7 @@ class content_input {
             $this->infoData = array_merge($data, $this->infoData);
         }
         //如果副表没有字段，加个关联ID字段。不然不会在副表插入一条记录
-        if (!isset($this->infoData[$this->ContentModel->getRelationName()])) {
+        if (!isset($this->infoData[$this->ContentModel->getRelationName()]) && $this->model[$this->modelid]['type'] == 0) {
             $this->infoData[$this->ContentModel->getRelationName()] = array('id' => 0);
         }
         return $this->infoData;
