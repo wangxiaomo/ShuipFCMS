@@ -205,8 +205,12 @@ class ContentAction extends AdminbaseAction {
                 if ($this->model[$modelid]['disabled'] == 1) {
                     $this->error("该模型已被禁用！");
                 }
-                //取模型ID，依模型ID来生成对应的表单
-                require_cache(RUNTIME_PATH . 'content_form.class.php');
+                //引入输入表单处理类
+                if (false == require_cache(RUNTIME_PATH . 'content_form.class.php')) {
+                    D("Category")->category_cache();
+                    D("Content_cache")->model_content_cache();
+                    require RUNTIME_PATH . 'content_form.class.php';
+                }
                 //实例化表单类 传入 模型ID 栏目ID 栏目数组
                 $content_form = new content_form($modelid, $this->catid);
                 //生成对应字段的输入表单
@@ -314,7 +318,11 @@ class ContentAction extends AdminbaseAction {
                 "locktime" => time()
             ));
             //引入输入表单处理类
-            require_cache(RUNTIME_PATH . 'content_form.class.php');
+            if (false == require_cache(RUNTIME_PATH . 'content_form.class.php')) {
+                D("Category")->category_cache();
+                D("Content_cache")->model_content_cache();
+                require RUNTIME_PATH . 'content_form.class.php';
+            }
             $content_form = new content_form($modelid, $this->catid);
             //字段内容
             $forminfos = $content_form->get($data);
