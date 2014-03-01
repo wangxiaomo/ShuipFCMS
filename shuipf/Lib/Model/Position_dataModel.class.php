@@ -25,7 +25,11 @@ class Position_dataModel extends CommonModel {
             return false;
         }
         //载入数据处理类
-        require_cache(RUNTIME_PATH . 'content_input.class.php');
+        if (false == require_cache(RUNTIME_PATH . 'content_input.class.php')) {
+            D("Category")->category_cache();
+            D("Content_cache")->model_content_cache();
+            require RUNTIME_PATH . 'content_input.class.php';
+        }
         $content_input = new content_input($data['modelid']);
         $data['data'] = $content_input->get($data['data'], 2);
         $data['data'] = serialize($data['data']);

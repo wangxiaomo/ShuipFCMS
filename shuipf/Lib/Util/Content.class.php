@@ -39,7 +39,7 @@ class Content {
      */
     public function add($data) {
         $this->catid = (int) $data['catid'];
-        $this->modelid = getCategory($this->catid,'modelid');
+        $this->modelid = getCategory($this->catid, 'modelid');
         //取得表单令牌验证码
         $data[C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
         //标签
@@ -93,7 +93,12 @@ class Content {
         }
         //数据模型对象
         $this->contentModel = ContentModel::getInstance($this->modelid);
-        require_cache(RUNTIME_PATH . 'content_input.class.php');
+        //载入数据处理类
+        if (false == require_cache(RUNTIME_PATH . 'content_input.class.php')) {
+            D("Category")->category_cache();
+            D("Content_cache")->model_content_cache();
+            require RUNTIME_PATH . 'content_input.class.php';
+        }
         $content_input = new content_input($this->modelid);
         //保存一份旧数据
         $oldata = $data;
@@ -117,7 +122,7 @@ class Content {
         //自动提取缩略图，从content 中提取
         if (empty($data['thumb'])) {
             $content = $isContent ? $data['content'] : $data[$getRelationName]['content'];
-            $auto_thumb_no = I('.auto_thumb_no', 1, 'intval')- 1;
+            $auto_thumb_no = I('.auto_thumb_no', 1, 'intval') - 1;
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
                 $oldata['thumb'] = $data['thumb'] = $matches[3][$auto_thumb_no];
             }
@@ -146,7 +151,11 @@ class Content {
         }
 
         //调用 update
-        require_cache(RUNTIME_PATH . 'content_update.class.php');
+        if (false == require_cache(RUNTIME_PATH . 'content_update.class.php')) {
+            D("Category")->category_cache();
+            D("Content_cache")->model_content_cache();
+            require RUNTIME_PATH . 'content_update.class.php';
+        }
         $content_update = new content_update($this->modelid);
         $updateStatus = $content_update->update($oldata);
         if (false == $updateStatus) {
@@ -263,7 +272,7 @@ class Content {
     public function edit($data, $id) {
         $data['id'] = $id;
         $this->catid = (int) $data['catid'];
-        $this->modelid = getCategory($this->catid,'modelid');
+        $this->modelid = getCategory($this->catid, 'modelid');
         //取得表单令牌验证码
         $data[C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
         //标签
@@ -310,7 +319,11 @@ class Content {
         if (isset($data['inputtime'])) {
             unset($data['inputtime']);
         }
-        require_cache(RUNTIME_PATH . 'content_input.class.php');
+        if (false == require_cache(RUNTIME_PATH . 'content_input.class.php')) {
+            D("Category")->category_cache();
+            D("Content_cache")->model_content_cache();
+            require RUNTIME_PATH . 'content_input.class.php';
+        }
         $content_input = new content_input($this->modelid);
         //保存一份旧数据
         $oldata = $data;
@@ -334,7 +347,7 @@ class Content {
         //自动提取缩略图，从content 中提取
         if (empty($data['thumb'])) {
             $content = $isContent ? $data['content'] : $data[$getRelationName]['content'];
-            $auto_thumb_no = I('.auto_thumb_no', 1, 'intval')- 1;
+            $auto_thumb_no = I('.auto_thumb_no', 1, 'intval') - 1;
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
                 $oldata['thumb'] = $data['thumb'] = $matches[3][$auto_thumb_no];
             }
@@ -350,7 +363,11 @@ class Content {
         $this->contentModel->dataMerger($data);
         $oldata['inputtime'] = $data['inputtime'] = $inputtime;
         //调用 update
-        require_cache(RUNTIME_PATH . 'content_update.class.php');
+        if (false == require_cache(RUNTIME_PATH . 'content_update.class.php')) {
+            D("Category")->category_cache();
+            D("Content_cache")->model_content_cache();
+            require RUNTIME_PATH . 'content_update.class.php';
+        }
         $content_update = new content_update($this->modelid);
         $updateStatus = $content_update->update($oldata);
         if (false == $updateStatus) {
@@ -456,16 +473,20 @@ class Content {
      * @param $catid 栏目id
      */
     public function delete($id, $catid) {
-        require_cache(RUNTIME_PATH . 'content_delete.class.php');
+        if (false == require_cache(RUNTIME_PATH . 'content_delete.class.php')) {
+            D("Category")->category_cache();
+            D("Content_cache")->model_content_cache();
+            require RUNTIME_PATH . 'content_delete.class.php';
+        }
         $this->catid = (int) $catid;
         //模型ID
-        $this->modelid = getCategory($this->catid,'modelid');
+        $this->modelid = getCategory($this->catid, 'modelid');
         if (getCategory($this->catid) == false) {
             $this->error = '获取不到栏目信息！';
             return false;
         }
         //栏目配置信息
-        $setting = getCategory($this->catid,'setting');
+        $setting = getCategory($this->catid, 'setting');
         //内容页是否生成静态
         $content_ishtml = $setting['content_ishtml'];
         $this->contentModel = ContentModel::getInstance($this->modelid);
@@ -525,7 +546,7 @@ class Content {
         //循环需要同步发布的栏目
         foreach ($othor_catid as $cid) {
             //获取需要同步栏目所属模型ID
-            $mid = getCategory($cid,'modelid');
+            $mid = getCategory($cid, 'modelid');
             //判断模型是否相同
             if ($modelid == $mid) {//相同
                 $data['catid'] = $cid;
@@ -585,9 +606,9 @@ class Content {
     public function check($catid, $id, $status = 99) {
         C('TOKEN_ON', false);
         //模型ID
-        $this->modelid = getCategory($catid,'modelid');
+        $this->modelid = getCategory($catid, 'modelid');
         //是否生成HTML
-        $sethtml = getCategory($catid,'sethtml');
+        $sethtml = getCategory($catid, 'sethtml');
         //栏目配置信息
         $setting = $this->categorys[$catid]['setting'];
         $content_ishtml = $setting['content_ishtml'];
@@ -655,7 +676,7 @@ class Content {
     public function deleteHtml($catid, $id, $inputtime, $prefix = '', $data = false) {
         if ($data == false) {
             //模型ID
-            $this->modelid = getCategory($catid,'modelid');
+            $this->modelid = getCategory($catid, 'modelid');
             $this->Content = ContentModel::getInstance($this->modelid);
             $data = $this->Content->relation(true)->where(array('id' => $id, 'catid' => $catid))->find();
             $this->Content->dataMerger($data);
@@ -687,7 +708,7 @@ class Content {
         if (!$catid || !$id) {
             return;
         }
-        $modelid = getCategory($catid,'modelid');
+        $modelid = getCategory($catid, 'modelid');
         $db = ContentModel::getInstance($modelid);
         $where = array();
         $where['catid'] = $catid;
@@ -704,7 +725,7 @@ class Content {
             if ($r['islink'] || empty($r['id']))
                 continue;
             $db->dataMerger($r);
-            $setting = getCategory($r['catid'],'setting');
+            $setting = getCategory($r['catid'], 'setting');
             $content_ishtml = $setting['content_ishtml'];
             if (!$content_ishtml) {
                 continue;

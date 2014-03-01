@@ -274,7 +274,11 @@ class FieldAction extends AdminbaseAction {
             $this->error("请指定模型！");
         }
         //载入 content_form.class.php 缓存文件
-        require_cache(RUNTIME_PATH . 'content_form.class.php');
+        if (false == require_cache(RUNTIME_PATH . 'content_form.class.php')) {
+            D("Category")->category_cache();
+            D("Content_cache")->model_content_cache();
+            require RUNTIME_PATH . 'content_form.class.php';
+        }
         $content_form = new content_form($modelid);
         //生成对应字段的输入表单
         $forminfos = $content_form->get();
