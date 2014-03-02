@@ -746,12 +746,17 @@ class Content {
         if (!in_array("Search", $App)) {
             return false;
         }
+        $db = D("Search/Search");
         //检查当前模型是否有在搜索数据源中
         $searchConfig = F("Search_config");
+        //判断缓存，如果不存在，尝试更新缓存
+        if (empty($searchConfig)) {
+            $db->search_cache();
+            $searchConfig = F("Search_config");
+        }
         if (!in_array($this->modelid, $searchConfig['modelid'])) {
             return false;
         }
-        $db = D("Search/Search");
         return $db->search_api($id, $data, $this->modelid, $action);
     }
 
