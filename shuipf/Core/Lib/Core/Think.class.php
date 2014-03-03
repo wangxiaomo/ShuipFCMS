@@ -246,6 +246,16 @@ class Think {
             if (require_cache(LIB_PATH . "/Driver/Passport/{$class}.class.php")) {
                 return;
             }
+        } elseif (in_array($class, array('content_update', 'content_output', 'content_input', 'content_form', 'content_delete'))) { // 加载内容模块相关处理类
+            if (require_cache(RUNTIME_PATH . "{$class}.class.php")) {
+                return;
+            } else {
+                //生成
+                D("Content_cache")->model_content_cache();
+                if (is_file(RUNTIME_PATH . "{$class}.class.php")) {
+                    include RUNTIME_PATH . "{$class}.class.php";
+                }
+            }
         } else {//加载 Util下 自定义类
             if (require_cache(LIB_PATH . "/Util/{$class}.class.php")) {
                 return;
@@ -276,8 +286,7 @@ class Think {
                     self::$_instance[$identify] = call_user_func_array(array(&$o, $method));
                 else
                     self::$_instance[$identify] = $o;
-            }
-            else
+            } else
                 halt(L('_CLASS_NOT_EXIST_') . ':' . $class);
         }
         return self::$_instance[$identify];
