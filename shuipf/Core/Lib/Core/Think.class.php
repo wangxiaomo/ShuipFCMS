@@ -130,9 +130,6 @@ class Think {
         //加载相关配置，需要连数据库的情况下
         //初始化网站基本配置
         $Config = F("Config");
-        if (false == $Config) {
-            $Config = D("Config")->config_cache();
-        }
         //产品版本号
         define("SHUIPF_VERSION", C("SHUIPF_VERSION"));
         //产品流水号
@@ -146,18 +143,10 @@ class Think {
         }
         //取得已安装模块缓存
         $App = F("App");
-        if (false == $App) {
-            //生成好缓存
-            D("Module")->module_cache();
-            $App = F("App");
-        }
         //配置已安装模块列表
         C("APP_GROUP_LIST", implode(",", $App));
         //获取行为列表
         $behaviorCache = F('Behavior');
-        if (empty($behaviorCache)) {
-            $behaviorCache = D('Behavior')->behavior_cache();
-        }
         C('tags', $behaviorCache);
         //###########################################
 

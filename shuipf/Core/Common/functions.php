@@ -500,14 +500,30 @@ function F($name, $value = '', $path = DATA_PATH) {
         $_cache[$name] = $value;
     } else {
         $value = false;
-        if ($name === 'Model') {
-            D("Model")->model_cache();
-            $value = F('Model');
-        } else if ($name === 'Category') {
-            D("Category")->category_cache();
-            D("Content_cache")->model_content_cache();
-            D("Position")->position_cache();
-            $value = F('Category');
+        //核心缓存处理
+        switch ($name) {
+            case 'App':
+                D("Module")->module_cache();
+                $value = F('App');
+                break;
+            case 'Behavior':
+                D('Behavior')->behavior_cache();
+                $value = F('Behavior');
+                break;
+            case 'Model':
+                D("Model")->model_cache();
+                $value = F('Model');
+                break;
+            case 'Category':
+                D("Category")->category_cache();
+                D("Content_cache")->model_content_cache();
+                D("Position")->position_cache();
+                $value = F('Category');
+                break;
+            case 'Config':
+                D("Config")->config_cache();
+                $value = F('Config');
+                break;
         }
     }
     return $value;
