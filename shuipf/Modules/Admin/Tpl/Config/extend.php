@@ -69,6 +69,7 @@
              </case>
           </switch>
            <span class="gray"> {$setting.tips}</span>
+		   <br/><span class="gray">模板调用标签：<literal>{$Config.</literal>{$vo.fieldname}}</span>
            <br/><a href="{:U('Config/extend',array('fid'=>$vo['fid'],'action'=>'delete'))}" class="J_ajax_del">删除该项配置</a>
           </th>
         </tr>
