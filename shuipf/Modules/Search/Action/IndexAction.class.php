@@ -1,24 +1,26 @@
 <?php
 
-/* * 
+/**
  * 搜索
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class IndexAction extends BaseAction {
 
-    public $config;
+    //搜索配置
+    protected $config;
 
-    function _initialize() {
+    //初始化
+    protected function _initialize() {
         parent::_initialize();
         $this->config = F("Search_config");
-        if (!$this->config) {
+        if (empty($this->config)) {
             D("Search")->search_cache();
             $this->config = F("Search_config");
         }
     }
 
+    //搜索首页
     public function index() {
         C('TOKEN_ON', false);
         $seo = seo();
@@ -26,22 +28,22 @@ class IndexAction extends BaseAction {
         if (I("request.q")) {
             G('search');
             //关键字
-            $q = Input::forSearch(safe_replace(I("request.q")));
+            $q = Input::forSearch(I("request.q"));
             $q = htmlspecialchars(strip_tags($q));
-            if (trim($q) == '') {
+            if (empty($q)) {
                 header('Location: ' . U("Search/Index/index"));
                 exit;
             }
             if (IS_POST) {
-                header('Location: ' . U("Search/Index/index", array("q" => $q)));
+                header('Location: ' . U("Search/Index/index", array("q" => urlencode($q))));
                 exit;
             }
             //时间范围
             $time = I('get.time');
             //模型
-            $mid = I('get.modelid',0,'intval');
+            $mid = I('get.modelid', 0, 'intval');
             //栏目
-            $catid = I('get.catid',0,'intval');
+            $catid = I('get.catid', 0, 'intval');
             //排序
             $order = array("adddate" => "DESC", "searchid" => "DESC");
             //搜索历史记录
@@ -50,7 +52,6 @@ class IndexAction extends BaseAction {
                 $shistory = array();
             }
             $model = F("Model");
-            $category = F("Category");
             array_unshift($shistory, $q);
             $shistory = array_slice(array_unique($shistory), 0, 10);
             //加入搜索历史
@@ -61,7 +62,6 @@ class IndexAction extends BaseAction {
             $pagesize = $this->config['pagesize'] ? $this->config['pagesize'] : 10;
             //缓存时间
             $cachetime = (int) $this->config['cachetime'];
-
             //按时间搜索
             if ($time == 'day') {//一天
                 $search_time = time() - 86400;
@@ -78,24 +78,17 @@ class IndexAction extends BaseAction {
             } else {
                 $search_time = 0;
             }
-
             //可用数据源
             $this->config['modelid'] = $this->config['modelid'] ? $this->config['modelid'] : array();
-
             //按模型搜索
             if ($mid && in_array($mid, $this->config['modelid'])) {
                 $where['modelid'] = array("EQ", (int) $mid);
             }
-
             //按栏目搜索
             if ($catid) {
                 //不支持多栏目搜索，和父栏目搜索。
                 $where['catid'] = array("EQ", (int) $catid);
             }
-
-            //分页模板
-            $TP = '共有{recordcount}条信息&nbsp;{pageindex}/{pagecount}&nbsp;{first}{prev}{liststart}{list}{listend}{next}{last}';
-
             //如果开启sphinx
             if ($this->config['sphinxenable']) {
                 import("Sphinxapi", APP_PATH . C("APP_GROUP_PATH") . '/Search/Class/');
@@ -115,8 +108,7 @@ class IndexAction extends BaseAction {
                 //按一种类似SQL的方式将列组合起来，升序或降序排列。用weight是权重排序
                 $cl->SetSortMode(SPH_SORT_EXTENDED, "@weight desc");
                 //设置返回结果集偏移量和数目
-                $page = (int) $this->_get(C("VAR_PAGE"));
-                $page = $page < 1 ? 1 : $page;
+                $page = I('get.' . C("VAR_PAGE"), 1, 'intval');
                 $offset = $pagesize * ($page - 1);
                 $cl->SetLimits($offset, $pagesize, ($pagesize > 1000) ? $pagesize : 1000);
                 if (in_array($time, array("day", "week", "month", "year"))) {
@@ -158,13 +150,12 @@ class IndexAction extends BaseAction {
                 $page = page($count, $pagesize);
                 $this->assign("Page", $page->show('default'));
             } else {
-                import("Segment", APP_PATH . C("APP_GROUP_PATH") . '/Search/Class/');
-                $Segment = new Segment();
                 //分词结果
-                $segment_q = $Segment->get_keyword($Segment->split_result($q));
+                $segment_q = D("Search")->discuzSegment($q);
                 if (!empty($segment_q) && $this->config['segment']) {
-                    $words = explode(" ", $segment_q);
-                    $where['_string'] = " MATCH (`data`) AGAINST ('$segment_q' IN BOOLEAN MODE) ";
+                    $words = $segment_q;
+                    $segment_q = implode(' ', $segment_q);
+                    $where['_string'] = " MATCH (`data`) AGAINST ('{$segment_q}' IN BOOLEAN MODE) ";
                 } else {
                     //这种搜索最不行
                     $where['data'] = array('like', "%{$q}%");
@@ -173,17 +164,16 @@ class IndexAction extends BaseAction {
                 //查询结果缓存
                 if ($cachetime) {
                     //统计
-                    $count = M("Search")->cache(true, $cachetime)->where($where)->count();
+                    $count = D("Search")->cache(true, $cachetime)->where($where)->count();
                     $page = page($count, $pagesize);
-                    $result = M("Search")->cache(true, $cachetime)->where($where)->limit($page->firstRow . ',' . $page->listRows)->order($order)->select();
+                    $result = D("Search")->cache(true, $cachetime)->where($where)->limit($page->firstRow . ',' . $page->listRows)->order($order)->select();
                 } else {
-                    $count = M("Search")->where($where)->count();
+                    $count = D("Search")->where($where)->count();
                     $page = page($count, $pagesize);
-                    $result = M("Search")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order($order)->select();
+                    $result = D("Search")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order($order)->select();
                 }
                 $this->assign("Page", $page->show('default'));
             }
-
             //搜索结果处理
             if ($result && is_array($result)) {
                 foreach ($result as $k => $r) {
@@ -197,7 +187,7 @@ class IndexAction extends BaseAction {
             }
             //搜索记录
             if (strlen($q) < 17 && strlen($q) > 1 && $result) {
-                $res = M("SearchKeyword")->where(array('keyword' => $q))->find();
+                $res = M("SearchKeyword")->where(array('keyword' => $q))->count();
                 if ($res) {
                     //关键词搜索数+1
                     M("SearchKeyword")->where(array('keyword' => $q))->setInc("searchnums");
@@ -222,7 +212,6 @@ class IndexAction extends BaseAction {
                 }
                 $map['_string'] = " MATCH (`data`) AGAINST ('%$relation_q%' IN BOOLEAN MODE) ";
                 $relation = M("SearchKeyword")->where($map)->select();
-
                 $this->assign("relation", $relation);
             }
 
@@ -234,18 +223,16 @@ class IndexAction extends BaseAction {
             }
             //搜索结果
             $this->assign("result", $result);
-            //运行时间
-            $search_time = G('search', 'end', 6);
             $this->assign("count", $count ? $count : 0);
-            $this->assign("search_time", $search_time);
             $this->assign("keyword", $q);
-            $this->assign("category", $category);
             $this->assign("source", $source);
             $this->assign("time", $time);
             $this->assign("modelid", $mid);
             $this->assign("shistory", $shistory);
             //分词后的搜索关键字
             $this->assign("words", $words);
+            //运行时间
+            $this->assign("search_time", G('search', 'end', 6));
             $this->display("search");
         } else {
             $this->display();
@@ -253,5 +240,3 @@ class IndexAction extends BaseAction {
     }
 
 }
-
-?>

@@ -17,13 +17,22 @@ class SearchModel extends CommonModel {
             return false;
         }
         $Search['setting'] = unserialize($Search['setting']);
+        //是否启用相关搜索
         $Search['setting']['relationenble'] = isset($Search['setting']['relationenble']) ? $Search['setting']['relationenble'] : 1;
+        //是否启用PHP简易分词
         $Search['setting']['segment'] = isset($Search['setting']['segment']) ? $Search['setting']['segment'] : 1;
+        //搜索结果每页显示条数
         $Search['setting']['pagesize'] = isset($Search['setting']['pagesize']) ? $Search['setting']['pagesize'] : 10;
+        //搜索结果缓存时间
         $Search['setting']['cachetime'] = isset($Search['setting']['cachetime']) ? $Search['setting']['cachetime'] : 0;
+        //是否启用sphinx全文索引
         $Search['setting']['sphinxenable'] = isset($Search['setting']['sphinxenable']) ? $Search['setting']['sphinxenable'] : 0;
+        //sphinx服务器主机地址
+        $Search['setting']['sphinxhost'] = isset($Search['setting']['sphinxhost']) ? $Search['setting']['sphinxhost'] : '';
+        //sphinx服务器端口号
+        $Search['setting']['sphinxport'] = isset($Search['setting']['sphinxport']) ? $Search['setting']['sphinxport'] : '';
         F("Search_config", $Search['setting']);
-        return false;
+        return $Search['setting'];
     }
 
     /**
@@ -52,9 +61,48 @@ class SearchModel extends CommonModel {
     }
 
     /**
-     *  数据处理
-     * @param type $data 数据
-     * @return type
+     * DZ在线中文分词
+     * @param $title string 进行分词的标题
+     * @param $content string 进行分词的内容
+     * @param $encode string API返回的数据编码
+     * @return  array 得到的关键词数组
+     */
+    public function discuzSegment($title = '', $content = '', $encode = 'utf-8') {
+        if (empty($title)) {
+            return false;
+        }
+        //标题处理
+        $title = rawurlencode(strip_tags(trim($title)));
+        //内容处理
+        $content = str_replace(' ', '', strip_tags($content));
+        //在线分词服务有长度限制
+        if (strlen($content) > 2400) {
+            $content = mb_substr($content, 0, 2300, $encode);
+        }
+        //进行URL编码
+        $content = rawurlencode($content);
+        //API地址
+        $url = 'http://keyword.discuz.com/related_kw.html?title=' . $title . '&content=' . $content . '&ics=' . $encode . '&ocs=' . $encode;
+        //将XML中的数据,读取到数组对象中
+        $xml_array = simplexml_load_file($url);
+        $result = $xml_array->keyword->result;
+        //分词数据
+        $data = array();
+        foreach ($result->item as $key => $value) {
+            array_push($data, (string) $value->kw);
+        }
+        if (count($data) > 0) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 搜索数据入库处理
+     * @param type $data 搜索数据
+     * @param type $text 附带数据，例如标题 关键字
+     * @return string
      */
     private function dataHandle($data, $text = '') {
         if (!$data) {
@@ -66,20 +114,15 @@ class SearchModel extends CommonModel {
         $data = str_replace(array(" ", "\r\t"), array(""), $data);
         $data = Input::forSearch($data);
         $data = Input::deleteHtmlTags($data);
+        //搜索配置
         $config = F("Search_config");
-        if (!$config) {
-            $this->search_cache();
-            $config = F("Search_config");
+        if (empty($config)) {
+            $config = $this->search_cache();
         }
         //判断是否启用sphinx全文索引，如果不是，则进行php简易分词处理
         if ((int) $config['sphinxenable'] == 0 && $config['segment']) {
-            static $Segment;
-            if (!isset($Segment)) {
-                import("Segment", APP_PATH . C("APP_GROUP_PATH") . '/Search/Class/');
-                $Segment = new Segment();
-            }
-            $fulltext_data = $Segment->get_keyword($Segment->split_result($data));
-            $data = $text . " " . $fulltext_data;
+            $fulltext_data = $this->discuzSegment($text ? $text : $data, $data);
+            $data = $text . " " . implode(' ', $fulltext_data);
         }
         return $data;
     }
@@ -154,11 +197,12 @@ class SearchModel extends CommonModel {
         if (!$id || !$catid || !$modelid) {
             return false;
         }
-        return $this->where(array(
+        $status = $this->where(array(
                     "id" => $id,
                     "catid" => $catid,
                     "modelid" => $modelid,
                 ))->delete();
+        return $status !== false ? true : false;
     }
 
     /**

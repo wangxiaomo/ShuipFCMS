@@ -7,16 +7,18 @@
  */
 class SearchAction extends AdminbaseAction {
 
-    public $config;
+    //搜索配置
+    protected $config;
+    //数据对象
     private $db;
 
-    function _initialize() {
+    //初始化
+    protected function _initialize() {
         parent::_initialize();
         $this->db = D("Search");
         $this->config = F("Search_config");
-        if (!$this->config) {
-            $this->db->search_cache();
-            $this->config = F("Search_config");
+        if (empty($this->config)) {
+            $this->config = $this->db->search_cache();
         }
     }
 
@@ -31,6 +33,10 @@ class SearchAction extends AdminbaseAction {
             }
         } else {
             $model = F("ModelType_0");
+            if (empty($model)) {
+                D('Model')->model_cache();
+                $model = F("ModelType_0");
+            }
             $this->assign("model_list", $model);
             $this->assign("config", $this->config);
             $this->display();
@@ -73,7 +79,6 @@ class SearchAction extends AdminbaseAction {
             $pages = I('get.pages', 0, 'intval');
             //信息总数
             $total = I('get.total', 0, 'intval');
-
             $model = F("Model");
             //如果是重建所有模型
             if ($modelid) {
@@ -129,8 +134,7 @@ class SearchAction extends AdminbaseAction {
             } else {
                 //当没有选择模型更新时，进行全部可用模型数据更新
                 $modelArr = $this->config['modelid'];
-                $autoid = $this->_get("autoid");
-                $autoid = $_GET['autoid'] ? intval($_GET['autoid']) : 0;
+                $autoid = I('get.autoid', 0, 'intval');
                 if (!isset($modelArr[$autoid])) {
                     $this->success("更新完成！ ...", U("Search/create"));
                     exit;
@@ -189,10 +193,9 @@ class SearchAction extends AdminbaseAction {
         } else {
             if (IS_POST) {
                 //每轮更新数
-                $pagesize = (int) $this->_post("pagesize");
-                $pagesize = $pagesize > 1 ? $pagesize : 100;
+                $pagesize = I('post.pagesize', 100, 'intval');
                 //模型
-                $modelid = (int) $this->_post("modelid");
+                $modelid = I('post.modelid', 0, 'intval');
                 if ($modelid) {
                     //删除旧的搜索数据
                     $this->db->where(array("modelid" => $modelid))->delete();
