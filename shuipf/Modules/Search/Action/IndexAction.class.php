@@ -151,7 +151,11 @@ class IndexAction extends BaseAction {
                 $this->assign("Page", $page->show('default'));
             } else {
                 //分词结果
-                $segment_q = D("Search")->discuzSegment($q);
+                if ($this->config['dzsegment']) {
+                    $segment_q = D("Search")->discuzSegment($q);
+                } else {
+                    $segment_q = D("Search")->segment($q);
+                }
                 if (!empty($segment_q) && $this->config['segment']) {
                     $words = $segment_q;
                     $segment_q = implode(' ', $segment_q);

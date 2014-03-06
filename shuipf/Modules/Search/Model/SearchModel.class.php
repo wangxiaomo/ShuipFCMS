@@ -25,6 +25,8 @@ class SearchModel extends CommonModel {
         $Search['setting']['pagesize'] = isset($Search['setting']['pagesize']) ? $Search['setting']['pagesize'] : 10;
         //搜索结果缓存时间
         $Search['setting']['cachetime'] = isset($Search['setting']['cachetime']) ? $Search['setting']['cachetime'] : 0;
+        //是否使用DZ在线分词接口
+        $Search['setting']['dzsegment'] = isset($Search['setting']['dzsegment']) && $Search['setting']['dzsegment'] ? true : false;
         //是否启用sphinx全文索引
         $Search['setting']['sphinxenable'] = isset($Search['setting']['sphinxenable']) ? $Search['setting']['sphinxenable'] : 0;
         //sphinx服务器主机地址
@@ -99,6 +101,26 @@ class SearchModel extends CommonModel {
     }
 
     /**
+     * 使用内置本地分词处理进行分词
+     * @param type $data
+     * @return boolean
+     */
+    public function segment($data) {
+        if (empty($data)) {
+            return false;
+        }
+        import("Segment", APP_PATH . C("APP_GROUP_PATH") . '/Search/Class/');
+        $Segment = get_instance_of('Segment');
+        $fulltext_data = $Segment->get_keyword($Segment->split_result($data));
+        $data = explode(' ', $fulltext_data);
+        if (count($data) > 0) {
+            return $data;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 搜索数据入库处理
      * @param type $data 搜索数据
      * @param type $text 附带数据，例如标题 关键字
@@ -121,7 +143,12 @@ class SearchModel extends CommonModel {
         }
         //判断是否启用sphinx全文索引，如果不是，则进行php简易分词处理
         if ((int) $config['sphinxenable'] == 0 && $config['segment']) {
-            $fulltext_data = $this->discuzSegment($text ? $text : $data, $data);
+            //是否使用DZ在线分词
+            if ($config['dzsegment']) {
+                $fulltext_data = $this->discuzSegment($text ? $text : $data, $data);
+            } else {
+                $fulltext_data = $this->segment($data);
+            }
             $data = $text . " " . implode(' ', $fulltext_data);
         }
         return $data;
