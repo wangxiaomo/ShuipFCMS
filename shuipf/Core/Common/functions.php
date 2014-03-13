@@ -435,6 +435,10 @@ function redirect($url, $time = 0, $msg = '') {
  */
 function S($name, $value = '', $options = null) {
     static $cache = '';
+    //解决同台服务器，多套同样程序，使用类似memcache缓存时，缓存会互串的问题。
+    if (is_string($name) && !empty($name)) {
+        $name = C('AUTHCODE') . $name;
+    }
     if (is_array($options) && empty($cache)) {
         // 缓存操作的同时初始化
         $type = isset($options['type']) ? $options['type'] : '';
@@ -445,9 +449,6 @@ function S($name, $value = '', $options = null) {
         return $cache;
     } elseif (empty($cache)) { // 自动初始化
         $cache = Cache::getInstance();
-    } else {
-        //加上站点密钥，解决同台服务器，多套同样程序，使用类似memcache缓存时，缓存会互串的问题。
-        $name = C('AUTHCODE') . $name;
     }
     if ('' === $value) { // 获取缓存
         return $cache->get($name);
