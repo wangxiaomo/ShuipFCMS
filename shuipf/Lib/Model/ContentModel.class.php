@@ -46,10 +46,8 @@ class ContentModel extends RelationModel {
             self::$_instance[$modelid]->modelid = $modelid;
             //初始化关联定义
             self::$_instance[$modelid]->relationShipsDefine($tableName);
-            //开启管理程序
-            self::$_instance[$modelid]->relation(self::$_instance[$modelid]->getRelationName($tableName));
         }
-        return self::$_instance[$modelid];
+        return self::$_instance[$modelid]->relation(self::$_instance[$modelid]->getRelationName($tableName));
     }
 
     /**
@@ -106,7 +104,7 @@ class ContentModel extends RelationModel {
      * @access public
      * @param mixed $data 创建数据
      * @param string $type 状态
-     * @param string $type 关联名称
+     * @param string $name 关联名称
      * @return mixed
      */
     public function create($data = '', $type = '', $name = true) {
@@ -139,10 +137,13 @@ class ContentModel extends RelationModel {
                     $mappingType = !empty($val['mapping_type']) ? $val['mapping_type'] : $val;
                     switch ($mappingType) {
                         case HAS_ONE:
+                            //是否有副表数据
+                            $isLinkData = false;
                             //数据
                             if (isset($data[$mappingName])) {
                                 $sideTablesData = $data[$mappingName];
                                 unset($data[$mappingName]);
+                                $isLinkData = true;
                             }
                             //自动验证
                             if (isset($_validate[$mappingName])) {
@@ -171,6 +172,10 @@ class ContentModel extends RelationModel {
                                 if (!empty($data[$this->getPk()])) {
                                     $sideTablesData[$this->getPk()] = $data[$this->getPk()];
                                 }
+                            }
+                            //下面进行的是副表验证操作，这里需要检查特殊情况，例如没有开启关联的，其实不用进行下面
+                            if (empty($this->options['link']) || empty($isLinkData)) {
+                                return $data;
                             }
                             //关闭表单验证
                             C('TOKEN_ON', false);
@@ -327,7 +332,7 @@ class ContentModel extends RelationModel {
         }
         if (getCategory($catid) == false) {
             return false;
-        } else if (getCategory($catid,'child')) {
+        } else if (getCategory($catid, 'child')) {
             return false;
         } else {
             return true;
