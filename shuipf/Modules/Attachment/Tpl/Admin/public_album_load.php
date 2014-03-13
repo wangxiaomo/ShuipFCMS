@@ -143,8 +143,8 @@
   <div class="h_a">搜索</div>
   <form method="get" action="{:U("Attachments/album_load")}">
     <input type="hidden" value="Attachment" name="g">
-    <input type="hidden" value="Attachments" name="m">
-    <input type="hidden" value="album_load" name="a">
+    <input type="hidden" value="Admin" name="m">
+    <input type="hidden" value="public_album_load" name="a">
     <div class="search_type cc mb10">
       <div class="mb10"> <span class="mr20"> 名称：
         <input type="text" class="input length_2" name="filename" style="width:200px;" value="{$Think.get.filename}" placeholder="请输入文件名...">
