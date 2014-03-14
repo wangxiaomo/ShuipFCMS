@@ -11,12 +11,13 @@ function box($field, $value) {
     if ($setting['boxtype'] == 'checkbox') {
         if (!is_array($value) || empty($value))
             return false;
+        //删除添加的默认值
         array_shift($value);
-        $value = ',' . implode(',', $value) . ',';
+        $value = implode(',', $value);
         return $value;
     } elseif ($setting['boxtype'] == 'multiple') {
         if (is_array($value) && count($value) > 0) {
-            $value = ',' . implode(',', $value) . ',';
+            $value = implode(',', $value);
             return $value;
         }
     } else {
