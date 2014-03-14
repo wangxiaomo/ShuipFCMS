@@ -564,10 +564,12 @@ class Content {
                     $nurls = $othordata['url'];
                     //更新地址
                     $this->contentModel->where(array('id' => $newid))->save(array('url' => $nurls));
+                    $othordata['url'] = $nurls;
                 } else {
                     $nurls = $this->url->show($othordata);
                     //更新地址
                     $this->contentModel->where(array('id' => $newid))->save(array('url' => $nurls['url']));
+                    $othordata['url'] = $nurls['url'];
                 }
                 if (is_array($nurls) && $_categorys['setting']['content_ishtml'] && $othordata['status'] == 99) {
                     //生成静态

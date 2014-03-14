@@ -39,6 +39,10 @@ class Html extends BaseAction {
         $category = getCategory($catid);
         //模型ID
         $this->modelid = $category['modelid'];
+        //检查数据是否合并
+        if (!$array_merge) {
+            ContentModel::getInstance($this->modelid)->dataMerger($data);
+        }
         //分页方式
         if (isset($data['paginationtype'])) {
             //分页方式 
