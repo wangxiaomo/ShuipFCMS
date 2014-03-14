@@ -17,14 +17,14 @@ CREATE TABLE `@shuipfcms@@zhubiao@` (
   `username` char(20) NOT NULL,
   `inputtime` int(10) unsigned NOT NULL default '0',
   `updatetime` int(10) unsigned NOT NULL default '0',
-  `views` int(11) NOT NULL DEFAULT '0' COMMENT 'µã»÷×ÜÊý',
-  `yesterdayviews` int(11) NOT NULL DEFAULT '0' COMMENT '×îÈÕ',
-  `dayviews` int(10) NOT NULL DEFAULT '0' COMMENT '½ñÈÕµã»÷Êý',
-  `weekviews` int(10) NOT NULL DEFAULT '0' COMMENT '±¾ÖÜ·ÃÎÊÊý',
-  `monthviews` int(10) NOT NULL DEFAULT '0' COMMENT '±¾ÔÂ·ÃÎÊ',
-  `viewsupdatetime` int(10) NOT NULL DEFAULT '0' COMMENT 'µã»÷Êý¸üÐÂÊ±¼ä',
+  `views` int(11) NOT NULL DEFAULT '0' COMMENT 'ç‚¹å‡»æ€»æ•°',
+  `yesterdayviews` int(11) NOT NULL DEFAULT '0' COMMENT 'æœ€æ—¥',
+  `dayviews` int(10) NOT NULL DEFAULT '0' COMMENT 'ä»Šæ—¥ç‚¹å‡»æ•°',
+  `weekviews` int(10) NOT NULL DEFAULT '0' COMMENT 'æœ¬å‘¨è®¿é—®æ•°',
+  `monthviews` int(10) NOT NULL DEFAULT '0' COMMENT 'æœ¬æœˆè®¿é—®',
+  `viewsupdatetime` int(10) NOT NULL DEFAULT '0' COMMENT 'ç‚¹å‡»æ•°æ›´æ–°æ—¶é—´',
   PRIMARY KEY  (`id`),
   KEY `status` (`status`,`listorder`,`id`),
   KEY `listorder` (`catid`,`status`,`listorder`,`id`),
   KEY `catid` (`catid`,`status`,`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

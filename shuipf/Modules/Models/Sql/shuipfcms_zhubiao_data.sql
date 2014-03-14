@@ -8,4 +8,4 @@ CREATE TABLE `@shuipfcms@@zhubiao@_data` (
   `allow_comment` tinyint(1) unsigned NOT NULL default '1',
   `relation` varchar(255) NOT NULL default '',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
