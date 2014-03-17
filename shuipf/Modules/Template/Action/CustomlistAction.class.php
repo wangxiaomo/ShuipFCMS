@@ -192,7 +192,7 @@ class CustomlistAction extends AdminbaseAction {
         $filepath = TEMPLATE_PATH . (empty(AppframeAction::$Cache["Config"]['theme']) ? "Default" : AppframeAction::$Cache["Config"]['theme']) . DIRECTORY_SEPARATOR . "Contents" . DIRECTORY_SEPARATOR;
         $tp_list = str_replace($filepath . "List" . DIRECTORY_SEPARATOR, "", glob($filepath . "List" . DIRECTORY_SEPARATOR . 'list*'));
 
-        $this->assign('list_html_ruleid', Form::urlrule('template', 'list', 1, $info['urlruleid'], 'name="urlruleid"'));
+        $this->assign('list_html_ruleid', Form::urlrule('content', 'category', 1, $info['urlruleid'], 'name="urlruleid"'));
         $this->assign('tp_list', $tp_list);
     }
 
