@@ -59,6 +59,8 @@ class Html extends BaseAction {
             D("Content_cache")->model_content_cache();
             require RUNTIME_PATH . 'content_output.class.php';
         }
+        //tag
+        tag('html_shwo_buildhtml', $data);
         $content_output = new content_output($this->modelid);
         //获取字段类型处理以后的数据
         $output_data = $content_output->get($data);
