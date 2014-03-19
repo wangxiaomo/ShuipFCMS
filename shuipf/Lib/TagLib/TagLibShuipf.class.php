@@ -943,8 +943,15 @@ class TagLibShuipf extends TagLib {
                 if (is_array($val)) {
                     $str .= "'$key'=>" . self::arr_to_html($val) . ",";
                 } else {
+                    //如果是变量的情况
                     if (strpos($val, '$') === 0) {
                         $str .= "'$key'=>$val,";
+                    } else if (preg_match("/^([a-zA-Z_].*)\(/i", $val, $matches)) {//判断是否使用函数
+                        if (function_exists($matches[1])) {
+                            $str .= "'$key'=>$val,";
+                        } else {
+                            $str .= "'$key'=>'" . new_addslashes($val) . "',";
+                        }
                     } else {
                         $str .= "'$key'=>'" . new_addslashes($val) . "',";
                     }
