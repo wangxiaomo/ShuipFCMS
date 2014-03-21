@@ -52,4 +52,11 @@ class Cacheapi {
         D("Censor")->censorword_cache();
     }
 
+    //插件缓存更新
+    public function addons_cache() {
+        if(isModuleInstall('Addons')){
+            D('Addons/Addons')->addons_cache();
+        }
+    }
+
 }

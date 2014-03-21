@@ -66,6 +66,7 @@ class IndexAction extends AdminbaseAction {
                             array('name' => "模型Content字段处理类缓存更新成功！", 'function' => 'model_content_cache', 'param' => ''),
                             array('name' => "应用更新成功！", 'function' => 'appstart_cache', 'param' => ''),
                             array('name' => "敏感词缓存生成成功！", 'function' => 'censorword_cache', 'param' => ''),
+                            array('name' => "插件评论缓存生成！", 'function' => 'addons_cache', 'param' => ''),
                         );
                         //需要更新的缓存信息
                         $cacheInfo = $modules[$stop - 1];
