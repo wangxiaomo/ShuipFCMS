@@ -24,7 +24,7 @@
               <td align="left"><input name='listorders[{$vo.catid}-{$vo.id}]' type='text' size='3' value='{$vo.listorder}' class="input"></td>
               <td align="left">{$vo.id}</td>
               <td align="left">{$vo.data.title} </td>
-              <td align="center">{$Category[$vo['catid']]['catname']}</td>
+              <td align="center">{:getCategory($vo['catid'],'catname')}</td>
               <td align="center">{$vo.data.inputtime|date="Y-m-d H:i:s",###}</td>
               <td align="center"><a href="{$vo.data.url}" target="_blank">原文</a> | <a onClick="javascript:openwinx('{:U("Contents/Content/edit",array("catid"=>$vo['catid'],"id"=>$vo['id']  ))}','')" href="javascript:;">原文编辑</a> | <a href="javascript:item_manage({$vo.id},{$vo.posid}, {$vo.modelid},'{$vo.data.title}')">信息管理</a></td>
             </tr>
@@ -49,7 +49,7 @@
 //信息管理
 function item_manage(id, posid, modelid, name) {
     Wind.use("artDialog", "iframeTools", function () {
-        art.dialog.open(GV.DIMAUB + "index.php?a=public_item_manage&m=Position&g=Contents&id=" + id + "&modelid=" + modelid, {
+        art.dialog.open(GV.DIMAUB + "index.php?a=public_item_manage&m=Position&g=Contents&id=" + id + "&modelid=" + modelid + "&posid=" + posid, {
             title: '修改--' + name,
             id: 'edit',
             lock: true,

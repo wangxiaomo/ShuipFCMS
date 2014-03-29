@@ -18,9 +18,7 @@ class PositionAction extends AdminbaseAction {
         $this->display();
     }
 
-    /**
-     * 信息管理 
-     */
+    //信息管理
     public function public_item() {
         if (IS_POST) {
             $items = count($_POST['items']) > 0 ? $_POST['items'] : $this->error("没有信息被选择！");
@@ -33,9 +31,8 @@ class PositionAction extends AdminbaseAction {
             }
             $this->success("移除成功！");
         } else {
-            $posid = $this->_get("posid");
+            $posid = I('get.posid', 0, 'intval');
             $db = M("Position_data");
-            $Category = F("Category");
             $where = array();
             $where['posid'] = array("EQ", $posid);
             $count = $db->where($where)->count();
@@ -43,11 +40,10 @@ class PositionAction extends AdminbaseAction {
             $data = $db->where($where)->order(array("listorder" => "DESC", "id" => "DESC"))->limit($page->firstRow . ',' . $page->listRows)->select();
             foreach ($data as $k => $v) {
                 $data[$k]['data'] = unserialize($v['data']);
-                $tab = ucwords(getModel(getCategory($v['catid'],'modelid'),'tablename'));
+                $tab = ucwords(getModel(getCategory($v['catid'], 'modelid'), 'tablename'));
                 $data[$k]['data']['url'] = M($tab)->where(array("id" => $v['id']))->getField("url");
             }
 
-            $this->assign("Category", $Category);
             $this->assign("Page", $page->show('Admin'));
             $this->assign("data", $data);
             $this->assign("posid", $posid);
@@ -55,9 +51,7 @@ class PositionAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 添加推荐位 
-     */
+    //添加推荐位
     public function add() {
         if (IS_POST) {
             $db = D("Position");
@@ -82,9 +76,7 @@ class PositionAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 编辑推荐位 
-     */
+    //编辑推荐位
     public function edit() {
         $db = D("Position");
         if (IS_POST) {
@@ -99,7 +91,7 @@ class PositionAction extends AdminbaseAction {
                 $this->error($db->getError());
             }
         } else {
-            $posid = $this->_get("posid");
+            $posid = I('get.posid', 0, 'intval');
             $data = $db->where(array("posid" => $posid))->find();
             if (!$data) {
                 $this->error('该推荐位不存在！');
@@ -115,11 +107,9 @@ class PositionAction extends AdminbaseAction {
         }
     }
 
-    /**
-     *  删除 推荐位
-     */
+    //删除 推荐位
     public function delete() {
-        $posid = $this->_get("posid");
+        $posid = I('get.posid', 0, 'intval');
         $db = M("Position");
         $status = $db->where(array("posid" => $posid))->delete();
         if ($status) {
@@ -135,9 +125,7 @@ class PositionAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 排序 
-     */
+    //排序
     public function public_item_listorder() {
         if (IS_POST) {
             $db = M("Position_data");
@@ -152,9 +140,7 @@ class PositionAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 信息管理编辑 
-     */
+    //信息管理编辑
     public function public_item_manage() {
         $db = D("Position_data");
         if (IS_POST) {
@@ -170,10 +156,11 @@ class PositionAction extends AdminbaseAction {
                 $this->error("更新失败！");
             }
         } else {
-            $id = $this->_get("id");
-            $modelid = $this->_get("modelid");
-            $data = $db->where(array("id" => $id, "modelid" => $modelid))->find();
-            if (!$data) {
+            $id = I('get.id', 0, 'intval');
+            $modelid = I('get.modelid', 0, 'intval');
+            $posid = I('get.posid', 0, 'intval');
+            $data = $db->where(array("id" => $id, "modelid" => $modelid, 'posid' => $posid))->find();
+            if (empty($data)) {
                 $this->error("该信息不存在！");
             }
             $data['data'] = unserialize($data['data']);
@@ -183,16 +170,12 @@ class PositionAction extends AdminbaseAction {
         }
     }
 
-    /**
-     * 推荐位添加栏目加载
-     */
+    ///推荐位添加栏目加载
     public function public_category_load() {
-        $modelid = intval($_GET['modelid']);
+        $modelid = I('get.modelid', 0, 'intval');
         import('Form');
         $category = Form::select_category('', 'name="info[catid]"', "=不限栏目=", $modelid, 0, 1);
         echo $category;
     }
 
 }
-
-?>

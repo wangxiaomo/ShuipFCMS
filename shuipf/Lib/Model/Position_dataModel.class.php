@@ -23,6 +23,11 @@ class Position_dataModel extends CommonModel {
         }
         if (!$data['posid'] || !$data['modelid'] || !$data['id']) {
             return false;
+        } else {
+            $posid = $data['posid'];
+            $modelid = $data['modelid'];
+            $id = $data['id'];
+            unset($data['posid'], $data['modelid'], $data['id']);
         }
         //载入数据处理类
         if (false == require_cache(RUNTIME_PATH . 'content_input.class.php')) {
@@ -30,11 +35,11 @@ class Position_dataModel extends CommonModel {
             D("Content_cache")->model_content_cache();
             require RUNTIME_PATH . 'content_input.class.php';
         }
-        $content_input = new content_input($data['modelid']);
+        $content_input = new content_input($modelid);
         $data['data'] = $content_input->get($data['data'], 2);
         $data['data'] = serialize($data['data']);
-        if ($this->save($data) !== false) {
-            service("Attachment")->api_update('', 'position-' . $data['modelid'] . '-' . $data['id'], 1);
+        if ($this->where(array('id' => $id, 'modelid' => $modelid, 'posid' => $posid))->save($data) !== false) {
+            service("Attachment")->api_update('', 'position-' . $modelid . '-' . $id, 1);
             return true;
         }
         return false;
