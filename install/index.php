@@ -158,6 +158,8 @@ switch ($step) {
             $seo_keywords = trim($_POST['sitekeywords']);
             //测试数据
             $testdata = (int) $_POST['testdata'];
+            //邮箱地址
+            $siteemail = trim($_POST['manager_email']);
 
             $conn = @ mysql_connect($dbHost, $dbUser, $dbPwd);
             if (!$conn) {
@@ -243,6 +245,7 @@ switch ($step) {
             mysql_query("UPDATE `{$dbPrefix}config` SET  `value` = '$sitefileurl' WHERE varname='sitefileurl' ");
             mysql_query("UPDATE `{$dbPrefix}config` SET  `value` = '$seo_description' WHERE varname='siteinfo'");
             mysql_query("UPDATE `{$dbPrefix}config` SET  `value` = '$seo_keywords' WHERE varname='sitekeywords'");
+            mysql_query("UPDATE `{$dbPrefix}config` SET  `value` = '$siteemail' WHERE varname='siteemail'");
 
             //读取配置文件，并替换真实配置数据
             $strConfig = file_get_contents(SITEDIR . 'install/' . $configFile);
