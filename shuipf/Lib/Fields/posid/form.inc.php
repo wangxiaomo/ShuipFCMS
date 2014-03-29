@@ -17,8 +17,18 @@ function posid($field, $value, $fieldinfo) {
     }
     $array = array();
     foreach ($position as $_key => $_value) {
-        if ($_value['modelid'] && ($_value['modelid'] != $this->modelid) || ($_value['catid'] && strpos(',' . getCategory($_value['catid'], 'arrchildid') . ',', ',' . $this->catid . ',') === false))
+        //如果有设置模型，检查是否有该模型
+        if ($_value['modelid'] && !in_array($this->modelid, explode(',', $_value['modelid']))) {
             continue;
+        }
+        //如果设置了模型，又设置了栏目
+        if ($_value['modelid'] && $_value['catid'] && !in_array($this->catid, explode(',', $_value['catid']))) {
+            continue;
+        }
+        //如果设置了栏目
+        if ($_value['catid'] && !in_array($this->catid, explode(',', $_value['catid']))) {
+            continue;
+        }
         $array[$_key] = $_value['name'];
     }
     $posids = array();

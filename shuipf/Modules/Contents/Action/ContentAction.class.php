@@ -888,7 +888,16 @@ class ContentAction extends AdminbaseAction {
                     if (!empty($position)) {
                         $array = array();
                         foreach ($position as $_key => $_value) {
-                            if ($_value['modelid'] && ($_value['modelid'] != $modelid) || ($_value['catid'] && strpos(',' . getCategory($_value['catid'], 'arrchildid') . ',', ',' . $catid . ',') === false)) {
+                            //如果有设置模型，检查是否有该模型
+                            if ($_value['modelid'] && !in_array($modelid, explode(',', $_value['modelid']))) {
+                                continue;
+                            }
+                            //如果设置了模型，又设置了栏目
+                            if ($_value['modelid'] && $_value['catid'] && !in_array($catid, explode(',', $_value['catid']))) {
+                                continue;
+                            }
+                            //如果设置了栏目
+                            if ($_value['catid'] && !in_array($catid, explode(',', $_value['catid']))) {
                                 continue;
                             }
                             $array[$_key] = $_value['name'];

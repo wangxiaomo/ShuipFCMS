@@ -11,7 +11,7 @@
             <td width="10%" align="left"><input type="checkbox" value="" id="check_box" class="J_check_all" data-direction="x" data-checklist="J_check_x">全选</td>
             <td width="10%"  align="left">排序</td>
             <td width="10%"  align="left">ID</td>
-            <td width=""  align="center">标题</td>
+            <td width=""  align="left">标题</td>
             <td width="15%" align="center">栏目名称</td>
             <td width="15%" align="center">发表时间</td>
             <td width="15%" align="center">管理操作</td>

@@ -13,10 +13,10 @@
         </tr>
         <tr>
           <th>所属模型</th>
-          <td><?php echo Form::select($modelinfo,$modelid,'name="info[modelid]" onchange="category_load(this);"','请选择模型');?></tr>
+          <td><?php echo Form::checkbox($modelinfo,$modelid,'name="info[modelid][]" onchange="category_load();"','');?></tr>
         <tr>
           <th>所属栏目</th>
-          <td id="load_catid"><?php echo Form::select_category($catid, 'name="info[catid]"', "=不限栏目=", $modelid, 0, 1); ?></td>
+          <td id="load_catid"></td>
         </tr>
         <tr>
           <th>排序</th>
@@ -38,12 +38,23 @@
 </div>
 <script src="{$config_siteurl}statics/js/common.js?v"></script>
 <script type="text/javascript">
-function category_load(obj)
-{
-	var modelid = $(obj).attr('value');
+$(function(){
+	category_load();
+});
+function category_load(){
+	var modelid = '';
+	$('input[name="info[modelid][]"]').each(function() {
+		if ($(this).attr("checked")) {
+			if(modelid){
+				modelid += ','+$(this).val();
+			}else{
+				modelid = $(this).val();
+			}
+		}
+	});
 	$.get(GV.DIMAUB+'index.php?a=public_category_load&m=Position&g=Contents&modelid='+modelid,function(data){
-			$('#load_catid').html(data);
-		  });
+		$('#load_catid').html(data);
+	});
 }
 </script>
 </body>

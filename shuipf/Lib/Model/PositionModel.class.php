@@ -11,8 +11,89 @@ class PositionModel extends CommonModel {
     protected $_validate = array(
         //array(验证字段,验证规则,错误提示,验证条件,附加规则,验证时间)
         array('name', 'require', '推荐位名称不能为空！', 1, 'regex', 3),
-        array('name', '', '该推荐位已经存在！', 0, 'unique', 3),
+        array('name', '', '该推荐位已经存在！', 0, 'unique', 1),
     );
+
+    /**
+     * 添加推荐位
+     * @param type $data 数据
+     * @return boolean
+     */
+    public function positionAdd($data) {
+        if (empty($data)) {
+            $this->error = '没有数据！';
+            return false;
+        }
+        $data['modelid'] = is_array($data['modelid']) ? implode(',', $data['modelid']) : 0;
+        $data['catid'] = is_array($data['catid']) ? implode(',', $data['catid']) : 0;
+        $data = $this->create($data, 1);
+        if ($data) {
+            $posid = $this->add($data);
+            if ($posid) {
+                $this->position_cache();
+                return $posid;
+            } else {
+                $this->error = '添加失败！';
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 更新推荐位
+     * @param type $data 数据
+     * @return boolean
+     */
+    public function positionSave($data) {
+        if (empty($data) || empty($data['posid'])) {
+            $this->error = '没有数据！';
+            return false;
+        } else {
+            $posid = $data['posid'];
+            unset($data['posid']);
+        }
+        $data['modelid'] = is_array($data['modelid']) ? implode(',', $data['modelid']) : 0;
+        $data['catid'] = is_array($data['catid']) ? implode(',', $data['catid']) : 0;
+        $data = $this->create($data, 2);
+        if ($data) {
+            if ($this->where(array('posid' => $posid))->save($data) !== false) {
+                $this->position_cache();
+                return true;
+            } else {
+                $this->error = '更新失败！';
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 删除推荐位
+     * @param type $posid 推荐位ID
+     * @return boolean
+     */
+    public function positionDel($posid) {
+        if (empty($posid)) {
+            $this->error = '请指定需要删除的推荐位！';
+            return false;
+        }
+        if ($this->where(array("posid" => $posid))->delete() !== false) {
+            $d = M("Position_data")->where(array("posid" => $posid))->select();
+            $Attachment = service("Attachment");
+            foreach ($d as $k => $v) {
+                M("Position_data")->where(array("posid" => $v['posid'], "id" => $v['id']))->delete();
+                $Attachment->api_delete('position-' . $v['modelid'] . '-' . $v['id']);
+            }
+            $this->position_cache();
+            return true;
+        } else {
+            $this->error = '删除失败！';
+            return false;
+        }
+    }
 
     /**
      * 推荐位推送修改接口
@@ -74,7 +155,7 @@ class PositionModel extends CommonModel {
         }
         $where = array();
         $where['catid'] = array("EQ", $catid);
-        $where['modelid'] = getCategory($catid,'modelid');
+        $where['modelid'] = getCategory($catid, 'modelid');
         $where['id'] = array("EQ", $id);
         $where['posid'] = array("IN", $real_posid);
         $status = $pos_data->where($where)->delete();

@@ -7,13 +7,10 @@
  */
 class PositionAction extends AdminbaseAction {
 
+    //推荐位列表
     public function index() {
         $db = M("Position");
         $data = $db->order(array("listorder" => "ASC", "posid" => "DESC"))->select();
-        foreach ($data as $k => $v) {
-            $data[$k]['catid'] = $v['catid'] == 0 ? "所有栏目" : getCategory($v['catid'], 'catname');
-            $data[$k]['modelid'] = $v['modelid'] == 0 ? "所有模型" : getModel($v['modelid'], 'name');
-        }
         $this->assign("data", $data);
         $this->display();
     }
@@ -56,18 +53,18 @@ class PositionAction extends AdminbaseAction {
         if (IS_POST) {
             $db = D("Position");
             $_POST['info'] = array_merge($_POST['info'], array(C("TOKEN_NAME") => $_POST[C("TOKEN_NAME")]));
-            if ($db->create($_POST['info'])) {
-                if ($db->add()) {
-                    $this->success("添加成功！<font color=\"#FF0000\">请更新缓存！</font>", U("Contents/Position/index"));
-                } else {
-                    $this->error("添加失败！");
-                }
+            if ($db->positionAdd($_POST['info'])) {
+                $this->success("添加成功！<font color=\"#FF0000\">请更新缓存！</font>", U("Contents/Position/index"));
             } else {
                 $this->error($db->getError());
             }
         } else {
             import('Form');
-            $Model = F("Model");
+            $Model = F("ModelType_0");
+            if (empty($Model)) {
+                D('Model')->model_cache();
+                $Model = F("ModelType_0");
+            }
             foreach ($Model as $k => $v) {
                 $modelinfo[$v['modelid']] = $v['name'];
             }
@@ -81,12 +78,8 @@ class PositionAction extends AdminbaseAction {
         $db = D("Position");
         if (IS_POST) {
             $_POST['info'] = array_merge($_POST['info'], array(C("TOKEN_NAME") => $_POST[C("TOKEN_NAME")]));
-            if ($db->create($_POST['info'])) {
-                if ($db->save() !== false) {
-                    $this->success("更新成功！<font color=\"#FF0000\">请更新缓存！</font>", U("Contents/Position/index"));
-                } else {
-                    $this->error("更新失败！");
-                }
+            if ($db->positionSave($_POST['info'])) {
+                $this->success("更新成功！<font color=\"#FF0000\">请更新缓存！</font>", U("Contents/Position/index"));
             } else {
                 $this->error($db->getError());
             }
@@ -97,7 +90,11 @@ class PositionAction extends AdminbaseAction {
                 $this->error('该推荐位不存在！');
             }
             import('Form');
-            $Model = F("Model");
+            $Model = F("ModelType_0");
+            if (empty($Model)) {
+                D('Model')->model_cache();
+                $Model = F("ModelType_0");
+            }
             foreach ($Model as $k => $v) {
                 $modelinfo[$v['modelid']] = $v['name'];
             }
@@ -110,18 +107,11 @@ class PositionAction extends AdminbaseAction {
     //删除 推荐位
     public function delete() {
         $posid = I('get.posid', 0, 'intval');
-        $db = M("Position");
-        $status = $db->where(array("posid" => $posid))->delete();
-        if ($status) {
-            $d = M("Position_data")->where(array("posid" => $posid))->select();
-            $Attachment = service("Attachment");
-            foreach ($d as $k => $v) {
-                M("Position_data")->where(array("posid" => $v['posid'], "id" => $v['id']))->delete();
-                $Attachment->api_delete('position-' . $v['modelid'] . '-' . $v['id']);
-            }
+        $db = D("Position");
+        if ($db->positionDel($posid)) {
             $this->success("删除成功！<font color=\"#FF0000\">请更新缓存！</font>", U("Contents/Position/index"));
         } else {
-            $this->error("删除失败！");
+            $this->error($db->getError());
         }
     }
 
@@ -172,10 +162,23 @@ class PositionAction extends AdminbaseAction {
 
     ///推荐位添加栏目加载
     public function public_category_load() {
-        $modelid = I('get.modelid', 0, 'intval');
+        $modelid = I('get.modelid', '', '');
+        $modelidList = explode(',', $modelid);
         import('Form');
-        $category = Form::select_category('', 'name="info[catid]"', "=不限栏目=", $modelid, 0, 1);
-        echo $category;
+        $result = F("Category");
+        if (is_array($result)) {
+            $categorys = array();
+            foreach ($result as $r) {
+                $categorys[$r['catid']] = $r['catname'];
+                if ($r['child'] != 0) {
+                    unset($categorys[$r['catid']]);
+                }
+                if (!empty($modelid) && !in_array($r['modelid'], $modelidList)) {
+                    unset($categorys[$r['catid']]);
+                }
+            }
+        }
+        echo Form::checkbox($categorys, I('get.catid', 0, ''), 'name="info[catid][]"', '', 1);
     }
 
 }

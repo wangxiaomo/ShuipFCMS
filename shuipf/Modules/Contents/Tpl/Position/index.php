@@ -21,8 +21,20 @@
             <td align="center"><input name='listorders[{$vo.posid}]' type='text' size='2' value='{$vo.listorder}' class="input"></td>
             <td align="center">{$vo.posid}</td>
             <td align="center">{$vo.name}</td>
-            <td align="center">{$vo.catid}</td>
-            <td align="center">{$vo.modelid}</td>
+            <td align="center">
+            <if condition=" empty($vo['catid']) ">
+            <font color="#FF0000">无限制</font>
+            <else />
+            多栏目
+            </if>
+            </td>
+            <td align="center">
+            <if condition=" empty($vo['modelid']) ">
+            <font color="#FF0000">无限制</font>
+            <else />
+            多模型
+            </if>
+            </td>
             <td align="center"><a href="{:U("Contents/Position/public_item",array("posid"=>$vo['posid']))}">信息管理</a> | <a href="{:U("Contents/Position/edit",array("posid"=>$vo['posid']))}">修改</a> | <a href="javascript:confirmurl('{:U("Contents/Position/delete",array("posid"=>$vo['posid']))}', '是否删除?')">删除</a></td>
           </tr>
         </volist>

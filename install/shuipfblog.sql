@@ -744,8 +744,8 @@ CREATE TABLE `shuipfcms_operationlog` (
 DROP TABLE IF EXISTS `shuipfcms_position`;
 CREATE TABLE `shuipfcms_position` (
   `posid` smallint(5) unsigned NOT NULL auto_increment COMMENT '推荐位id',
-  `modelid` smallint(5) unsigned default '0' COMMENT '模型id',
-  `catid` smallint(5) unsigned default '0' COMMENT '栏目id',
+  `modelid` char(30) DEFAULT '0' COMMENT '模型id',
+  `catid` char(30) DEFAULT '0' COMMENT '栏目id',
   `name` char(30) NOT NULL default '' COMMENT '推荐位名称',
   `maxnum` smallint(5) NOT NULL default '20' COMMENT '最大存储数据量',
   `extention` char(100) default NULL,
