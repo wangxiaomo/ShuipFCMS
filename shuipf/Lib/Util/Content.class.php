@@ -559,6 +559,9 @@ class Content {
                 }
                 $othordata = $data;
                 $othordata['id'] = $newid;
+                if (isset($othordata[$this->contentModel->getRelationName()]['id'])) {
+                    $othordata[$this->contentModel->getRelationName()]['id'] = $newid;
+                }
                 //更新URL地址
                 if ((int) $othordata['islink'] == 1) {
                     $nurls = $othordata['url'];
