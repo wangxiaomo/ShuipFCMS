@@ -1094,3 +1094,35 @@ CREATE TABLE `shuipfcms_config_field` (
   `createtime` int(10) DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`fid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='网站配置，扩展字段列表';
+
+-- ----------------------------
+-- Table structure for shuipfcms_cache
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_cache`;
+CREATE TABLE `shuipfcms_cache` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增长ID',
+  `name` varchar(255) NOT NULL COMMENT '名称',
+  `module` char(20) NOT NULL COMMENT '模块名称',
+  `model` char(30) NOT NULL COMMENT '模型名称',
+  `action` char(30) NOT NULL COMMENT '方法名',
+  `param` varchar(255) NOT NULL COMMENT '参数',
+  `system` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='缓存更新列队';
+
+-- ----------------------------
+-- Records of shuipfcms_cache
+-- ----------------------------
+INSERT INTO `shuipfcms_cache` VALUES ('1', '更新网站配置', '', 'Config', 'config_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('2', '更新栏目缓存', '', 'Category', 'category_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('3', '更新模型缓存', '', 'Model', 'model_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('4', '更新后台菜单缓存', '', 'Menu', 'menu_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('5', '更新评论配置缓存', '', 'Comments', 'comments_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('6', '更新URL规则缓存', '', 'Urlrule', 'public_cache_urlrule', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('7', '更新模型字段缓存', '', 'Model_field', 'model_field_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('8', '更新内容模型缓存', '', 'Content_cache', 'model_content_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('9', '更新推荐位缓存', '', 'Position', 'position_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('10', '更新可用模块缓存', '', 'Module', 'module_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('11', '更新敏感词过滤缓存', '', 'Censor', 'censorword_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('12', '更新插件模块可用插件缓存', 'Addons', 'Addons', 'addons_cache', '', '1');
+

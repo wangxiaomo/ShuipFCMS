@@ -17,9 +17,8 @@ class IndexAction extends AdminbaseAction {
     public function public_cache() {
         if (isset($_GET['type'])) {
             import("Dir");
-            import('Cacheapi');
-            $Cache = new Cacheapi();
             $Dir = new Dir();
+            $cache = D('Cache');
             $type = I('get.type');
             set_time_limit(0);
             switch ($type) {
@@ -60,24 +59,17 @@ class IndexAction extends AdminbaseAction {
                         }
                     }
                     if ($stop) {
-                        $modules = array(
-                            array('name' => "菜单，模型，栏目缓存更新成功！", 'function' => 'site_cache', 'param' => ''),
-                            array('name' => "模型字段缓存更新成功！", 'function' => 'model_field_cache', 'param' => ''),
-                            array('name' => "模型Content字段处理类缓存更新成功！", 'function' => 'model_content_cache', 'param' => ''),
-                            array('name' => "应用更新成功！", 'function' => 'appstart_cache', 'param' => ''),
-                            array('name' => "敏感词缓存生成成功！", 'function' => 'censorword_cache', 'param' => ''),
-                            array('name' => "插件评论缓存生成！", 'function' => 'addons_cache', 'param' => ''),
-                        );
+                        $modules = $cache->getCacheList();
                         //需要更新的缓存信息
                         $cacheInfo = $modules[$stop - 1];
                         if ($cacheInfo) {
-                            $function = $cacheInfo['function'];
-                            if ($function) {
-                                $Cache->$function();
+                            if ($cache->runUpdate($cacheInfo) !== false) {
+                                $this->assign("waitSecond", 200);
+                                $this->success($cacheInfo['name'], U('Index/public_cache', array('type' => 'site', 'stop' => $stop + 1)));
+                                exit;
+                            } else {
+                                $this->error('缓存[' . $cacheInfo['name'] . ']更新失败！', U('Index/public_cache', array('type' => 'site', 'stop' => $stop + 1)));
                             }
-                            $this->assign("waitSecond", 200);
-                            $this->success($cacheInfo['name'], U('Index/public_cache', array('type' => 'site', 'stop' => $stop + 1)));
-                            exit;
                         } else {
                             $this->success('缓存更新完毕！', U('Index/public_cache'));
                             exit;
