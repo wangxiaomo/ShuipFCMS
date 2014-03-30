@@ -9,45 +9,53 @@ class CheckcodeAction extends Action {
 
     public function index() {
         import("Util.Checkcode", LIB_PATH);
-        $checkcode = new Checkcode();
-        if (isset($_GET['code_len']) && intval($_GET['code_len']))
-            $checkcode->code_len = intval($_GET['code_len']);
-        if ($checkcode->code_len > 8 || $checkcode->code_len < 2) {
-            $checkcode->code_len = 4;
-        }
-        //强制验证码不得小于4位
-        if($checkcode->code_len < 4){
-            $checkcode->code_len = 4;
-        }
-        if (isset($_GET['font_size']) && intval($_GET['font_size']))
-            $checkcode->font_size = intval($_GET['font_size']);
-        if (isset($_GET['width']) && intval($_GET['width']))
-            $checkcode->width = intval($_GET['width']);
-        if ($checkcode->width <= 0) {
-            $checkcode->width = 130;
-        }
-        if (isset($_GET['height']) && intval($_GET['height']))
-            $checkcode->height = intval($_GET['height']);
-        if ($checkcode->height <= 0) {
-            $checkcode->height = 50;
-        }
-        if (isset($_GET['font_color']) && trim(urldecode($_GET['font_color'])) && preg_match('/(^#[a-z0-9]{6}$)/im', trim(urldecode($_GET['font_color']))))
-            $checkcode->font_color = trim(urldecode($_GET['font_color']));
-        if (isset($_GET['background']) && trim(urldecode($_GET['background'])) && preg_match('/(^#[a-z0-9]{6}$)/im', trim(urldecode($_GET['background']))))
-            $checkcode->background = trim(urldecode($_GET['background']));
-        $checkcode->doimage();
-        
+        $checkcode = get_instance_of('Checkcode');
         //验证码类型
-        $type = $this->_get("type");
-        $type = $type?strtolower($type):"verify";
+        $type = I('get.type', 'verify', 'strtolower');
+        //获取已有session
         $verify = session("_verify_");
-        if(empty($verify)){
+        if (empty($verify)) {
             $verify = array();
         }
-        $verify[$type] = $checkcode->get_code();
-        session("_verify_",$verify);
+        //设置长度
+        $codelen = I('get.code_len', 0, 'intval');
+        if ($codelen) {
+            if ($codelen > 8 || $codelen < 2) {
+                $codelen = 4;
+            }
+            $checkcode->codelen = $codelen;
+        }
+        //设置验证码字体大小
+        $fontsize = I('get.font_size', 0, 'intval');
+        if ($fontsize) {
+            $checkcode->fontsize = $fontsize;
+        }
+        //设置验证码图片宽度
+        $width = I('get.width', 0, 'intval');
+        if ($width) {
+            $checkcode->width = $width;
+        }
+        //设置验证码图片高度
+        $height = I('get.height', 0, 'intval');
+        if ($height) {
+            $checkcode->height = $height;
+        }
+        //设置背景颜色
+        $background = I('get.background', '', '');
+        if ($background) {
+            $checkcode->background = $background;
+        }
+        //设置字体颜色
+        $fontcolor = I('get.font_color', '', '');
+        if($fontcolor){
+            $checkcode->fontcolor = $fontcolor;
+        }
+
+        //显示图片
+        $checkcode->output();
+        $verify[$type] = $checkcode->getCode();
+        session("_verify_", $verify);
+        return true;
     }
 
 }
-
-?>

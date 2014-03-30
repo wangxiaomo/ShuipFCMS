@@ -1,139 +1,111 @@
 <?php
 
 /**
- * 生成验证码
- * @author chenzhouyu
- * 类用法
- * $checkcode = new checkcode();
- * $checkcode->doimage();
- * //取得验证
- * $_SESSION['code']=$checkcode->get_code();
+ * 验证码生成类
+ * File Name：Checkcode.class.php
+ * File Encoding：UTF-8
+ * File New Time：2014-3-30 19:56:51
+ * Author：水平凡
+ * Mailbox：admin@abc3210.com
  */
 class Checkcode {
 
-    //验证码的宽度
-    public $width = 130;
-    //验证码的高
-    public $height = 50;
-    //设置字体的地址
-    private $font;
-    //设置字体色
-    public $font_color;
-    //设置随机生成因子
-    public $charset = 'abcdefghkmnprstuvwyzABCDEFGHKLMNPRSTUVWYZ23456789';
-    //设置背景色
-    public $background = '#EDF7FF';
-    //生成验证码字符数
-    public $code_len = 4;
-    //字体大小
-    public $font_size = 20;
+    //随机因子
+    private $charset = 'abcdefghkmnprstuvwxyzABCDEFGHKMNPRSTUVWXYZ23456789';
     //验证码
     private $code;
-    //图片内存
+    //验证码长度
+    private $codelen = 4;
+    //宽度
+    private $width = 100;
+    //高度
+    private $height = 30;
+    //图形资源句柄
     private $img;
-    //文字X轴开始的地方
-    private $x_start;
+    //指定的字体
+    private $font;
+    //指定字体大小
+    private $fontsize = 15;
+    //指定字体颜色
+    private $fontcolor;
+    //设置背景色
+    private $background = '#EDF7FF';
 
-    function __construct() {
-        //设置字体
-        $this->font = LIB_PATH .  'Font' . DIRECTORY_SEPARATOR . 'elephant.ttf';
+    //构造方法初始化
+    public function __construct() {
+        $this->font = LIB_PATH . 'Font/elephant.ttf';
     }
 
-    /**
-     * 生成随机验证码。
-     */
-    protected function creat_code() {
-        $code = '';
-        $charset_len = strlen($this->charset) - 1;
-        for ($i = 0; $i < $this->code_len; $i++) {
-            $code .= $this->charset[rand(1, $charset_len)];
+    //魔术方法，设置
+    public function __set($name, $value) {
+        if (empty($name) || in_array($name, array('code', 'img'))) {
+            return false;
         }
-        $this->code = $code;
+        $this->$name = $value;
     }
 
-    /**
-     * 获取验证码
-     */
-    public function get_code() {
-        return strtolower($this->code);
+    //生成随机码
+    private function createCode() {
+        $_len = strlen($this->charset) - 1;
+        for ($i = 0; $i < $this->codelen; $i++) {
+            $this->code .= $this->charset[mt_rand(0, $_len)];
+        }
     }
 
-    /**
-     * 生成图片
-     */
-    public function doimage() {
-        $code = $this->creat_code();
+    //生成背景
+    private function createBg() {
         $this->img = imagecreatetruecolor($this->width, $this->height);
-        if (!$this->font_color) {
-            $this->font_color = imagecolorallocate($this->img, rand(0, 156), rand(0, 156), rand(0, 156));
+        if (empty($this->background)) {
+            $color = imagecolorallocate($this->img, mt_rand(157, 255), mt_rand(157, 255), mt_rand(157, 255));
         } else {
-            $this->font_color = imagecolorallocate($this->img, hexdec(substr($this->font_color, 1, 2)), hexdec(substr($this->font_color, 3, 2)), hexdec(substr($this->font_color, 5, 2)));
+            //设置背景色
+            $color = imagecolorallocate($this->img, hexdec(substr($this->background, 1, 2)), hexdec(substr($this->background, 3, 2)), hexdec(substr($this->background, 5, 2)));
         }
-        //设置背景色
-        $background = imagecolorallocate($this->img, hexdec(substr($this->background, 1, 2)), hexdec(substr($this->background, 3, 2)), hexdec(substr($this->background, 5, 2)));
-        //画一个柜形，设置背景颜色。
-        imagefilledrectangle($this->img, 0, $this->height, $this->width, 0, $background);
-        $this->creat_font();
-        $this->creat_line();
-        $this->output();
+        imagefilledrectangle($this->img, 0, $this->height, $this->width, 0, $color);
     }
 
-    /**
-     * 生成文字
-     */
-    private function creat_font() {
-        $x = $this->width / $this->code_len;
-        for ($i = 0; $i < $this->code_len; $i++) {
-            imagettftext($this->img, $this->font_size, rand(-30, 30), $x * $i + rand(0, 5), $this->height / 1.4, $this->font_color, $this->font, $this->code[$i]);
-            if ($i == 0)
-                $this->x_start = $x * $i + 5;
+    //生成文字
+    private function createFont() {
+        $_x = $this->width / $this->codelen;
+        $isFontcolor = false;
+        if ($this->fontcolor && !$isFontcolor) {
+            $this->fontcolor = imagecolorallocate($this->img, hexdec(substr($this->fontcolor, 1, 2)), hexdec(substr($this->fontcolor, 3, 2)), hexdec(substr($this->fontcolor, 5, 2)));
+            $isFontcolor = true;
+        }
+        for ($i = 0; $i < $this->codelen; $i++) {
+            if (!$isFontcolor) {
+                $this->fontcolor = imagecolorallocate($this->img, mt_rand(0, 156), mt_rand(0, 156), mt_rand(0, 156));
+            }
+            imagettftext($this->img, $this->fontsize, mt_rand(-30, 30), $_x * $i + mt_rand(1, 5), $this->height / 1.4, $this->fontcolor, $this->font, $this->code[$i]);
         }
     }
 
-    /**
-     * 画线
-     */
-    private function creat_line() {
-        imagesetthickness($this->img, 3);
-        $xpos = ($this->font_size * 2) + rand(-5, 5);
-        $width = $this->width / 2.66 + rand(3, 10);
-        $height = $this->font_size * 2.14;
-
-        if (rand(0, 100) % 2 == 0) {
-            $start = rand(0, 66);
-            $ypos = $this->height / 2 - rand(10, 30);
-            $xpos += rand(5, 15);
-        } else {
-            $start = rand(180, 246);
-            $ypos = $this->height / 2 + rand(10, 30);
+    //生成线条、雪花
+    private function createLine() {
+        for ($i = 0; $i < 6; $i++) {
+            $color = imagecolorallocate($this->img, mt_rand(0, 156), mt_rand(0, 156), mt_rand(0, 156));
+            imageline($this->img, mt_rand(0, $this->width), mt_rand(0, $this->height), mt_rand(0, $this->width), mt_rand(0, $this->height), $color);
         }
-
-        $end = $start + rand(75, 110);
-
-        imagearc($this->img, $xpos, $ypos, $width, $height, $start, $end, $this->font_color);
-
-        if (rand(1, 75) % 2 == 0) {
-            $start = rand(45, 111);
-            $ypos = $this->height / 2 - rand(10, 30);
-            $xpos += rand(5, 15);
-        } else {
-            $start = rand(200, 250);
-            $ypos = $this->height / 2 + rand(10, 30);
+        for ($i = 0; $i < 100; $i++) {
+            $color = imagecolorallocate($this->img, mt_rand(200, 255), mt_rand(200, 255), mt_rand(200, 255));
+            imagestring($this->img, mt_rand(1, 5), mt_rand(0, $this->width), mt_rand(0, $this->height), '*', $color);
         }
-
-        $end = $start + rand(75, 100);
-
-        imagearc($this->img, $this->width * .75, $ypos, $width, $height, $start, $end, $this->font_color);
     }
 
-    /**
-     * 输出图片
-     */
-    private function output() {
-        //ob_clean();//防止出现'图像因其本身有错无法显示'的问题
-        header("content-type:image/png\r\n");
+    //输出
+    public function output() {
+        header('Content-type:image/png');
+        $this->createBg();
+        $this->createCode();
+        $this->createLine();
+        $this->createFont();
         imagepng($this->img);
         imagedestroy($this->img);
+    }
+
+    //获取验证码
+    public function getCode() {
+        return strtolower($this->code);
     }
 
 }
