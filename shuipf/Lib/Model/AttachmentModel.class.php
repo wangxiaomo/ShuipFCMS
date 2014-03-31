@@ -58,6 +58,8 @@ class AttachmentModel extends CommonModel {
         if (empty($info) || !is_array($info)) {
             return false;
         }
+        //后缀强制小写
+        $info['extension'] = strtolower($info['extension']);
         //文件保存物理地址
         $filePath = $info['savepath'] . $info['savename'];
         if (empty($filePath)) {
@@ -101,5 +103,3 @@ class AttachmentModel extends CommonModel {
     }
 
 }
-
-?>
