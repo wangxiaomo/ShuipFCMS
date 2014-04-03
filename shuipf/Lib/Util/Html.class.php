@@ -54,11 +54,7 @@ class Html extends BaseAction {
             $paginationtype = 0;
         }
         //载入字段数据处理类
-        if (false == require_cache(RUNTIME_PATH . 'content_output.class.php')) {
-            D("Category")->category_cache();
-            D("Content_cache")->model_content_cache();
-            require RUNTIME_PATH . 'content_output.class.php';
-        }
+        require_cache(RUNTIME_PATH . 'content_output.class.php');
         //tag
         tag('html_shwo_buildhtml', $data);
         $content_output = new content_output($this->modelid);

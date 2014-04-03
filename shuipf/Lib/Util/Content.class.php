@@ -94,11 +94,7 @@ class Content {
         //数据模型对象
         $this->contentModel = ContentModel::getInstance($this->modelid);
         //载入数据处理类
-        if (false == require_cache(RUNTIME_PATH . 'content_input.class.php')) {
-            D("Category")->category_cache();
-            D("Content_cache")->model_content_cache();
-            require RUNTIME_PATH . 'content_input.class.php';
-        }
+        require_cache(RUNTIME_PATH . 'content_input.class.php');
         $content_input = new content_input($this->modelid);
         //保存一份旧数据
         $oldata = $data;
@@ -151,11 +147,7 @@ class Content {
         }
 
         //调用 update
-        if (false == require_cache(RUNTIME_PATH . 'content_update.class.php')) {
-            D("Category")->category_cache();
-            D("Content_cache")->model_content_cache();
-            require RUNTIME_PATH . 'content_update.class.php';
-        }
+        require_cache(RUNTIME_PATH . 'content_update.class.php');
         $content_update = new content_update($this->modelid);
         $updateStatus = $content_update->update($oldata);
         if (false == $updateStatus) {
@@ -319,11 +311,7 @@ class Content {
         if (isset($data['inputtime'])) {
             unset($data['inputtime']);
         }
-        if (false == require_cache(RUNTIME_PATH . 'content_input.class.php')) {
-            D("Category")->category_cache();
-            D("Content_cache")->model_content_cache();
-            require RUNTIME_PATH . 'content_input.class.php';
-        }
+        require_cache(RUNTIME_PATH . 'content_input.class.php');
         $content_input = new content_input($this->modelid);
         //保存一份旧数据
         $oldata = $data;
@@ -363,11 +351,7 @@ class Content {
         $this->contentModel->dataMerger($data);
         $oldata['inputtime'] = $data['inputtime'] = $inputtime;
         //调用 update
-        if (false == require_cache(RUNTIME_PATH . 'content_update.class.php')) {
-            D("Category")->category_cache();
-            D("Content_cache")->model_content_cache();
-            require RUNTIME_PATH . 'content_update.class.php';
-        }
+        require_cache(RUNTIME_PATH . 'content_update.class.php');
         $content_update = new content_update($this->modelid);
         $updateStatus = $content_update->update($oldata);
         if (false == $updateStatus) {
@@ -473,11 +457,7 @@ class Content {
      * @param $catid 栏目id
      */
     public function delete($id, $catid) {
-        if (false == require_cache(RUNTIME_PATH . 'content_delete.class.php')) {
-            D("Category")->category_cache();
-            D("Content_cache")->model_content_cache();
-            require RUNTIME_PATH . 'content_delete.class.php';
-        }
+        require_cache(RUNTIME_PATH . 'content_delete.class.php');
         $this->catid = (int) $catid;
         //模型ID
         $this->modelid = getCategory($this->catid, 'modelid');
