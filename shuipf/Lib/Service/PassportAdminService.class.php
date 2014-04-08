@@ -33,7 +33,6 @@ class PassportAdminService {
                 return $User;
             }
         }
-        $this->logoutLocalAdmin();
         return false;
     }
 
@@ -89,20 +88,7 @@ class PassportAdminService {
      */
     public function logoutLocalAdmin() {
         // 注销session
-        //设置标记
-        session(C('USER_AUTH_KEY'), NULL);
-        //设置用户名
-        session("username", NULL);
-        //标记为后台登陆
-        session("isadmin", NULL);
-        //角色
-        session("roleid", NULL);
-        //特权。创始人
-        session(C('ADMIN_AUTH_KEY'), NULL);
-        //删除权限缓存
-        session("_ACCESS_LIST", NULL);
-        //清空验证码
-        session("adminverify", NULL);
+        session("[destroy]");
         return true;
     }
 
@@ -152,5 +138,3 @@ class PassportAdminService {
     }
 
 }
-
-?>
