@@ -10,6 +10,10 @@
 function author($field, $value, $fieldinfo) {
     //扩展配置
     $setting = unserialize($fieldinfo['setting']);
+    //默认显示
+    if (empty($value)) {
+        $value = $setting['defaultvalue'];
+    }
     //错误提示
     $errortips = $fieldinfo['errortips'];
     if ($fieldinfo['minlength']) {
