@@ -440,7 +440,7 @@ CREATE TABLE `shuipfcms_loginlog` (
   `password` varchar(30) character set utf8 NOT NULL default '' COMMENT '尝试错误密码',
   `info` varchar(255) character set utf8 NOT NULL default '0' COMMENT '其他说明',
   PRIMARY KEY  (`loginid`)
-) ENGINE=MyISAM DEFAULT CHARSET=gbk COMMENT='后台登陆日志表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台登陆日志表';
 
 -- ----------------------------
 -- Table structure for `shuipfcms_menu`
@@ -736,7 +736,7 @@ CREATE TABLE `shuipfcms_operationlog` (
   PRIMARY KEY  (`id`),
   KEY `status` (`status`),
   KEY `username` (`uid`)
-) ENGINE=MyISAM DEFAULT CHARSET=gbk COMMENT='后台操作日志表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台操作日志表';
 
 -- ----------------------------
 -- Table structure for `shuipfcms_position`
