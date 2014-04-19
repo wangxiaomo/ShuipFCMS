@@ -5,32 +5,46 @@
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
+//定义是后台
+defined('IN_ADMIN') or define('IN_ADMIN', false);
+
 class BaseAction extends AppframeAction {
 
     public $TemplatePath, $Theme, $ThemeDefault;
 
     //初始化
     protected function _initialize() {
-        //定义是前台
-        define('IN_ADMIN', false);
         parent::_initialize();
-        //前台关闭表单令牌
-        C("TOKEN_ON", false);
-        $this->initUser();
-        //=====模板配置初始化=====
+        //非后台
+        if (IN_ADMIN === false) {
+            //前台关闭表单令牌
+            C("TOKEN_ON", false);
+            //初始化前台会员登录信息
+            $this->initUser();
+        }
+        //前台模板初始化
+        $this->templateInitialize();
+    }
+
+    /**
+     * 前台模板初始化
+     */
+    protected function templateInitialize() {
+        //当前启用主题名称
+        $themeName = empty(AppframeAction::$Cache["Config"]['theme']) ? "Default" : AppframeAction::$Cache["Config"]['theme'];
+        //设置前台提示信息模板
+        if (is_file(TEMPLATE_PATH . $themeName . "/" . "error" . C("TMPL_TEMPLATE_SUFFIX")) && IN_ADMIN == false) {
+            C("TMPL_ACTION_ERROR", TEMPLATE_PATH . $themeName . "/" . "error" . C("TMPL_TEMPLATE_SUFFIX"));
+        }
+        if (is_file(TEMPLATE_PATH . $themeName . "/" . "success" . C("TMPL_TEMPLATE_SUFFIX")) && IN_ADMIN == false) {
+            C("TMPL_ACTION_SUCCESS", TEMPLATE_PATH . $themeName . "/" . "success" . C("TMPL_TEMPLATE_SUFFIX"));
+        }
         //模板路径
         $this->TemplatePath = TEMPLATE_PATH;
         //默认主题风格
         $this->ThemeDefault = "Default";
         //主题风格
-        $this->Theme = empty(AppframeAction::$Cache["Config"]['theme']) ? $this->ThemeDefault : AppframeAction::$Cache["Config"]['theme'];
-        //设置前台提示信息模板
-        if (is_file($this->TemplatePath . $this->Theme . "/" . "error" . C("TMPL_TEMPLATE_SUFFIX")) && IN_ADMIN == false) {
-            C("TMPL_ACTION_ERROR", $this->TemplatePath . $this->Theme . "/" . "error" . C("TMPL_TEMPLATE_SUFFIX"));
-        }
-        if (is_file($this->TemplatePath . $this->Theme . "/" . "success" . C("TMPL_TEMPLATE_SUFFIX")) && IN_ADMIN == false) {
-            C("TMPL_ACTION_SUCCESS", $this->TemplatePath . $this->Theme . "/" . "success" . C("TMPL_TEMPLATE_SUFFIX"));
-        }
+        $this->Theme = $themeName;
         //模块静态资源目录，例如CSS JS等
         $this->assign('model_extresdir', CONFIG_SITEURL_MODEL . MODEL_EXTRESDIR);
     }

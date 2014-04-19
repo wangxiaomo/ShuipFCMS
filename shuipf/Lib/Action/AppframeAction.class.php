@@ -79,6 +79,9 @@ class AppframeAction extends Action {
         }
         //当然登陆用户ID
         $userid = service("Passport")->isLogged();
+        if (empty($userid)) {
+            return false;
+        }
         //获取用户信息
         $userInfo = service("Passport")->getLocalUser((int) $userid);
         if (false == $userInfo) {
