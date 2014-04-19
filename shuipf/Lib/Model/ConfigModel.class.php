@@ -213,6 +213,18 @@ class ConfigModel extends CommonModel {
                 return false;
             }
         }
+        if ($data['DATA_CACHE_TYPE'] == 'Redis') {
+            if (class_exists('Redis') == false) {
+                $this->error = '您的环境不支持Redis，无法开启！';
+                return false;
+            }
+        }
+        if ($data['DATA_CACHE_TYPE'] == 'Xcache') {
+            if (function_exists('xcache_set') == false) {
+                $this->error = '您的环境不支持Xcache，无法开启！';
+                return false;
+            }
+        }
         //***********************END************************************
 
         file_exists($filename) or touch($filename);
