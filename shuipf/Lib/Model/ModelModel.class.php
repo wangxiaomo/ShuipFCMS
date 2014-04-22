@@ -294,11 +294,16 @@ class ModelModel extends CommonModel {
         //导入
         $modelid = $this->addModel($model);
         if ($modelid) {
-            $ModelField = M('ModelField');
+            $ModelField = D('Model_field');
             if (!empty($data['field'])) {
                 foreach ($data['field'] as $value) {
                     $value['modelid'] = $modelid;
-                    $ModelField->add($value);
+                    if ($value['setting']) {
+                        $value['setting'] = unserialize($value['setting']);
+                    }
+                    $model = new Model_fieldModel();
+                    $model->addField($value);
+                    unset($model);
                 }
             }
             return $modelid;
