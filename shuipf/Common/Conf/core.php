@@ -11,11 +11,6 @@
 /**
  * ShuipFCMS专属模式
  */
-//require PROJECT_PATH . 'Common/functions.php';
-//// 加载框架底层语言包
-//L(include THINK_PATH . 'Lang/zh-cn.php');
-//$database = include CONF_PATH . 'database' . CONF_EXT;
-//$db = new Think\Model('Config', $database['DB_PREFIX'], $database);
 return array(
     // 配置文件
     'config' => array(
@@ -39,8 +34,8 @@ return array(
     ),
     // 函数和类文件
     'core' => array(
-        PROJECT_PATH . 'Common/functions.php',
-        CORE_PATH . 'Hook' . EXT,
+        COMMON_PATH . 'Common/functions.php',
+        PROJECT_PATH . 'Libs/System/Hook' . EXT,
         CORE_PATH . 'App' . EXT,
         CORE_PATH . 'Dispatcher' . EXT,
         //CORE_PATH . 'Log'.EXT,
@@ -53,23 +48,23 @@ return array(
     ),
     // 行为扩展定义
     'tags' => array(
-        'app_init' => array(
-            'Behavior\BuildLiteBehavior', // 生成运行Lite文件
-        ),
-        'app_begin' => array(
-            'Behavior\ReadHtmlCacheBehavior', // 读取静态缓存
-        ),
-        'app_end' => array(
-            'Behavior\ShowPageTraceBehavior', // 页面Trace显示
-        ),
-        'view_parse' => array(
-            'Behavior\ParseTemplateBehavior', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
-        ),
-        'template_filter' => array(
-            'Behavior\ContentReplaceBehavior', // 模板输出替换
-        ),
-        'view_filter' => array(
-            'Behavior\WriteHtmlCacheBehavior', // 写入静态缓存
-        ),
+//        'app_init' => array(
+//            'Behavior\BuildLiteBehavior', // 生成运行Lite文件
+//        ),
+//        'app_begin' => array(
+//            'Behavior\ReadHtmlCacheBehavior', // 读取静态缓存
+//        ),
+//        'app_end' => array(
+//            'Behavior\ShowPageTraceBehavior', // 页面Trace显示
+//        ),
+//        'view_parse' => array(
+//            'Behavior\ParseTemplateBehavior', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
+//        ),
+//        'template_filter' => array(
+//            'Behavior\ContentReplaceBehavior', // 模板输出替换
+//        ),
+//        'view_filter' => array(
+//            'Behavior\WriteHtmlCacheBehavior', // 写入静态缓存
+//        ),
     ),
 );

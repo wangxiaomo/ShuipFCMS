@@ -17,18 +17,10 @@ define('SITE_PATH', getcwd() . '/');
 define('PROJECT_PATH', SITE_PATH . 'shuipf/');
 // 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false
 define('APP_DEBUG', True);
-//模式
-define('APP_MODE', 'shuipf');
-//应用公共配置目录
-define('CONF_PATH', PROJECT_PATH . 'Conf/');
 // 应用公共目录
 define('COMMON_PATH', PROJECT_PATH . 'Common/');
-//应用语言配置
-define('LANG_PATH', PROJECT_PATH . 'Lang/');
 // 定义应用目录
-define('APP_PATH', PROJECT_PATH . 'Modules/');
-//应用静态目录
-define('HTML_PATH', PROJECT_PATH . 'Html/');
+define('APP_PATH', PROJECT_PATH . 'Application/');
 //应用运行缓存目录
 define("RUNTIME_PATH", SITE_PATH . "#runtime/");
 // 引入ThinkPHP入口文件
