@@ -903,17 +903,21 @@ class TagLibShuipf extends TagLib {
             $parseStr .= ' } ';
         } else {
             $parseStr .= ' $cache = ' . $cache . ';';
-            $parseStr .= ' $cacheID = to_guid_string(' . self::arr_to_html($tableWhere) . ');';
-            $parseStr .= ' if(' . $cache . ' && $_return = S( $cacheID ) ){ ';
-            $parseStr .= '      $' . $return . '=$_return;';
-            $parseStr .= ' }else{ ';
             if ($table) {
+                $parseStr .= ' $cacheID = to_guid_string(' . self::arr_to_html($tableWhere) . ');';
+                $parseStr .= ' if(' . $cache . ' && $_return = S( $cacheID ) ){ ';
+                $parseStr .= '      $' . $return . '=$_return;';
+                $parseStr .= ' }else{ ';
                 $parseStr .= ' $get_db = M(ucwords("' . $table . '"));';
                 if ($tag['order']) {
                     $parseStr .= ' $get_db->order("' . $tag['order'] . '"); ';
                 }
                 $parseStr .= '      $' . $return . '=$get_db->where(' . self::arr_to_html($tableWhere) . ')->limit(' . $num . ')->select();';
             } else {
+                $parseStr .= ' $cacheID = to_guid_string(' . self::arr_to_html($tag) . ');';
+                $parseStr .= ' if(' . $cache . ' && $_return = S( $cacheID ) ){ ';
+                $parseStr .= '      $' . $return . '=$_return;';
+                $parseStr .= ' }else{ ';
                 //判断是否变量传递
                 if (substr(trim($sql), 0, 1) == '$') {
                     $parseStr .= ' $_sql = str_replace(array("think_", "shuipfcms_"), C("DB_PREFIX"),' . $sql . ');';
