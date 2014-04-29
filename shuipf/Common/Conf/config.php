@@ -51,14 +51,14 @@ return array(
     'DEFAULT_FILTER' => 'htmlspecialchars', // 默认参数过滤方法 用于I函数...
 
     /* 数据库设置 */
-    'DB_TYPE' => '', // 数据库类型
+    'DB_TYPE' => 'mysql', // 数据库类型
     'DB_HOST' => '', // 服务器地址
     'DB_NAME' => '', // 数据库名
     'DB_USER' => '', // 用户名
     'DB_PWD' => '', // 密码
-    'DB_PORT' => '', // 端口
+    'DB_PORT' => '3306', // 端口
     'DB_PREFIX' => '', // 数据库表前缀
-    'DB_FIELDTYPE_CHECK' => false, // 是否进行字段类型检查
+    'DB_FIELDTYPE_CHECK' => true, // 是否进行字段类型检查
     'DB_FIELDS_CACHE' => true, // 启用字段缓存
     'DB_CHARSET' => 'utf8', // 数据库编码默认采用utf8
     'DB_DEPLOY_TYPE' => 0, // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
@@ -68,7 +68,7 @@ return array(
     'DB_SQL_BUILD_CACHE' => false, // 数据库查询的SQL创建缓存
     'DB_SQL_BUILD_QUEUE' => 'file', // SQL缓存队列的缓存方式 支持 file xcache和apc
     'DB_SQL_BUILD_LENGTH' => 20, // SQL缓存的队列长度
-    'DB_SQL_LOG' => false, // SQL执行日志记录
+    'DB_SQL_LOG' => true, // SQL执行日志记录
     'DB_BIND_PARAM' => false, // 数据库写入数据自动参数绑定
 
     /* 数据缓存设置 */
@@ -107,7 +107,7 @@ return array(
     'TMPL_ACTION_SUCCESS' => THINK_PATH . 'Tpl/dispatch_jump.tpl', // 默认成功跳转对应的模板文件
     'TMPL_EXCEPTION_FILE' => THINK_PATH . 'Tpl/think_exception.tpl', // 异常页面的模板文件
     'TMPL_DETECT_THEME' => false, // 自动侦测模板主题
-    'TMPL_TEMPLATE_SUFFIX' => '.html', // 默认模板文件后缀
+    'TMPL_TEMPLATE_SUFFIX' => '.php', // 默认模板文件后缀
     'TMPL_FILE_DEPR' => '/', //模板文件CONTROLLER_NAME与ACTION_NAME之间的分割符
     // 布局设置
     'TMPL_ENGINE_TYPE' => 'Think', // 默认模板引擎 以下设置仅对使用Think模板引擎有效
@@ -150,9 +150,9 @@ return array(
     'URL_MAP_RULES' => array(), // URL映射定义规则
 
     /* 系统变量名称设置 */
-    'VAR_MODULE' => 'm', // 默认模块获取变量
+    'VAR_MODULE' => 'g', // 默认模块获取变量
     'VAR_ADDON' => 'addon', // 默认的插件控制器命名空间变量
-    'VAR_CONTROLLER' => 'c', // 默认控制器获取变量
+    'VAR_CONTROLLER' => 'm', // 默认控制器获取变量
     'VAR_ACTION' => 'a', // 默认操作获取变量
     'VAR_AJAX_SUBMIT' => 'ajax', // 默认的AJAX提交变量
     'VAR_JSONP_HANDLER' => 'callback',

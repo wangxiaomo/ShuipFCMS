@@ -7,27 +7,9 @@
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
-
-namespace Common\Behavior;
-
-use Think\Hook;
-
-defined('THINK_PATH') or exit();
-
-class AppInitBehavior {
-
-    public function run(&$param) {
-        // 注册AUTOLOAD方法
-        spl_autoload_register('Common\Behavior\AppInitBehavior::autoload');
-    }
-
-    /**
-     * 类库自动加载
-     * @param string $class 对象类名
-     * @return void
-     */
-    static public function autoload($class) {
-        
-    }
-
+// 检测PHP环境
+if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+    die('require PHP > 5.3.0 !');
 }
+define('BIND_MODULE', 'Install');
+require './index.php';

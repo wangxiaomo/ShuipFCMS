@@ -44,9 +44,9 @@ class Hook {
      */
     static public function import($data, $recursive = true) {
         //初始化
-        if (empty(self::$tags)) {
+        if (empty(self::$tags) && C('DB_HOST') && C('DB_NAME') && C('DB_USER') && C('DB_PWD')) {
             $tags = F('Behavior');
-            if(empty($tags)){
+            if (empty($tags)) {
                 $tags = D('Behavior')->behavior_cache();
             }
             self::$tags = $tags;
@@ -55,6 +55,15 @@ class Hook {
             self::$tags = array_merge(self::$tags, $data);
         } else { // 合并导入
             foreach ($data as $tag => $val) {
+                //兼容tp原来的写法
+                if (is_array($val)) {
+                    foreach ($val as $k => $rs) {
+                        $val[$k] = array(
+                            '_type' => 2,
+                            'class' => $rs,
+                        );
+                    }
+                }
                 if (!isset(self::$tags[$tag]))
                     self::$tags[$tag] = array();
                 if (!empty($val['_overlay'])) {
@@ -117,13 +126,12 @@ class Hook {
 
     /**
      * 执行某个插件
-     * @param array $ar 规则数组
+     * @param array $name 规则
      * @param string $tag 方法名（标签名）     
      * @param Mixed $params 传入的参数
      * @return void
      */
-    static public function exec($ar, $tag, &$params = NULL) {
-        $name = $ar['class'];
+    static public function exec($name, $tag, &$params = NULL) {
         if ('Behavior' == substr($name, -8)) {
             // 行为扩展必须用run入口方法
             $tag = 'run';

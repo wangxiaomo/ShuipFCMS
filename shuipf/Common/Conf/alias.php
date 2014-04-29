@@ -8,7 +8,5 @@
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
 return array(
-//    'app_init' => array(
-//        'Common\Behavior\AppInitBehavior',
-//    )
+    'Dir' => PROJECT_PATH . 'Libs/Util/Dir.class.php',
 );
