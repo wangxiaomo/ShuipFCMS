@@ -3,7 +3,7 @@
 // +----------------------------------------------------------------------
 // | ShuipFCMS
 // +----------------------------------------------------------------------
-// | Copyright (c) 2012-2014 http://www.shuipfcms.co, All rights reserved.
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
@@ -22,6 +22,12 @@ class IndexController extends Controller {
                 'Behavior\ParseTemplateBehavior', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
             ),
         ));
+
+        //检查是否已经安装过
+        if (is_file(MODULE_PATH . 'install.lock')) {
+            exit('你已经安装过该系统，如果想重新安装，请先删除站点'.MODULE_PATH.'目录下的 install.lock 文件，然后再安装。');
+        }
+
         $this->assign('Title', C('SHUIPF_APPNAME'))
                 ->assign('Powered', 'Powered by abc3210.com');
     }
@@ -60,6 +66,7 @@ class IndexController extends Controller {
         $folder = array(
             '/',
             '/d/',
+            '/shuipf/Application/Install/',
             '/shuipf/Common/Conf/',
         );
         $dir = new \Dir();
@@ -107,6 +114,7 @@ class IndexController extends Controller {
         }
         $domain = $sys_protocal . $domain . $rootpath;
         $parse_url = parse_url($domain);
+        $parse_url['path'] = str_replace('install.php', '', $parse_url['path']);
         $this->assign('parse_url', $parse_url);
         $this->display();
     }
@@ -119,6 +127,7 @@ class IndexController extends Controller {
 
     //安装完成
     public function step_5() {
+        @touch(MODULE_PATH . 'install.lock');
         $this->display();
     }
 
@@ -162,7 +171,7 @@ class IndexController extends Controller {
         }
         mysql_query("SET NAMES 'utf8'"); //,character_set_client=binary,sql_mode='';
         $version = mysql_get_server_info($conn);
-        if ($version < 4.1) {
+        if ($version < 5.0) {
             $arr['msg'] = '数据库版本太低!';
             echo json_encode($arr);
             exit;
@@ -250,7 +259,8 @@ class IndexController extends Controller {
         $strConfig = str_replace('#DB_PORT#', $dbPort, $strConfig);
         $strConfig = str_replace('#DB_PREFIX#', $dbPrefix, $strConfig);
         $strConfig = str_replace('#AUTHCODE#', genRandomString(18), $strConfig);
-        $strConfig = str_replace('#COOKIE_PREFIX#', genRandomString(6) . "_", $strConfig);
+        $strConfig = str_replace('#COOKIE_PREFIX#', genRandomString(3) . "_", $strConfig);
+        $strConfig = str_replace('#DATA_CACHE_PREFIX#', genRandomString(3) . "_", $strConfig);
         @file_put_contents(CONF_PATH . 'dataconfig.php', $strConfig);
 
         //插入管理员

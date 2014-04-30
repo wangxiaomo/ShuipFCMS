@@ -3,7 +3,7 @@
 // +----------------------------------------------------------------------
 // | ShuipFCMS
 // +----------------------------------------------------------------------
-// | Copyright (c) 2012-2014 http://www.shuipfcms.co, All rights reserved.
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
@@ -15,6 +15,6 @@ defined('THINK_PATH') or exit();
 return array(
     "SHUIPF_APPNAME" => "ShuipFCMS_UTF8_Free", //产品名称
     "SHUIPF_BUILD" => 20140419, //产品流水号
-    "SHUIPF_VERSION" => "2.0.0", //产品版本号
+    "SHUIPF_VERSION" => "1.5.5", //产品版本号
 );
 

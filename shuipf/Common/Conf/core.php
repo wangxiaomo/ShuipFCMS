@@ -3,7 +3,7 @@
 // +----------------------------------------------------------------------
 // | ShuipFCMS
 // +----------------------------------------------------------------------
-// | Copyright (c) 2012-2014 http://www.shuipfcms.co, All rights reserved.
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
@@ -34,7 +34,8 @@ return array(
     ),
     // 函数和类文件
     'core' => array(
-        COMMON_PATH . 'Common/functions.php',
+        COMMON_PATH . 'Common/corefun.php',
+        COMMON_PATH . 'Common/common.php',
         PROJECT_PATH . 'Libs/System/Hook' . EXT,
         CORE_PATH . 'App' . EXT,
         CORE_PATH . 'Dispatcher' . EXT,

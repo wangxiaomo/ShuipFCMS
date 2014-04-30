@@ -28,7 +28,7 @@ var n=0;
     var data = {$data};
     $.ajaxSetup ({ cache: false });
     function reloads(n) {
-        var url =  "./index.php?step=4&install=1&n="+n;
+        var url =  "./install.php?g=Install&m=Index&a=mysql&n="+n;
         $.ajax({
             type: "POST",		
             url: url,
