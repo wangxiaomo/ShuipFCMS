@@ -14,7 +14,7 @@
 defined('THINK_PATH') or exit();
 return array(
     "SHUIPF_APPNAME" => "ShuipFCMS_UTF8_Free", //产品名称
-    "SHUIPF_BUILD" => 20140419, //产品流水号
+    "SHUIPF_BUILD" => 20140503, //产品流水号
     "SHUIPF_VERSION" => "1.5.5", //产品版本号
 );
 

@@ -7,12 +7,22 @@
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
+
+function cache($name = NULL, $value = NULL) {
+    if (!empty($name)) {
+        if (empty($value)) {
+            unset(\ShuipFCMSController::$Cache[$name]);
+        } else {
+            \ShuipFCMSController::$Cache[$name] = $value;
+        }
+    }
+    return \ShuipFCMSController::$Cache;
+}
+
 /**
- * 产生随机字符串 
  * 产生一个指定长度的随机字符串,并返回给用户 
- * @access public 
- * @param int $len 产生字符串的位数 
- * @return string 
+ * @param type $len 产生字符串的长度
+ * @return string 随机字符串
  */
 function genRandomString($len = 6) {
     $chars = array(
@@ -24,7 +34,8 @@ function genRandomString($len = 6) {
         "3", "4", "5", "6", "7", "8", "9"
     );
     $charsLen = count($chars) - 1;
-    shuffle($chars);    // 将数组打乱 
+    // 将数组打乱 
+    shuffle($chars);
     $output = "";
     for ($i = 0; $i < $len; $i++) {
         $output .= $chars[mt_rand(0, $charsLen)];

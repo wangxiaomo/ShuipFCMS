@@ -41,7 +41,7 @@ return array(
     'DEFAULT_V_LAYER' => 'View', // 默认的视图层名称
     'DEFAULT_LANG' => 'zh-cn', // 默认语言
     'DEFAULT_THEME' => '', // 默认模板主题名称
-    'DEFAULT_MODULE' => 'Home', // 默认模块
+    'DEFAULT_MODULE' => 'Content', // 默认模块
     'DEFAULT_CONTROLLER' => 'Index', // 默认控制器名称
     'DEFAULT_ACTION' => 'index', // 默认操作名称
     'DEFAULT_CHARSET' => 'utf-8', // 默认输出编码
@@ -76,7 +76,7 @@ return array(
     'DATA_CACHE_COMPRESS' => false, // 数据缓存是否压缩缓存
     'DATA_CACHE_CHECK' => false, // 数据缓存是否校验缓存
     'DATA_CACHE_PREFIX' => '', // 缓存前缀
-    'DATA_CACHE_TYPE' => 'File', // 数据缓存类型,支持:File|Db|Apc|Memcache|Shmop|Sqlite|Xcache|Apachenote|Eaccelerator
+    'DATA_CACHE_TYPE' => 'Memcache', // 数据缓存类型,支持:File|Db|Apc|Memcache|Shmop|Sqlite|Xcache|Apachenote|Eaccelerator
     'DATA_CACHE_PATH' => TEMP_PATH, // 缓存路径设置 (仅对File方式缓存有效)
     'DATA_CACHE_SUBDIR' => false, // 使用子目录缓存 (自动根据缓存标识的哈希创建子目录)
     'DATA_PATH_LEVEL' => 1, // 子目录缓存级别
@@ -128,7 +128,7 @@ return array(
     'TAGLIB_BEGIN' => '<', // 标签库标签开始标记
     'TAGLIB_END' => '>', // 标签库标签结束标记
     'TAGLIB_LOAD' => true, // 是否使用内置标签库之外的其它标签库，默认自动检测
-    'TAGLIB_BUILD_IN' => 'cx', // 内置标签库名称(标签使用不必指定标签库名称),以逗号分隔 注意解析顺序
+    'TAGLIB_BUILD_IN' => 'cx,Common\TagLib\Shuipf', // 内置标签库名称(标签使用不必指定标签库名称),以逗号分隔 注意解析顺序
     'TAGLIB_PRE_LOAD' => '', // 需要额外加载的标签库(须指定标签库名称)，多个以逗号分隔 
 
     /* URL设置 */
@@ -159,12 +159,13 @@ return array(
     'VAR_PATHINFO' => 's', // 兼容模式PATHINFO获取变量例如 ?s=/module/action/id/1 后面的参数取决于URL_PATHINFO_DEPR
     'VAR_TEMPLATE' => 't', // 默认模板切换变量
     'HTTP_CACHE_CONTROL' => 'private', // 网页缓存控制
-    'CHECK_APP_DIR' => true, // 是否检查应用目录是否创建
+    'CHECK_APP_DIR' => false, // 是否检查应用目录是否创建
     'FILE_UPLOAD_TYPE' => 'Local', // 文件上传方式
     'DATA_CRYPT_TYPE' => 'Think', // 数据加密方式
 
     /* 命名空间 */
     'AUTOLOAD_NAMESPACE' => array(
         'Common' => COMMON_PATH,
+        'Libs' => PROJECT_PATH.'Libs',
     ),
 );

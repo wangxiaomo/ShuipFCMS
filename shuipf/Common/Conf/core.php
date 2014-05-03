@@ -16,7 +16,7 @@ return array(
     'config' => array(
         THINK_PATH . 'Conf/convention.php', // 系统惯例配置
         CONF_PATH . 'config' . CONF_EXT, // 应用公共配置
-        CONF_PATH . 'database' . CONF_EXT, //数据库配置
+        CONF_PATH . 'dataconfig' . CONF_EXT, //数据库配置
         CONF_PATH . 'addition' . CONF_EXT, //用户扩展配置
         CONF_PATH . 'version' . CONF_EXT, //系统版本配置
     ),

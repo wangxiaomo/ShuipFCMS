@@ -11,23 +11,18 @@
 namespace Install\Controller;
 
 use Think\Controller;
-use Think\Hook;
 
 class IndexController extends Controller {
 
     //初始化
     public function _initialize() {
-        Hook::import(array(
-            'view_parse' => array(
-                'Behavior\ParseTemplateBehavior', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
-            ),
-        ));
-
+        if (!defined('INSTALL')) {
+            exit('请不要直接访问本模块。');
+        }
         //检查是否已经安装过
         if (is_file(MODULE_PATH . 'install.lock')) {
-            exit('你已经安装过该系统，如果想重新安装，请先删除站点'.MODULE_PATH.'目录下的 install.lock 文件，然后再安装。');
+            exit('你已经安装过该系统，如果想重新安装，请先删除站点' . MODULE_PATH . '目录下的 install.lock 文件，然后再安装。');
         }
-
         $this->assign('Title', C('SHUIPF_APPNAME'))
                 ->assign('Powered', 'Powered by abc3210.com');
     }

@@ -50,6 +50,29 @@ class Hook {
                 $tags = D('Behavior')->behavior_cache();
             }
             self::$tags = $tags;
+        } else {
+            //当没有安装的时候载入初始tag
+            $data = array(
+                'app_init' => array(
+                    'Behavior\BuildLiteBehavior',
+                    'Common\Behavior\AppInitBehavior',
+                ),
+                'app_begin' => array(
+                    'Behavior\ReadHtmlCacheBehavior',
+                ),
+                'app_end' => array(
+                    'Behavior\ShowPageTraceBehavior',
+                ),
+                'view_parse' => array(
+                    'Behavior\ParseTemplateBehavior',
+                ),
+                'template_filter' => array(
+                    'Behavior\ContentReplaceBehavior',
+                ),
+                'view_filter' => array(
+                    'Behavior\WriteHtmlCacheBehavior',
+                ),
+            );
         }
         if (!$recursive) { // 覆盖导入
             self::$tags = array_merge(self::$tags, $data);
