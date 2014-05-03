@@ -8,15 +8,27 @@
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
 
-function cache($name = NULL, $value = NULL) {
-    if (!empty($name)) {
-        if (empty($value)) {
-            unset(\ShuipFCMSController::$Cache[$name]);
+/**
+ * 系统缓存缓存管理
+ * @param mixed $name 缓存名称
+ * @param mixed $value 缓存值
+ * @param mixed $options 缓存参数
+ * @return mixed
+ */
+function cache($name, $value = '', $options = null) {
+    // 获取缓存
+    if ('' === $value) {
+        return Libs\System\Cache::get($name);
+    } elseif (is_null($value)) {//删除缓存
+        return Libs\System\Cache::remove($name);
+    } else {//缓存数据
+        if (is_array($options)) {
+            $expire = isset($options['expire']) ? $options['expire'] : NULL;
         } else {
-            \ShuipFCMSController::$Cache[$name] = $value;
+            $expire = is_numeric($options) ? $options : NULL;
         }
+        return Libs\System\Cache::set($name, $value, $expire);
     }
-    return \ShuipFCMSController::$Cache;
 }
 
 /**
