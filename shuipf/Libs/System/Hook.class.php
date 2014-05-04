@@ -50,7 +50,7 @@ class Hook {
                 $tags = D('Behavior')->behavior_cache();
             }
             self::$tags = $tags;
-        } else {
+        } else if( !C('DB_HOST') && !C('DB_NAME') && !C('DB_USER') && !C('DB_PWD')) {
             //当没有安装的时候载入初始tag
             $data = array(
                 'app_init' => array(
