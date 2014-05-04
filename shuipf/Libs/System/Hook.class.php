@@ -44,7 +44,7 @@ class Hook {
      */
     static public function import($data, $recursive = true) {
         //初始化
-        if (empty(self::$tags) && C('DB_HOST') && C('DB_NAME') && C('DB_USER') && C('DB_PWD')) {
+        if (empty(self::$tags) && empty($data) && C('DB_HOST') && C('DB_NAME') && C('DB_USER') && C('DB_PWD')) {
             $tags = F('Behavior');
             if (empty($tags)) {
                 $tags = D('Behavior')->behavior_cache();
@@ -81,10 +81,14 @@ class Hook {
                 //兼容tp原来的写法
                 if (is_array($val)) {
                     foreach ($val as $k => $rs) {
-                        $val[$k] = array(
-                            '_type' => 2,
-                            'class' => $rs,
-                        );
+                        if (is_array($rs)) {
+                            $val[$k] = $rs;
+                        } else {
+                            $val[$k] = array(
+                                '_type' => 2,
+                                'class' => $rs,
+                            );
+                        }
                     }
                 }
                 if (!isset(self::$tags[$tag]))
