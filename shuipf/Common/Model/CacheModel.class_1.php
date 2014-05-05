@@ -1,15 +1,12 @@
 <?php
 
-// +----------------------------------------------------------------------
-// | ShuipFCMS 缓存模型
-// +----------------------------------------------------------------------
-// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
-// +----------------------------------------------------------------------
-// | Author: 水平凡 <admin@abc3210.com>
-// +----------------------------------------------------------------------
-
-namespace Common\Model;
-
+/**
+ * File Name：CacheModel.class.php
+ * File Encoding：UTF-8
+ * File New Time：2014-3-30 19:56:51
+ * Author：水平凡
+ * Mailbox：admin@abc3210.com
+ */
 class CacheModel extends CommonModel {
 
     //自动验证
@@ -95,9 +92,9 @@ class CacheModel extends CommonModel {
         }
         $mo = '';
         if (empty($config['module'])) {
-            $mo = "Common/{$config['model']}";
+            $mo = $config['model'];
         } else {
-            $mo = "{$config['module']}/{$config['model']}";
+            $mo = $config['module'] . "/" . $config['model'];
         }
         $model = D($mo);
         if ($config['action']) {

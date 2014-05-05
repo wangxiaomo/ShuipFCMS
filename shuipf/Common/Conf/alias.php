@@ -12,4 +12,5 @@ return array(
     'ShuipFCMSController' => COMMON_PATH . 'Controller\ShuipFCMSController' . EXT,
     'BaseController' => COMMON_PATH . 'Controller\BaseController' . EXT,
     'Dir' => PROJECT_PATH . 'Libs/Util/Dir.class.php',
+    'Checkcode' => PROJECT_PATH . 'Libs/Util/Checkcode.class.php',
 );

@@ -23,7 +23,7 @@ return array(
     'APP_DOMAIN_SUFFIX' => '', // 域名后缀 如果是com.cn net.cn 之类的后缀必须设置    
     'ACTION_SUFFIX' => '', // 操作方法后缀
     'MULTI_MODULE' => true, // 是否允许多模块 如果为false 则必须设置 DEFAULT_MODULE
-    'MODULE_DENY_LIST' => array('Common', 'Runtime'),
+    'MODULE_DENY_LIST' => array('Common', 'Runtime'), // 设置禁止访问的模块列表
     'CONTROLLER_LEVEL' => 1, //多级控制器
     'APP_AUTOLOAD_LAYER' => 'Controller,Model', // 自动加载的应用类库层 关闭APP_USE_NAMESPACE后有效
     'APP_AUTOLOAD_PATH' => '', // 自动加载的路径 关闭APP_USE_NAMESPACE后有效
@@ -92,7 +92,7 @@ return array(
     'LOG_TYPE' => 'File', // 日志记录类型 默认为文件方式
     'LOG_LEVEL' => 'EMERG,ALERT,CRIT,ERR', // 允许记录的日志级别
     'LOG_FILE_SIZE' => 2097152, // 日志文件大小限制
-    'LOG_EXCEPTION_RECORD' => false, // 是否记录异常信息日志
+    'LOG_EXCEPTION_RECORD' => true, // 是否记录异常信息日志
 
     /* SESSION设置 */
     'SESSION_AUTO_START' => true, // 是否自动开启Session
@@ -133,7 +133,7 @@ return array(
 
     /* URL设置 */
     'URL_CASE_INSENSITIVE' => true, // 默认false 表示URL区分大小写 true则表示不区分大小写
-    'URL_MODEL' => 1, // URL访问模式,可选参数0、1、2、3,代表以下四种模式：
+    'URL_MODEL' => 3, // URL访问模式,可选参数0、1、2、3,代表以下四种模式：
     // 0 (普通模式); 1 (PATHINFO 模式); 2 (REWRITE  模式); 3 (兼容模式)  默认为PATHINFO 模式
     'URL_PATHINFO_DEPR' => '/', // PATHINFO模式下，各参数之间的分割符号
     'URL_PATHINFO_FETCH' => 'ORIG_PATH_INFO,REDIRECT_PATH_INFO,REDIRECT_URL', // 用于兼容判断PATH_INFO 参数的SERVER替代变量列表
@@ -166,6 +166,6 @@ return array(
     /* 命名空间 */
     'AUTOLOAD_NAMESPACE' => array(
         'Common' => COMMON_PATH,
-        'Libs' => PROJECT_PATH.'Libs',
+        'Libs' => PROJECT_PATH . 'Libs',
     ),
 );

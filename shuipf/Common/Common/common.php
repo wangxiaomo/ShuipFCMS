@@ -16,18 +16,22 @@
  * @return mixed
  */
 function cache($name, $value = '', $options = null) {
+    static $cache = '';
+    if (empty($cache)) {
+        $cache = Libs\System\Cache::getInstance();
+    }
     // 获取缓存
     if ('' === $value) {
-        return Libs\System\Cache::get($name);
+        return $cache->get($name);
     } elseif (is_null($value)) {//删除缓存
-        return Libs\System\Cache::remove($name);
+        return $cache->remove($name);
     } else {//缓存数据
         if (is_array($options)) {
             $expire = isset($options['expire']) ? $options['expire'] : NULL;
         } else {
             $expire = is_numeric($options) ? $options : NULL;
         }
-        return Libs\System\Cache::set($name, $value, $expire);
+        return $cache->set($name, $value, $expire);
     }
 }
 

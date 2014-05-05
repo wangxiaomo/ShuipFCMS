@@ -10,6 +10,8 @@
 
 namespace Common\Behavior;
 
+use Libs\System\Cache;
+
 defined('THINK_PATH') or exit();
 
 class AppInitBehavior {
@@ -28,6 +30,10 @@ class AppInitBehavior {
      * 是否安装检测
      */
     private function richterInstall() {
+        //日志目录
+        if (!is_dir(LOG_PATH)) {
+            mkdir(LOG_PATH);
+        }
         $dbHost = C('DB_HOST');
         if (empty($dbHost) && !defined('INSTALL')) {
             redirect('./install.php');
@@ -42,6 +48,13 @@ class AppInitBehavior {
         define("SHUIPF_BUILD", C("SHUIPF_BUILD"));
         //产品名称
         define("SHUIPF_APPNAME", C("SHUIPF_APPNAME"));
+        //MODULE_ALLOW_LIST配置
+        $moduleList = cache('Module');
+        $moduleAllowList = array('Admin', 'Api', 'Content');
+        foreach ($moduleList as $rs) {
+            $moduleAllowList[] = $rs['module'];
+        }
+        C('MODULE_ALLOW_LIST', $moduleAllowList);
     }
 
     /**

@@ -13,24 +13,18 @@ namespace Libs\System;
 class Cache {
 
     /**
-     * 操作句柄
-     * @var string
-     * @access protected
-     */
-    static protected $handler;
-
-    /**
      * 连接缓存系统
      * @access public
      * @param string $type 缓存类型
      * @param array $options  配置数组
      * @return void
      */
-    static public function connect($type = 'S', $options = array()) {
-        if (empty(self::$handler)) {
-            self::$handler = new self();
+    static public function getInstance($type = 'S', $options = array()) {
+        static $systemHandier;
+        if (empty($systemHandier)) {
+            $systemHandier = new Cache();
         }
-        return self::$handler;
+        return $systemHandier;
     }
 
     /**
@@ -44,6 +38,7 @@ class Cache {
             return $cache;
         } else {
             //尝试生成缓存
+            return $this->runUpdate($name);
         }
         return null;
     }
@@ -69,19 +64,25 @@ class Cache {
     }
 
     /**
-     * 使用静态方式调用对象方法
-     * @param type $method 方法
-     * @param type $args 参数
-     * @return type
+     * 更新缓存
+     * @param type $name 缓存key
+     * @return boolean
      */
-    static public function __callstatic($method, $args) {
-        if (empty(self::$handler)) {
-            self::connect();
+    public function runUpdate($name) {
+        if (empty($name)) {
+            return false;
         }
-        //调用缓存驱动的方法
-        if (method_exists(self::$handler, $method)) {
-            return call_user_func_array(array(self::$handler, $method), $args);
+        $cacheModel = D('Common/Cache');
+        //查询缓存key
+        $cacheList = $cacheModel->where(array('key' => $name))->order(array('id' => 'DESC'))->select();
+        if (empty($cacheList)) {
+            return false;
         }
+        foreach($cacheList as $cache){
+            $cacheModel->runUpdate($cache);
+        }
+        //再次加载
+        return S($name);
     }
 
 }

@@ -7,14 +7,9 @@
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
-
-/**
- * 系统版本号配置
- */
-defined('THINK_PATH') or exit();
-return array(
-    "SHUIPF_APPNAME" => "ShuipFCMS_UTF8_Free", //产品名称
-    "SHUIPF_BUILD" => 20140419, //产品流水号
-    "SHUIPF_VERSION" => "1.5.5", //产品版本号
-);
-
+// 检测PHP环境
+if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+    die('require PHP > 5.3.0 !');
+}
+define('BIND_MODULE', 'Api');
+require './index.php';

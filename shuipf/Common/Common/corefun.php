@@ -798,7 +798,9 @@ function layout($layout) {
  * @param boolean $domain 是否显示域名
  * @return string
  */
-function U($url = '', $vars = '', $suffix = true, $domain = false) {
+function U($url = '', $vars = '', $suffix = true, $domain = true) {
+    //网站配置
+    $config = cache('Config');
     // 解析URL
     $info = parse_url($url);
     $url = !empty($info['path']) ? $info['path'] : ACTION_NAME;
@@ -885,7 +887,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = false) {
             $module = '';
 
             if (!empty($path)) {
-                $var[$varModule] = array_pop($path);
+                $_module = $var[$varModule] = array_pop($path);
             } else {
                 if (C('MULTI_MODULE')) {
                     if (MODULE_NAME != C('DEFAULT_MODULE') || !C('MODULE_ALLOW_LIST')) {
@@ -899,14 +901,25 @@ function U($url = '', $vars = '', $suffix = true, $domain = false) {
                 }
             }
             if (isset($var[$varModule])) {
-                $module = $var[$varModule];
+                $_module = $module = $var[$varModule];
                 unset($var[$varModule]);
             }
         }
     }
-
+    $appUrl = __APP__;
+    if (in_array(C('URL_MODEL'), array(0, 1, 3))) {
+        $appUrl = '/index.php';
+        switch ($_module) {
+            case 'Api':
+                $appUrl = '/api.php';
+                break;
+            case 'Admin':
+                $appUrl = '/admin.php';
+                break;
+        }
+    }
     if (C('URL_MODEL') == 0) { // 普通模式URL转换
-        $url = __APP__ . '?' . C('VAR_MODULE') . "={$module}&" . http_build_query(array_reverse($var));
+        $url = $appUrl . '?' . C('VAR_MODULE') . "={$module}&" . http_build_query(array_reverse($var));
         if ($urlCase) {
             $url = strtolower($url);
         }
@@ -916,10 +929,10 @@ function U($url = '', $vars = '', $suffix = true, $domain = false) {
         }
     } else { // PATHINFO模式或者兼容URL模式
         if (isset($route)) {
-            $url = __APP__ . '/' . rtrim($url, $depr);
+            $url = $appUrl . '/' . rtrim($url, $depr);
         } else {
             $module = defined('BIND_MODULE') ? '' : $module;
-            $url = __APP__ . '/' . ($module ? $module . MODULE_PATHINFO_DEPR : '') . implode($depr, array_reverse($var));
+            $url = $appUrl . '/' . ($module ? $module . MODULE_PATHINFO_DEPR : '') . implode($depr, array_reverse($var));
         }
         if ($urlCase) {
             $url = strtolower($url);

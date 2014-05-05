@@ -185,3 +185,22 @@ CREATE TABLE `shuipfcms_behavior_log` (
   `create_time` int(10) NOT NULL COMMENT '执行行为的时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='执行行为日志';
+
+-- ----------------------------
+-- Table structure for `shuipfcms_module`
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_module`;
+CREATE TABLE `shuipfcms_module` (
+  `module` varchar(15) NOT NULL COMMENT '模块',
+  `name` varchar(20) NOT NULL COMMENT '模块名称',
+  `url` varchar(50) NOT NULL COMMENT 'url',
+  `iscore` tinyint(1) unsigned NOT NULL default '0' COMMENT '内置模块',
+  `version` varchar(50) NOT NULL default '' COMMENT '版本',
+  `description` varchar(255) NOT NULL COMMENT '描述',
+  `setting` mediumtext NOT NULL COMMENT '设置信息',
+  `listorder` tinyint(3) unsigned NOT NULL default '0' COMMENT '排序',
+  `disabled` tinyint(1) unsigned NOT NULL default '0' COMMENT '是否可用',
+  `installdate` date NOT NULL default '0000-00-00' COMMENT '安装时间',
+  `updatedate` date NOT NULL default '0000-00-00' COMMENT '更新时间',
+  PRIMARY KEY  (`module`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='模块配置信息表';

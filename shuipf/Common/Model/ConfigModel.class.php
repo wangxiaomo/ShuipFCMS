@@ -252,7 +252,7 @@ class ConfigModel extends CommonModel {
      */
     public function config_cache() {
         $data = M("Config")->getField("varname,value");
-        F("Config", $data);
+        cache("Config", $data);
         return $data;
     }
 

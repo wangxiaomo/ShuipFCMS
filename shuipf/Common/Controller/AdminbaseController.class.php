@@ -11,10 +11,10 @@
 define('IN_ADMIN', true);
 
 class AdminbaseController extends ShuipFCMSController {
-    
+
     //初始化
-    protected function _initialize(){
-        
+    protected function _initialize() {
+        parent::_initialize();
     }
 
     /**
