@@ -129,6 +129,10 @@ class Think {
         //###########################################
         //加载相关配置，需要连数据库的情况下
         //初始化网站基本配置
+        if(defined('SITE_CONFIG')){
+            C(unserialize(SITE_CONFIG));
+        }
+
         $Config = F("Config");
         //产品版本号
         define("SHUIPF_VERSION", C("SHUIPF_VERSION"));
