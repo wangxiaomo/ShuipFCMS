@@ -175,7 +175,7 @@ $(function(){
 											callback:function(){
 												window.location.href = "{:U('Category/index',array('catid'=>$catid))}";
 												return true;
-											},
+											}
 										}
 									]
 							    });
