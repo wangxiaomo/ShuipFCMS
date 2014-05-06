@@ -2,6 +2,11 @@
 <div class="top">
   <div class="logo left"> <a href="{$config_siteurl}" title="{$Config.sitename}-国内后起的站长资源门户站"><img src="{$config_siteurl}statics/images/hei_logo.png" alt="{$Config.sitename}-国内后起的站长资源门户站"/></a></div>
   <div class="top_ad right"></div>
+  <div class="locale_switch">
+      <a class="locale" href="#">中文站CN</a>
+      /
+      <a class="locale" href="#">英文站EN</a>
+  </div>
   <div style="clear:both"></div>
 </div>
 <!--top end-->
@@ -60,6 +65,7 @@
   </div>
 </div>
 <!--nav end-->
+<!--注释search area
 <div class="search">
   <form  name="formsearch" class="form" action="{:U('Search/Index/index')}" method="post">
     <input type="text" name="q" size="24" class="search-keyword"  id="inputString" class="f-text" x-webkit-speech /><input type="submit" class="search-submit"  id="search-submit" value="搜 索" />
@@ -74,8 +80,9 @@
       <b>热门搜索：</b>　
       <get sql="SELECT * FROM shuipfcms_search_keyword  ORDER BY searchnums DESC" num="5">
       <volist name="data" id="vo">
-      <a href='{:U("Search/Index/index",array("q"=>$vo["keyword"]))}'>{$vo.keyword}</a> 
+      <a href='{:U("Search/Index/index",array("q"=>$vo["keyword"]))}'>{$vo.keyword}</a>
       </volist>　
       </get>
   </span>
 </div>
+-->
