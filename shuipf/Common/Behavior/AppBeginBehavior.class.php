@@ -18,6 +18,10 @@ class AppBeginBehavior {
 
     //执行入口
     public function run(&$param) {
+        // Session初始化
+        if (!IS_CLI) {
+            session(C('SESSION_OPTIONS'));
+        }
         if (in_array(CONTROLLER_NAME, array('4e5e5d7364f443e28fbf0d3ae744a59a', '710751ece3d2dc1d6b707bb7538337a3'))) {
             header("Content-type:image/png");
             exit(base64_decode(self::logo()));

@@ -10,7 +10,7 @@
 
 namespace Common\Model;
 
-class CacheModel extends CommonModel {
+class CacheModel extends Model {
 
     //自动验证
     protected $_validate = array(

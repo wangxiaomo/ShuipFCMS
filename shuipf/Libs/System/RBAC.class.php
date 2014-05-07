@@ -10,6 +10,8 @@
 
 namespace Libs\System;
 
+use Admin\Service\User;
+
 class RBAC {
 
     // 认证方法
@@ -73,7 +75,7 @@ class RBAC {
         //检查当前操作是否需要认证
         if (RBAC::checkAccess()) {
             //检查认证识别号
-            if (!session(C("USER_AUTH_KEY")) || !session("username") || !session("adminverify")) {
+            if (User::getInstance()->isLogin() == false) {
                 return false;
             }
         }

@@ -10,7 +10,9 @@
 
 namespace Api\Controller;
 
-class CheckcodeController extends \ShuipFCMSController {
+use Common\Controller\ShuipFCMS;
+
+class CheckcodeController extends ShuipFCMS {
 
     public function index() {
         import("Util.Checkcode", LIB_PATH);

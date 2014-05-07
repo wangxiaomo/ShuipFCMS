@@ -10,7 +10,7 @@
 
 namespace Common\Model;
 
-class ModuleModel extends CommonModel {
+class ModuleModel extends Model {
 
     //模块所处目录路径
     protected $appPath = NULL;

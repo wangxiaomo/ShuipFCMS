@@ -7,9 +7,12 @@
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
+
+namespace Common\Controller;
+
 use Think\Controller;
 
-class ShuipFCMSController extends Controller {
+abstract class ShuipFCMS extends Controller {
 
     //缓存
     public static $Cache = array();
@@ -18,7 +21,7 @@ class ShuipFCMSController extends Controller {
     protected function _initialize() {
         $this->initSite();
         //默认跳转时间
-        $this->assign("waitSecond", 2000);
+        $this->assign("waitSecond", 3);
     }
 
     /**
@@ -32,6 +35,34 @@ class ShuipFCMSController extends Controller {
         self::$Cache['Config'] = $Config;
         $this->assign("config_siteurl", $config_siteurl);
         $this->assign("Config", $Config);
+    }
+
+    /**
+     * 验证码验证
+     * @param type $verify 验证码
+     * @param type $type 验证码类型
+     * @return boolean
+     */
+    static public function verify($verify, $type = "verify") {
+        $verifyArr = session("_verify_");
+        if (!is_array($verifyArr)) {
+            $verifyArr = array();
+        }
+        if ($verifyArr[$type] == strtolower($verify)) {
+            unset($verifyArr[$type]);
+            if (!$verifyArr) {
+                $verifyArr = array();
+            }
+            session('_verify_', $verifyArr);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //空操作
+    public function _empty() {
+        $this->error('该页面不存在！');
     }
 
 }

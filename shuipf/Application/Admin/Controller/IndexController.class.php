@@ -10,11 +10,13 @@
 
 namespace Admin\Controller;
 
-class IndexController extends \AdminbaseController {
+use Common\Controller\AdminBase;
+
+class IndexController extends AdminBase {
 
     //后台框架首页
     public function index() {
-        $this->assign("SUBMENU_CONFIG", json_encode(D("Menu")->menu_json()));
+        $this->assign("SUBMENU_CONFIG", json_encode(D("Common/Menu")->menu_json()));
         $this->display();
     }
 

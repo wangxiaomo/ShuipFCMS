@@ -7,9 +7,12 @@
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
+
+namespace Common\Controller;
+
 //定义是后台
 defined('IN_ADMIN') or define('IN_ADMIN', false);
 
-class BaseController extends ShuipFCMSController {
+class Base extends ShuipFCMS {
     
 }

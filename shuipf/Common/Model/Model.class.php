@@ -10,9 +10,7 @@
 
 namespace Common\Model;
 
-use Think\Model;
-
-class CommonModel extends Model {
+class Model extends \Think\Model {
 
     /**
      * 删除表

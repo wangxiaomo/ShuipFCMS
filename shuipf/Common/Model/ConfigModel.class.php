@@ -10,7 +10,7 @@
 
 namespace Common\Model;
 
-class ConfigModel extends CommonModel {
+class ConfigModel extends Model {
 
     /**
      * 增加扩展配置项
