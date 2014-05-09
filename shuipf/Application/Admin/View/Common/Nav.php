@@ -1,17 +1,21 @@
-<?php if (!defined('SHUIPF_VERSION')) exit(); ?>
 <?php 
-$getMenu = AdminbaseAction::getMenu(); 
+$getMenu = isset($Custom)?$Custom:D('Admin/Menu')->getMenu(); 
 if($getMenu) {
- ?>
+?>
 <div class="nav">
+  <?php
+  if(!empty($menuReturn)){
+	  echo '<div class="return"><a href="'.$menuReturn['url'].'">返回'.$menuReturn['name'].'</a></div>';
+  }
+  ?>
   <ul class="cc">
     <?php
 	foreach($getMenu as $r){
 		$app = $r['app'];
-		$model = $r['model'];
+		$controller = $r['controller'];
 		$action = $r['action'];
 	?>
-    <li <?php echo $action==ACTION_NAME?'class="current"':""; ?>><a href="<?php echo U("".$app."/".$model."/".$action."",$r['data']);?>"><?php echo $r['name'];?></a></li>
+    <li <?php echo $action==ACTION_NAME ?'class="current"':""; ?>><a href="<?php echo U("".$app."/".$controller."/".$action."",$r['parameter']);?>"><?php echo $r['name'];?></a></li>
     <?php
 	}
 	?>

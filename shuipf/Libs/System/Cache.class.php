@@ -69,6 +69,10 @@ class Cache {
      * @return boolean
      */
     public function runUpdate($name) {
+        //安装状态下不执行
+        if (defined('INSTALL')) {
+            return true;
+        }
         if (empty($name)) {
             return false;
         }
@@ -78,7 +82,7 @@ class Cache {
         if (empty($cacheList)) {
             return false;
         }
-        foreach($cacheList as $cache){
+        foreach ($cacheList as $cache) {
             $cacheModel->runUpdate($cache);
         }
         //再次加载

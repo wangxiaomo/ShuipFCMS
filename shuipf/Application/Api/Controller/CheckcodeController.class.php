@@ -15,7 +15,6 @@ use Common\Controller\ShuipFCMS;
 class CheckcodeController extends ShuipFCMS {
 
     public function index() {
-        import("Util.Checkcode", LIB_PATH);
         $checkcode = new \Checkcode();
         //验证码类型
         $type = I('get.type', 'verify', 'strtolower');

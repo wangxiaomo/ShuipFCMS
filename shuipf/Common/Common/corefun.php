@@ -907,19 +907,38 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
         }
     }
     $appUrl = __APP__;
-    if (in_array(C('URL_MODEL'), array(0, 1, 3))) {
-        $appUrl = '/index.php';
+    $showModuleName = true; //是否显示模块名(g)
+    if (in_array(C('URL_MODEL'), array(0, 1, 3)) && defined('BIND_MODULE')) {
+        $homeFile = array('index.php', 'api.php', 'install.php', 'admin.php');
         switch ($_module) {
             case 'Api':
-                $appUrl = '/api.php';
+                $appUrl = str_replace($homeFile, 'api.php', __APP__);
+                $showModuleName = false;
                 break;
             case 'Admin':
-                $appUrl = '/admin.php';
+                $appUrl = str_replace($homeFile, 'admin.php', __APP__);
+                $showModuleName = false;
                 break;
+        }
+        //U方法里的模块等于当前模块时，隐藏
+        if ($module == MODULE_NAME) {
+            $showModuleName = false;
+        }
+        //去除默认参数
+        if (C('URL_MODEL') == 0) {
+            if ($var[C('VAR_MODULE')] == C('DEFAULT_MODULE')) {
+                unset($var[C('VAR_MODULE')]);
+            }
+            if ($var[C('VAR_CONTROLLER')] == C('DEFAULT_CONTROLLER')) {
+                unset($var[C('VAR_CONTROLLER')]);
+            }
+            if ($var[C('VAR_ACTION')] == C('DEFAULT_ACTION')) {
+                unset($var[C('VAR_ACTION')]);
+            }
         }
     }
     if (C('URL_MODEL') == 0) { // 普通模式URL转换
-        $url = $appUrl . '?' . C('VAR_MODULE') . "={$module}&" . http_build_query(array_reverse($var));
+        $url = $appUrl . (!empty($var) ? '?' . ($showModuleName ? C('VAR_MODULE') . "={$module}&" : "") . http_build_query(array_reverse($var)) : '');
         if ($urlCase) {
             $url = strtolower($url);
         }

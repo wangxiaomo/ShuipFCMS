@@ -13,9 +13,7 @@
               <td width="140">上级:</td>
               <td><select name="parentid">
                   <option value="0">作为一级菜单</option>
-                  
                      {$select_categorys}
-                
                 </select></td>
             </tr>
             <tr>
@@ -23,12 +21,12 @@
               <td><input type="text" class="input" name="name" value="{$name}"></td>
             </tr>
             <tr>
-              <td>项目:</td>
-              <td><input type="text" class="input" name="app" id="app" value="{$app}"></td>
+              <td>模块:</td>
+              <td><input type="text" class="input" name="app" id="app" value="Admin"></td>
             </tr>
             <tr>
-              <td>模块:</td>
-              <td><input type="text" class="input" name="model" id="model" value="{$model}"></td>
+              <td>控制器:</td>
+              <td><input type="text" class="input" name="controller" id="controller" value="{$controller}"></td>
             </tr>
             <tr>
               <td>方法:</td>
@@ -36,7 +34,7 @@
             </tr>
             <tr>
               <td>参数:</td>
-              <td><input type="text" class="input length_5" name="data" value="{$data}">
+              <td><input type="text" class="input length_5" name="parameter" value="{$parameter}">
                 例:groupid=1&amp;type=2</td>
             </tr>
             <tr>
@@ -48,7 +46,7 @@
               <td><select name="status">
                   <option value="1" <eq name="status" value="1">selected</eq>>显示</option>
                   <option value="0" <eq name="status" value="0">selected</eq>>不显示</option>
-                </select></td>
+                </select>需要明显不确定的操作时建议设置为不显示，例如：删除，修改等</td>
             </tr>
             <tr>
               <td>类型:</td>
@@ -69,6 +67,6 @@
     </form>
   </div>
 </div>
-<script src="{$config_siteurl}statics/js/common.js?v"></script>
+<script src="{$config_siteurl}statics/js/common.js"></script>
 </body>
 </html>

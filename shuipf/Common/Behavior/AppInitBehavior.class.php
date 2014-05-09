@@ -22,6 +22,10 @@ class AppInitBehavior {
         spl_autoload_register('Common\Behavior\AppInitBehavior::autoload');
         //检查是否安装
         $this->richterInstall();
+        if ($this->richterInstall() == false) {
+            redirect('./install.php');
+            return false;
+        }
         //站点初始化
         $this->initialization();
     }
@@ -36,12 +40,16 @@ class AppInitBehavior {
         }
         $dbHost = C('DB_HOST');
         if (empty($dbHost) && !defined('INSTALL')) {
-            redirect('./install.php');
+            return false;
         }
+        return true;
     }
 
     //初始化
     private function initialization() {
+        if(defined('INSTALL')){
+            return true;
+        }
         //产品版本号
         define("SHUIPF_VERSION", C("SHUIPF_VERSION"));
         //产品流水号

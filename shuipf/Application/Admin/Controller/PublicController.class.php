@@ -17,6 +17,10 @@ class PublicController extends AdminBase {
 
     //后台登陆界面
     public function login() {
+        //如果已经登录
+        if (User::getInstance()->isLogin()) {
+            $this->redirect(U('Index/index'));
+        }
         $this->display();
     }
 
@@ -64,10 +68,4 @@ class PublicController extends AdminBase {
             $this->success('注销成功！', U("Admin/Public/login"));
         }
     }
-
-    //维持在线
-    public function online() {
-        
-    }
-
 }

@@ -16,7 +16,11 @@ class IndexController extends AdminBase {
 
     //后台框架首页
     public function index() {
-        $this->assign("SUBMENU_CONFIG", json_encode(D("Common/Menu")->menu_json()));
+        if(IS_AJAX){
+            $this->success('shuipfcms');
+            return true;
+        }
+        $this->assign("SUBMENU_CONFIG", json_encode(D("Admin/Menu")->getMenuList()));
         $this->display();
     }
 

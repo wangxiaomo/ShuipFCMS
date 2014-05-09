@@ -1,11 +1,18 @@
 <?php
 
-/**
- * 后台环境页
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
-class MainAction extends AdminbaseAction {
+// +----------------------------------------------------------------------
+// | ShuipFCMS 后台框架首页
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
+
+namespace Admin\Controller;
+
+use Common\Controller\AdminBase;
+
+class MainController extends AdminBase {
 
     public function index() {
         //服务器信息

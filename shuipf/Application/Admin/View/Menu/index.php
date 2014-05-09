@@ -3,7 +3,7 @@
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
-  <form class="J_ajaxForm" action="{:U('Menu/listorders')}" method="post">
+  <form class="J_ajaxForm" action="{:U('Menu/index')}" method="post">
     <div class="table_list">
       <table width="100%">
         <colgroup>

@@ -1,14 +1,17 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | ShuipFCMS
+// | ShuipFCMS 后台用户角色表
 // +----------------------------------------------------------------------
 // | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
-return array(
-    'Dir' => PROJECT_PATH . 'Libs/Util/Dir.class.php',
-    'Checkcode' => PROJECT_PATH . 'Libs/Util/Checkcode.class.php',
-    'Tree' => PROJECT_PATH . 'Libs/Util/Tree.class.php',
-);
+
+namespace Admin\Model;
+
+use Common\Model\Model;
+
+class RoleModel extends Model {
+    
+}

@@ -506,7 +506,7 @@ function showTab(li) {
 
 //用于维持在线
 function online(){
-    $.get('<?php echo U("Admin/Public/online");?>');
+    $.get('<?php echo U("Admin/Index/index");?>');
 }
 
 //增强体验，如果支持全屏，则使用更完美的全屏方案

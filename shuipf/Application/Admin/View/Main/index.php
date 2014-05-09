@@ -22,8 +22,8 @@
       <li> <em><font color="#0000FF">在线使用手册</font></em> <span><a href="http://document.shuipfcms.com/" target="_blank">http://document.shuipfcms.com/</a></span> </li>
     </ul>
   </div>
-  <h2 class="h_a">问题反馈</h2>
-  <div class="table_full">
+  <h2 class="h_a" style="display:none">问题反馈</h2>
+  <div class="table_full" style="display:none">
   <form method="post" action="http://www.abc3210.com/index.php?g=Formguide&a=post" id="RegForm" name="RegForm">
   <table width="100%" class="table_form">
   <input type="hidden" name="formid" value="4"/>
@@ -45,33 +45,17 @@
 		</tr>
 	</table>
   </div>
-  <div class="">
+  <div class="" style="display:none">
       <div class="btn_wrap_pd">             
         <button class="btn btn_submit mr10" type="submit">提交</button>
       </div>
   </div>
   </form>
 </div>
-<!--升级提示-->
-<div id="J_system_update" style="display:none" class="system_update"> 您正在使用旧版本的ShuipFCMS，为了获得更好的体验，请升级至最新版本。<a href="">立即升级</a> </div>
-<script src="{$config_siteurl}statics/js/common.js?v"></script> 
+<script src="{$config_siteurl}statics/js/common.js"></script> 
 <script>
 $("#btn_submit").click(function(){
 	$("#tips_success").fadeTo(500,1);
-});
-//获取升级信息通知
-$.ajax({
-    url: "{:U('Public/public_notice')}",
-    dataType: "json",
-    success: function (data) {
-    	var r = data.data;
-    	if (r.notice) {
-    		$('#J_system_update').show();
-    		$('#J_system_update').html(r.notice + "<a href='" + r.url +"'>立即升级</a>");
-    	}
-    },
-    error: function () {
-    }
 });
 </script>
 </body>

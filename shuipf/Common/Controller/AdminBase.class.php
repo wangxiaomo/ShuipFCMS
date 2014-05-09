@@ -10,14 +10,51 @@
 
 namespace Common\Controller;
 
+use Admin\Service\User;
+
 //定义是后台
 define('IN_ADMIN', true);
 
-abstract class AdminBase extends ShuipFCMS {
+class AdminBase extends ShuipFCMS {
+
+    //当前登录用户uid
+    public static $uid = 0;
+    //当前登录用户会员名称
+    public static $username = NULL;
+    //当前登录会员详细信息
+    public static $userInfo = array();
 
     //初始化
     protected function _initialize() {
         parent::_initialize();
+        //验证登录
+        $this->competence();
+    }
+
+    /**
+     * 验证登录
+     * @return boolean
+     */
+    private function competence() {
+        //检查是否登录
+        self::$uid = (int) User::getInstance()->isLogin();
+        if (empty(self::$uid)) {
+            return false;
+        }
+        //获取当前登录用户信息
+        self::$userInfo = User::getInstance()->getUserInfo(self::$uid);
+        if (empty(self::$userInfo)) {
+            User::getInstance()->logout();
+            return false;
+        }
+        //是否锁定
+        if (!self::$userInfo['status']) {
+            User::getInstance()->logout();
+            $this->error('您的帐号已经被锁定！', U('Public/login'));
+            return false;
+        }
+        self::$username = self::$userInfo['username'];
+        return self::$userInfo;
     }
 
     /**
@@ -43,5 +80,4 @@ abstract class AdminBase extends ShuipFCMS {
     public function success($message = '', $jumpUrl = '', $ajax = false) {
         parent::success($message, $jumpUrl, $ajax);
     }
-
 }
