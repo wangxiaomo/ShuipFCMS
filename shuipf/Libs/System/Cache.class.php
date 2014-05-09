@@ -59,7 +59,7 @@ class Cache {
      * @param string $name 缓存变量名
      * @return boolean
      */
-    public function rm($name) {
+    public function remove($name) {
         return S($name, NULL);
     }
 

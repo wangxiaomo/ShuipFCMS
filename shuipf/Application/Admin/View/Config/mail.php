@@ -30,7 +30,7 @@
             <th class="y-bg"><input type="text" class="input" name="mail_fname" id="mail_fname" size="30" value="{$Site.mail_fname}"/></th>
           </tr>
           <tr>
-            <th>AUTH LOGIN验证</th>
+            <th>密码验证</th>
             <th class="y-bg"><input name="mail_auth" id="mail_auth" value="1" type="radio"  <if condition=" $Site['mail_auth'] == '1' ">checked</if>> 开启 
             <input name="mail_auth" id="mail_auth" value="0" type="radio" <if condition=" $Site['mail_auth'] == '0' ">checked</if>> 关闭</th>
           </tr>

@@ -21,6 +21,10 @@
 	     <td><input type="text" class="input"  name="sitefileurl" value="{$Site.sitefileurl}" size="40"> <span class="gray"> 非上传目录设置</span></td>
       </tr>
       <tr>
+	     <th width="140">联系邮箱:</th>
+	     <td><input type="text" class="input"  name="siteemail" value="{$Site.siteemail}" size="40"> </td>
+      </tr>
+      <tr>
 	     <th width="140">网站关键字:</th>
 	     <td><input type="text" class="input"  name="sitekeywords" value="{$Site.sitekeywords}" size="40"> </td>
       </tr>
@@ -34,33 +38,6 @@
             <option value="1" <if condition="$Site['domainaccess'] eq '1' "> selected</if>>开启指定域名访问</option>
             <option value="0" <if condition="$Site['domainaccess'] eq '0' "> selected</if>>关闭指定域名访问</option>
           </select> <span class="gray"> （该功能需要配合“域名绑定”模块使用，需要在域名绑定模块中添加域名！）</span></td>
-      </tr>
-      <tr>
-	     <th width="140">是否生成首页:</th>
-	     <td><select name="generate" id="generate" onChange="generates(this.value);">
-            <option value="1" <if condition="$Site['generate'] eq '1' "> selected</if>>生成静态</option>
-            <option value="0" <if condition="$Site['generate'] eq '0' "> selected</if>>不生成静态</option>
-          </select></td>
-      </tr>
-      <tr>
-	     <th width="140">首页URL规则:</th>
-	     <td>
-         <div style="<if condition=" $Site['generate'] eq 0 "> display:none</if>" id="index_ruleid_1"><?php echo Form::select($IndexURL[1], $Site['index_urlruleid'], 'name="index_urlruleid" '.($Site['generate'] ==0 ?"disabled":"").' id="index_urlruleid"');?> <span class="gray"> 注意：该URL规则只有当首页模板中标签有开启分页才会生效。</span></div>
-         <div style="<if condition=" $Site['generate'] eq 1 "> display:none</if>" id="index_ruleid_0"><?php echo Form::select($IndexURL[0], $Site['index_urlruleid'], 'name="index_urlruleid" '.($Site['generate'] ==1 ?"disabled":"").' id="index_urlruleid"');?> <span class="gray"> 注意：该URL规则只有当首页模板中标签有开启分页才会生效。</span></div>
-         </td>
-      </tr>
-      <tr>
-	     <th width="140">首页模板:</th>
-	     <td><select name="indextp" id="indextp">
-            <volist name="indextp" id="vo">
-            <option value="{$vo}" <if condition="$Site['indextp'] eq $vo"> selected</if>>{$vo}</option>
-            </volist>
-          </select>
-	     <span class="gray"> 新增模板以index_x<?php echo C("TMPL_TEMPLATE_SUFFIX")?>形式</span></td>
-      </tr>
-      <tr>
-	     <th width="140">TagURL规则:</th>
-	     <td><?php echo Form::select($TagURL, $Site['tagurl'], 'name="tagurl" id="tagurl"', 'TagURL规则选择');?></td>
       </tr>
       </table>
       <div class="btn_wrap">

@@ -108,4 +108,18 @@ class MenuController extends AdminBase {
         }
     }
 
+    //删除
+    public function delete() {
+        $id = I('get.id', 0, 'intval');
+        $count = D("Admin/Menu")->where(array("parentid" => $id))->count();
+        if ($count > 0) {
+            $this->error("该菜单下还有子菜单，无法删除！");
+        }
+        if (D("Admin/Menu")->delete($id)) {
+            $this->success("删除菜单成功！");
+        } else {
+            $this->error("删除失败！");
+        }
+    }
+
 }

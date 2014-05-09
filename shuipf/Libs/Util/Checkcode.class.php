@@ -30,6 +30,10 @@ class Checkcode {
     private $fontcolor;
     //设置背景色
     private $background = '#EDF7FF';
+    //验证码类型
+    private $type = '';
+    //输出多少次后更换验证码
+    private $testLimit = 3;
 
     //构造方法初始化
     public function __construct() {
@@ -46,10 +50,12 @@ class Checkcode {
 
     //生成随机码
     private function createCode() {
+        $code = '';
         $_len = strlen($this->charset) - 1;
         for ($i = 0; $i < $this->codelen; $i++) {
-            $this->code .= $this->charset[mt_rand(0, $_len)];
+            $code .= $this->charset[mt_rand(0, $_len)];
         }
+        return $code;
     }
 
     //生成背景
@@ -94,18 +100,65 @@ class Checkcode {
 
     //输出
     public function output() {
+        header('Pragma: public');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Content-Transfer-Encoding: binary');
         header('Content-type:image/png');
         $this->createBg();
-        $this->createCode();
+        $this->getVerifyCode();
         $this->createLine();
         $this->createFont();
         imagepng($this->img);
         imagedestroy($this->img);
     }
 
+    /**
+     * $regenerate
+     * @param type $regenerate 刷新
+     * @return type
+     */
+    protected function getVerifyCode($regenerate = false) {
+        $name = $this->getSessionKey();
+        $old = session($name);
+        //没有的话重新生成个
+        if (empty($old) || $regenerate) {
+            $this->code = $this->createCode();
+            session($name, $this->code);
+            session($name . 'count', 1);
+        } else {
+            $this->code = $old;
+        }
+        return $this->code;
+    }
+
     //获取验证码
     public function getCode() {
-        return strtolower($this->code);
+        return strtolower($this->getVerifyCode());
+    }
+
+    /**
+     * 验证输入，看它是否生成的代码相匹配。
+     * @param type $input 用户输入的验证码
+     * @param type $caseSensitive 是否验证大小写
+     * @return boolean
+     */
+    public function validate($input, $caseSensitive = false) {
+        $code = $this->getVerifyCode();
+        $valid = $caseSensitive ? ($input === $code) : strcasecmp($input, $code) === 0;
+        $name = $this->getSessionKey() . 'count';
+        $old = session($name);
+        $session = (int) $old + 1;
+        session($name, $session);
+        if ($session > $this->testLimit || $valid) {
+            $this->getVerifyCode(true);
+        }
+        return $valid;
+    }
+
+    //返回用于存储验证码的会话变量名。
+    protected function getSessionKey() {
+        return md5($this->type);
     }
 
 }

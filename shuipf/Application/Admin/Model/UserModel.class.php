@@ -80,4 +80,23 @@ class UserModel extends Model {
         return md5($password . md5($verify));
     }
 
+    /**
+     * 修改密码
+     * @param int $uid 用户ID
+     * @param string $newPass 新密码
+     * @param string $password 旧密码
+     * @return boolean
+     */
+    public function changePassword($uid, $newPass, $password = NULL) {
+        //获取会员信息
+        $userInfo = $this->getUserInfo((int) $uid, $password);
+        if (empty($userInfo)) {
+            $this->error = '旧密码不正确或者该用户不存在！';
+            return false;
+        }
+        $verify = genRandomString(6);
+        $status = $this->where(array('id' => $userInfo['id']))->save(array('password' => $this->hashPassword($newPass, $verify), 'verify' => $verify));
+        return $status !== false ? true : false;
+    }
+
 }

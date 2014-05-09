@@ -181,10 +181,10 @@ class ConfigModel extends Model {
             return false;
         }
         //配置文件地址
-        $filename = SITE_PATH . '/shuipf/Conf/addition.php';
+        $filename = COMMON_PATH . 'Conf/addition.php';
         //检查文件是否可写
         if (is_writable($filename) == false) {
-            $this->error = '请检查[shuipf/Conf/addition.php]文件权限是否可写！';
+            $this->error = '请检查[' . COMMON_PATH . 'Conf/addition.php' . ']文件权限是否可写！';
             return false;
         }
         if (isset($data[C('TOKEN_NAME')])) {
@@ -254,6 +254,11 @@ class ConfigModel extends Model {
         $data = M("Config")->getField("varname,value");
         cache("Config", $data);
         return $data;
+    }
+
+    // 写入数据前的回调方法 包括新增和更新
+    protected function _before_write(&$data) {
+        cache('Config', NULL);
     }
 
 }

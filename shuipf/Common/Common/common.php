@@ -18,11 +18,17 @@
 function cache($name, $value = '', $options = null) {
     static $cache = '';
     if (empty($cache)) {
-        $cache = Libs\System\Cache::getInstance();
+        $cache = \Libs\System\Cache::getInstance();
     }
     // 获取缓存
     if ('' === $value) {
-        return $cache->get($name);
+        if (false !== strpos($name, '.')) {
+            $vars = explode('.', $name);
+            $data = $cache->get($vars[0]);
+            return is_array($data) ? $data[$vars[1]] : $data;
+        } else {
+            return $cache->get($name);
+        }
     } elseif (is_null($value)) {//删除缓存
         return $cache->remove($name);
     } else {//缓存数据

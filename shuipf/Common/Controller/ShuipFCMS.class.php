@@ -77,20 +77,7 @@ abstract class ShuipFCMS extends \Think\Controller {
      * @return boolean
      */
     static public function verify($verify, $type = "verify") {
-        $verifyArr = session("_verify_");
-        if (!is_array($verifyArr)) {
-            $verifyArr = array();
-        }
-        if ($verifyArr[$type] == strtolower($verify)) {
-            unset($verifyArr[$type]);
-            if (!$verifyArr) {
-                $verifyArr = array();
-            }
-            session('_verify_', $verifyArr);
-            return true;
-        } else {
-            return false;
-        }
+        return A('Api/Checkcode')->validate($type, $verify);
     }
 
     //空操作

@@ -17,7 +17,7 @@
         <thead>
           <tr>
             <th>用户名</th>
-            <td> {$User.username}</td>
+            <td> {$userInfo.username}</td>
           </tr>
         </thead>
         <tr>
@@ -48,7 +48,7 @@ $(function () {
     Wind.use('ajaxForm', function () {
 		$('input[name=password]').on("focusout",function(e){
 			var passwords = $('input[name=password]').fieldValue();
-			$.get("{:U('Admin/Adminmanage/verifypass')}", { password: ""+passwords+"" } ,function(data){
+			$.get("{:U('Admin/Adminmanage/public_verifypass')}", { password: ""+passwords+"" } ,function(data){
 				if(data.state == "fail"){
 					$( '#J_reg_tip_password' ).html(' <span for="dbname" generated="true" class="tips_error" style="">旧密码不正确！</span>');
 				}else{

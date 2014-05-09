@@ -146,7 +146,7 @@ CREATE TABLE `shuipfcms_config` (
   `value` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `varname` (`varname`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=38 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shuipfcms_config
@@ -168,30 +168,25 @@ INSERT INTO `shuipfcms_config` VALUES ('15', 'watermarkimg', '水印图片', '1'
 INSERT INTO `shuipfcms_config` VALUES ('16', 'watermarkpct', '水印透明度', '1', '80');
 INSERT INTO `shuipfcms_config` VALUES ('17', 'watermarkquality', 'JPEG 水印质量', '1', '85');
 INSERT INTO `shuipfcms_config` VALUES ('18', 'watermarkpos', '水印位置', '1', '7');
-INSERT INTO `shuipfcms_config` VALUES ('19', 'indextp', '首页模板', '1', 'index.php');
-INSERT INTO `shuipfcms_config` VALUES ('20', 'theme', '主题风格', '1', 'Default');
-INSERT INTO `shuipfcms_config` VALUES ('21', 'generate', '是否生成首页', '1', '1');
-INSERT INTO `shuipfcms_config` VALUES ('22', 'tagurl', 'TagURL规则', '1', '8');
-INSERT INTO `shuipfcms_config` VALUES ('23', 'ftpstatus', 'FTP上传', '1', '0');
-INSERT INTO `shuipfcms_config` VALUES ('24', 'ftpuser', 'FTP用户名', '1', '');
-INSERT INTO `shuipfcms_config` VALUES ('25', 'ftppassword', 'FTP密码', '1', '');
-INSERT INTO `shuipfcms_config` VALUES ('26', 'ftphost', 'FTP服务器地址', '1', '');
-INSERT INTO `shuipfcms_config` VALUES ('27', 'ftpport', 'FTP服务器端口', '1', '21');
-INSERT INTO `shuipfcms_config` VALUES ('28', 'ftppasv', 'FTP是否开启被动模式', '1', '1');
-INSERT INTO `shuipfcms_config` VALUES ('29', 'ftpssl', 'FTP是否使用SSL连接', '1', '0');
-INSERT INTO `shuipfcms_config` VALUES ('30', 'ftptimeout', 'FTP超时时间', '1', '10');
-INSERT INTO `shuipfcms_config` VALUES ('31', 'ftpuppat', 'FTP上传目录', '1', '/');
-INSERT INTO `shuipfcms_config` VALUES ('32', 'mail_type', '邮件发送模式', '1', '1');
-INSERT INTO `shuipfcms_config` VALUES ('33', 'mail_server', '邮件服务器', '1', 'smtp.qq.com');
-INSERT INTO `shuipfcms_config` VALUES ('34', 'mail_port', '邮件发送端口', '1', '25');
-INSERT INTO `shuipfcms_config` VALUES ('35', 'mail_from', '发件人地址', '1', 'admin@abc3210.com');
-INSERT INTO `shuipfcms_config` VALUES ('36', 'mail_auth', 'AUTH LOGIN验证', '1', '1');
-INSERT INTO `shuipfcms_config` VALUES ('37', 'mail_user', '邮箱用户名', '1', '');
-INSERT INTO `shuipfcms_config` VALUES ('38', 'mail_password', '邮箱密码', '1', '');
-INSERT INTO `shuipfcms_config` VALUES ('39', 'mail_fname', '发件人名称', '1', 'ShuipFCMS管理员');
-INSERT INTO `shuipfcms_config` VALUES ('40', 'fileexclude', '远程下载过滤域名', '1', '');
-INSERT INTO `shuipfcms_config` VALUES ('41', 'index_urlruleid', '首页URL规则', '1', '11');
-INSERT INTO `shuipfcms_config` VALUES ('42', 'domainaccess', '指定域名访问', '1', '0');
+INSERT INTO `shuipfcms_config` VALUES ('19', 'theme', '主题风格', '1', 'Default');
+INSERT INTO `shuipfcms_config` VALUES ('20', 'ftpstatus', 'FTP上传', '1', '0');
+INSERT INTO `shuipfcms_config` VALUES ('21', 'ftpuser', 'FTP用户名', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('22', 'ftppassword', 'FTP密码', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('23', 'ftphost', 'FTP服务器地址', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('24', 'ftpport', 'FTP服务器端口', '1', '21');
+INSERT INTO `shuipfcms_config` VALUES ('25', 'ftppasv', 'FTP是否开启被动模式', '1', '1');
+INSERT INTO `shuipfcms_config` VALUES ('26', 'ftpssl', 'FTP是否使用SSL连接', '1', '0');
+INSERT INTO `shuipfcms_config` VALUES ('27', 'ftptimeout', 'FTP超时时间', '1', '10');
+INSERT INTO `shuipfcms_config` VALUES ('28', 'ftpuppat', 'FTP上传目录', '1', '/');
+INSERT INTO `shuipfcms_config` VALUES ('29', 'mail_type', '邮件发送模式', '1', '1');
+INSERT INTO `shuipfcms_config` VALUES ('30', 'mail_server', '邮件服务器', '1', 'smtp.qq.com');
+INSERT INTO `shuipfcms_config` VALUES ('31', 'mail_port', '邮件发送端口', '1', '25');
+INSERT INTO `shuipfcms_config` VALUES ('32', 'mail_from', '发件人地址', '1', 'admin@abc3210.com');
+INSERT INTO `shuipfcms_config` VALUES ('33', 'mail_auth', '密码验证', '1', '1');
+INSERT INTO `shuipfcms_config` VALUES ('34', 'mail_user', '邮箱用户名', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('35', 'mail_password', '邮箱密码', '1', '');
+INSERT INTO `shuipfcms_config` VALUES ('36', 'mail_fname', '发件人名称', '1', 'ShuipFCMS管理员');
+INSERT INTO `shuipfcms_config` VALUES ('37', 'domainaccess', '指定域名访问', '1', '0');
 
 -- ----------------------------
 -- Table structure for shuipfcms_config_field

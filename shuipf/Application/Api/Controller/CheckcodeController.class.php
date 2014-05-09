@@ -17,12 +17,7 @@ class CheckcodeController extends ShuipFCMS {
     public function index() {
         $checkcode = new \Checkcode();
         //验证码类型
-        $type = I('get.type', 'verify', 'strtolower');
-        //获取已有session
-        $verify = session("_verify_");
-        if (empty($verify)) {
-            $verify = array();
-        }
+        $checkcode->type = I('get.type', 'verify', 'strtolower');
         //设置长度
         $codelen = I('get.code_len', 0, 'intval');
         if ($codelen) {
@@ -59,9 +54,19 @@ class CheckcodeController extends ShuipFCMS {
 
         //显示图片
         $checkcode->output();
-        $verify[$type] = $checkcode->getCode();
-        session("_verify_", $verify);
         return true;
+    }
+
+    /**
+     * 验证输入，看它是否生成的代码相匹配。
+     * @param type $type
+     * @param type $input
+     * @return type
+     */
+    public function validate($type, $input) {
+        $checkcode = new \Checkcode();
+        $checkcode->type = $type;
+        return $checkcode->validate($input, false);
     }
 
 }
