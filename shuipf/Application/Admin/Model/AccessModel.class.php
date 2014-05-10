@@ -68,4 +68,30 @@ class AccessModel extends Model {
         return $count ? true : false;
     }
 
+    /**
+     * 返回用户权限列表，用于授权
+     * @param type $roleid 角色
+     * @param type $userId 用户ID
+     * @return type
+     */
+    public function getUserAccessList($roleid, $userId = 0) {
+        if (empty($roleid)) {
+            return false;
+        }
+        $result = cache('Menu');
+        $data = $this->where(array("role_id" => $roleid))->field("role_id,app,controller,action")->select();
+        $json = array();
+        foreach ($result as $rs) {
+            $data = array(
+                'id' => $rs['id'],
+                'checked' => $rs['id'],
+                'parentid' => $rs['parentid'],
+                'name' => $rs['name'] . ($rs['type'] == 0 ? "(菜单项)" : ""),
+                'checked' => D('Admin/Role')->isCompetence($rs, $roleid, $data) ? true : false,
+            );
+            $json[] = $data;
+        }
+        return array();
+    }
+
 }

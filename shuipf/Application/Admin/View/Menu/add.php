@@ -18,7 +18,7 @@
             </tr>
             <tr>
               <td>名称:</td>
-              <td><input type="text" class="input" name="name" value="{$name}"></td>
+              <td><input type="text" class="input" name="name" value=""></td>
             </tr>
             <tr>
               <td>模块:</td>
@@ -26,15 +26,15 @@
             </tr>
             <tr>
               <td>控制器:</td>
-              <td><input type="text" class="input" name="controller" id="controller" value="{$controller}"></td>
+              <td><input type="text" class="input" name="controller" id="controller" value=""></td>
             </tr>
             <tr>
               <td>方法:</td>
-              <td><input type="text" class="input" name="action" id="action" value="{$action}"></td>
+              <td><input type="text" class="input" name="action" id="action" value=""></td>
             </tr>
             <tr>
               <td>参数:</td>
-              <td><input type="text" class="input length_5" name="parameter" value="{$parameter}">
+              <td><input type="text" class="input length_5" name="parameter" value="">
                 例:groupid=1&amp;type=2</td>
             </tr>
             <tr>

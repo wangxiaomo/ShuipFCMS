@@ -54,4 +54,55 @@ class RoleModel extends Model {
         return $this->where(array('id' => $roleId))->getField('name');
     }
 
+    /**
+     * 检查指定菜单是否有权限
+     * @param type $data menu表中数组，单条
+     * @param type $roleid 需要检查的角色ID
+     * @param type $priv_data 已授权权限表数据
+     * @return boolean
+     */
+    public function isCompetence($data, $roleid, $priv_data = array()) {
+        $priv_arr = array('app', 'controller', 'action');
+        if ($data['app'] == '') {
+            return false;
+        }
+        if (empty($priv_data)) {
+            //查询已授权权限
+            $priv_data = D('Admin/Access')->getAccessList($roleid);
+        }
+        if (empty($priv_data)) {
+            return false;
+        }
+        //菜单id
+        $menuid = $data['id'];
+        //菜单类型
+        $type = $data['type'];
+        //去除不要的数据
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $priv_arr)) {
+                unset($data[$key]);
+            }
+        }
+        $competence = array(
+            'role_id' => $roleid,
+            'app' => $data['app'],
+        );
+        //如果是菜单项加上菜单Id用以区分，保持唯一
+        if ($type == 0) {
+            $competence["controller"] = $data['controller'] . $menuid;
+            $competence["action"] = $data['action'] . $menuid;
+        } else {
+            $competence["controller"] = $data['controller'];
+            $competence["action"] = $data['action'];
+        }
+        //检查是否在已授权列表中
+        $implode = implode('', $competence);
+        $info = in_array(implode('', $competence), $this->privArrStr($priv_data));
+        if ($info) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

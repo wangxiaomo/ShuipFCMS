@@ -80,4 +80,19 @@ class AdminBase extends ShuipFCMS {
     public function success($message = '', $jumpUrl = '', $ajax = false) {
         parent::success($message, $jumpUrl, $ajax);
     }
+
+    /**
+     * 分页输出
+     * @param type $total 信息总数
+     * @param type $size 每页数量
+     * @param type $number 当前分页号（页码）
+     * @param type $config 配置，会覆盖默认设置
+     * @return type
+     */
+    protected function page($total, $size = 0, $number = 0, $config = array()) {
+        $Page = parent::page($total, $size, $number, $config);
+        $Page->SetPager('Admin', '<span class="all">共有{recordcount}条信息</span>{first}{prev}{liststart}{list}{listend}{next}{last}');
+        return $Page;
+    }
+
 }
