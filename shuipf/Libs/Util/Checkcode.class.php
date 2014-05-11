@@ -99,14 +99,14 @@ class Checkcode {
     }
 
     //输出
-    public function output() {
+    public function output($regenerate = false) {
         header('Pragma: public');
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Content-Transfer-Encoding: binary');
         header('Content-type:image/png');
         $this->createBg();
-        $this->getVerifyCode();
+        $this->getVerifyCode($regenerate);
         $this->createLine();
         $this->createFont();
         imagepng($this->img);

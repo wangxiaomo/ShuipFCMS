@@ -39,12 +39,7 @@
         </tr>
           <tr>
             <th>所属角色</th>
-            <td>
-            <select name="role_id">
-                <foreach name="role" item="vo">
-                <option value="{$vo.id}" <if condition="$data['role_id'] eq $vo['id'] ">selected</if>>{$vo.name}</option>
-                </foreach>
-              </select></td>
+            <td>{$role}</td>
           </tr>
           <tr>
           <th>状态</td>
@@ -63,6 +58,6 @@
     </div>
     </form>
 </div>
-<script src="{$config_siteurl}statics/js/common.js?v"></script>
+<script src="{$config_siteurl}statics/js/common.js"></script>
 </body>
 </html>

@@ -97,6 +97,31 @@ class BehaviorController extends AdminBase {
         }
     }
 
+    //行为日志
+    public function logs() {
+        if(IS_POST){
+            $this->redirect('loginlog',$_POST);
+        }
+        $wehre = array();
+        $type = I('type', '', 'trim');
+        $keyword = I('keyword', '', 'trim');
+        if ($type) {
+            if ($type == 'guid') {
+                $wehre[$type] = array('LIKE', "%{$keyword}%");
+            } else {
+                $wehre[$type] = $keyword;
+            }
+            $this->assign('type', $type);
+            $this->assign('keyword', $keyword);
+        }
+        $model = M('BehaviorLog');
+        $count = $model->where($wehre)->count();
+        $page = $this->page($count, 20);
+        $data = $model->where($wehre)->limit($page->firstRow . ',' . $page->listRows)->order(array('id' => 'DESC'))->select();
+        $this->assign('Page', $page->show())
+                ->display();
+    }
+
     //状态转换
     public function status() {
         $id = I('get.id', 0, 'intval');

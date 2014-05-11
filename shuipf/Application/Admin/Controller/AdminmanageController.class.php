@@ -47,7 +47,7 @@ class AdminmanageController extends AdminBase {
                 $this->error("请输入旧密码！");
             }
             $newPass = I('post.new_password', '', 'trim');
-            $new_pwdconfirm = I('post.new_pwdconfirm','','trim');
+            $new_pwdconfirm = I('post.new_pwdconfirm', '', 'trim');
             if ($newPass != $new_pwdconfirm) {
                 $this->error("两次密码不相同！");
             }
@@ -72,7 +72,7 @@ class AdminmanageController extends AdminBase {
             $this->error("密码不能为空！");
         }
         //验证密码
-        $user = User::getInstance()->getUserInfo((int) User::getInstance()->id, $password);
+        $user = D('Admin/User')->getUserInfo((int) User::getInstance()->id, $password);
         if (!empty($user)) {
             $this->success("密码正确！");
         } else {

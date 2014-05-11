@@ -199,9 +199,9 @@ if (window.parent !== window.self) {
               <input maxlength=16 type="password"  id="p" name="password" tabindex="2"   class="input_txt" type="text" value=""  placeholder="密码" title="密码"/>
             </li>
             <li class="yanzhengma clearfix" id="verifytip"> <span id="verifyinput">
-              <input  id="verifycode" name="code" maxlength=5 tabindex="3" class="input_txt" type="text" value="" onfocus="$('#verifycodehint').hide();" onblur="if($('#verifycode').val()=='')$('#verifycodehint').show();" placeholder="请输入验证码" />
+              <input  id="verifycode" name="code" maxlength=5 tabindex="3" class="input_txt" type="text" value=""  placeholder="请输入验证码" />
               </span>
-              <div class="yanzhengma_box" id="verifyshow"> <img class="yanzheng_img" id="code_img" alt="" src="{:U('Api/Checkcode/index','code_len=4&font_size=20&width=130&height=50&font_color=&background=')}"><a href="javascript:document.getElementById('code_img').src='{:U('Api/Checkcode/index','code_len=4&font_size=20&width=130&height=50&font_color=&background=')}&time='+Math.random();void(0);" class="change_img">看不清，换一张</a> </div>
+              <div class="yanzhengma_box" id="verifyshow"> <img class="yanzheng_img" id="code_img" alt="" src="{:U('Api/Checkcode/index','code_len=4&font_size=20&width=130&height=50&font_color=&background=')}"><a href="javascript:;;" onClick="refreshs()" class="change_img">看不清，换一张</a> </div>
             </li>
             <li>
               <button type="submit" class="login_btn" tabindex="4" id="subbtn">登录</button>
@@ -223,5 +223,16 @@ if (window.parent !== window.self) {
   </div>
 </div>
 <script src="{$config_siteurl}statics/js/common.js"></script>
+<script>
+//刷新广告
+function refreshs(){
+	document.getElementById('code_img').src='{:U('Api/Checkcode/index','code_len=4&font_size=20&width=130&height=50&font_color=&background=&refresh=1')}&time='+Math.random();void(0);
+}
+$(function(){
+	$('#verifycode').focus(function(){
+		$('a.change_img').trigger("click");
+	});
+});
+</script>
 </body>
 </html>

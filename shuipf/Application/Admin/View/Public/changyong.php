@@ -2,9 +2,8 @@
 <Admintemplate file="Common/Head"/>
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
-  <Admintemplate file="Common/Nav"/>
-  <div class="h_a">{$name} - 角色授权</div>
-  <form class="J_ajaxFsorm" action="{:U('Rbac/authorize')}" method="post">
+  <div class="h_a">常用菜单</div>
+  <form class="J_ajaxFsorm" action="{:U('Public/changyong')}" method="post">
     <div class="table_full">
       <ul id="treeDemo" class="ztree">
       </ul>
@@ -13,7 +12,7 @@
       <div class="btn_wrap_pd">
         <input type="hidden" name="roleid" value="{$roleid}" />
         <input type="hidden" name="menuid" value="" />
-        <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">授权</button>
+        <button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">添加</button>
       </div>
     </div>
   </form>
@@ -24,7 +23,7 @@
 var setting = {
 	check: {
 		enable: true,
-		chkboxType:{ "Y" : "ps", "N" : "ps" }
+		chkboxType:{ "Y" : "", "N" : "" }
 	},
     data: {
         simpleData: {

@@ -14,7 +14,7 @@
             <td width="10%"  align="left" >最后登录时间</td>
             <td width="15%"  align="left" >E-mail</td>
             <td width="20%">备注</td>
-            <td width="15%" >管理操作</td>
+            <td width="15%" align="center">管理操作</td>
           </tr>
         </thead>
         <tbody>
@@ -22,17 +22,17 @@
           <tr>
             <td width="10%" align="center">{$vo.id}</td>
             <td width="10%" >{$vo.username}</td>
-            <td width="10%" >{$vo.role_name}</td>
+            <td width="10%" ><?php echo D('Admin/Role')->getRoleIdName($vo['role_id'])?></td>
             <td width="10%" >{$vo.last_login_ip}</td>
             <td width="10%"  >
             <if condition="$vo['last_login_time'] eq 0">
             该用户还没登陆过
             <else />
-            {$vo.last_login_time|date="y-m-d H:i:s",###}
+            {$vo.last_login_time|date="Y-m-d H:i:s",###}
             </if>
             </td>
             <td width="15%">{$vo.email}</td>
-            <td width="20%"  align="center">{$vo.remark}</td>
+            <td width="20%">{$vo.remark}</td>
             <td width="15%"  align="center">
             <if condition="$User['username'] eq $vo['username']">
             <font color="#cccccc">修改</font> | 
@@ -51,6 +51,6 @@
       </div>
    </div>
 </div>
-<script src="{$config_siteurl}statics/js/common.js?v"></script>
+<script src="{$config_siteurl}statics/js/common.js"></script>
 </body>
 </html>

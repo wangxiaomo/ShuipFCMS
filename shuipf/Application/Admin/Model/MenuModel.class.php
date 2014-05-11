@@ -34,17 +34,17 @@ class MenuModel extends Model {
             "id" => "",
             "name" => "常用菜单",
             "parent" => "changyong",
-            "url" => U("Menu/public_changyong"),
+            "url" => U("Public/changyong"),
         );
-//        foreach (AdminPanel::model()->getPanelList(AdminBase::$uid) as $r) {
-//            $items[$r['menuid'] . '0changyong'] = array(
-//                "icon" => "",
-//                "id" => $r['menuid'] . '0changyong',
-//                "name" => $r['name'],
-//                "parent" => "changyong",
-//                "url" => AdminBase::U($r['url']),
-//            );
-//        }
+        foreach (D('Admin/AdminPanel')->getAllPanel(\Admin\Service\User::getInstance()->id) as $r) {
+            $items[$r['mid'] . '0changyong'] = array(
+                "icon" => "",
+                "id" => $r['mid'] . '0changyong',
+                "name" => $r['name'],
+                "parent" => "changyong",
+                "url" => U($r['url']),
+            );
+        }
         $changyong = array(
             "changyong" => array(
                 "icon" => "",
@@ -82,11 +82,13 @@ class MenuModel extends Model {
             return $result;
         }
         $array = array();
+        //子角色列表
+        $child = explode(',', D("Admin/Role")->getArrchildid(\Admin\Service\User::getInstance()->role_id));
         foreach ($result as $v) {
             //方法
             $action = $v['action'];
             //条件
-            $where = array('app' => $v['app'], 'controller' => $v['controller'], 'action' => $action, 'role_id' => \Admin\Service\User::getInstance()->role_id);
+            $where = array('app' => $v['app'], 'controller' => $v['controller'], 'action' => $action, 'role_id' => array('IN', $child));
             //如果是菜单项
             if ($v['type'] == 0) {
                 $where['controller'] .= $v['id'];
@@ -180,6 +182,26 @@ class MenuModel extends Model {
         if ($data['action']) {
             $data['action'] = strtolower($data['action']);
         }
+        //清除缓存
+        cache('Menu', NULL);
+    }
+
+    /**
+     * 更新缓存
+     * @param type $data
+     * @return type
+     */
+    public function menu_cache() {
+        $data = $this->select();
+        if (empty($data)) {
+            return false;
+        }
+        $cache = array();
+        foreach ($data as $rs) {
+            $cache[$rs['id']] = $rs;
+        }
+        cache('Menu', $cache);
+        return $cache;
     }
 
 }

@@ -155,7 +155,7 @@ class RBAC {
      */
     static public function getAccessList($authId) {
         //用户信息
-        $userInfo = User::getInstance()->getUserInfo((int) $authId);
+        $userInfo = User::getInstance()->getInfo();
         if (empty($userInfo)) {
             return false;
         }

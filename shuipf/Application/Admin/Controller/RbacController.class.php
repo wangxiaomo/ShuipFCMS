@@ -16,6 +16,28 @@ class RbacController extends AdminBase {
 
     //角色管理首页
     public function rolemanage() {
+        $tree = new \Tree();
+        $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
+        $tree->nbsp = '&nbsp;&nbsp;&nbsp;';
+        $roleList = D("Admin/Role")->getTreeArray();
+        foreach ($roleList as $k => $rs) {
+            $operating = '';
+            if ($rs['id'] == 1) {
+                $operating = '<font color="#cccccc">权限设置</font> | <a href="' . U('Management/manager', array('role_id' => $rs['id'])) . '">成员管理</a> | <font color="#cccccc">修改</font> | <font color="#cccccc">删除</font>';
+            } else {
+                $operating = '<a href="' . U("Rbac/authorize", array("id" => $rs["id"])) . '">权限设置</a> | <a href="' . U('Management/manager', array('role_id' => $rs['id'])) . '">成员管理</a> | <a href="' . U('Rbac/roleedit', array('id' => $rs['id'])) . '">修改</a> | <a class="J_ajax_del" href="' . U('Rbac/roledelete', array('id' => $rs['id'])) . '">删除</a>';
+            }
+            $roleList[$k]['operating'] = $operating;
+        }
+        $str = "<tr>
+          <td width='10%' align='center'>\$id</td>
+          <td width='15%'  >\$spacer\$name</td>
+          <td >\$remark</td>
+          <td width='5%'><font color='red'>√</font></td>
+          <td  class='text-c'>\$operating</td>
+        </tr>";
+        $tree->init($roleList);
+        $this->assign("role", $tree->get_tree(0, $str));
         $this->assign("data", D("Admin/Role")->order(array("listorder" => "asc", "id" => "desc"))->select())
                 ->display();
     }
@@ -46,7 +68,8 @@ class RbacController extends AdminBase {
         if (D("Admin/Role")->roleDelete($id)) {
             $this->success("删除成功！", U('Rbac/rolemanage'));
         } else {
-            $this->error("删除失败！");
+            $error = D("Admin/Role")->getError();
+            $this->error($error ? $error : '添加失败！');
         }
     }
 
@@ -91,42 +114,36 @@ class RbacController extends AdminBase {
             $menuidAll = explode(',', I('post.menuid', ''));
             if (is_array($menuidAll) && count($menuidAll) > 0) {
                 //取得菜单数据
-                $menuinfo = M("Menu")->select();
-                foreach ($menuinfo as $_v) {
-                    $menu_info[$_v["id"]] = $_v;
-                }
-                C('TOKEN_ON', false);
+                $menu_info = cache('Menu');
                 $addauthorize = array();
                 //检测数据合法性
                 foreach ($menuidAll as $menuid) {
-                    $info = array();
-                    $info = $this->get_menuinfo((int) $menuid, $menu_info);
-                    if ($info == false) {
+                    if (empty($menu_info[$menuid])) {
                         continue;
                     }
+                    $info = array(
+                        'app' => $menu_info[$menuid]['app'],
+                        'controller' => $menu_info[$menuid]['controller'],
+                        'action' => $menu_info[$menuid]['action'],
+                        'type' => $menu_info[$menuid]['type'],
+                    );
+                    //菜单项
                     if ($info['type'] == 0) {
-                        $info['g'] = $info['g'];
-                        $info['m'] = $info['m'] . $menuid;
-                        $info['a'] = $info['a'] . $menuid;
+                        $info['app'] = $info['app'];
+                        $info['controller'] = $info['controller'] . $menuid;
+                        $info['action'] = $info['action'] . $menuid;
                     }
                     $info['role_id'] = $roleid;
                     $info['status'] = $info['type'] ? 1 : 0;
-                    $data = $this->Access->create($info);
-                    if (!$data) {
-                        $this->error($this->Access->getError());
-                    } else {
-                        $addauthorize[] = $data;
-                    }
+                    $addauthorize[] = $info;
                 }
-                C('TOKEN_ON', true);
-                if ($this->Access->rbac_authorize($roleid, $addauthorize)) {
+                if (D('Admin/Access')->batchAuthorize($addauthorize, $roleid)) {
                     $this->success("授权成功！", U("Rbac/rolemanage"));
                 } else {
-                    $this->error("授权失败！");
+                    $error = D("Admin/Access")->getError();
+                    $this->error($error ? $error : '授权失败！');
                 }
             } else {
-                //当没有数据时，清除当前角色授权
-                $this->Access->where(array("role_id" => $roleid))->delete();
                 $this->error("没有接收到数据，执行清除授权成功！");
             }
         } else {
@@ -136,9 +153,9 @@ class RbacController extends AdminBase {
                 $this->error("参数错误！");
             }
             //菜单缓存
-            $result = F("Menu");
+            $result = cache("Menu");
             //获取已权限表数据
-            $priv_data = D("Admin/Access")->where(array("role_id" => $roleid))->field("role_id,g,m,a")->select();
+            $priv_data = D("Admin/Role")->getAccessList($roleid);
             $json = array();
             foreach ($result as $rs) {
                 $data = array(
@@ -146,129 +163,15 @@ class RbacController extends AdminBase {
                     'checked' => $rs['id'],
                     'parentid' => $rs['parentid'],
                     'name' => $rs['name'] . ($rs['type'] == 0 ? "(菜单项)" : ""),
-                    'checked' => ($this->is_checked($rs, $roleid, $priv_data)) ? true : false,
+                    'checked' => D("Admin/Role")->isCompetence($rs, $roleid, $priv_data) ? true : false,
                 );
                 $json[] = $data;
             }
-            $this->assign('json', json_encode(D("Admin/Access")->getUserAccessList($roleid)))
+            $this->assign('json', json_encode($json))
                     ->assign("roleid", $roleid)
+                    ->assign('name', D("Admin/Role")->getRoleIdName($roleid))
                     ->display();
         }
-    }
-
-    /**
-     * 设置栏目权限 
-     */
-    public function setting_cat_priv() {
-        if (IS_POST) {
-            $roleid = I('post.roleid', 0, 'intval');
-            $priv = array();
-            foreach ($_POST['priv'] as $k => $v) {
-                foreach ($v as $e => $q) {
-                    $priv[] = array("roleid" => $roleid, "catid" => $k, "action" => $q, "is_admin" => 1);
-                }
-            }
-            C('TOKEN_ON', false);
-            //循环验证每天数据是否都合法
-            foreach ($priv as $r) {
-                $data = D("Category_priv")->create($r);
-                if (!$data) {
-                    $this->error(D("Category_priv")->getError());
-                } else {
-                    $addpriv[] = $data;
-                }
-            }
-            C('TOKEN_ON', true);
-            //设置权限前，先删除原来旧的权限
-            M("Category_priv")->where(array("roleid" => $roleid))->delete();
-            //添加新的权限数据，使用D方法有操作记录产生
-            D("Category_priv")->addAll($addpriv);
-            $this->success("权限赋予成功！");
-        } else {
-            import('Tree');
-            $roleid = I('get.roleid', 0, 'intval');
-            $categorys = F("Category");
-            $tree = new Tree();
-            $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
-            $tree->nbsp = '&nbsp;&nbsp;&nbsp;';
-            $category_priv = M("Category_priv")->where(array("roleid" => $roleid))->select();
-            $priv = array();
-            foreach ($category_priv as $k => $v) {
-                $priv[$v['catid']][$v['action']] = true;
-            }
-
-            foreach ($categorys as $k => $v) {
-                if ($v['type'] == 1 || $v['child']) {
-                    $v['disabled'] = 'disabled';
-                    $v['init_check'] = '';
-                    $v['add_check'] = '';
-                    $v['delete_check'] = '';
-                    $v['listorder_check'] = '';
-                    $v['push_check'] = '';
-                    $v['move_check'] = '';
-                } else {
-                    $v['disabled'] = '';
-                    $v['add_check'] = isset($priv[$v['catid']]['add']) ? 'checked' : '';
-                    $v['delete_check'] = isset($priv[$v['catid']]['delete']) ? 'checked' : '';
-                    $v['listorder_check'] = isset($priv[$v['catid']]['listorder']) ? 'checked' : '';
-                    $v['push_check'] = isset($priv[$v['catid']]['push']) ? 'checked' : '';
-                    $v['move_check'] = isset($priv[$v['catid']]['remove']) ? 'checked' : '';
-                    $v['edit_check'] = isset($priv[$v['catid']]['edit']) ? 'checked' : '';
-                }
-                $v['init_check'] = isset($priv[$v['catid']]['init']) ? 'checked' : '';
-                $categorys[$k] = $v;
-            }
-            $str = "<tr>
-	<td align='center'><input type='checkbox'  value='1' onclick='select_all(\$catid, this)' ></td>
-	<td>\$spacer\$catname</td>
-	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$init_check  value='init' ></td>
-	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$add_check value='add' ></td>
-	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$edit_check value='edit' ></td>
-	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$delete_check  value='delete' ></td>
-	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$listorder_check value='listorder' ></td>
-	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$push_check value='push' ></td>
-	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$move_check value='remove' ></td>
-            </tr>";
-            $tree->init($categorys);
-            $categorydata = $tree->get_tree(0, $str);
-            $this->assign("categorys", $categorydata);
-            $this->assign("roleid", $roleid);
-            $this->display("categoryrbac");
-        }
-    }
-
-    /**
-     * 获取菜单深度
-     * @param $id
-     * @param $array
-     * @param $i
-     */
-    protected function get_level($id, $array = array(), $i = 0) {
-        foreach ($array as $n => $value) {
-            if ($value['id'] == $id) {
-                if ($value['parentid'] == '0')
-                    return $i;
-                $i++;
-                return $this->get_level($value['parentid'], $array, $i);
-            }
-        }
-    }
-
-    /**
-     * 获取菜单表信息
-     * @param int $menuid 菜单ID
-     * @param int $menu_info 菜单数据
-     */
-    protected function get_menuinfo($menuid, $menu_info) {
-        $info = $menu_info[$menuid];
-        if (!$info) {
-            return false;
-        }
-        $return['g'] = $info['app'];
-        $return['m'] = $info['model'];
-        $return['a'] = $info['action'];
-        $return['type'] = $info['type'];
-        return $return;
     }
 
 }

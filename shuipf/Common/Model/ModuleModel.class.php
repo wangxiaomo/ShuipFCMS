@@ -507,11 +507,10 @@ class ModuleModel extends Model {
      * @return type
      */
     public function module_cache() {
-        $data = M("Module")->where(array("disabled" => 1))->select();
+        $data = $this->where(array("disabled" => 1))->select();
         $Module = array();
         foreach ($data as $v) {
             $Module[$v['module']] = $v;
-            $App[$v['module']] = $v['module'];
         }
         cache("Module", $Module);
         return $data;

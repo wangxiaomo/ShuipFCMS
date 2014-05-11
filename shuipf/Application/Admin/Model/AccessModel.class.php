@@ -23,8 +23,13 @@ class AccessModel extends Model {
         if (empty($roleid)) {
             return false;
         }
+        //子角色列表
+        $child = explode(',', D("Admin/Role")->getArrchildid($roleid));
+        if (empty($child)) {
+            return false;
+        }
         //查询出该角色拥有的全部权限列表
-        $data = $this->where(array('role_id' => $roleid))->select();
+        $data = $this->where(array('role_id' => array('IN', $child)))->select();
         if (empty($data)) {
             return false;
         }
@@ -42,7 +47,13 @@ class AccessModel extends Model {
      * @return type
      */
     public function isCompetence($map = '') {
+        //超级管理员
+        if (\Admin\Service\User::getInstance()->isAdministrator()) {
+            return true;
+        }
         if (!is_array($map)) {
+            //子角色列表
+            $child = explode(',', D("Admin/Role")->getArrchildid(\Admin\Service\User::getInstance()->role_id));
             if (!empty($map)) {
                 $map = trim($map, '/');
                 $map = explode('/', $map);
@@ -62,7 +73,7 @@ class AccessModel extends Model {
                 $app = GROUP_NAME;
                 list($controller, $action) = $map;
             }
-            $map = array('role_id' => \Admin\Service\User::getInstance()->role_id, 'app' => $app, 'controller' => $controller, 'action' => $action);
+            $map = array('role_id' => array('IN', $child), 'app' => $app, 'controller' => $controller, 'action' => $action);
         }
         $count = $this->where($map)->count();
         return $count ? true : false;
@@ -92,6 +103,33 @@ class AccessModel extends Model {
             $json[] = $data;
         }
         return array();
+    }
+
+    /**
+     * 角色授权
+     * @param type $addauthorize 授权数据
+     * @param type $roleid 角色id
+     * @return boolean
+     */
+    public function batchAuthorize($addauthorize, $roleid = 0) {
+        if (empty($addauthorize)) {
+            $this->error = '没有需要授权的权限！';
+            return false;
+        }
+        if (empty($roleid)) {
+            if (empty($addauthorize[0]['role_id'])) {
+                $this->error = '角色ID不能为空！';
+                return false;
+            }
+            $roleid = $addauthorize[0]['role_id'];
+        }
+        C('TOKEN_ON', false);
+        foreach ($addauthorize as $k => $rs) {
+            $addauthorize[$k] = $this->create($rs, 1);
+        }
+        //删除旧的权限
+        $this->where(array("role_id" => $roleid))->delete();
+        return $this->addAll($addauthorize) !== false ? true : false;
     }
 
 }

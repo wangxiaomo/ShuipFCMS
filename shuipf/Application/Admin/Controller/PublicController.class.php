@@ -18,7 +18,7 @@ class PublicController extends AdminBase {
     //后台登陆界面
     public function login() {
         //如果已经登录
-        if (User::getInstance()->isLogin()) {
+        if (User::getInstance()->id) {
             $this->redirect(U('Index/index'));
         }
         $this->display();
@@ -68,4 +68,60 @@ class PublicController extends AdminBase {
             $this->success('注销成功！', U("Admin/Public/login"));
         }
     }
+
+    //常用菜单设置
+    public function changyong() {
+        if (IS_POST) {
+            //被选中的菜单项
+            $menuidAll = explode(',', I('post.menuid', ''));
+            if (is_array($menuidAll) && count($menuidAll) > 0) {
+                //取得菜单数据
+                $menu_info = cache('Menu');
+                $addPanel = array();
+                //检测数据合法性
+                foreach ($menuidAll as $menuid) {
+                    if (empty($menu_info[$menuid])) {
+                        continue;
+                    }
+                    $info = array(
+                        'mid' => $menuid,
+                        'userid' => User::getInstance()->id,
+                        'name' => $menu_info[$menuid]['name'],
+                        'url' => "{$menu_info[$menuid]['app']}/{$menu_info[$menuid]['controller']}/{$menu_info[$menuid]['action']}",
+                    );
+                    $addPanel[] = $info;
+                }
+                if (D('Admin/AdminPanel')->addPanel($addPanel)) {
+                    $this->success("添加成功！", U("Public/changyong"));
+                } else {
+                    $error = D('Admin/AdminPanel')->getError();
+                    $this->error($error ? $error : '添加失败！');
+                }
+            } else {
+                D('Admin/AdminPanel')->where(array("userid" => \Admin\Service\User::getInstance()->id))->delete();
+                $this->error("常用菜单清除成功！");
+            }
+        } else {
+            //菜单缓存
+            $result = cache("Menu");
+            $json = array();
+            foreach ($result as $rs) {
+                if ($rs['status'] == 0) {
+                    continue;
+                }
+                $data = array(
+                    'id' => $rs['id'],
+                    'nocheck' => $rs['type'] ? 0 : 1,
+                    'checked' => $rs['id'],
+                    'parentid' => $rs['parentid'],
+                    'name' => $rs['name'],
+                    'checked' => D("Admin/AdminPanel")->isExist($rs['id']) ? true : false,
+                );
+                $json[] = $data;
+            }
+            $this->assign('json', json_encode($json))
+                    ->display();
+        }
+    }
+
 }

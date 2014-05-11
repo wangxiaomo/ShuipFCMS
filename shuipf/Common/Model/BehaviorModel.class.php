@@ -33,37 +33,37 @@ class BehaviorModel extends Model {
      * @param type $params 参数
      * @return type
      */
-    public function behaviorDispatch($behavior, &$params) {
-        if (empty($behavior)) {
-            return false;
-        }
-        //规则类型
-        switch ($behavior['_type']) {
-            //规则行为
-            case 1:
-                return $this->execution($behavior, $params);
-                break;
-            //文件行为
-            case 2:
-                $name = $behavior['behavior'];
-                if (require_cache($behavior['phpfile'])) {
-                    B($name, $params);
-                } else {
-                    if (APP_DEBUG) { // 记录行为的执行日志
-                        trace('[ 行为规则 ' . $name . ' 执行错误] --File:' . $behavior['phpfile'], '', 'INFO');
-                    }
-                }
-                break;
-            //SQL规则行为
-            case 3:
-                return $this->executionSQL($behavior, $params);
-                break;
-            //插件行为
-            case 4:
-                return D('Addons/Addons')->execution($behavior, $params);
-                break;
-        }
-    }
+//    public function behaviorDispatch($behavior, &$params) {
+//        if (empty($behavior)) {
+//            return false;
+//        }
+//        //规则类型
+//        switch ($behavior['_type']) {
+//            //规则行为
+//            case 1:
+//                return $this->execution($behavior, $params);
+//                break;
+//            //文件行为
+//            case 2:
+//                $name = $behavior['behavior'];
+//                if (require_cache($behavior['phpfile'])) {
+//                    B($name, $params);
+//                } else {
+//                    if (APP_DEBUG) { // 记录行为的执行日志
+//                        trace('[ 行为规则 ' . $name . ' 执行错误] --File:' . $behavior['phpfile'], '', 'INFO');
+//                    }
+//                }
+//                break;
+//            //SQL规则行为
+//            case 3:
+//                return $this->executionSQL($behavior, $params);
+//                break;
+//            //插件行为
+//            case 4:
+//                return D('Addons/Addons')->execution($behavior, $params);
+//                break;
+//        }
+//    }
 
     /**
      * 根据行为ID取得对应的行为信息和规则
@@ -334,75 +334,75 @@ class BehaviorModel extends Model {
      * @param type $behaviorRule 对应规则
      * @return boolean
      */
-    public function moduleBehaviorInstallation($module, $behaviorRule) {
-        if (empty($module) || !is_array($behaviorRule)) {
-            $this->error = '参数不正确！';
-            return false;
-        }
-        $time = time();
-        foreach ($behaviorRule as $behavior => $ruleList) {
-            //检查是否有同样的行为
-            $behaviorInfo = $this->where(array('name' => $behavior))->find();
-            if (empty($behaviorInfo)) {
-                //行为说明
-                $title = $ruleList['title'];
-                //行为描述
-                $remark = $ruleList['remark'];
-                //行为类型
-                $type = (int) $ruleList['type'];
-                //不存在这个行为，创建
-                $behaviorId = $this->add(array(
-                    'name' => $behavior,
-                    'title' => $title ? $title : $behavior . '行为',
-                    'remark' => $remark ? $remark : "模块{$module}中的行为！",
-                    'status' => 1,
-                    'system' => 0,
-                    'type' => $type,
-                    'module' => $module,
-                    'datetime' => $time,
-                ));
-            } else {
-                $behaviorId = $behaviorInfo['id'];
-            }
-            //如果获取不到行为id，跳过
-            if (empty($behaviorId)) {
-                continue;
-            }
-            //规则
-            $ruleAll = array();
-            unset($ruleList['title'], $ruleList['remark'], $ruleList['type']);
-            foreach ($ruleList as $key => $rule) {
-                if (!empty($rule)) {
-                    $ruleAll[] = array(
-                        'behaviorid' => $behaviorId,
-                        'system' => 0,
-                        'module' => $module,
-                        'rule' => $rule,
-                        'listorder' => 0,
-                        'datetime' => $time,
-                    );
-                }
-            }
-            //批量添加规则
-            if (!empty($ruleAll)) {
-                M('BehaviorRule')->addAll($ruleAll);
-            }
-        }
-        return true;
-    }
+//    public function moduleBehaviorInstallation($module, $behaviorRule) {
+//        if (empty($module) || !is_array($behaviorRule)) {
+//            $this->error = '参数不正确！';
+//            return false;
+//        }
+//        $time = time();
+//        foreach ($behaviorRule as $behavior => $ruleList) {
+//            //检查是否有同样的行为
+//            $behaviorInfo = $this->where(array('name' => $behavior))->find();
+//            if (empty($behaviorInfo)) {
+//                //行为说明
+//                $title = $ruleList['title'];
+//                //行为描述
+//                $remark = $ruleList['remark'];
+//                //行为类型
+//                $type = (int) $ruleList['type'];
+//                //不存在这个行为，创建
+//                $behaviorId = $this->add(array(
+//                    'name' => $behavior,
+//                    'title' => $title ? $title : $behavior . '行为',
+//                    'remark' => $remark ? $remark : "模块{$module}中的行为！",
+//                    'status' => 1,
+//                    'system' => 0,
+//                    'type' => $type,
+//                    'module' => $module,
+//                    'datetime' => $time,
+//                ));
+//            } else {
+//                $behaviorId = $behaviorInfo['id'];
+//            }
+//            //如果获取不到行为id，跳过
+//            if (empty($behaviorId)) {
+//                continue;
+//            }
+//            //规则
+//            $ruleAll = array();
+//            unset($ruleList['title'], $ruleList['remark'], $ruleList['type']);
+//            foreach ($ruleList as $key => $rule) {
+//                if (!empty($rule)) {
+//                    $ruleAll[] = array(
+//                        'behaviorid' => $behaviorId,
+//                        'system' => 0,
+//                        'module' => $module,
+//                        'rule' => $rule,
+//                        'listorder' => 0,
+//                        'datetime' => $time,
+//                    );
+//                }
+//            }
+//            //批量添加规则
+//            if (!empty($ruleAll)) {
+//                M('BehaviorRule')->addAll($ruleAll);
+//            }
+//        }
+//        return true;
+//    }
 
     /**
      * 卸载模块时删除对应模块安装时创建的规则！
      * @param type $module 模块标识
      * @return boolean
      */
-    public function moduleBehaviorUninstall($module) {
-        if (empty($module)) {
-            $this->error = '模块标识不能为空！';
-            return false;
-        }
-        return $this->ruleDelByModule($module);
-    }
+//    public function moduleBehaviorUninstall($module) {
+//        if (empty($module)) {
+//            $this->error = '模块标识不能为空！';
+//            return false;
+//        }
+//        return $this->ruleDelByModule($module);
+//    }
 
     /**
      * 缓存行为规则
@@ -417,7 +417,7 @@ class BehaviorModel extends Model {
         foreach ($behaviorList as $behavior) {
             $return[$behavior['name']] = $this->parseBehavior($behavior['name']);
         }
-        F('Behavior', $return);
+        cache('Behavior', $return);
         return $return;
     }
 
@@ -548,49 +548,49 @@ class BehaviorModel extends Model {
      * @param type $params 参数
      * @return boolean
      */
-    protected function executionSQL($rule = false, &$params = null) {
-        if (!$rule || empty($rule['sql'])) {
-            return false;
-        }
-        $ruleId = $rule['ruleid'];
-        if (APP_DEBUG) {
-            G($ruleId . 'Start');
-            trace('[ 行为规则ID：' . $ruleId . ' ] --START--', '', 'INFO');
-        }
-        //检查执行周期
-        if ($rule['cycle'] && $rule['max']) {
-            $guid = to_guid_string($rule);
-            $where = array(
-                'ruleid' => $ruleId,
-                'guid' => $guid,
-            );
-            $where['create_time'] = array('gt', NOW_TIME - intval($rule['cycle']) * 3600);
-            $executionCount = M('BehaviorLog')->where($where)->count('id');
-            if ($executionCount >= (int) $rule['max']) {
-                return false;
-            }
-        }
-        //SQL语句
-        $sql = str_replace(array("think_", "shuipfcms_"), C("DB_PREFIX"), $rule['sql']);
-        //参数处理
-        if (!empty($sql)) {
-            $sql = $this->ruleParams($sql, $params);
-        }
-        $return = M()->execute($sql);
-        if (APP_DEBUG) { // 记录行为的执行日志
-            trace('[ 行为规则ID：' . $ruleId . ' ] --END-- [ RunTime:' . G($ruleId . 'Start', $ruleId . 'End', 6) . 's ]', '', 'INFO');
-        }
-        if (false !== $return) {
-            if ($rule['cycle'] && $rule['max']) {
-                M('BehaviorLog')->add(array(
-                    'ruleid' => $ruleId,
-                    'guid' => $guid,
-                    'create_time' => NOW_TIME,
-                ));
-            }
-        }
-        return $return;
-    }
+//    protected function executionSQL($rule = false, &$params = null) {
+//        if (!$rule || empty($rule['sql'])) {
+//            return false;
+//        }
+//        $ruleId = $rule['ruleid'];
+//        if (APP_DEBUG) {
+//            G($ruleId . 'Start');
+//            trace('[ 行为规则ID：' . $ruleId . ' ] --START--', '', 'INFO');
+//        }
+//        //检查执行周期
+//        if ($rule['cycle'] && $rule['max']) {
+//            $guid = to_guid_string($rule);
+//            $where = array(
+//                'ruleid' => $ruleId,
+//                'guid' => $guid,
+//            );
+//            $where['create_time'] = array('gt', NOW_TIME - intval($rule['cycle']) * 3600);
+//            $executionCount = M('BehaviorLog')->where($where)->count('id');
+//            if ($executionCount >= (int) $rule['max']) {
+//                return false;
+//            }
+//        }
+//        //SQL语句
+//        $sql = str_replace(array("think_", "shuipfcms_"), C("DB_PREFIX"), $rule['sql']);
+//        //参数处理
+//        if (!empty($sql)) {
+//            $sql = $this->ruleParams($sql, $params);
+//        }
+//        $return = M()->execute($sql);
+//        if (APP_DEBUG) { // 记录行为的执行日志
+//            trace('[ 行为规则ID：' . $ruleId . ' ] --END-- [ RunTime:' . G($ruleId . 'Start', $ruleId . 'End', 6) . 's ]', '', 'INFO');
+//        }
+//        if (false !== $return) {
+//            if ($rule['cycle'] && $rule['max']) {
+//                M('BehaviorLog')->add(array(
+//                    'ruleid' => $ruleId,
+//                    'guid' => $guid,
+//                    'create_time' => NOW_TIME,
+//                ));
+//            }
+//        }
+//        return $return;
+//    }
 
     /**
      * 执行规则行为，也是就是类型为1的规则
@@ -598,51 +598,51 @@ class BehaviorModel extends Model {
      * @param type $params
      * @return boolean
      */
-    protected function execution($rule = false, &$params = null) {
-        if (!$rule || empty($rule['table']) || empty($rule['field']) || empty($rule['condition'])) {
-            return false;
-        }
-        $ruleId = $rule['ruleid'];
-        if (APP_DEBUG) {
-            G($ruleId . 'Start');
-            trace('[ 行为规则ID：' . $ruleId . ' ] --START--', '', 'INFO');
-        }
-        //操作的条件参数处理
-        if (!empty($params)) {
-            $rule['condition'] = $this->ruleParams($rule['condition'], $params);
-        }
-        //检查执行周期
-        if ($rule['cycle'] && $rule['max']) {
-            $guid = to_guid_string($rule);
-            $where = array(
-                'ruleid' => $ruleId,
-                'guid' => $guid,
-            );
-            $where['create_time'] = array('gt', NOW_TIME - intval($rule['cycle']) * 3600);
-            $executionCount = M('BehaviorLog')->where($where)->count('id');
-            if ($executionCount >= (int) $rule['max']) {
-                return false;
-            }
-        }
-        //执行数据库操作
-        $tableName = ucfirst($rule['table']);
-        $Model = M($tableName);
-        $field = $rule['field'];
-        $return = $Model->where($rule['condition'])->setField($field, array('exp', $rule['rule']));
-        if (APP_DEBUG) { // 记录行为的执行日志
-            trace('[ 行为规则ID：' . $ruleId . ' ] --END-- [ RunTime:' . G($ruleId . 'Start', $ruleId . 'End', 6) . 's ]', '', 'INFO');
-        }
-        if ($return) {
-            if ($rule['cycle'] && $rule['max']) {
-                M('BehaviorLog')->add(array(
-                    'ruleid' => $ruleId,
-                    'guid' => $guid,
-                    'create_time' => NOW_TIME,
-                ));
-            }
-        }
-        return $return;
-    }
+//    protected function execution($rule = false, &$params = null) {
+//        if (!$rule || empty($rule['table']) || empty($rule['field']) || empty($rule['condition'])) {
+//            return false;
+//        }
+//        $ruleId = $rule['ruleid'];
+//        if (APP_DEBUG) {
+//            G($ruleId . 'Start');
+//            trace('[ 行为规则ID：' . $ruleId . ' ] --START--', '', 'INFO');
+//        }
+//        //操作的条件参数处理
+//        if (!empty($params)) {
+//            $rule['condition'] = $this->ruleParams($rule['condition'], $params);
+//        }
+//        //检查执行周期
+//        if ($rule['cycle'] && $rule['max']) {
+//            $guid = to_guid_string($rule);
+//            $where = array(
+//                'ruleid' => $ruleId,
+//                'guid' => $guid,
+//            );
+//            $where['create_time'] = array('gt', NOW_TIME - intval($rule['cycle']) * 3600);
+//            $executionCount = M('BehaviorLog')->where($where)->count('id');
+//            if ($executionCount >= (int) $rule['max']) {
+//                return false;
+//            }
+//        }
+//        //执行数据库操作
+//        $tableName = ucfirst($rule['table']);
+//        $Model = M($tableName);
+//        $field = $rule['field'];
+//        $return = $Model->where($rule['condition'])->setField($field, array('exp', $rule['rule']));
+//        if (APP_DEBUG) { // 记录行为的执行日志
+//            trace('[ 行为规则ID：' . $ruleId . ' ] --END-- [ RunTime:' . G($ruleId . 'Start', $ruleId . 'End', 6) . 's ]', '', 'INFO');
+//        }
+//        if ($return) {
+//            if ($rule['cycle'] && $rule['max']) {
+//                M('BehaviorLog')->add(array(
+//                    'ruleid' => $ruleId,
+//                    'guid' => $guid,
+//                    'create_time' => NOW_TIME,
+//                ));
+//            }
+//        }
+//        return $return;
+//    }
 
     /**
      * 规则条件参数处理
@@ -650,20 +650,20 @@ class BehaviorModel extends Model {
      * @param type $params 参数
      * @return type
      */
-    protected function ruleParams($condition, $params = null) {
-        //操作的条件参数处理
-        if (!empty($params)) {
-            if (is_array($params)) {
-                foreach ($params as $name => $value) {
-                    $value = "'" . str_replace("'", "\'", $value) . "'";
-                    $condition = str_replace('{$' . $name . '}', $value, $condition);
-                }
-            }
-            $value = "'" . str_replace("'", "\'", $params) . "'";
-            $condition = str_replace('{$self}', $value, $condition);
-        }
-
-        return $condition;
-    }
+//    protected function ruleParams($condition, $params = null) {
+//        //操作的条件参数处理
+//        if (!empty($params)) {
+//            if (is_array($params)) {
+//                foreach ($params as $name => $value) {
+//                    $value = "'" . str_replace("'", "\'", $value) . "'";
+//                    $condition = str_replace('{$' . $name . '}', $value, $condition);
+//                }
+//            }
+//            $value = "'" . str_replace("'", "\'", $params) . "'";
+//            $condition = str_replace('{$self}', $value, $condition);
+//        }
+//
+//        return $condition;
+//    }
 
 }

@@ -29,12 +29,71 @@ class RoleModel extends Model {
     );
 
     /**
+     * 通过递归的方式获取该角色下的全部子角色
+     * @param type $id
+     * @return string
+     */
+    public function getArrchildid($id) {
+        if (empty($this->roleList)) {
+            $this->roleList = $this->getTreeArray();
+        }
+        $arrchildid = $id;
+        if (is_array($this->roleList)) {
+            foreach ($this->roleList as $k => $cat) {
+                if ($cat['parentid'] && $k != $id && $cat['parentid'] == $id) {
+                    $arrchildid .= ',' . $this->getArrchildid($k);
+                }
+            }
+        }
+        return $arrchildid;
+    }
+
+    /**
+     * 通过递归的方式获取父角色ID列表
+     * @param type $id 角色ID
+     * @param type $arrparentid
+     * @param type $n
+     * @return boolean
+     */
+    public function getArrparentid($id, $arrparentid = '', $n = 1) {
+        if (empty($this->roleList)) {
+            $this->roleList = $this->getTreeArray();
+        }
+        if ($n > 10 || !is_array($this->roleList) || !isset($this->roleList[$id])) {
+            return false;
+        }
+        //获取当前栏目的上级栏目ID
+        $parentid = $this->roleList[$id]['parentid'];
+        //所有父ID
+        $arrparentid = $arrparentid ? $parentid . ',' . $arrparentid : $parentid;
+        if ($parentid) {
+            $arrparentid = $this->getArrparentid($parentid, $arrparentid, ++$n);
+        } else {
+            $this->roleList[$id]['arrparentid'] = $arrparentid;
+        }
+        return $arrparentid;
+    }
+
+    /**
      * 删除角色
      * @param int $roleid 角色ID
      * @return boolean
      */
     public function roleDelete($roleid) {
         if (empty($roleid) || $roleid == 1) {
+            $this->error = '超级管理员角色不能被删除！';
+            return false;
+        }
+        //角色信息
+        $info = $this->where(array("id" => $roleid))->find();
+        if (empty($info)) {
+            $this->error = '该角色不存在！';
+            return false;
+        }
+        //子角色列表
+        $child = explode(',', $this->getArrchildid($roleid));
+        if (count($child) > 1) {
+            $this->error = '该角色下有子角色，请删除子角色才可以删除！';
             return false;
         }
         $status = $this->where(array("id" => $roleid))->delete();
@@ -68,7 +127,7 @@ class RoleModel extends Model {
         }
         if (empty($priv_data)) {
             //查询已授权权限
-            $priv_data = D('Admin/Access')->getAccessList($roleid);
+            $priv_data = $this->getAccessList($roleid);
         }
         if (empty($priv_data)) {
             return false;
@@ -103,6 +162,84 @@ class RoleModel extends Model {
         } else {
             return false;
         }
+    }
+
+    /**
+     * 按规则排序组合
+     * @param type $priv_data
+     * @return array
+     */
+    private function privArrStr($priv_data) {
+        $privArrStr = array();
+        if (empty($priv_data)) {
+            return $privArrStr;
+        }
+        foreach ($priv_data as $rs) {
+            $competence = array(
+                'role_id' => $rs['role_id'],
+                'app' => $rs['app'],
+                'controller' => $rs['controller'],
+                'action' => $rs['action'],
+            );
+            $privArrStr[] = implode('', $competence);
+        }
+        return $privArrStr;
+    }
+
+    /**
+     * 返回Tree使用的数组
+     * @return array
+     */
+    public function getTreeArray() {
+        $roleList = array();
+        $roleData = $this->order(array("listorder" => "asc", "id" => "desc"))->select();
+        foreach ($roleData as $rs) {
+            $roleList[$rs['id']] = $rs;
+        }
+        return $roleList;
+    }
+
+    /**
+     * 返回select选择列表
+     * @param int $parentid 父节点ID
+     * @param string $selectStr 是否要 <select></select>
+     * @return string
+     */
+    public function selectHtmlOption($parentid = 0, $selectStr = '') {
+        $tree = new \Tree();
+        $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
+        $tree->nbsp = '&nbsp;&nbsp;&nbsp;';
+        $str = "'<option value='\$id' \$selected>\$spacer\$name</option>";
+        $tree->init($this->getTreeArray());
+        if ($selectStr) {
+            $html = '<select ' . $selectStr . '>';
+            $html.=$tree->get_tree(0, $str, $parentid);
+            $html.='</select>';
+            return $html;
+        }
+        return $tree->get_tree(0, $str, $parentid);
+    }
+
+    /**
+     * 根据角色ID返回全部权限
+     * @param type $roleid 角色ID
+     * @return array  
+     */
+    public function getAccessList($roleid) {
+        $priv_data = array();
+        $data = D("Admin/Access")->getAccessList($roleid);
+        if (empty($data)) {
+            return $priv_data;
+        }
+        foreach ($data as $k => $rs) {
+            $priv_data[$k] = array(
+                'role_id' => $rs['role_id'],
+                'app' => $rs['app'],
+                'controller' => $rs['controller'],
+                'action' => $rs['action'],
+            );
+        }
+        return $priv_data;
     }
 
 }

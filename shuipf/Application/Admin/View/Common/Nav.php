@@ -5,7 +5,7 @@ if($getMenu) {
 <div class="nav">
   <?php
   if(!empty($menuReturn)){
-	  echo '<div class="return"><a href="'.$menuReturn['url'].'">返回'.$menuReturn['name'].'</a></div>';
+	  echo '<div class="return"><a href="'.$menuReturn['url'].'">'.$menuReturn['name'].'</a></div>';
   }
   ?>
   <ul class="cc">

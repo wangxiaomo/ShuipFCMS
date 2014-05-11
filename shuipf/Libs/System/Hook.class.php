@@ -45,7 +45,7 @@ class Hook {
     static public function import($data, $recursive = true) {
         //初始化
         if (empty(self::$tags) && empty($data) && C('DB_HOST') && C('DB_NAME') && C('DB_USER') && C('DB_PWD')) {
-            $tags = F('Behavior');
+            $tags = cache('Behavior');
             if (empty($tags)) {
                 $tags = D('Behavior')->behavior_cache();
             }

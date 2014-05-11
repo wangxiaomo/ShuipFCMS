@@ -20,15 +20,16 @@ class UserModel extends Model {
         array('nickname', 'require', '真实姓名不能为空！'),
         array('role_id', 'require', '帐号所属角色不能为空！', 0, 'regex', 1),
         array('password', 'require', '密码不能为空！', 0, 'regex', 1),
+        array('pwdconfirm', 'password', '两次输入的密码不一样！', 0, 'confirm'),
         array('email', 'email', '邮箱地址有误！'),
         array('username', '', '帐号名称已经存在！', 0, 'unique', 1),
-        array('pwdconfirm', 'password', '两次输入的密码不一样！', 0, 'confirm'),
         array('status', array(0, 1), '状态错误，状态只能是1或者0！', 2, 'in'),
     );
     //array(填充字段,填充内容,[填充条件,附加规则])
     protected $_auto = array(
         array('create_time', 'time', 1, 'function'),
         array('update_time', 'time', 3, 'function'),
+        array('verify', 'genRandomString', 1, 'function', 6), //新增时自动生成验证码
     );
 
     /**
@@ -97,6 +98,70 @@ class UserModel extends Model {
         $verify = genRandomString(6);
         $status = $this->where(array('id' => $userInfo['id']))->save(array('password' => $this->hashPassword($newPass, $verify), 'verify' => $verify));
         return $status !== false ? true : false;
+    }
+
+    /**
+     * 修改管理员信息
+     * @param type $data
+     */
+    public function amendManager($data) {
+        if (empty($data) || !is_array($data) || !isset($data['id'])) {
+            $this->error = '没有需要修改的数据！';
+            return false;
+        }
+        $info = $this->where(array('id' => $data['id']))->find();
+        if (empty($info)) {
+            $this->error = '该管理员不存在！';
+            return false;
+        }
+        //密码为空，表示不修改密码
+        if (isset($data['password']) && empty($data['password'])) {
+            unset($data['password']);
+        }
+        if ($this->create($data)) {
+            if ($this->data['password']) {
+                $verify = genRandomString(6);
+                $this->verify = $verify;
+                $this->password = $this->hashPassword($this->password, $verify);
+            }
+            $status = $this->save();
+            return $status !== false ? true : false;
+        }
+        return false;
+    }
+
+    /**
+     * 创建管理员
+     * @param type $data
+     * @return boolean
+     */
+    public function createManager($data) {
+        if (empty($data)) {
+            $this->error = '没有数据！';
+            return false;
+        }
+        if ($this->create($data)) {
+            $id = $this->add();
+            if ($id) {
+                return $id;
+            }
+            $this->error = '入库失败！';
+            return false;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 插入成功后的回调方法
+     * @param type $data 数据
+     * @param type $options 表达式
+     */
+    protected function _after_insert($data, $options) {
+        //添加信息后，更新密码字段
+        $this->where(array('id' => $data['id']))->save(array(
+            'password' => $this->hashPassword($data['password'], $data['verify']),
+        ));
     }
 
 }

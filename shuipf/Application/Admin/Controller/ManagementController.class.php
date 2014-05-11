@@ -1,35 +1,37 @@
 <?php
 
-/**
- * 管理员配置管理
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
-class ManagementAction extends AdminbaseAction {
+// +----------------------------------------------------------------------
+// | ShuipFCMS 管理员配置管理
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
 
-    protected $UserMod;
+namespace Admin\Controller;
 
-    function _initialize() {
-        parent::_initialize();
-        $this->UserMod = D("User");
-    }
+use Common\Controller\AdminBase;
+use Admin\Service\User;
+
+class ManagementController extends AdminBase {
 
     //管理员列表
     public function manager() {
-        //角色id
-        $role_id = I('get.role_id');
-        $UserView = D("UserView");
-        if (empty($role_id)) {
-            $count = $UserView->count();
-            $page = $this->page($count, 20);
-            $User = $UserView->limit($page->firstRow . ',' . $page->listRows)->select();
-        } else {
-            $count = $UserView->where(array("role_id" => $role_id))->count();
-            $page = $this->page($count, 20);
-            $User = $UserView->limit($page->firstRow . ',' . $page->listRows)->where(array("role_id" => $role_id))->select();
+        $where = array();
+        $role_id = I('get.role_id', 0, 'intval');
+        if ($role_id) {
+            $where['role_id'] = $role_id;
+            $menuReturn = array(
+                'url' => U('Rbac/rolemanage'),
+                'name' => '返回角色管理',
+            );
+            $this->assign('menuReturn', $menuReturn);
         }
+        $count = D('Admin/User')->where($where)->count();
+        $page = $this->page($count, 20);
+        $User = D('Admin/User')->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array('id' => 'DESC'))->select();
         $this->assign("Userlist", $User);
-        $this->assign("Page", $page->show('Admin'));
+        $this->assign("Page", $page->show());
         $this->display();
     }
 
@@ -39,23 +41,26 @@ class ManagementAction extends AdminbaseAction {
         if (empty($id)) {
             $this->error("请选择需要编辑的信息！");
         }
-        if ($id == 1) {
-            $this->error("该帐号不支持非本人修改！");
-        }
         //判断是否修改本人，在此方法，不能修改本人相关信息
-        if (AppframeAction::$Cache['uid'] == $id) {
-            $this->error("不能修改本人信息！");
+        if (User::getInstance()->id == $id) {
+            $this->error("修改当前登录用户信息请进入[我的面板]中进行修改！");
+        }
+        if (1 == $id) {
+            $this->error("该帐号不允许修改！");
         }
         if (IS_POST) {
-            if (false !== $this->UserMod->editUser($_POST)) {
+            if (false !== D('Admin/User')->amendManager($_POST)) {
                 $this->success("更新成功！", U("Management/manager"));
             } else {
-                $this->error($this->UserMod->getError());
+                $error = D('Admin/User')->getError();
+                $this->error($error ? $error : '修改失败！');
             }
         } else {
-            $data = $this->UserMod->where(array("id" => $id))->find();
-            $role = M("Role")->select();
-            $this->assign("role", $role);
+            $data = D('Admin/User')->where(array("id" => $id))->find();
+            if (empty($data)) {
+                $this->error('该信息不存在！');
+            }
+            $this->assign("role", D('Admin/Role')->selectHtmlOption($data['role_id'], 'name="role_id"'));
             $this->assign("data", $data);
             $this->display();
         }
@@ -64,14 +69,14 @@ class ManagementAction extends AdminbaseAction {
     //添加管理员
     public function adminadd() {
         if (IS_POST) {
-            if ($this->UserMod->addUser($_POST)) {
+            if (D('Admin/User')->createManager($_POST)) {
                 $this->success("添加管理员成功！", U('Management/manager'));
             } else {
-                $this->error($this->UserMod->getError());
+                $error = D('Admin/User')->getError();
+                $this->error($error ? $error : '添加失败！');
             }
         } else {
-            $data = M("Role")->select();
-            $this->assign("role", $data);
+            $this->assign("role", D('Admin/Role')->selectHtmlOption(0, 'name="role_id"'));
             $this->display();
         }
     }

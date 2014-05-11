@@ -52,8 +52,8 @@ class CheckcodeController extends ShuipFCMS {
             $checkcode->fontcolor = $fontcolor;
         }
 
-        //显示图片
-        $checkcode->output();
+        //显示验证码
+        $checkcode->output(I('refresh', false, ''));
         return true;
     }
 

@@ -17,13 +17,6 @@ define('IN_ADMIN', true);
 
 class AdminBase extends ShuipFCMS {
 
-    //当前登录用户uid
-    public static $uid = 0;
-    //当前登录用户会员名称
-    public static $username = NULL;
-    //当前登录会员详细信息
-    public static $userInfo = array();
-
     //初始化
     protected function _initialize() {
         parent::_initialize();
@@ -37,24 +30,23 @@ class AdminBase extends ShuipFCMS {
      */
     private function competence() {
         //检查是否登录
-        self::$uid = (int) User::getInstance()->isLogin();
-        if (empty(self::$uid)) {
+        $uid = (int) User::getInstance()->isLogin();
+        if (empty($uid)) {
             return false;
         }
         //获取当前登录用户信息
-        self::$userInfo = User::getInstance()->getUserInfo(self::$uid);
-        if (empty(self::$userInfo)) {
+        $userInfo = User::getInstance()->getInfo();
+        if (empty($userInfo)) {
             User::getInstance()->logout();
             return false;
         }
         //是否锁定
-        if (!self::$userInfo['status']) {
+        if (!$userInfo['status']) {
             User::getInstance()->logout();
             $this->error('您的帐号已经被锁定！', U('Public/login'));
             return false;
         }
-        self::$username = self::$userInfo['username'];
-        return self::$userInfo;
+        return $userInfo;
     }
 
     /**
@@ -65,7 +57,8 @@ class AdminBase extends ShuipFCMS {
      * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
-    public function error($message = '', $jumpUrl = '', $ajax = false) {
+    final public function error($message = '', $jumpUrl = '', $ajax = false) {
+        D('Admin/Operationlog')->record($message, 0);
         parent::error($message, $jumpUrl, $ajax);
     }
 
@@ -77,7 +70,8 @@ class AdminBase extends ShuipFCMS {
      * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
      */
-    public function success($message = '', $jumpUrl = '', $ajax = false) {
+    final public function success($message = '', $jumpUrl = '', $ajax = false) {
+        D('Admin/Operationlog')->record($message, 1);
         parent::success($message, $jumpUrl, $ajax);
     }
 
@@ -89,9 +83,9 @@ class AdminBase extends ShuipFCMS {
      * @param type $config 配置，会覆盖默认设置
      * @return type
      */
-    protected function page($total, $size = 0, $number = 0, $config = array()) {
+    protected function page($total, $size = 20, $number = 0, $config = array()) {
         $Page = parent::page($total, $size, $number, $config);
-        $Page->SetPager('Admin', '<span class="all">共有{recordcount}条信息</span>{first}{prev}{liststart}{list}{listend}{next}{last}');
+        $Page->SetPager('default', '<span class="all">共有{recordcount}条信息</span>{first}{prev}{liststart}{list}{listend}{next}{last}');
         return $Page;
     }
 

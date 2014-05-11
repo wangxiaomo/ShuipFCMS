@@ -8,6 +8,10 @@
     <div class="table_full">
       <table width="100%">
         <tr>
+          <th width="100">父角色</th>
+          <td><?php echo D('Admin/Role')->selectHtmlOption($data['parentid'],'name="parentid"') ?></td>
+        </tr>
+        <tr>
           <th width="100">角色名称</th>
           <td><input type="text" name="name" value="{$data.name}" class="input" id="rolename">
             </input></td>

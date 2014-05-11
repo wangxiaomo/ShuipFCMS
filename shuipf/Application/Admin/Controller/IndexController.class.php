@@ -18,12 +18,12 @@ class IndexController extends AdminBase {
     //后台框架首页
     public function index() {
         if (IS_AJAX) {
-            $this->success('shuipfcms');
+            $this->ajaxReturn(array('status' => 1));
             return true;
         }
         $this->assign("SUBMENU_CONFIG", json_encode(D("Admin/Menu")->getMenuList()));
-        $this->assign('userInfo',  User::getInstance()->getInfo());
-        $this->assign('role_name',D('Admin/Role')->getRoleIdName(User::getInstance()->role_id));
+        $this->assign('userInfo', User::getInstance()->getInfo());
+        $this->assign('role_name', D('Admin/Role')->getRoleIdName(User::getInstance()->role_id));
         $this->display();
     }
 
