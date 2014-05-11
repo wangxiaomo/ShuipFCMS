@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50536
 File Encoding         : 65001
 
-Date: 2014-05-09 18:13:25
+Date: 2014-05-11 22:26:40
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -31,6 +31,32 @@ CREATE TABLE `shuipfcms_access` (
 -- ----------------------------
 -- Records of shuipfcms_access
 -- ----------------------------
+INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Menu', 'delete', '1');
+INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Menu', 'edit', '1');
+INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Menu', 'add', '1');
+INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Menu', 'index', '1');
+INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Config7', 'index7', '0');
+INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Config3', 'index3', '0');
+INSERT INTO `shuipfcms_access` VALUES ('2', 'Admin', 'Config2', 'index2', '0');
+INSERT INTO `shuipfcms_access` VALUES ('2', 'Admin', 'Adminmanage4', 'myinfo4', '0');
+INSERT INTO `shuipfcms_access` VALUES ('2', 'Admin', 'Adminmanage', 'myinfo', '1');
+INSERT INTO `shuipfcms_access` VALUES ('2', 'Admin', 'Adminmanage', 'chanpass', '1');
+
+-- ----------------------------
+-- Table structure for shuipfcms_admin_panel
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_admin_panel`;
+CREATE TABLE `shuipfcms_admin_panel` (
+  `mid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '菜单ID',
+  `userid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `name` char(32) NOT NULL COMMENT '菜单名',
+  `url` char(255) NOT NULL COMMENT '菜单地址',
+  UNIQUE KEY `userid` (`mid`,`userid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='常用菜单';
+
+-- ----------------------------
+-- Records of shuipfcms_admin_panel
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for shuipfcms_behavior
@@ -47,7 +73,7 @@ CREATE TABLE `shuipfcms_behavior` (
   `module` char(20) NOT NULL COMMENT '所属模块',
   `datetime` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统行为表';
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='系统行为表';
 
 -- ----------------------------
 -- Records of shuipfcms_behavior
@@ -96,7 +122,7 @@ CREATE TABLE `shuipfcms_behavior_rule` (
   `listorder` tinyint(3) NOT NULL DEFAULT '0' COMMENT '排序',
   `datetime` int(10) NOT NULL COMMENT '添加时间',
   PRIMARY KEY (`ruleid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='行为规则表';
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='行为规则表';
 
 -- ----------------------------
 -- Records of shuipfcms_behavior_rule
@@ -126,13 +152,15 @@ CREATE TABLE `shuipfcms_cache` (
   `system` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否系统',
   PRIMARY KEY (`id`),
   KEY `ckey` (`key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='缓存更新列队';
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='缓存更新列队';
 
 -- ----------------------------
 -- Records of shuipfcms_cache
 -- ----------------------------
 INSERT INTO `shuipfcms_cache` VALUES ('1', 'Config', '网站配置', '', 'Config', 'config_cache', '', '1');
 INSERT INTO `shuipfcms_cache` VALUES ('2', 'Module', '可用模块列表', '', 'Module', 'module_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('3', 'Behavior', '行为列表', '', 'Behavior', 'behavior_cache', '', '1');
+INSERT INTO `shuipfcms_cache` VALUES ('4', 'Menu', '后台菜单', 'Admin', 'Menu', 'menu_cache', '', '0');
 
 -- ----------------------------
 -- Table structure for shuipfcms_config
@@ -146,7 +174,7 @@ CREATE TABLE `shuipfcms_config` (
   `value` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `varname` (`varname`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='网站配置表';
+) ENGINE=MyISAM AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COMMENT='网站配置表';
 
 -- ----------------------------
 -- Records of shuipfcms_config
@@ -206,6 +234,21 @@ CREATE TABLE `shuipfcms_config_field` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for shuipfcms_loginlog
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_loginlog`;
+CREATE TABLE `shuipfcms_loginlog` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '日志ID',
+  `username` char(30) NOT NULL COMMENT '登录帐号',
+  `logintime` int(10) NOT NULL COMMENT '登录时间戳',
+  `loginip` char(20) NOT NULL COMMENT '登录IP',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态,1为登录成功，0为登录失败',
+  `password` varchar(30) NOT NULL DEFAULT '' COMMENT '尝试错误密码',
+  `info` varchar(255) NOT NULL COMMENT '其他说明',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台登陆日志表';
+
+-- ----------------------------
 -- Table structure for shuipfcms_menu
 -- ----------------------------
 DROP TABLE IF EXISTS `shuipfcms_menu`;
@@ -223,7 +266,7 @@ CREATE TABLE `shuipfcms_menu` (
   `listorder` smallint(6) unsigned NOT NULL DEFAULT '0' COMMENT '排序ID',
   PRIMARY KEY (`id`),
   KEY `parentid` (`parentid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台菜单表';
+) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='后台菜单表';
 
 -- ----------------------------
 -- Records of shuipfcms_menu
@@ -240,7 +283,7 @@ INSERT INTO `shuipfcms_menu` VALUES ('10', '附件配置', '8', 'Admin', 'Config
 INSERT INTO `shuipfcms_menu` VALUES ('11', '高级配置', '8', 'Admin', 'Config', 'addition', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('12', '扩展配置', '8', 'Admin', 'Config', 'extend', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('13', '行为管理', '7', 'Admin', 'Behavior', 'index', '', '1', '1', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('14', '添加行为', '13', 'Admin', 'Behavior', 'add', '', '1', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('14', '行为日志', '13', 'Admin', 'Behavior', 'logs', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('15', '编辑行为', '13', 'Admin', 'Behavior', 'edit', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('16', '删除行为', '13', 'Admin', 'Behavior', 'delete', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('17', '后台菜单管理', '7', 'Admin', 'Menu', 'index', '', '1', '1', '', '0');
@@ -248,11 +291,11 @@ INSERT INTO `shuipfcms_menu` VALUES ('18', '添加菜单', '17', 'Admin', 'Menu'
 INSERT INTO `shuipfcms_menu` VALUES ('19', '修改', '17', 'Admin', 'Menu', 'edit', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('20', '删除', '17', 'Admin', 'Menu', 'delete', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('21', '管理员设置', '3', 'Admin', 'Management', 'index', '', '0', '1', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('22', '管理员管理', '21', 'Admin', 'Management', 'manager', '', '0', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('22', '管理员管理', '21', 'Admin', 'Management', 'manager', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('23', '添加管理员', '22', 'Admin', 'Management', 'adminadd', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('24', '编辑管理信息', '22', 'Admin', 'Management', 'edit', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('25', '删除管理员', '22', 'Admin', 'Management', 'delete', '', '1', '0', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('26', '管理员角色', '21', 'Admin', 'Rbac', 'rolemanage', '', '1', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('26', '角色管理', '21', 'Admin', 'Rbac', 'rolemanage', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('27', '添加角色', '26', 'Admin', 'Rbac', 'roleadd', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('28', '删除角色', '26', 'Admin', 'Rbac', 'roledelete', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('29', '角色编辑', '26', 'Admin', 'Rbac', 'roleedit', '', '1', '0', '', '0');
@@ -260,8 +303,9 @@ INSERT INTO `shuipfcms_menu` VALUES ('30', '角色授权', '26', 'Admin', 'Rbac'
 INSERT INTO `shuipfcms_menu` VALUES ('31', '日志管理', '3', 'Admin', 'Logs', 'index', '', '0', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('32', '后台登陆日志', '31', 'Admin', 'Logs', 'loginlog', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('33', '后台操作日志', '31', 'Admin', 'Logs', 'index', '', '1', '1', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('34', '删除一个月前的登陆日志', '32', 'Admin', 'Logs', 'deleteloginlog', '', '1', '0', '', '0');
-INSERT INTO `shuipfcms_menu` VALUES ('35', '删除一个月前的操作日志', '33', 'Admin', 'Logs', 'deletelog', '', '1', '0', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('34', '删除一个月前的登陆日志', '32', 'Admin', 'Logs', 'deleteloginlog', '', '1', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('35', '删除一个月前的操作日志', '33', 'Admin', 'Logs', 'deletelog', '', '1', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('36', '添加行为', '13', 'Admin', 'Behavior', 'add', '', '1', '1', '', '0');
 
 -- ----------------------------
 -- Table structure for shuipfcms_module
@@ -287,29 +331,46 @@ CREATE TABLE `shuipfcms_module` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for shuipfcms_operationlog
+-- ----------------------------
+DROP TABLE IF EXISTS `shuipfcms_operationlog`;
+CREATE TABLE `shuipfcms_operationlog` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '日志ID',
+  `uid` smallint(6) NOT NULL COMMENT '操作帐号ID',
+  `time` int(10) NOT NULL COMMENT '操作时间',
+  `ip` char(20) NOT NULL DEFAULT '' COMMENT 'IP',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态,0错误提示，1为正确提示',
+  `info` text NOT NULL COMMENT '其他说明',
+  `get` varchar(255) NOT NULL COMMENT 'get数据',
+  PRIMARY KEY (`id`),
+  KEY `status` (`status`),
+  KEY `username` (`uid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台操作日志表';
+
+-- ----------------------------
 -- Table structure for shuipfcms_role
 -- ----------------------------
 DROP TABLE IF EXISTS `shuipfcms_role`;
 CREATE TABLE `shuipfcms_role` (
   `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL DEFAULT '角色名称',
-  `pid` smallint(6) NOT NULL COMMENT '父角色ID',
+  `parentid` smallint(6) NOT NULL COMMENT '父角色ID',
   `status` tinyint(1) unsigned NOT NULL COMMENT '状态',
   `remark` varchar(255) NOT NULL COMMENT '备注',
   `create_time` int(11) unsigned NOT NULL COMMENT '创建时间',
   `update_time` int(11) unsigned NOT NULL COMMENT '更新时间',
   `listorder` int(3) NOT NULL DEFAULT '0' COMMENT '排序字段',
   PRIMARY KEY (`id`),
-  KEY `parentId` (`pid`),
+  KEY `parentId` (`parentid`),
   KEY `status` (`status`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='角色信息列表';
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='角色信息列表';
 
 -- ----------------------------
 -- Records of shuipfcms_role
 -- ----------------------------
 INSERT INTO `shuipfcms_role` VALUES ('1', '超级管理员', '0', '1', '拥有网站最高管理员权限！', '1329633709', '1329633709', '0');
-INSERT INTO `shuipfcms_role` VALUES ('2', '站点管理员', '0', '1', '站点管理员', '1329633722', '1330155227', '0');
-INSERT INTO `shuipfcms_role` VALUES ('3', '发布人员', '0', '1', '发布人员', '1329633733', '1399530536', '0');
+INSERT INTO `shuipfcms_role` VALUES ('2', '站点管理员', '1', '1', '站点管理员', '1329633722', '1399780945', '0');
+INSERT INTO `shuipfcms_role` VALUES ('3', '发布人员', '2', '1', '发布人员', '1329633733', '1399798954', '0');
 
 -- ----------------------------
 -- Table structure for shuipfcms_user
