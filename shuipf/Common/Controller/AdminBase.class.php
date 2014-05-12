@@ -11,6 +11,7 @@
 namespace Common\Controller;
 
 use Admin\Service\User;
+use Libs\System\RBAC;
 
 //定义是后台
 define('IN_ADMIN', true);
@@ -19,6 +20,22 @@ class AdminBase extends ShuipFCMS {
 
     //初始化
     protected function _initialize() {
+        C(array(
+            "USER_AUTH_ON" => true, //是否开启权限认证
+            "USER_AUTH_TYPE" => 1, //默认认证类型 1 登录认证 2 实时认证
+            "REQUIRE_AUTH_MODULE" => "", //需要认证模块
+            "NOT_AUTH_MODULE" => "Public", //无需认证模块
+            "USER_AUTH_GATEWAY" => U("Admin/Public/login"), //登录地址
+        ));
+        if (false == RBAC::AccessDecision(MODULE_NAME)) {
+            //检查是否登录
+            if (false === RBAC::checkLogin()) {
+                //跳转到登录界面
+                redirect(C('USER_AUTH_GATEWAY'));
+            }
+            //没有操作权限
+            $this->error('您没有操作此项的权限！');
+        }
         parent::_initialize();
         //验证登录
         $this->competence();

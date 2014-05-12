@@ -70,8 +70,8 @@ class Cache {
      */
     public function runUpdate($name) {
         //安装状态下不执行
-        if (defined('INSTALL')) {
-            return true;
+        if (!C('DB_HOST')) {
+            return false;
         }
         if (empty($name)) {
             return false;

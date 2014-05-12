@@ -47,7 +47,7 @@ class Hook {
         if (empty(self::$tags) && empty($data) && C('DB_HOST') && C('DB_NAME') && C('DB_USER') && C('DB_PWD')) {
             $tags = cache('Behavior');
             if (empty($tags)) {
-                $tags = D('Behavior')->behavior_cache();
+                $tags = D('Common/Behavior')->behavior_cache();
             }
             self::$tags = $tags;
         } else if( !C('DB_HOST') && !C('DB_NAME') && !C('DB_USER') && !C('DB_PWD')) {

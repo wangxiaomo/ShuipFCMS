@@ -10,39 +10,30 @@
 
 namespace Common\Behavior;
 
-use Libs\System\RBAC;
-
 defined('THINK_PATH') or exit();
 
 class AppBeginBehavior {
 
     //执行入口
     public function run(&$param) {
-        // Session初始化
-        if (!IS_CLI) {
-            session(C('SESSION_OPTIONS'));
-        }
         if (in_array(CONTROLLER_NAME, array('4e5e5d7364f443e28fbf0d3ae744a59a', '710751ece3d2dc1d6b707bb7538337a3'))) {
             header("Content-type:image/png");
             exit(base64_decode(self::logo()));
         }
-        //后台
-        if (MODULE_NAME === 'Admin') {
-            C(array(
-                "USER_AUTH_ON" => true, //是否开启权限认证
-                "USER_AUTH_TYPE" => 1, //默认认证类型 1 登录认证 2 实时认证
-                "REQUIRE_AUTH_MODULE" => "", //需要认证模块
-                "NOT_AUTH_MODULE" => "Public", //无需认证模块
-                "USER_AUTH_GATEWAY" => U("Admin/Public/login"), //登录地址
-            ));
-            if (false == RBAC::AccessDecision(MODULE_NAME)) {
-                //检查是否登录
-                if (false === RBAC::checkLogin()) {
-                    //跳转到登录界面
-                    redirect(C('USER_AUTH_GATEWAY'));
-                }
-                //没有操作权限
-                A('Admin/Index')->error('您没有操作此项的权限！');
+        //禁止访问
+        $this->prohibitAccess();
+    }
+
+    /**
+     * 禁止非法访问
+     */
+    private function prohibitAccess() {
+        if (!in_array(MODULE_NAME, C('MODULE_ALLOW_LIST'))) {
+            if (APP_DEBUG) {
+                E('该模块没有安装，无法进行访问！');
+            } else {
+                send_http_status(400);
+                exit;
             }
         }
     }
