@@ -21,6 +21,12 @@
         <if condition=" $version == false && isset($version) "><br/><font color="#FF0000">该模板最低只支持ShuipFCMS {$config.adaptation} 版本，请升级后再安装，避免不必要是损失！</font></if>
         </td>
       </tr>
+      <if condition=" !empty($config['depend']) ">
+      <tr>
+        <th>依赖模块：</th>
+        <td ><?php echo implode('|',$config['depend']) ?></td>
+      </tr>
+      </if>
       <tr>
         <th>模块简介：</th>
         <td >{$config.introduce}</td>
@@ -47,6 +53,6 @@
     </div>
   </form>
 </div>
-<script src="{$config_siteurl}statics/js/common.js?v"></script>
+<script src="{$config_siteurl}statics/js/common.js"></script>
 </body>
 </html>

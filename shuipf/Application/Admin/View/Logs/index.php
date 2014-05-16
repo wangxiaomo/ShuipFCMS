@@ -4,10 +4,7 @@
 <div class="wrap J_check_wrap">
   <Admintemplate file="Common/Nav"/>
   <div class="h_a">搜索</div>
-  <form method="get" action="{$config_siteurl}index.php">
-  <input type="hidden" value="Admin" name="g">
-    <input type="hidden" value="Logs" name="m">
-    <input type="hidden" value="index" name="a">
+  <form method="post" action="{:U('index')}">
   <div class="search_type cc mb10">
     <div class="mb10"> <span class="mr20">
     搜索类型：

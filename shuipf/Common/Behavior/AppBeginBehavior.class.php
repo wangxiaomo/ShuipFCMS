@@ -22,6 +22,8 @@ class AppBeginBehavior {
         }
         //禁止访问
         $this->prohibitAccess();
+        //模块(应用)静态资源目录地址extresdir
+        define('MODULE_EXTRESDIR', 'statics/extres/' . strtolower(MODULE_NAME) . '/');
     }
 
     /**

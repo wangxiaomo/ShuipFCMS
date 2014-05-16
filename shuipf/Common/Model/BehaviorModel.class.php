@@ -334,75 +334,75 @@ class BehaviorModel extends Model {
      * @param type $behaviorRule 对应规则
      * @return boolean
      */
-//    public function moduleBehaviorInstallation($module, $behaviorRule) {
-//        if (empty($module) || !is_array($behaviorRule)) {
-//            $this->error = '参数不正确！';
-//            return false;
-//        }
-//        $time = time();
-//        foreach ($behaviorRule as $behavior => $ruleList) {
-//            //检查是否有同样的行为
-//            $behaviorInfo = $this->where(array('name' => $behavior))->find();
-//            if (empty($behaviorInfo)) {
-//                //行为说明
-//                $title = $ruleList['title'];
-//                //行为描述
-//                $remark = $ruleList['remark'];
-//                //行为类型
-//                $type = (int) $ruleList['type'];
-//                //不存在这个行为，创建
-//                $behaviorId = $this->add(array(
-//                    'name' => $behavior,
-//                    'title' => $title ? $title : $behavior . '行为',
-//                    'remark' => $remark ? $remark : "模块{$module}中的行为！",
-//                    'status' => 1,
-//                    'system' => 0,
-//                    'type' => $type,
-//                    'module' => $module,
-//                    'datetime' => $time,
-//                ));
-//            } else {
-//                $behaviorId = $behaviorInfo['id'];
-//            }
-//            //如果获取不到行为id，跳过
-//            if (empty($behaviorId)) {
-//                continue;
-//            }
-//            //规则
-//            $ruleAll = array();
-//            unset($ruleList['title'], $ruleList['remark'], $ruleList['type']);
-//            foreach ($ruleList as $key => $rule) {
-//                if (!empty($rule)) {
-//                    $ruleAll[] = array(
-//                        'behaviorid' => $behaviorId,
-//                        'system' => 0,
-//                        'module' => $module,
-//                        'rule' => $rule,
-//                        'listorder' => 0,
-//                        'datetime' => $time,
-//                    );
-//                }
-//            }
-//            //批量添加规则
-//            if (!empty($ruleAll)) {
-//                M('BehaviorRule')->addAll($ruleAll);
-//            }
-//        }
-//        return true;
-//    }
+    public function moduleBehaviorInstallation($module, $behaviorRule) {
+        if (empty($module) || !is_array($behaviorRule)) {
+            $this->error = '参数不正确！';
+            return false;
+        }
+        $time = time();
+        foreach ($behaviorRule as $behavior => $ruleList) {
+            //检查是否有同样的行为
+            $behaviorInfo = $this->where(array('name' => $behavior))->find();
+            if (empty($behaviorInfo)) {
+                //行为说明
+                $title = $ruleList['title'];
+                //行为描述
+                $remark = $ruleList['remark'];
+                //行为类型
+                $type = (int) $ruleList['type'];
+                //不存在这个行为，创建
+                $behaviorId = $this->add(array(
+                    'name' => $behavior,
+                    'title' => $title ? $title : $behavior . '行为',
+                    'remark' => $remark ? $remark : "模块{$module}中的行为！",
+                    'status' => 1,
+                    'system' => 0,
+                    'type' => $type,
+                    'module' => $module,
+                    'datetime' => $time,
+                ));
+            } else {
+                $behaviorId = $behaviorInfo['id'];
+            }
+            //如果获取不到行为id，跳过
+            if (empty($behaviorId)) {
+                continue;
+            }
+            //规则
+            $ruleAll = array();
+            unset($ruleList['title'], $ruleList['remark'], $ruleList['type']);
+            foreach ($ruleList as $key => $rule) {
+                if (!empty($rule)) {
+                    $ruleAll[] = array(
+                        'behaviorid' => $behaviorId,
+                        'system' => 0,
+                        'module' => $module,
+                        'rule' => $rule,
+                        'listorder' => 0,
+                        'datetime' => $time,
+                    );
+                }
+            }
+            //批量添加规则
+            if (!empty($ruleAll)) {
+                M('BehaviorRule')->addAll($ruleAll);
+            }
+        }
+        return true;
+    }
 
     /**
      * 卸载模块时删除对应模块安装时创建的规则！
      * @param type $module 模块标识
      * @return boolean
      */
-//    public function moduleBehaviorUninstall($module) {
-//        if (empty($module)) {
-//            $this->error = '模块标识不能为空！';
-//            return false;
-//        }
-//        return $this->ruleDelByModule($module);
-//    }
+    public function moduleBehaviorUninstall($module) {
+        if (empty($module)) {
+            $this->error = '模块标识不能为空！';
+            return false;
+        }
+        return $this->ruleDelByModule($module);
+    }
 
     /**
      * 缓存行为规则

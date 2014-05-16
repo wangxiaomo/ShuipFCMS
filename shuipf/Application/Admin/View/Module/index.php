@@ -28,28 +28,38 @@
       </thead>
       <volist name="data" id="vo">
       <tr>
-        <td><div class="app_icon"><b></b><img src="{$config_siteurl}shuipf/Modules/{$vo.module|ucwords}/icon.png" onerror="this.onerror=null;this.src='{$config_siteurl}statics/images/modul.png'" alt="{$vo.modulename}" width="80" height="80"></div></td>
-        <td valign="top"><h3 class="mb5 f12"><if condition=" $vo['authorsite'] "><a target="_blank" href="{$vo.authorsite}">{$vo.modulename}</a><else />{$vo.modulename}</if></h3>
-          <div class="mb5"> <span class="mr15">版本：<b>{$vo.version}</b></span> <span>开发者：<if condition=" $vo['author'] "><a target="_blank" href="{$vo.authorsite}">{$vo.author}</a><else />匿名开发者</if></span> <span>适配 ShuipFCMS 最低版本：<if condition=" $vo['adaptation'] ">{$vo.adaptation}<else /><font color="#FF0000">没有标注，存在风险</font></if></span> </div>
-          <div class="gray"><if condition=" $vo['introduce'] ">{$vo.introduce}<else />没有任何介绍</if></div>
-          <div> <span class="mr20"><a href="{$vo.authorsite}" target="_blank">{$vo.authorsite}</a></span> </div></td>
-        <td align="center"><span>{$vo.installdate}</span></td>
+        <td>
+            <div class="app_icon">
+            <if condition=" $vo['icon'] ">
+            <img src="{$vo.icon}" alt="{$vo.modulename}" width="80" height="80">
+            <else/>
+            <img src="{$config_siteurl}statics/images/modul.png" alt="{$vo.modulename}" width="80" height="80">
+            </if>
+            </div>
+        </td>
+        <td valign="top">
+            <h3 class="mb5 f12"><if condition=" $vo['address'] "><a target="_blank" href="{$vo.address}">{$vo.modulename}</a><else />{$vo.modulename}</if></h3>
+            <div class="mb5"> <span class="mr15">版本：<b>{$vo.version}</b></span> <span>开发者：<if condition=" $vo['author'] "><a target="_blank" href="{$vo.authorsite}">{$vo.author}</a><else />匿名开发者</if></span> <span>适配 ShuipFCMS 最低版本：<if condition=" $vo['adaptation'] ">{$vo.adaptation}<else /><font color="#FF0000">没有标注，可能存在兼容风险</font></if></span> </div>
+            <div class="gray"><if condition=" $vo['introduce'] ">{$vo.introduce}<else />没有任何介绍</if></div>
+            <div> <span class="mr20"><a href="{$vo.authorsite}" target="_blank">{$vo.authorsite}</a></span> </div>
+        </td>
+        <td align="center"><if condition=" $vo['installdate'] "><span>{$vo.installdate}</span><else/>/</if></td>
         <td align="center">
-          <if condition=" in_array($vo['status'],array(1,2)) && !isset($modules[$vo['module']])">
-          <a  href="{:U('Module/install', array('module'=>$vo['module'])  )}" class="btn btn_submit mr5">安装</a>
-          </if>
-          <if condition=" $modules[$vo['module']] && !$modules[$vo['module']]['iscore']">
-          <if condition=" $vo['disabled']">
-          <a  href="{:U('Module/disabled', array('module'=>$vo['module'])  )}" class="btn mr5">禁用</a>
-          <else/>
-          <a  href="{:U('Module/disabled', array('module'=>$vo['module'])  )}" class="btn btn_submit  mr5">启用</a>
-          </if>
-          <button data-action="{:U('Module/uninstall',array('module'=>$vo['module']))}" class="J_ajax_upgrade btn">卸载</button>
-          </if>
-          <if condition=" $modules[$vo['module']] && $modules[$vo['module']]['iscore']">
-          系统模块
-          </if>
-         </td>
+          <?php
+		  $op = array();
+		  if(empty($vo['installtime'])){
+			  $op[] = '<a href="'.U('install',array('module'=>$vo['module'])).'" class="btn btn_submit mr5">安装</a>';
+		  }else{
+			  $op[] = '<a href="'.U('uninstall',array('module'=>$vo['module'])).'" class="J_ajax_upgrade btn">卸载</a>';
+			  if($vo['disabled']){
+				  $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn mr5">禁用</a>';
+			  }else{
+				  $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn btn_submit  mr5">启用</a>';
+			  }
+		  }
+		  echo implode('  ',$op);
+		  ?>
+        </td>
       </tr>
       </volist>
     </table>
@@ -58,13 +68,13 @@
         <div class="pages">{$Page}</div>
    </div>
 </div>
-<script src="{$config_siteurl}statics/js/common.js?v"></script>
+<script src="{$config_siteurl}statics/js/common.js"></script>
 <script>
-if ($('button.J_ajax_upgrade').length) {
+if ($('a.J_ajax_upgrade').length) {
     Wind.use('artDialog', function () {
         $('.J_ajax_upgrade').on('click', function (e) {
             e.preventDefault();
-           var $_this = this,$this = $(this), url = $this.data('action'), msg = $this.data('msg'), act = $this.data('act');
+           var $_this = this,$this = $(this), url = this.href, msg = $this.data('msg'), act = $this.data('act');
             art.dialog({
                 title: false,
                 icon: 'question',

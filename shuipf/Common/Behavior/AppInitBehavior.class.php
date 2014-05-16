@@ -47,7 +47,7 @@ class AppInitBehavior {
 
     //初始化
     private function initialization() {
-        if(defined('INSTALL')){
+        if (!C('DB_PWD')) {
             return true;
         }
         //产品版本号
@@ -58,7 +58,7 @@ class AppInitBehavior {
         define("SHUIPF_APPNAME", C("SHUIPF_APPNAME"));
         //MODULE_ALLOW_LIST配置
         $moduleList = cache('Module');
-        $moduleAllowList = array('Admin', 'Api', 'Content');
+        $moduleAllowList = array('Admin', 'Api', 'Content', 'Install');
         foreach ($moduleList as $rs) {
             $moduleAllowList[] = $rs['module'];
         }
