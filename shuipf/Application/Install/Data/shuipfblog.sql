@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50536
 File Encoding         : 65001
 
-Date: 2014-05-11 22:26:40
+Date: 2014-05-16 17:04:12
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -31,16 +31,7 @@ CREATE TABLE `shuipfcms_access` (
 -- ----------------------------
 -- Records of shuipfcms_access
 -- ----------------------------
-INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Menu', 'delete', '1');
-INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Menu', 'edit', '1');
-INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Menu', 'add', '1');
-INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Menu', 'index', '1');
-INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Config7', 'index7', '0');
-INSERT INTO `shuipfcms_access` VALUES ('3', 'Admin', 'Config3', 'index3', '0');
-INSERT INTO `shuipfcms_access` VALUES ('2', 'Admin', 'Config2', 'index2', '0');
-INSERT INTO `shuipfcms_access` VALUES ('2', 'Admin', 'Adminmanage4', 'myinfo4', '0');
-INSERT INTO `shuipfcms_access` VALUES ('2', 'Admin', 'Adminmanage', 'myinfo', '1');
-INSERT INTO `shuipfcms_access` VALUES ('2', 'Admin', 'Adminmanage', 'chanpass', '1');
+
 
 -- ----------------------------
 -- Table structure for shuipfcms_admin_panel
@@ -249,6 +240,11 @@ CREATE TABLE `shuipfcms_loginlog` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台登陆日志表';
 
 -- ----------------------------
+-- Records of shuipfcms_loginlog
+-- ----------------------------
+
+
+-- ----------------------------
 -- Table structure for shuipfcms_menu
 -- ----------------------------
 DROP TABLE IF EXISTS `shuipfcms_menu`;
@@ -266,7 +262,7 @@ CREATE TABLE `shuipfcms_menu` (
   `listorder` smallint(6) unsigned NOT NULL DEFAULT '0' COMMENT '排序ID',
   PRIMARY KEY (`id`),
   KEY `parentid` (`parentid`)
-) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='后台菜单表';
+) ENGINE=MyISAM AUTO_INCREMENT=44 DEFAULT CHARSET=utf8 COMMENT='后台菜单表';
 
 -- ----------------------------
 -- Records of shuipfcms_menu
@@ -306,6 +302,13 @@ INSERT INTO `shuipfcms_menu` VALUES ('33', '后台操作日志', '31', 'Admin', 
 INSERT INTO `shuipfcms_menu` VALUES ('34', '删除一个月前的登陆日志', '32', 'Admin', 'Logs', 'deleteloginlog', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('35', '删除一个月前的操作日志', '33', 'Admin', 'Logs', 'deletelog', '', '1', '1', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('36', '添加行为', '13', 'Admin', 'Behavior', 'add', '', '1', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('37', '模块', '0', 'Admin', 'Module', 'index', '', '0', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('38', '在线云平台', '37', 'Admin', 'Cloud', 'index', '', '0', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('39', '模块商店', '38', 'Admin', 'Moduleshop', 'index', '', '1', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('40', '插件商店', '38', 'Admin', 'Addonshop', 'index', '', '1', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('41', '在线升级', '38', 'Admin', 'Upgrade', 'index', '', '1', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('42', '本地模块管理', '37', 'Admin', 'Module', 'index', '', '0', '1', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('43', '模块管理', '42', 'Admin', 'Module', 'index', '', '1', '1', '', '0');
 
 -- ----------------------------
 -- Table structure for shuipfcms_module
@@ -313,22 +316,21 @@ INSERT INTO `shuipfcms_menu` VALUES ('36', '添加行为', '13', 'Admin', 'Behav
 DROP TABLE IF EXISTS `shuipfcms_module`;
 CREATE TABLE `shuipfcms_module` (
   `module` varchar(15) NOT NULL COMMENT '模块',
-  `name` varchar(20) NOT NULL COMMENT '模块名称',
-  `url` varchar(50) NOT NULL COMMENT 'url',
+  `modulename` varchar(20) NOT NULL COMMENT '模块名称',
   `iscore` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '内置模块',
-  `version` varchar(50) NOT NULL DEFAULT '' COMMENT '版本',
-  `description` varchar(255) NOT NULL COMMENT '描述',
-  `setting` mediumtext NOT NULL COMMENT '设置信息',
-  `listorder` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否可用',
-  `installdate` date NOT NULL DEFAULT '0000-00-00' COMMENT '安装时间',
-  `updatedate` date NOT NULL DEFAULT '0000-00-00' COMMENT '更新时间',
+  `version` varchar(50) NOT NULL DEFAULT '' COMMENT '版本',
+  `setting` mediumtext NOT NULL COMMENT '设置信息',
+  `installtime` int(10) NOT NULL COMMENT '安装时间',
+  `updatetime` int(10) NOT NULL COMMENT '更新时间',
+  `listorder` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   PRIMARY KEY (`module`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='模块配置信息表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='已安装模块列表';
 
 -- ----------------------------
 -- Records of shuipfcms_module
 -- ----------------------------
+
 
 -- ----------------------------
 -- Table structure for shuipfcms_operationlog
@@ -346,6 +348,10 @@ CREATE TABLE `shuipfcms_operationlog` (
   KEY `status` (`status`),
   KEY `username` (`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台操作日志表';
+
+-- ----------------------------
+-- Records of shuipfcms_operationlog
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for shuipfcms_role
@@ -395,3 +401,7 @@ CREATE TABLE `shuipfcms_user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `account` (`username`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台用户表';
+
+-- ----------------------------
+-- Records of shuipfcms_user
+-- ----------------------------
