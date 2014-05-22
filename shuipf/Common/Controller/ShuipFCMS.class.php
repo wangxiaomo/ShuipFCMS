@@ -19,7 +19,7 @@ abstract class ShuipFCMS extends \Think\Controller {
     protected function _initialize() {
         $this->initSite();
         //默认跳转时间
-        $this->assign("waitSecond", 3);
+        $this->assign("waitSecond", 3000);
     }
 
     /**
@@ -69,7 +69,7 @@ abstract class ShuipFCMS extends \Think\Controller {
                 Hook::listen('ajax_return', $data);
         }
     }
-    
+
     /**
      * 分页输出
      * @param type $total 信息总数

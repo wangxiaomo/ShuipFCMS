@@ -42,6 +42,29 @@ function cache($name, $value = '', $options = null) {
 }
 
 /**
+ * 快捷方法取得服务
+ * @param type $name 服务类型
+ * @param type $params 参数
+ * @return type
+ */
+function service($name, $params = array()) {
+    return Libs\System\Service::getInstance($name, $params);
+}
+
+/**
+ * 检查模块是否已经安装
+ * @param type $moduleName 模块名称
+ * @return boolean
+ */
+function isModuleInstall($moduleName) {
+    $appCache = cache('Module');
+    if (isset($appCache[$moduleName])) {
+        return true;
+    }
+    return false;
+}
+
+/**
  * 产生一个指定长度的随机字符串,并返回给用户 
  * @param type $len 产生字符串的长度
  * @return string 随机字符串
@@ -153,4 +176,83 @@ function page($total, $size = 0, $number = 0, $config = array()) {
     $Page = new \Libs\Util\Page($total, $defaultConfig['size'], $defaultConfig['number'], $defaultConfig['list'], $defaultConfig['param'], $defaultConfig['rule'], $defaultConfig['isrule']);
     $Page->SetPager('default', $defaultConfig['tpl'], $defaultConfig['tplconfig']);
     return $Page;
+}
+
+/**
+ * 获取栏目相关信息
+ * @param type $catid 栏目id
+ * @param type $field 返回的字段，默认返回全部，数组
+ * @param type $newCache 是否强制刷新
+ * @return boolean
+ */
+function getCategory($catid, $field = '', $newCache = false) {
+    if (empty($catid)) {
+        return false;
+    }
+    $key = 'getCategory_' . $catid;
+    //强制刷新缓存
+    if ($newCache) {
+        S($key, NULL);
+    }
+    $cache = S($key);
+    if ($cache === 'false') {
+        return false;
+    }
+    if (empty($cache)) {
+        //读取数据
+        $cache = M('Category')->where(array('catid' => $catid))->find();
+        if (empty($cache)) {
+            S($key, 'false', 60);
+            return false;
+        } else {
+            //扩展配置
+            $cache['setting'] = unserialize($cache['setting']);
+            //栏目扩展字段
+            $cache['extend'] = $cache['setting']['extend'];
+            S($key, $cache, 3600);
+        }
+    }
+    if ($field) {
+        //支持var.property，不过只支持一维数组
+        if (false !== strpos($field, '.')) {
+            $vars = explode('.', $field);
+            return $cache[$vars[0]][$vars[1]];
+        } else {
+            return $cache[$field];
+        }
+    } else {
+        return $cache;
+    }
+}
+
+/**
+ * 获取模型数据
+ * @param type $modelid 模型ID
+ * @param type $field 返回的字段，默认返回全部，数组
+ * @return boolean
+ */
+function getModel($modelid, $field = '') {
+    if (empty($modelid)) {
+        return false;
+    }
+    $key = 'getModel_' . $modelid;
+    $cache = S($key);
+    if ($cache === 'false') {
+        return false;
+    }
+    if (empty($cache)) {
+        //读取数据
+        $cache = M('Model')->where(array('modelid' => $modelid))->find();
+        if (empty($cache)) {
+            S($key, 'false', 60);
+            return false;
+        } else {
+            S($key, $cache, 3600);
+        }
+    }
+    if ($field) {
+        return $cache[$field];
+    } else {
+        return $cache;
+    }
 }
