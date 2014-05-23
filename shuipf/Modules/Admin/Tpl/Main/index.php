@@ -15,10 +15,11 @@
   <div class="home_info" id="home_devteam">
     <ul>
       <li> <em>负责人</em> <span>王小默</span> </li>
+      <li> <em>QQ</em> <span>497052184</span> </li>
       <li> <em>联系邮箱</em> <span>wxm4ever@gmail.com</span> </li>
     </ul>
   </div>
-<script src="{$config_siteurl}statics/js/common.js?v"></script> 
+<script src="{$config_siteurl}statics/js/common.js?v"></script>
 <script>
 $("#btn_submit").click(function(){
 	$("#tips_success").fadeTo(500,1);
