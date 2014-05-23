@@ -71,6 +71,13 @@ class AppInitBehavior {
      * @return void
      */
     static public function autoload($class) {
+        //内容模型content_xx.class.php类自动加载
+        if (in_array($class, array('content_form', 'content_input', 'content_output', 'content_update', 'content_delete'))) {
+            D('Content/Content')->model_content_cache();
+            $class = RUNTIME_PATH . "{$class}.class.php";
+            include $class;
+            return;
+        }
         echo '错误：' . $class . '<br/>';
         exit;
     }

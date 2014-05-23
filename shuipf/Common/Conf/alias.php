@@ -1,7 +1,7 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | ShuipFCMS
+// | ShuipFCMS 别名
 // +----------------------------------------------------------------------
 // | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
@@ -13,4 +13,10 @@ return array(
     'Tree' => PROJECT_PATH . 'Libs/Util/Tree.class.php',
     'Curl' => PROJECT_PATH . 'Libs/Util/Curl.class.php',
     'Form' => PROJECT_PATH . 'Libs/Util/Form.class.php',
+    'Input' => PROJECT_PATH . 'Libs/Util/Input.class.php',
+    'content_form' => RUNTIME_PATH . 'content_form.class.php',
+    'content_input' => RUNTIME_PATH . 'content_input.class.php',
+    'content_output' => RUNTIME_PATH . 'content_output.class.php',
+    'content_update' => RUNTIME_PATH . 'content_update.class.php',
+    'content_delete' => RUNTIME_PATH . 'content_delete.class.php',
 );

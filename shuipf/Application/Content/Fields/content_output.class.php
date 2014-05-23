@@ -25,12 +25,13 @@ class content_output {
     protected $tablename = '';
 
     function __construct($modelid) {
-        $this->model = F("Model");
+        $this->model = cache("Model");
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {
             return false;
         }
-        $this->fields = F("Model_field_" . $this->modelid);
+        $modelField = cache('ModelField');
+        $this->fields = $modelField[$this->modelid];
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
 

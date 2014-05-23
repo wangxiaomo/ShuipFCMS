@@ -28,11 +28,10 @@ class IndexController extends AdminBase {
     }
 
     //缓存更新
-    public function public_cache() {
+    public function cache() {
         if (isset($_GET['type'])) {
-            import("Dir");
-            $Dir = new Dir();
-            $cache = D('Cache');
+            $Dir = new \Dir();
+            $cache = D('Common/Cache');
             $type = I('get.type');
             set_time_limit(0);
             switch ($type) {
@@ -62,12 +61,10 @@ class IndexController extends AdminBase {
                                     $Dir->delDir($path);
                                     //防止超时，清理一个从新跳转一次
                                     $this->assign("waitSecond", 200);
-                                    $this->success("清理缓存目录[{$dirName}]成功！", U('Index/public_cache', array('type' => 'site', 'dir' => implode(',', $dirList))));
+                                    $this->success("清理缓存目录[{$dirName}]成功！", U('Index/cache', array('type' => 'site', 'dir' => implode(',', $dirList))));
                                     exit;
                                 }
                             }
-                            //更新开启其他方式的缓存
-                            Cache::getInstance()->clear();
                         } catch (Exception $exc) {
                             
                         }
@@ -79,37 +76,35 @@ class IndexController extends AdminBase {
                         if ($cacheInfo) {
                             if ($cache->runUpdate($cacheInfo) !== false) {
                                 $this->assign("waitSecond", 200);
-                                $this->success($cacheInfo['name'], U('Index/public_cache', array('type' => 'site', 'stop' => $stop + 1)));
+                                $this->success('更新缓存：'.$cacheInfo['name'], U('Index/cache', array('type' => 'site', 'stop' => $stop + 1)));
                                 exit;
                             } else {
-                                $this->error('缓存[' . $cacheInfo['name'] . ']更新失败！', U('Index/public_cache', array('type' => 'site', 'stop' => $stop + 1)));
+                                $this->error('缓存[' . $cacheInfo['name'] . ']更新失败！', U('Index/cache', array('type' => 'site', 'stop' => $stop + 1)));
                             }
                         } else {
-                            $this->success('缓存更新完毕！', U('Index/public_cache'));
+                            $this->success('缓存更新完毕！', U('Index/cache'));
                             exit;
                         }
                     }
-                    $this->success("即将更新站点缓存！", U('Index/public_cache', array('type' => 'site', 'stop' => 1)));
+                    $this->success("即将更新站点缓存！", U('Index/cache', array('type' => 'site', 'stop' => 1)));
                     break;
                 case "template":
                     //删除缓存目录下的文件
                     $Dir->del(RUNTIME_PATH);
                     $Dir->delDir(RUNTIME_PATH . "Cache/");
                     $Dir->delDir(RUNTIME_PATH . "Temp/");
-                    //更新开启其他方式的缓存
-                    Cache::getInstance()->clear();
-                    $this->success("模板缓存清理成功！", U('Index/public_cache'));
+                    $this->success("模板缓存清理成功！", U('Index/cache'));
                     break;
                 case "logs":
                     $Dir->delDir(RUNTIME_PATH . "Logs/");
-                    $this->success("站点日志清理成功！", U('Index/public_cache'));
+                    $this->success("站点日志清理成功！", U('Index/cache'));
                     break;
                 default:
                     $this->error("请选择清楚缓存类型！");
                     break;
             }
         } else {
-            $this->display("Index:cache");
+            $this->display();
         }
     }
 

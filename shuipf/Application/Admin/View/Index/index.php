@@ -46,7 +46,7 @@ if (window.top !== window.self) {
           <ul id="J_B_main_block">
           </ul>
         </div>
-        <div class="login_info"><span class="mr10">{$role_name}： {$userInfo.username}</span><a href="{:U('Public/logout')}" class="mr10">[注销]</a>{:tag("view_admin_top_menu")}<a href="{$Config.siteurl}" class="home" target="_blank">前台首页</a><a href="javascript:;;" id="deletecache" class="home"  style="color:#FFF">缓存更新</a></div></td>
+        <div class="login_info"><span class="mr10">{$role_name}： {$userInfo.username}</span><a href="{:U('Public/logout')}" class="mr10">[注销]</a>{:tag("view_admin_top_menu")}<a href="{$Config.siteurl}" class="home" target="_blank">前台首页</a><?php if(\Libs\System\RBAC::authenticate('Admin/Index/cache')){ ?><a href="javascript:;;" id="deletecache" class="home"  style="color:#FFF">缓存更新</a><?php } ?></div></td>
     </tr>
     <tr class="tab">
       <th> <div class="search">
@@ -85,15 +85,17 @@ if (window.top !== window.self) {
 <script src="{$config_siteurl}statics/js/common.js"></script>
 <literal>
 <script>
+<?php if(\Libs\System\RBAC::authenticate('Admin/Index/cache')){ ?>
 $("#deletecache").on('click',function(e){
     e.preventDefault();
     e.stopPropagation();
     iframeJudge({
         elem: $(this),
-        href: "<?php echo U('Index/public_cache');?>",
+        href: "<?php echo U('Index/cache')?>",
         id: "deletecache"
     });
 });
+<?php } ?>
 //iframe 加载事件
 var iframe_default = document.getElementById('iframe_default');
 var def_iframe_height = 0;

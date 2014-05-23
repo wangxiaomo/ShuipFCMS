@@ -908,23 +908,30 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
     }
     $appUrl = __APP__;
     $showModuleName = true; //是否显示模块名(g)
-    if (in_array(C('URL_MODEL'), array(0, 1, 3)) && defined('BIND_MODULE')) {
-        $homeFile = array('index.php', 'api.php', 'install.php', 'admin.php');
-        switch ($_module) {
-            case 'Api':
-                $appUrl = str_replace($homeFile, 'api.php', __APP__);
-                $showModuleName = false;
-                break;
-            case 'Admin':
-                $appUrl = str_replace($homeFile, 'admin.php', __APP__);
-                $showModuleName = false;
-                break;
-            default :
-                $appUrl = str_replace($homeFile, 'index.php', __APP__);
-                break;
+    if (in_array(C('URL_MODEL'), array(0, 1, 3))) {
+        //如果是绑定BIND_MODULE时处理
+        if (defined('BIND_MODULE')) {
+            $homeFile = array('index.php', 'api.php', 'install.php', 'admin.php');
+            switch ($_module) {
+                case 'Api':
+                    $appUrl = str_replace($homeFile, 'api.php', __APP__);
+                    $showModuleName = false;
+                    break;
+                case 'Admin':
+                    $appUrl = str_replace($homeFile, 'admin.php', __APP__);
+                    $showModuleName = false;
+                    break;
+                case 'Install':
+                    $appUrl = str_replace($homeFile, 'install.php', __APP__);
+                    $showModuleName = false;
+                    break;
+                default :
+                    $appUrl = str_replace($homeFile, 'index.php', __APP__);
+                    break;
+            }
         }
         //U方法里的模块等于当前模块时，隐藏
-        if ($module == MODULE_NAME) {
+        if ($module == MODULE_NAME || $module == C('DEFAULT_MODULE')) {
             $showModuleName = false;
         }
     }

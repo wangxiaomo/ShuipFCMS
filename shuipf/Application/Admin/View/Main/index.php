@@ -14,11 +14,11 @@
   <h2 class="h_a">开发团队</h2>
   <div class="home_info" id="home_devteam">
     <ul>
-      <li> <em>版权所有</em> <span><a href="http://www.shuipfcms.com" target="_blank">www.shuipfcms.com</a></span> </li>
+      <li> <em>版权所有</em> <span><a href="http://www.shuipfcms.com" target="_blank">http://www.shuipfcms.com/</a></span> </li>
       <li> <em>负责人</em> <span>水平凡</span> </li>
       <li> <em>微博</em> <span><a href="http://t.qq.com/shuipf" target="_blank">http://t.qq.com/shuipf</a></span> </li>
       <li> <em>联系邮箱</em> <span>admin@abc3210.com</span> </li>
-      <li> <em>捐赠</em> <span>您因如果使用ShuipFCMS而受益或者感到愉悦，您还可以这样帮助ShuipFCMS成长~<br/>捐赠地址：<a href="https://me.alipay.com/shuipf" target="_blank">https://me.alipay.com/shuipf</a></span> </li>
+      <li> <em>捐赠</em> <span>您因如果使用ShuipFCMS而受益或者感到愉悦，您还可以这样帮助ShuipFCMS成长~<br/>捐赠：<a href="https://www.alipay.com/" target="_blank">支付宝帐号：gongjingpingde@163.com</a></span> </li>
       <li> <em><font color="#0000FF">在线使用手册</font></em> <span><a href="http://document.shuipfcms.com/" target="_blank">http://document.shuipfcms.com/</a></span> </li>
     </ul>
   </div>

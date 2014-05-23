@@ -43,7 +43,7 @@
             <div class="gray"><if condition=" $vo['introduce'] ">{$vo.introduce}<else />没有任何介绍</if></div>
             <div> <span class="mr20"><a href="{$vo.authorsite}" target="_blank">{$vo.authorsite}</a></span> </div>
         </td>
-        <td align="center"><if condition=" $vo['installdate'] "><span>{$vo.installdate}</span><else/>/</if></td>
+        <td align="center"><if condition=" $vo['installtime'] "><span>{$vo.installtime|date='Y-m-d H:i:s',###}</span><else/>/</if></td>
         <td align="center">
           <?php
 		  $op = array();

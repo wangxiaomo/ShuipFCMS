@@ -1,15 +1,29 @@
 <?php
 
+// +----------------------------------------------------------------------
+// | ShuipFCMS 网站前台
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
+
 namespace Content\Controller;
 
-use Think\Controller;
+use Common\Controller\Base;
 
-class IndexController extends Controller {
+class IndexController extends Base {
 
     public function index() {
-        // echo CONF_PATH.'core.php';
-        //cache('sss');
-        $this->show('<style type="text/css">*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: "微软雅黑"; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px }</style><div style="padding: 24px 48px;"> <h1>:)</h1><p>欢迎使用 <b>ThinkPHP</b>！</p><br/>[ 您现在访问的是Content模块的Index控制器 ]</div><script type="text/javascript" src="http://tajs.qq.com/stats?sId=9347272" charset="UTF-8"></script>', 'utf-8');
+        echo '网站首页';
+    }
+
+    public function lists() {
+        echo '列表页';
+    }
+
+    public function shows() {
+        echo '内容页';
     }
 
 }

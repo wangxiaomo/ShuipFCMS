@@ -58,17 +58,30 @@
       </table>
       <table width="100%">
         <tr>
+          <td class="td1">函数支持检测</td>
+          <td class="td1" width="25%">当前环境</td>
+          <td class="td1" width="25%">程序要求</td>
+        </tr>
+       <volist name="function" id="rs">
+        <tr>
+          <td>{$key}</td>
+          <td><if condition="$rs"><span class="correct_span">&radic;</span>支持<else/><span class="correct_span error_span">&radic;</span>不支持</if></td>
+          <td><span class="correct_span">&radic;</span>支持</td>
+        </tr>
+      </volist>
+      <table width="100%">
+        <tr>
           <td class="td1">目录、文件权限检查</td>
           <td class="td1" width="25%">写入</td>
           <td class="td1" width="25%">读取</td>
         </tr>
-		<volist name="folderInfo" id="rs">
+       <volist name="folderInfo" id="rs">
         <tr>
           <td>{$rs.dir}</td>
           <td>{$rs.is_writable}</td>
           <td>{$rs.is_readable}</td>
         </tr>
-		</volist>
+        </volist>
       </table>
     </div>
     <div class="bottom tac"> <a href="{:U('step_2')}" class="btn">重新检测</a><a href="{:U('step_3')}" class="btn next">下一步</a> </div>

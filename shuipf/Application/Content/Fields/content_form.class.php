@@ -32,13 +32,14 @@ class content_form {
      * @param type $catid 栏目id
      */
     function __construct($modelid, $catid) {
-        $this->model = F("Model");
+        $this->model = cache("Model");
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {
             return false;
         }
+        $modelField = cache('ModelField');
         $this->catid = $catid;
-        $this->fields = F("Model_field_" . $this->modelid);
+        $this->fields = $modelField[$this->modelid];
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
 

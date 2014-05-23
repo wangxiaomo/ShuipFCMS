@@ -1,11 +1,10 @@
 <?php
 
-/* * 
+/**
  * 数据更新，也就是类似回调吧！
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-
 class content_update {
 
     //信息ID
@@ -26,13 +25,13 @@ class content_update {
     protected $tablename = '';
 
     function __construct($modelid) {
-        $this->model = F("Model");
+        $this->model = cache("Model");
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {
-            $this->error('该模型不存在！');
             return false;
         }
-        $this->fields = F("Model_field_" . $this->modelid);
+        $modelField = cache('ModelField');
+        $this->fields = $modelField[$this->modelid];
         $this->tablename = trim($this->model[$this->modelid]['tablename']);
     }
 

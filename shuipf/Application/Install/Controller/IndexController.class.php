@@ -87,7 +87,20 @@ class IndexController extends Controller {
             }
             $folderInfo[] = $result;
         }
+
+        //PHP内置函数检测
+        $function = array(
+            'mb_strlen' => function_exists('mb_strlen'),
+            'curl_init' => function_exists('curl_init'),
+        );
+        foreach ($function as $rs) {
+            if ($rs == false) {
+                $err++;
+            }
+        }
+
         $this->assign('os', PHP_OS)
+                ->assign('function', $function)
                 ->assign('err', $err)
                 ->assign('phpv', @phpversion())
                 ->assign('mysql', $mysql)
