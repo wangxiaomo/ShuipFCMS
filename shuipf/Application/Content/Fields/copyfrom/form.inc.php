@@ -23,5 +23,5 @@ function copyfrom($field, $value, $fieldinfo) {
         $this->formValidateMessages['info[' . $field . ']'] = array("required" => $errortips ? $errortips : $fieldinfo['name'] . "不能为空！");
     }
     $width = $setting['width'] ? $setting['width'] : 180;
-    return "<input type='text' name='info[{$field}]' value='{$value}' style='width:{$width}px;' class='input' placeholder='信息来源'/>";
+    return "<input type='text' name='info[{$field}]' value='".\Input::forTag($value)."' style='width:{$width}px;' class='input' placeholder='信息来源'/>";
 }

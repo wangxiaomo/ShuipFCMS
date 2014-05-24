@@ -4,7 +4,7 @@
  * 多文件上传字段类型相关配置
  */
 //字段数据库类型	
-$field_type = 'mediumtext';
+$field_type = 'text';
 //是否允许作为主表字段
 $field_basic_table = 0;
 //是否允许建立索引

@@ -36,19 +36,19 @@ function box($field, $value, $fieldinfo) {
     $value = implode(',', $value);
     switch ($setting['boxtype']) {
         case 'radio':
-            $string = Form::radio($option, $value, "name='info[$field]' {$fieldinfo['formattribute']}", $setting['width'], $field);
+            $string = \Form::radio($option, $value, "name='info[$field]' {$fieldinfo['formattribute']}", $setting['width'], $field);
             break;
 
         case 'checkbox':
-            $string = Form::checkbox($option, $value, "name='info[$field][]' {$fieldinfo['formattribute']}", 1, $setting['width'], $field);
+            $string = \Form::checkbox($option, $value, "name='info[$field][]' {$fieldinfo['formattribute']}", 1, $setting['width'], $field);
             break;
 
         case 'select':
-            $string = Form::select($option, $value, "name='info[$field]' id='$field' {$fieldinfo['formattribute']}");
+            $string = \Form::select($option, $value, "name='info[$field]' id='$field' {$fieldinfo['formattribute']}");
             break;
 
         case 'multiple':
-            $string = Form::select($option, $value, "name='info[$field][]' id='$field ' size=2 multiple='multiple' style='height:60px;' {$fieldinfo['formattribute']}");
+            $string = \Form::select($option, $value, "name='info[$field][]' id='$field ' size=2 multiple='multiple' style='height:60px;' {$fieldinfo['formattribute']}");
             break;
     }
     return $string;

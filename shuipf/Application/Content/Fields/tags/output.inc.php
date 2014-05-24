@@ -13,8 +13,8 @@ function tags($field, $value) {
     //把Tags进行分割成数组
     $tags = strpos($value, ',') !== false ? explode(',', $value) : explode(' ', $value);
     //获取分页规则
-    $urlrules = F("urlrules");
-    $urlrules = $urlrules[AppframeAction::$Cache['Config']['tagurl']];
+    $urlrules = cache("Urlrules");
+    $urlrules = $urlrules[\Common\Controller\ShuipFCMS::$Cache['Config']['tagurl']];
     if (empty($urlrules)) {
         $urlrules = 'index.php?g=Tags&tagid={$tagid}|index.php?g=Tags&tagid={$tagid}&page={$page}';
     }

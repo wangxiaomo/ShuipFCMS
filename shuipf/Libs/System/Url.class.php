@@ -1,7 +1,7 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | ShuipFCMS 内容模型地址
+// | ShuipFCMS 内容模型地址处理
 // +----------------------------------------------------------------------
 // | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
@@ -15,7 +15,7 @@ class Url {
     //内容URL规则缓存
     private $urlrules;
 
-    function __construct() {
+    public function __construct() {
         //获取URL生成规则缓存
         $this->urlrules = cache("Urlrules");
     }
@@ -400,6 +400,17 @@ class Url {
         $url['path'] = str_replace('{$page}', $page, $url['path']);
 
         return $url;
+    }
+
+    /**
+     * 获取Tags标签访问路径
+     * @param type $data Tags数据，可以是数组，tagsname或者id
+     * @param type $page 分页
+     * @param type $ruleid 规则ID
+     * @return type
+     */
+    public function tags($data, $page = 1, $ruleid = false) {
+        return array();
     }
 
     /**

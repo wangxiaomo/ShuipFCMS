@@ -69,7 +69,8 @@ class content_form {
     public function get($data = array()) {
         $this->data = $data;
         $info = array();
-        foreach ($this->fields as $field => $fieldInfo) {
+        foreach ($this->fields as $fieldInfo) {
+            $field = $fieldInfo['field'];
             //判断是否后台
             if (defined('IN_ADMIN') && IN_ADMIN) {
                 //判断是否内部字段，如果是，跳过

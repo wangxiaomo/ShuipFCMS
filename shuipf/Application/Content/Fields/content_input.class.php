@@ -73,7 +73,8 @@ class content_input {
         $this->catid = (int) $data['catid'];
         //获取内容模型对象
         $this->ContentModel = ContentModel::getInstance($this->modelid);
-        foreach ($this->fields as $field => $fieldInfo) {
+        foreach ($this->fields as $fieldInfo) {
+            $field = $fieldInfo['field'];
             //如果是更新状态下，没有数据的，跳过
             if ($type == 2) {
                 if (!isset($this->data[$field])) {

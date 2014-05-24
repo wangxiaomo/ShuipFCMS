@@ -8,5 +8,5 @@
  */
 function tags($field, $value) {
     //删除对应的tags记录
-    return D("Tags")->deleteAll($this->id, $this->catid, $this->modelid);
+    return D('Content/Tags')->deleteAll($this->id, $this->catid, $this->modelid);
 }

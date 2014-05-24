@@ -23,7 +23,7 @@ function downfile($field, $value, $fieldinfo) {
     //生成上传附件验证 //同时允许的上传个数, 允许上传的文件类型, 是否允许从已上传中选择
     $authkey = upload_key("1,{$setting['upload_allowext']},{$setting['isselectimage']}");
     //模块
-    $module = ( in_array(GROUP_NAME, array("Contents", "contents")) ) ? 'Contents' : GROUP_NAME;
+    $module = MODULE_NAME;
     //文本框模式
     return "<input type='text' name='info[$field]' id='$field' value='$value' style='width:{$width}px;' class='input' />  <input type='button' class='button' onclick=\"flashupload('{$field}_downfile', '附件上传','{$field}',submit_attachment,'1,{$setting['upload_allowext']},{$setting['isselectimage']}','{$module}','$this->catid','$authkey')\"/ value='上传文件'>";
 }

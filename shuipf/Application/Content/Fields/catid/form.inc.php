@@ -12,10 +12,10 @@ function catid($field, $value, $fieldinfo) {
         //当值为空时，获取当前添加的栏目ID
         $value = $this->catid;
     }
-    //html
+    //后台管理员搞高级选项
     $publish_str = '';
     if (ACTION_NAME == 'add' && defined("IN_ADMIN") && IN_ADMIN) {
-        $publish_str = "<a href='javascript:;' onclick=\"omnipotent('selectid','" . U("Contents/Content/public_othors", array("catid" => $this->catid)) . "','同时发布到其他栏目',1);return false;\" style='color:#B5BFBB'>[同时发布到其他栏目]</a>
+        $publish_str = "<a href='javascript:;' onclick=\"omnipotent('selectid','" . U("Content/Content/public_othors", array("catid" => $this->catid)) . "','同时发布到其他栏目',1);return false;\" style='color:#B5BFBB'>[同时发布到其他栏目]</a>
             <ul class='three_list cc' id='add_othors_text'></ul>";
     }
     $publish_str = '<input type="hidden" name="info[' . $field . ']" value="' . $value . '"/>' . getCategory($value, 'catname') . $publish_str;

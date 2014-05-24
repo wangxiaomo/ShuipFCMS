@@ -7,8 +7,5 @@
  * @return string
  */
 function copyfrom($field, $value) {
-    if (empty($value)) {
-        return $value;
-    }
-    return htmlspecialchars($value);
+    return \Input::forTag($value);
 }

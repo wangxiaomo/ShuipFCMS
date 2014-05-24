@@ -48,7 +48,7 @@
         </td>
     </tr>
 </table>
-<SCRIPT LANGUAGE="JavaScript">
+<script>
     <!--
     function fieldtype_setting(obj) {
         if(obj!='varchar') {
@@ -58,4 +58,4 @@
         }
     }
     //-->
-</SCRIPT>
+</script>

@@ -62,7 +62,8 @@ class content_update {
         $this->data = $data;
         $this->id = (int) $data['id'];
         $this->catid = (int) $data['catid'];
-        foreach ($this->fields as $field => $fieldInfo) {
+        foreach ($this->fields as $fieldInfo) {
+            $field = $fieldInfo['field'];
             if (empty($fieldInfo)) {
                 continue;
             }

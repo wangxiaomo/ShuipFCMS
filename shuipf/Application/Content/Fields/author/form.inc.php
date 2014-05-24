@@ -11,7 +11,7 @@ function author($field, $value, $fieldinfo) {
     //扩展配置
     $setting = unserialize($fieldinfo['setting']);
     //默认显示
-    if (empty($value)) {
+    if ($value == '') {
         $value = $setting['defaultvalue'];
     }
     //错误提示
@@ -22,6 +22,7 @@ function author($field, $value, $fieldinfo) {
         //验证不通过提示
         $this->formValidateMessages['info[' . $field . ']'] = array("required" => $errortips ? $errortips : $fieldinfo['name'] . "不能为空！");
     }
-    $width = $setting['width'] ? $setting['width'] : 180;
-    return '<input type="text" class="input" name="info[' . $field . ']" value="' . $value . '" style="width:' . $width . 'px;">';
+    //宽度
+    $width = $setting['width'] ? ('width:' . $setting['width'] . 'px') : 'width:180px';
+    return '<input type="text" class="input" name="info[' . $field . ']" value="' . \Input::forTag($value) . '" style="' . $width . '" placeholder="请输入' . $fieldinfo['name'] . '信息">';
 }

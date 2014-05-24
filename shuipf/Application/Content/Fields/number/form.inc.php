@@ -10,7 +10,7 @@
 function number($field, $value, $fieldinfo) {
     $setting = unserialize($fieldinfo['setting']);
     $size = $setting['size']?"style=\"width:{$setting['size']}px;\"":"";
-    if (empty($value)) {
+    if ($value == '') {
         $value = $setting['defaultvalue'];
     }
     //错误提示
@@ -21,5 +21,5 @@ function number($field, $value, $fieldinfo) {
         //验证不通过提示
         $this->formValidateMessages['info[' . $field . ']'] = array("required" => $errortips ? $errortips : $fieldinfo['name'] . "不能为空！");
     }
-    return "<input type='text' name='info[$field]' id='$field' value='$value' class='input' {$size} {$fieldinfo['formattribute']} {$fieldinfo['css']} />";
+    return "<input type='text' name='info[{$field}]' id='{$field}' value='{$value}' class='input' {$size} {$fieldinfo['formattribute']} {$fieldinfo['css']} />";
 }

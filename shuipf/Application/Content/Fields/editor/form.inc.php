@@ -16,18 +16,21 @@ function editor($field, $value, $fieldinfo) {
     if (empty($setting['height'])) {
         $height = 300;
     }
-
     if (defined('IN_ADMIN') && IN_ADMIN) {
         //是否允许上传
         $allowupload = 1;
         //编辑器类型，简洁型还是标准型
         $toolbar = $setting['toolbar'];
     } else {
-        $Member_group = F("Member_group");
         //获取当前登陆会员组id
         $groupid = SiteCookie('groupid');
-        //是否允许上传
-        $allowupload = $Member_group[$groupid]['allowattachment'] ? 1 : 0;
+        if (isModuleInstall('Member')) {
+            $Member_group = cache("Member_group");
+            //是否允许上传
+            $allowupload = $Member_group[$groupid]['allowattachment'] ? 1 : 0;
+        } else {
+            $allowupload = 0;
+        }
         //编辑器类型，简洁型还是标准型
         $toolbar = $setting['mbtoolbar'] ? $setting['mbtoolbar'] : "basic";
     }
@@ -36,12 +39,12 @@ function editor($field, $value, $fieldinfo) {
     if (empty($value)) {
         $value = $setting['defaultvalue'] ? $setting['defaultvalue'] : '<p></p>';
     }
-    if ($setting['minlength'] || $fieldinfo['pattern']){
+    if ($setting['minlength'] || $fieldinfo['pattern']) {
         $allow_empty = '';
     }
     //模块
-    $module = ( in_array(GROUP_NAME, array("Contents", "contents")) ) ? 'Contents' : GROUP_NAME;
-    $form = Form::editor($field, $toolbar, $module, $this->catid, $allowupload, $allowupload, '', 10, $height, $disabled_page);
+    $module = MODULE_NAME;
+    $form = \Form::editor($field, $toolbar, $module, $this->catid, $allowupload, $allowupload, '', 10, $height, $disabled_page);
     //javascript
     $this->formJavascript .= "
             //编辑器

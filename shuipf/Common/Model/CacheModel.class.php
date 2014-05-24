@@ -77,7 +77,7 @@ class CacheModel extends Model {
         $cache = S('cache_list');
         if (empty($cache) || $isup) {
             //取得现在全部需要更新缓存的队列
-            $cache = $this->order(array('id' => 'DESC'))->select();
+            $cache = $this->order(array('id' => 'ASC'))->select();
             S('cache_list', $cache, 600);
         }
         return $cache;

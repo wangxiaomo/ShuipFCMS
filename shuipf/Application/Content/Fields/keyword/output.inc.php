@@ -7,8 +7,8 @@
  * @return array 返回数组
  */
 function keyword($field, $value) {
-    if (empty($value)) {
-        return "";
+    if ($value == '') {
+        return '';
     }
     //对关键字进行处理，返回数组
     if (strpos($value, ',') === false) {

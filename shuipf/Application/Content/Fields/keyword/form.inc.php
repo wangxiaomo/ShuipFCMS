@@ -17,5 +17,5 @@ function keyword($field, $value, $fieldinfo) {
         //验证不通过提示
         $this->formValidateMessages['info[' . $field . ']'] = array("required" => $errortips ? $errortips : "请输入关键字！");
     }
-    return "<input type='text' name='info[$field]' id='$field' value='$value' style='width:280px' {$fieldinfo['formattribute']} {$fieldinfo['css']} class='input' placeholder='请输入关键字'>";
+    return "<input type='text' name='info[{$field}]' id='{$field}' value='".\Input::forTag($value)."' style='width:280px' {$fieldinfo['formattribute']} {$fieldinfo['css']} class='input' placeholder='请输入关键字'>";
 }

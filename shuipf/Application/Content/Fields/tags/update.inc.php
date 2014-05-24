@@ -12,7 +12,7 @@ function tags($field, $value) {
             return false;
         } else if (ACTION_NAME == 'edit' && $this->data['status'] != 99) {
             //如果是编辑状态，且未审核，直接清除已有的tags
-            D("Tags")->deleteAll($this->data['id'], $this->data['catid'], $this->modelid);
+            D('Content/Tags')->deleteAll($this->data['id'], $this->data['catid'], $this->modelid);
             return false;
         }
         if (strpos($value, ',') === false) {
@@ -23,18 +23,18 @@ function tags($field, $value) {
         $keyword = array_unique($keyword);
         //新增
         if (ACTION_NAME == 'add') {
-            D("Tags")->addTag($keyword, $this->id, $this->catid, $this->modelid, array(
+            D('Content/Tags')->addTag($keyword, $this->id, $this->catid, $this->modelid, array(
                 "url" => $this->data['url'],
                 "title" => $this->data['title'],
             ));
         } else {
-            D("Tags")->updata($keyword, $this->id, $this->catid, $this->modelid, array(
+            D('Content/Tags')->updata($keyword, $this->id, $this->catid, $this->modelid, array(
                 "url" => $this->data['url'],
                 "title" => $this->data['title'],
             ));
         }
     } else {
         //删除全部tags信息
-        D("Tags")->deleteAll($this->id, $this->catid, $this->modelid);
+        D('Content/Tags')->deleteAll($this->id, $this->catid, $this->modelid);
     }
 }

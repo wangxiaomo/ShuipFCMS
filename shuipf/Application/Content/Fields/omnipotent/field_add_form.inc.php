@@ -28,7 +28,7 @@
                 <option value="double">数值双精度型(DOUBLE)</option>
                 <option value="date">日期型(DATE)</option>
                 <option value="datetime">日期时间型(DATETIME)</option>
-            </select> <span id="minnumber" style="display:none"><input type="radio" name="setting[minnumber]" value="1" checked/> <font color='red'>正整数</font> <input type="radio" name="setting[minnumber]" value="-1" /> 整数</span>
+            </select> <span id="minnumber">数字类型：<input type="radio" name="setting[minnumber]" value="1" checked/> <font color='red'>正整数</font> <input type="radio" name="setting[minnumber]" value="-1" /> 整数</span>
         </td>
     </tr>
 </table>

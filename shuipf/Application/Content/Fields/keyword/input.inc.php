@@ -7,8 +7,8 @@
  * @return int
  */
 function keyword($field, $value) {
-    if (empty($value)) {
+    if ($value == '') {
         return $value;
     }
-    return htmlspecialchars($value);
+    return \Input::forTag($value);
 }

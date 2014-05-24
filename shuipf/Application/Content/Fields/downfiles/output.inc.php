@@ -15,7 +15,7 @@ function downfiles($field, $value) {
             if ($_v['fileurl']) {
                 if ($setting['downloadlink']) {
                     //链接到跳转页面
-                    $fileurl = U('Contents/Download/index', array('catid' => $this->catid, 'id' => $this->id, 'f' => $field, 'k' => $_k));
+                    $fileurl = U('Content/Download/index', array('catid' => $this->catid, 'id' => $this->id, 'f' => $field, 'k' => $_k));
                 } else {
                     $fileurl = $_v['fileurl'];
                 }

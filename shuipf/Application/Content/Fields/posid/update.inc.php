@@ -9,7 +9,7 @@ function posid($field, $value) {
     if (!empty($value) && is_array($value)) {
         //新增
         if (ACTION_NAME == 'add') {
-            $position_data_db = D('Position');
+            $position_data_db = D('Content/Position');
             $textcontent = array();
             foreach ($this->fields AS $_key => $_value) {
                 //判断字段是否入库到推荐位字段
@@ -32,7 +32,7 @@ function posid($field, $value) {
         } else {
             $posids = array();
             $catid = $this->data['catid'];
-            $position_data_db = D('Position');
+            $position_data_db = D('Content/Position');
             foreach ($value as $r) {
                 if ($r != '-1')
                     $posids[] = $r;

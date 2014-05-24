@@ -9,7 +9,7 @@
 function downfiles($field, $value) {
     $files = $_POST[$field . '_fileurl'];
     $files_alt = $_POST[$field . '_filename'];
-    if (defined("IN_ADMIN") && IN_ADMIN) {
+    if (defined("IN_ADMIN") && IN_ADMIN && isModuleInstall('Member')) {
         $groupid = $_POST[$field . '_groupid'];
         $point = $_POST[$field . '_point'];
     } else {

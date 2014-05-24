@@ -43,5 +43,5 @@ function datetime($field, $value, $fieldinfo) {
         $isdatetime = 1;
         $timesystem = 0;
     }
-    return Form::date("info[{$field}]", $value, $isdatetime, 1, 'true', $timesystem);
+    return \Form::date("info[{$field}]", $value, $isdatetime, 1, 'true', $timesystem);
 }

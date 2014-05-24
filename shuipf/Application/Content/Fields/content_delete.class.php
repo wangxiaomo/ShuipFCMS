@@ -62,7 +62,8 @@ class content_delete {
         $this->id = (int) $data['id'];
         $this->catid = (int) $data['catid'];
         $info = array();
-        foreach ($this->fields as $field => $fieldInfo) {
+        foreach ($this->fields as $fieldInfo) {
+            $field = $fieldInfo['field'];
             //字段类型
             $func = $fieldInfo['formtype'];
             if (!$func || !isset($this->data[$field])) {

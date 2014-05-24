@@ -1,7 +1,7 @@
 <table cellpadding="2" cellspacing="1" width="98%">
     <tr> 
         <td width="120">文本框长度</td>
-        <td><input type="text" name="setting[width]" value="<?php echo $setting['width']; ?>" size="10" class="input">px</td>
+        <td><input type="text" name="setting[width]" value="<?php echo $setting['width']; ?>" size="10" class="input"> <span>px</span></td>
     </tr>
     <tr> 
         <td>默认值</td>
@@ -9,7 +9,7 @@
     </tr>
     <tr> 
         <td>允许上传的类型</td>
-        <td><input type="text" name="setting[upload_allowext]" value="<?php echo $setting['upload_allowext']; ?>" size="40" class="input">多个用“|”隔开</td>
+        <td><input type="text" name="setting[upload_allowext]" value="<?php echo $setting['upload_allowext']; ?>" size="40" class="input"> <span>多个用“|”隔开</span></td>
     </tr>
     <tr> 
         <td>是否在图片上添加水印</td>

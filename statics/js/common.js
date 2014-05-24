@@ -2,13 +2,8 @@
     //全局ajax处理
     $.ajaxSetup({
         complete: function (jqXHR) {
-            //登录失效处理
-            if (jqXHR.responseText.state === 'logout') {
-                location.href = GV.URL.LOGIN;
-            }
         },
         data: {
-            __hash__: GV.TOKEN
         },
         error: function (jqXHR, textStatus, errorThrown) {
             //请求失败处理

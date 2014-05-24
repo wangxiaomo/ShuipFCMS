@@ -8,7 +8,7 @@
  * @return type
  */
 function omnipotent($field, $value, $fieldinfo) {
-    $view = Think::instance('View');
+    $view = \Think\Think::instance('\Think\View');
     $setting = unserialize($fieldinfo['setting']);
     //特殊处理
     if (in_array($setting['fieldtype'], array('text', 'mediumtext', 'longtext'))) {

@@ -7,5 +7,5 @@
  * @return type
  */
 function tags($field, $value) {
-    return $value;
+    return trim($value);
 }

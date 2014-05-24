@@ -21,9 +21,8 @@ function downfiles($field, $value, $fieldinfo) {
     $list_str = '';
     if ($value) {
         $value = unserialize(html_entity_decode($value, ENT_QUOTES));
-        if (defined("IN_ADMIN") && IN_ADMIN) {
-            import("Form");
-            $Member_group = F("Member_group");
+        if (defined("IN_ADMIN") && IN_ADMIN && isModuleInstall('Member')) {
+            $Member_group = cache("Member_group");
             foreach ($Member_group as $v) {
                 if (in_array($v['groupid'], array("1", "7", "8"))) {
                     continue;
@@ -33,8 +32,8 @@ function downfiles($field, $value, $fieldinfo) {
         }
         if (is_array($value)) {
             foreach ($value as $_k => $_v) {
-                if (defined("IN_ADMIN") && IN_ADMIN) {
-                    $list_str .= "<div id='multifile{$_k}'><input type='text' name='{$field}_fileurl[]' value='{$_v['fileurl']}' style='width:310px;' class='input'> <input type='text' name='{$field}_filename[]' value='{$_v['filename']}' style='width:160px;' class='input'> 权限：" . Form::select($group, $_v['groupid'], 'name="' . $field . '_groupid[]"', '游客') . " 点数：<input type='text' name='{$field}_point[]' value='" . $_v['point'] . "' style='width:60px;' class='input'> <a href=\"javascript:remove_div('multifile{$_k}')\">移除</a></div>";
+                if (defined("IN_ADMIN") && IN_ADMIN && isModuleInstall('Member')) {
+                    $list_str .= "<div id='multifile{$_k}'><input type='text' name='{$field}_fileurl[]' value='{$_v['fileurl']}' style='width:310px;' class='input'> <input type='text' name='{$field}_filename[]' value='{$_v['filename']}' style='width:160px;' class='input'> 权限：" . \Form::select($group, $_v['groupid'], 'name="' . $field . '_groupid[]"', '游客') . " 点数：<input type='text' name='{$field}_point[]' value='" . $_v['point'] . "' style='width:60px;' class='input'> <a href=\"javascript:remove_div('multifile{$_k}')\">移除</a></div>";
                 } else {
                     $list_str .= "<div id='multifile{$_k}'><input type='text' name='{$field}_fileurl[]' value='{$_v['fileurl']}' style='width:310px;' class='input'> <input type='text' name='{$field}_filename[]' value='{$_v['filename']}' style='width:160px;' class='input'> <a href=\"javascript:remove_div('multifile{$_k}')\">移除</a></div>";
                 }
@@ -51,13 +50,12 @@ function downfiles($field, $value, $fieldinfo) {
 		';
 
     //模块
-    $module = ( in_array(GROUP_NAME, array("Contents", "contents")) ) ? 'Contents' : GROUP_NAME;
+    $module = MODULE_NAME;
     //生成上传附件验证
     $authkey = upload_key("{$setting['upload_number']},{$setting['upload_allowext']},{$setting['isselectimage']}");
     //后台允许权限设置
-    if (defined("IN_ADMIN") && IN_ADMIN) {
-        import("Form");
-        $Member_group = F("Member_group");
+    if (defined("IN_ADMIN") && IN_ADMIN && isModuleInstall('Member')) {
+        $Member_group = cache("Member_group");
         foreach ($Member_group as $v) {
             if (in_array($v['groupid'], array("1", "7", "8"))) {
                 continue;
@@ -72,7 +70,7 @@ function change_multifile_admin(uploadid, returnid) {
     var str = \'\';
     var contents = in_content.split(\'|\');
     var filenames = in_filename.split(\'|\');
-    var group = \'权限：' . Form::select($group, $id, 'name="\' + returnid + \'_groupid[]"', '游客') . '\';
+    var group = \'权限：' . \Form::select($group, $id, 'name="\' + returnid + \'_groupid[]"', '游客') . '\';
     $(\'#\' + returnid + \'_tips\').css(\'display\', \'none\');
     if (contents == \'\') return true;
     $.each(contents, function (i, n) {
@@ -85,7 +83,7 @@ function change_multifile_admin(uploadid, returnid) {
 
 function add_multifile_admin(returnid) {
     var ids = parseInt(Math.random() * 10000);
-    var group = \'权限：' . Form::select($group, $id, 'name="\' + returnid + \'_groupid[]"', '游客') . '\';
+    var group = \'权限：' . \Form::select($group, $id, 'name="\' + returnid + \'_groupid[]"', '游客') . '\';
     var str = "<li id=\'multifile" + ids + "\'><input type=\'text\' name=\'" + returnid + "_fileurl[]\' value=\'\' style=\'width:310px;\' class=\'input\'> <input type=\'text\' name=\'" + returnid + "_filename[]\' value=\'附件说明\' style=\'width:160px;\' class=\'input\'> "+group+"  点数：<input type=\'text\' name=\'" + returnid + "_point[]\' value=\'0\' style=\'width:60px;\' class=\'input\'>  <a href=\"javascript:remove_div(\'multifile" + ids + "\')\">移除</a> </li>";
     $(\'#\' + returnid).append(str);
 };</script>';

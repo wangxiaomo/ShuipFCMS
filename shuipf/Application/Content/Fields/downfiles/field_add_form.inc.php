@@ -13,15 +13,13 @@
     </tr>
     <tr> 
         <td>下载统计字段</td>
-        <td><input type="text" name="setting[statistics]" value="" class="input"> 下载次数统计字段只能在主表！</td>
+        <td><input type="text" name="setting[statistics]" value="" class="input"> <span>下载次数统计字段只能在主表！</span></td>
     </tr>
     <tr>
         <td>文件链接方式</td>
         <td>
-            <input name="setting[downloadlink]" value="0" type="radio">
-            链接到真实软件地址 （无法进行验证和统计）
-            <input name="setting[downloadlink]" value="1" checked="checked" type="radio">
-            链接到下载跳转页面
+            <label><input name="setting[downloadlink]" value="0" type="radio"> 链接到真实软件地址 （无法进行验证和统计）</label>
+            <label><input name="setting[downloadlink]" value="1" checked="checked" type="radio"> 链接到下载跳转页面</label>
         </td>
     </tr>		
 </table>

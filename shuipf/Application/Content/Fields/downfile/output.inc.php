@@ -9,7 +9,7 @@
 function downfile($field, $value) {
     $setting = unserialize($this->fields[$field]['setting']);
     if ($setting['downloadlink']) {
-        return U('Contents/Download/index', array('catid' => $this->catid, 'id' => $this->id, 'f' => $field));
+        return U('Content/Download/index', array('catid' => $this->catid, 'id' => $this->id, 'f' => $field));
     } else {
         return $value;
     }

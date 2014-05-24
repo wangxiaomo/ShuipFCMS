@@ -53,7 +53,7 @@ function image($field, $value, $fieldinfo) {
 </script>";
     }
     //模块
-    $module = ( in_array(GROUP_NAME, array("Contents", "contents")) ) ? 'Contents' : GROUP_NAME;
+    $module = MODULE_NAME;
     //生成上传附件验证
     $authkey = upload_key("1,{$setting['upload_allowext']},{$setting['isselectimage']},{$setting['images_width']},{$setting['images_height']},{$setting['watermark']}");
     //图片模式

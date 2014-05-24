@@ -63,7 +63,8 @@ class content_output {
         $this->catid = $data['catid'];
         $this->id = $data['id'];
         $info = array();
-        foreach ($this->fields as $field => $fieldInfo) {
+        foreach ($this->fields as $fieldInfo) {
+            $field = $fieldInfo['field'];
             if (!isset($this->data[$field])) {
                 continue;
             }

@@ -30,6 +30,6 @@ function pages($field, $value, $fieldinfo) {
                 <option value=\"0\">不分页</option>
                 <option value=\"2\" selected>手动分页</option>
             </select>
-			<span id=\"paginationtype1\" style=\"display:none\"><input name=\"info[{$field}][maxcharperpage]\" type=\"text\" id=\"maxcharperpage\" value=\"10000\" size=\"8\" maxlength=\"8\" class='input'>字符数（包含HTML标记）</span>";
+	<span id=\"paginationtype1\" style=\"display:none\"><input name=\"info[{$field}][maxcharperpage]\" type=\"text\" id=\"maxcharperpage\" value=\"10000\" size=\"8\" maxlength=\"8\" class='input'>字符数（包含HTML标记）</span>";
     }
 }

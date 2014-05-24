@@ -76,7 +76,7 @@ if(is_array($forminfos['senior'])) {
           <td><b><?php echo $info['name']?></b><?php if($info['star']){ ?><font color="red">*</font><?php } ?></td>
         </tr>
         <tr>
-          <td><?php echo $info['form'];?><?php echo $info['tips'];?></td>
+            <td><?php echo $info['form'];?><?php echo $info['tips'];?></td>
         </tr>
 <?php
    }
@@ -120,7 +120,7 @@ if(is_array($forminfos['base'])) {
               <th width="80">
                 <?php echo $info['name'];?> 
                </th>
-              <td><?php if($info['star']){ ?><span class="must_red">*</span><?php } ?><?php echo $info['form'];?> <?php echo $info['tips'];?></td>
+               <td><?php if($info['star']){ ?><span class="must_red">*</span><?php } ?><?php echo $info['form'];?> <span><?php echo $info['tips'];?></span></td>
             </tr>
             <?php
 } }
