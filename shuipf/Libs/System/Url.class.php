@@ -88,9 +88,11 @@ class Url {
      * )
      */
     public function show($data, $page = 1) {
+        static $_show = array();
         if (!$data['inputtime'] || !$data['id'] || !$data['catid']) {
             return false;
         }
+        $guid = to_guid_string($data);
         //栏目id
         $catid = (int) $data['catid'];
         //信息id
@@ -109,75 +111,76 @@ class Url {
         $category = getCategory($catid);
         //扩展配置
         $setting = $category['setting'];
-        //是否生成内容静态
-        $content_ishtml = $setting['content_ishtml'];
-        //内容规则ID
-        $show_ruleid = $setting['show_ruleid'];
-        //取得URL规则
-        $urlrule = $this->urlrules[$show_ruleid]['urlrule'];
-        if (empty($urlrule)) {
-            return false;
-        }
-
-        //使用自定义函数生成规则
-        if (substr($urlrule, 0, 1) == '=') {
-            load("@.urlrule");
-            $fun = str_replace(substr($urlrule, 0, 1), "", $urlrule);
-            $urlrule = call_user_func_array(trim($fun), array(
-                "data" => $data,
-                "page" => $page,
-            ));
-        }
-
-        $replace_l = array(); //需要替换的标签
-        $replace_r = array(); //替换的内容
-        //初始
-        //父栏目目录
-        if (strstr($urlrule, '{$categorydir}')) {
-            //获取当前栏目父栏目路径
-            $category_dir = $this->get_categorydir($catid);
-            $replace_l[] = '{$categorydir}';
-            $replace_r[] = $category_dir;
-        }
-        //栏目目录
-        if (strstr($urlrule, '{$catdir}')) {
-            $replace_l[] = '{$catdir}';
-            $replace_r[] = $category['catdir'];
-        }
-        //栏目id
-        if (strstr($urlrule, '{$catid}')) {
-            $replace_l[] = '{$catid}';
-            $replace_r[] = $catid;
-        }
-        //年份
-        if (strstr($urlrule, '{$year}')) {
-            $replace_l[] = '{$year}';
-            $replace_r[] = date('Y', $time);
-        }
-        //月份
-        if (strstr($urlrule, '{$month}')) {
-            $replace_l[] = '{$month}';
-            $replace_r[] = date('m', $time);
-        }
-        //日期
-        if (strstr($urlrule, '{$day}')) {
-            $replace_l[] = '{$day}';
-            $replace_r[] = date('d', $time);
-        }
-        //文件名，如果有自定义文件名则使用自定义文件名，否则默认使用当前内容ID
-        if ($content_ishtml && $prefix) {
-            $fileName = trim($prefix);
+        if (!isset($_show[$guid])) {
+            //是否生成内容静态
+            $content_ishtml = $setting['content_ishtml'];
+            //内容规则ID
+            $show_ruleid = $setting['show_ruleid'];
+            //取得URL规则
+            $urlrule = $this->urlrules[$show_ruleid]['urlrule'];
+            if (empty($urlrule)) {
+                return false;
+            }
+            //使用自定义函数生成规则
+            if (substr($urlrule, 0, 1) == '=') {
+                load("@.urlrule");
+                $fun = str_replace(substr($urlrule, 0, 1), "", $urlrule);
+                $urlrule = call_user_func_array(trim($fun), array(
+                    "data" => $data,
+                    "page" => $page,
+                ));
+            }
+            $replace_l = array(); //需要替换的标签
+            $replace_r = array(); //替换的内容
+            //初始
+            //父栏目目录
+            if (strstr($urlrule, '{$categorydir}')) {
+                //获取当前栏目父栏目路径
+                $category_dir = $this->get_categorydir($catid);
+                $replace_l[] = '{$categorydir}';
+                $replace_r[] = $category_dir;
+            }
+            //栏目目录
+            if (strstr($urlrule, '{$catdir}')) {
+                $replace_l[] = '{$catdir}';
+                $replace_r[] = $category['catdir'];
+            }
+            //栏目id
+            if (strstr($urlrule, '{$catid}')) {
+                $replace_l[] = '{$catid}';
+                $replace_r[] = $catid;
+            }
+            //年份
+            if (strstr($urlrule, '{$year}')) {
+                $replace_l[] = '{$year}';
+                $replace_r[] = date('Y', $time);
+            }
+            //月份
+            if (strstr($urlrule, '{$month}')) {
+                $replace_l[] = '{$month}';
+                $replace_r[] = date('m', $time);
+            }
+            //日期
+            if (strstr($urlrule, '{$day}')) {
+                $replace_l[] = '{$day}';
+                $replace_r[] = date('d', $time);
+            }
+            //文件名，如果有自定义文件名则使用自定义文件名，否则默认使用当前内容ID
+            if ($content_ishtml && $prefix) {
+                $fileName = trim($prefix);
+            } else {
+                $fileName = $id;
+            }
+            $replace_l[] = '{$id}';
+            $replace_r[] = $fileName;
+            //标签替换
+            $urlrule = str_replace($replace_l, $replace_r, $urlrule);
+            $_show[$guid] = $urlrule;
         } else {
-            $fileName = $id;
+            $urlrule = $_show[$guid];
         }
-        $replace_l[] = '{$id}';
-        $replace_r[] = $fileName;
-
-        //标签替换
-        $urlrule = str_replace($replace_l, $replace_r, $urlrule);
-
         //生成静态处理
-        if ($content_ishtml) {
+        if ($setting['content_ishtml']) {
             //所有父ID
             $parentids = array();
             if ($category['arrparentid']) {
@@ -201,7 +204,6 @@ class Url {
                 }
             }
         }
-
         //栏目绑定了域名，且需要生成静态
         if ($content_ishtml && $domain) {
             //检查是否保护绑定域名目录
@@ -215,13 +217,11 @@ class Url {
             }
             $urlrule = str_replace(array($domain_dir, '\\'), array($domain, '/'), $urlrule);
         }
-
         $urlrule = explode("|", $urlrule);
         $url = array(
             "url" => ($page > 1 ? $urlrule[1] : $urlrule[0]),
             "path" => "",
         );
-
         //用于分页使用
         $url['page'] = array(
             "index" => $urlrule[0],
@@ -274,50 +274,57 @@ class Url {
      *  )
      */
     public function category_url($catid, $page = 1, $category_ruleid = false) {
-        //网站配置
-        $config = cache("Config");
         //栏目数据
         $category = getCategory($catid);
+        if(empty($category)){
+            return false;
+        }
         //外部链接直接返回外部地址
-        if ($category['type'] == 2)
+        if ($category['type'] == 2) {
             return $category['url'];
-        //页码
-        $page = max(intval($page), 1);
+        }
         //栏目扩展配置信息
         $setting = $category['setting'];
-        //栏目URL生成规则ID
-        $category_ruleid = $category_ruleid ? $category_ruleid : (int) $setting['category_ruleid'];
-        //取得规则
-        $urlrule = $this->urlrules[$category_ruleid]['urlrule'];
-
-        //使用自定义函数生成规则
-        if (substr($urlrule, 0, 1) == '=') {
-            load("@.urlrule");
-            $fun = str_replace(substr($urlrule, 0, 1), "", $urlrule);
-            $urlrule = call_user_func_array(trim($fun), array(
-                "catid" => $catid,
-                "page" => $page,
-            ));
+        //网站配置
+        $config = cache("Config");
+        //页码
+        $page = max(intval($page), 1);
+        static $_category_url = array();
+        if (!isset($_category_url[$catid])) {
+            //栏目URL生成规则ID
+            $category_ruleid = $category_ruleid ? $category_ruleid : (int) $setting['category_ruleid'];
+            //取得规则
+            $urlrule = $this->urlrules[$category_ruleid]['urlrule'];
+            //使用自定义函数生成规则
+            if (substr($urlrule, 0, 1) == '=') {
+                load("@.urlrule");
+                $fun = str_replace(substr($urlrule, 0, 1), "", $urlrule);
+                $urlrule = call_user_func_array(trim($fun), array(
+                    "catid" => $catid,
+                    "page" => $page,
+                ));
+            }
+            $replace_l = array(); //需要替换的标签
+            $replace_r = array(); //替换的内容
+            //初始
+            if (strstr($urlrule, '{$categorydir}')) {
+                //获取当前栏目父栏目路径
+                $category_dir = $this->get_categorydir($catid);
+                $replace_l[] = '{$categorydir}';
+                $replace_r[] = $category_dir;
+            }
+            if (strstr($urlrule, '{$catdir}')) {
+                $replace_l[] = '{$catdir}';
+                $replace_r[] = $category['catdir'];
+            }
+            $replace_l[] = '{$catid}';
+            $replace_r[] = $catid;
+            //标签替换
+            $urlrule = str_replace($replace_l, $replace_r, $urlrule);
+            $_category_url[$catid] = $urlrule;
+        } else {
+            $urlrule = $_category_url[$catid];
         }
-
-        $replace_l = array(); //需要替换的标签
-        $replace_r = array(); //替换的内容
-        //初始
-        if (strstr($urlrule, '{$categorydir}')) {
-            //获取当前栏目父栏目路径
-            $category_dir = $this->get_categorydir($catid);
-            $replace_l[] = '{$categorydir}';
-            $replace_r[] = $category_dir;
-        }
-        if (strstr($urlrule, '{$catdir}')) {
-            $replace_l[] = '{$catdir}';
-            $replace_r[] = $category['catdir'];
-        }
-        $replace_l[] = '{$catid}';
-        $replace_r[] = $catid;
-        //标签替换
-        $urlrule = str_replace($replace_l, $replace_r, $urlrule);
-
         //检测是否要生成静态
         if ($setting['ishtml']) {
             //所有父ID
@@ -342,7 +349,6 @@ class Url {
                     $domain_dir = $this->get_categorydir($pid) . getCategory($pid, 'catdir') . '/';
                 }
             }
-
             //绑定域名
             if ($domain && $domain_dir) {
                 //检查是否保护绑定域名目录
@@ -357,7 +363,6 @@ class Url {
                 $urlrule = str_replace(array($domain_dir, '\\'), array($domain, '/'), $urlrule);
             }
         }
-
         $urlrule = explode("|", $urlrule);
         $url = array(
             "url" => ($page > 1 ? $urlrule[1] : $urlrule[0]),
@@ -409,8 +414,58 @@ class Url {
      * @param type $ruleid 规则ID
      * @return type
      */
-    public function tags($data, $page = 1, $ruleid = false) {
-        return array();
+    public function tags($data, $page = 1, $ruleid = 9) {
+        static $_tags = array();
+        $guid = to_guid_string($data);
+        //网站配置
+        $config = cache('Config');
+        if (!isset($_tags[$guid])) {
+            //字符串表示 tags
+            if (is_string($data)) {
+                $data = M('Tags')->where(array('tag' => $data))->find();
+            } else if (is_numeric($data)) {//tagsid
+                $data = M('Tags')->where(array('tagid' => $data))->find();
+            }
+            if (empty($data)) {
+                return false;
+            }
+            //url规则
+            $urlrule = $this->urlrules[$ruleid ? $ruleid : $config['tagurl']]['urlrule'];
+            $urlrule = $urlrule? : 'index.php?m=Tags&tag={$tag}|index.php?m=Tags&page={$page}&tag={$tag}';
+            $replace_l = array(); //需要替换的标签
+            $replace_r = array(); //替换的内容
+            if (strstr($urlrule, '{$tag}')) {
+                //获取当前栏目父栏目路径
+                $replace_l[] = '{$tag}';
+                $replace_r[] = $data['tag'];
+            }
+            if (strstr($urlrule, '{$tagid}')) {
+                //获取当前栏目父栏目路径
+                $replace_l[] = '{$tagid}';
+                $replace_r[] = $data['tagid'];
+            }
+            //标签替换
+            $_tags[$guid] = $urlrule = str_replace($replace_l, $replace_r, $urlrule);
+        } else {
+            $urlrule = $_tags[$guid];
+        }
+        $urlrule = explode('|', $urlrule);
+        $url = array(
+            'url' => ($page > 1 ? $urlrule[1] : $urlrule[0]),
+            'path' => '',
+        );
+        //用于分页使用
+        $url['page'] = array(
+            'index' => $urlrule[0],
+            'list' => $urlrule[1],
+        );
+        //加上域名
+        $url['url'] = $config['siteurl'] . $url['url'];
+        $url['page']['index'] = $config['siteurl'] . $url['page']['index'];
+        $url['page']['list'] = $config['siteurl'] . $url['page']['list'];
+        //替换分页号
+        $url['url'] = str_replace('{$page}', $page, $url["url"]);
+        return $url;
     }
 
     /**
