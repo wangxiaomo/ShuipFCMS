@@ -6,7 +6,7 @@
  * @param type $value 字段内容
  * @return int
  */
-function keyword($field, $value) {
+function number($field, $value) {
     $setting = unserialize($this->fields[$field]['setting']);
     //小数位
     $decimaldigits = $setting['decimaldigits'];

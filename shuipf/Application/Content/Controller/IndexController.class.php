@@ -15,6 +15,7 @@ use Common\Controller\Base;
 class IndexController extends Base {
 
     public function index() {
+        print_r(service('Attachment'));
         echo '网站首页';
     }
 

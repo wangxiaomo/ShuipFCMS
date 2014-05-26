@@ -198,15 +198,12 @@ class ContentController extends AdminBase {
                 if ($this->model[$this->modelid]['disabled'] == 1) {
                     $this->error("模型被禁用！");
                 }
-                //setting 配置
-                $setting = $category['setting'];
-                import('Content');
-                $Content = get_instance_of('Content');
-                $status = $Content->add($_POST['info']);
+                $status = \Libs\System\Content::getInstance()->add($_POST['info']);
                 if ($status) {
                     $this->success("添加成功！");
                 } else {
-                    $this->error($Content->getError());
+                    $error = \Libs\System\Content::getInstance()->getError();
+                    $this->error($error ? $error : '添加失败！');
                 }
             } else if ($category['type'] == 1) {//单页栏目
                 $db = D('Page');

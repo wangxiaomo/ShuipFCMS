@@ -46,12 +46,7 @@ body fieldset legend {
 </head>
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
-  <div class="nav">
-    <ul class="cc">
-      <li class="current"><a href="{:U('Content/classlist', array('catid'=>$catid)  )}">{$category.catname}列表</a></li>
-    </ul>
-  </div>
-  <form name="myform" id="myform" action="{:U("Contents/Content/add")}" method="post" class="J_ajaxForms" enctype="multipart/form-data">
+  <form name="myform" id="myform" action="{:U("add")}" method="post" class="J_ajaxForms" enctype="multipart/form-data">
   <div class="col-right">
     <div class="table_full">
       <table width="100%">
@@ -96,7 +91,7 @@ if(is_array($forminfos['senior'])) {
     </div>
   </div>
   <div class="col-auto">
-    <div class="h_a">文章内容</div>
+    <div class="h_a">信息发布</div>
     <div class="table_full">
       <table width="100%">
             <?php
@@ -138,7 +133,7 @@ if(is_array($forminfos['base'])) {
   <div class="btn_wrap" style="z-index:999;text-align: center;">
     <div class="btn_wrap_pd">
       <input type="hidden" name="ajax" value="1" />
-      <button class="btn btn_submit J_ajax_submit_btn"type="submit">提交</button>
+      <button class="btn btn_submit J_ajax_submit_btn1"type="submit">提交</button>
       <button class="btn J_ajax_close_btn"type="submit">关闭</button>
     </div>
   </div>

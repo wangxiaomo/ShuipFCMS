@@ -167,4 +167,6 @@ return array(
         'Common' => COMMON_PATH,
         'Libs' => PROJECT_PATH . 'Libs',
     ),
+    /* 上传路径配置 */
+    "UPLOADFILEPATH" => SITE_PATH . '/d/file/', //上传附件路径
 );

@@ -24,13 +24,13 @@ function tags($field, $value) {
         //新增
         if (ACTION_NAME == 'add') {
             D('Content/Tags')->addTag($keyword, $this->id, $this->catid, $this->modelid, array(
-                "url" => $this->data['url'],
-                "title" => $this->data['title'],
+                'url' => $this->data['url'],
+                'title' => $this->data['title'],
             ));
         } else {
             D('Content/Tags')->updata($keyword, $this->id, $this->catid, $this->modelid, array(
-                "url" => $this->data['url'],
-                "title" => $this->data['title'],
+                'url' => $this->data['url'],
+                'title' => $this->data['title'],
             ));
         }
     } else {

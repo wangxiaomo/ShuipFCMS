@@ -1,7 +1,7 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | ShuipFCMS 本地存储方案
+// | ShuipFCMS 远程FTP存储方案
 // +----------------------------------------------------------------------
 // | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
@@ -12,7 +12,10 @@ namespace Libs\Driver\Attachment;
 
 use Libs\Service\Attachment;
 
-class Local extends Attachment {
+class Ftp extends Attachment {
+
+    //操作句柄
+    protected $handlerLocal;
 
     /**
      * 架构函数
@@ -59,14 +62,68 @@ class Local extends Attachment {
         $this->options['savePath'] = D('Attachment/Attachment')->getFilePath($this->options['module'], $this->options['dateFormat'], $this->options['time']);
         //如果生成缩略图是否移除原图
         $this->options['thumbRemoveOrigin'] = false;
+        //FTP上传地址
+        $this->options['ftphost'] = $this->config['ftphost'];
+        //FTP端口
+        $this->options['ftpport'] = $this->config['ftpport'];
+        //FTP上传目录
+        $this->options['ftpuppat'] = $this->config['ftpuppat'];
+        //FTP用户名
+        $this->options['ftpuser'] = $this->config['ftpuser'];
+        //FTP密码
+        $this->options['ftppassword'] = $this->config['ftppassword'];
+        //是否开启被动模式
+        $this->options['ftppasv'] = $this->config['ftppasv'];
+        //是否启用SSL
+        $this->options['ftpssl'] = $this->config['ftpssl'];
+        //超时时间
+        $this->options['ftptimeout'] = $this->config['ftptimeout'];
+        //FTP上传后，是否删除本地文件
+        $this->options['isupftpdel'] = true;
 
-        $this->handler = new \UploadFile();
-        //设置上传类型
-        $this->handler->allowExts = $this->options['uploadallowext'];
-        //设置上传大小
-        $this->handler->maxSize = $this->options['uploadmaxsize'];
-        //设置本次上传目录，不存在时生成
-        $this->handler->savePath = $this->options['savePath'];
+        $this->handler = new \Ftp();
+        $ftpsta = $this->handler->connect($this->options['ftphost'], $this->options['ftpuser'], $this->options['ftppassword'], $this->options['ftpport'], $this->options['ftppasv'], $this->options['ftpssl'], $this->options['ftptimeout']);
+        if (false == $ftpsta) {
+            E('FTP连接失败！');
+        }
+    }
+
+    /**
+     * 把一个文件上传到FTP附件服务器上
+     * @param type $upfile 本地存放地址，需要上传的文件
+     * @param type $file FTP存放地址
+     * @return boolean
+     */
+    public function FTPuplode($upfile, $file) {
+        if (!$upfile) {
+            $this->error = '没有指定需要删除的文件！';
+            return false;
+        }
+        // 远程存放地址
+        $remote = str_replace(SITE_PATH, $this->options['ftpuppat'], $file);
+        $remote = str_replace('//', '/', $remote);
+        //FTP上传
+        if ($this->handler->put($remote, $upfile) == false) {
+            $this->error = '远程附件上传失败！' . $this->handler->get_error();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 删除文件夹
+     * @param type $dirname 文件夹地址
+     * @param type $enforce 是否强制删除
+     * @return boolean
+     */
+    public function FTPrmdir($dirname, $enforce = false) {
+        if (!$dirname) {
+            $this->error = '没有指定需要删除的文件夹！';
+            return false;
+        }
+        // 远程存放地址
+        $ftpDirName = str_replace(SITE_PATH, $this->options['ftpuppat'], $dirname);
+        return $this->handler->rmdir($ftpDirName, $enforce);
     }
 
     /**
@@ -75,32 +132,40 @@ class Local extends Attachment {
      * @return boolean|array
      */
     public function upload($Callback = false) {
+        $this->handlerLocal = new \UploadFile();
+        //设置上传类型
+        $this->handlerLocal->allowExts = $this->options['uploadallowext'];
+        //设置上传大小
+        $this->handlerLocal->maxSize = $this->options['uploadmaxsize'];
+        //设置本次上传目录，不存在时生成
+        $this->handlerLocal->savePath = $this->options['savePath'];
         //是否生成缩略图
         if ($this->options['thumb']) {
-            if ($this->options['thumbMaxWidth'] && $this->options['thumbMaxHeight']) {
+            if ($this->options['thumbMaxWidth'] && $this->options['thumbMaxWidth']) {
                 //开启生成缩略图
-                $this->handler->thumb = true;
+                $this->handlerLocal->thumb = true;
                 //如果生成缩图，且缩图扩展名为空，不允许设置删除原图
-                if ($this->handler->thumb && empty($this->handler->thumbPrefix)) {
-                    $this->handler->thumbRemoveOrigin = false;
+                if ($this->handlerLocal->thumb && empty($this->handlerLocal->thumbPrefix)) {
+                    $this->handlerLocal->thumbRemoveOrigin = false;
                 } else {
                     //是否移除原图
-                    $this->handler->thumbRemoveOrigin = $this->options['thumbRemoveOrigin'] ? true : false;
+                    $this->handlerLocal->thumbRemoveOrigin = $this->options['thumbRemoveOrigin'] ? true : false;
                 }
                 //设置缩略图最大宽度
-                $this->handler->thumbMaxWidth = $this->options['thumbMaxWidth'];
+                $this->handlerLocal->thumbMaxWidth = $this->options['thumbMaxWidth'];
                 //设置缩略图最大高度
-                $this->handler->thumbMaxHeight = $this->options['thumbMaxHeight'];
+                $this->handlerLocal->thumbMaxHeight = $this->options['thumbMaxHeight'];
             }
         }
-        if ($this->handler->upload($Callback)) {
+
+        if ($this->handlerLocal->upload($Callback)) {
             //获取上传后的文件信息
-            $info = $this->handler->getUploadFileInfo();
+            $info = $this->handlerLocal->getUploadFileInfo();
             //写入附件数据库信息
             foreach ($info as $i => $value) {
                 //如果需要生成缩图，但也要删除原图时，文件名换成生成后的缩图文件名
-                if ($this->handler->thumb && $this->handler->thumbRemoveOrigin) {
-                    $info[$i]['savename'] = $value['savename'] = $this->handler->thumbPrefix . $value['savename'];
+                if ($this->handlerLocal->thumb && $this->handlerLocal->thumbRemoveOrigin) {
+                    $info[$i]['savename'] = $value['savename'] = $this->handlerLocal->thumbPrefix . $value['savename'];
                 }
                 $aid = D('Attachment/Attachment')->fileInfoAdd($value, $this->options['module'], $this->options['catid'], $this->options['thumb'], $this->options['isadmin'], $this->options['userid'], $this->options['time']);
                 if ($aid) {
@@ -108,6 +173,24 @@ class Local extends Attachment {
                     $info[$i]['aid'] = $aid;
                     //附件完整访问地址
                     $info[$i]['url'] = $this->options['sitefileurl'] . str_replace(array($this->options['uploadfilepath'], '//', '\\'), array('', '/', '\/'), $filePath);
+                    //上传到FTP
+                    if ($this->FTPuplode($filePath, $filePath)) {
+                        //上传成功
+                        if ($this->options['isupftpdel']) {
+                            try {
+                                unlink($info[$i]['savepath'] . $info[$i]['savename']);
+                            } catch (Exception $exc) {
+                                
+                            }
+                        }
+                    } else {
+                        $this->error = $this->handler->get_error();
+                        try {
+                            unlink($info[$i]['savepath'] . $info[$i]['savename']);
+                        } catch (Exception $exc) {
+                            
+                        }
+                    }
                 } else {
                     //入库信息写入失败，删除上传好的文件！
                     try {
@@ -120,10 +203,25 @@ class Local extends Attachment {
             }
             return $info;
         } else {
-            $this->error = $this->handler->getErrorMsg();
+            $this->error = $this->handlerLocal->getErrorMsg();
             return false;
         }
         return true;
+    }
+
+    /**
+     * 把一个文件移动到另外一个位置
+     * @param type $originalFilesPath 原文件地址
+     * @param type $movingFilesPath 移动目标地址 SITE_PATH
+     * @return boolean
+     */
+    public function movingFiles($originalFilesPath, $movingFilesPath) {
+        if ($this->FTPuplode($originalFilesPath, $movingFilesPath)) {
+            unlink(SITE_PATH . $originalFilesPath);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -137,13 +235,14 @@ class Local extends Attachment {
             $info = D('Attachment')->where(array("aid" => $file))->find();
             if ($info) {
                 //附件地址
-                $filepath = $this->options['uploadfilepath'] . $info['filepath'];
+                $filepath = str_replace(SITE_PATH, '', $this->options['uploadfilepath'] . $info['filepath']);
                 if (!D('Attachment/Attachment')->where(array("aid" => $file))->delete()) {
                     $this->error = '无法删除数据库记录的附件信息！';
                     return false;
                 }
                 try {
-                    return unlink($filepath);
+                    //FTP删除
+                    return $this->handler->f_delete($this->options['ftpuppat'] . $filepath);
                 } catch (Exception $exc) {
                     $this->error = '文件[' . $filepath . ']删除失败！';
                     return false;
@@ -165,9 +264,12 @@ class Local extends Attachment {
             $authcode = md5($newFile);
             $info = D('Attachment/Attachment')->where(array("authcode" => $authcode))->find();
             if ($info) {
+                //附件地址
+                $filepath = str_replace(SITE_PATH, '', $this->options['uploadfilepath'] . $info['filepath']);
                 if (D('Attachment/Attachment')->where(array("authcode" => $authcode))->delete()) {
                     try {
-                        return unlink($this->options['uploadfilepath'] . $newFile);
+                        //FTP删除
+                        return $this->handler->f_delete($this->options['ftpuppat'] . $filepath);
                     } catch (Exception $exc) {
                         $this->error = '文件[' . $this->options['uploadfilepath'] . $newFile . ']删除失败！';
                         return false;
@@ -182,7 +284,8 @@ class Local extends Attachment {
                     if (strpos($newFile, 'http://')) {
                         return false;
                     }
-                    return unlink($this->options['uploadfilepath'] . $newFile);
+                    //FTP删除
+                    return $this->handler->f_delete($this->options['ftpuppat'] . $uploadfilepath . $newFile);
                 } catch (Exception $exc) {
                     $this->error = '文件[' . $this->options['uploadfilepath'] . $newFile . ']删除失败！';
                     return false;
@@ -190,6 +293,19 @@ class Local extends Attachment {
             }
         }
         return true;
+    }
+
+    /**
+     * 删除文件夹（包括下面的文件）
+     * @param type $file 如果为数字，表示根据aid删除，其他为文件路径
+     * @return boolean
+     */
+    public function delDir($dirPath) {
+        if ($this->FTPrmdir($dirPath, true)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -203,6 +319,7 @@ class Local extends Attachment {
         if (!function_exists('curl_init')) {
             return $value;
         }
+        $this->handlerLocal = new \UploadFile();
         //水印开关
         if (is_null($watermark)) {
             if ($this->config['watermarkenable']) {
@@ -242,7 +359,7 @@ class Local extends Attachment {
             //取得文件名
             $file_name = basename($file);
             //保存文件名
-            $filename = $this->handler->getSaveName(array(
+            $filename = $this->handlerLocal->getSaveName(array(
                 'name' => $file_name,
                 'extension' => $file_fileext,
                 'savename' => $this->options['savePath'],
@@ -278,6 +395,25 @@ class Local extends Attachment {
                 );
                 $info['url'] = $this->options['sitefileurl'] . str_replace($this->options['uploadfilepath'], '', $info['savepath'] . $info['savename']);
                 $aid = D('Attachment')->fileInfoAdd($info, $this->options['module'], $this->options['catid'], $this->options['thumb'], $this->options['isadmin'], $this->options['userid'], $this->options['time']);
+                //上传到FTP
+                $filePath = $info['savepath'] . $info['savename'];
+                if ($this->FTPuplode($filePath, $filePath)) {
+                    //上传成功
+                    if ($this->options['isupftpdel']) {
+                        try {
+                            unlink($info[$i]['savepath'] . $info[$i]['savename']);
+                        } catch (Exception $exc) {
+                            
+                        }
+                    }
+                } else {
+                    $this->error = $this->handler->get_error();
+                    try {
+                        unlink($info[$i]['savepath'] . $info[$i]['savename']);
+                    } catch (Exception $exc) {
+                        
+                    }
+                }
                 //设置标识
                 $this->upload_json($aid, $info['url'], $filename);
             }

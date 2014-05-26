@@ -9,10 +9,10 @@
       <thead>
         <tr>
           <td width="20">ID</td>
-          <td width="200"  align="left" >角色名称</td>
-          <td align="left" >角色描述</td>
-          <td width="50"  align="left" >状态</td>
-          <td width="300">管理操作</td>
+          <td>角色名称</td>
+          <td width="200" align='center'>角色描述</td>
+          <td width="50"   align='center'>状态</td>
+          <td width="200" align='center'>管理操作</td>
         </tr>
       </thead>
       <tbody>

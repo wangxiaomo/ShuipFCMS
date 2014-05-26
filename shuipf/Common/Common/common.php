@@ -353,6 +353,45 @@ function isMax($value, $length) {
 }
 
 /**
+ * 取得文件扩展
+ * @param type $filename 文件名
+ * @return type 后缀
+ */
+function fileext($filename) {
+    $pathinfo = pathinfo($filename);
+    return $pathinfo['extension'];
+}
+
+/**
+ * 对 javascript escape 解码
+ * @param type $str 
+ * @return type
+ */
+function unescape($str) {
+    $ret = '';
+    $len = strlen($str);
+    for ($i = 0; $i < $len; $i++) {
+        if ($str[$i] == '%' && $str[$i + 1] == 'u') {
+            $val = hexdec(substr($str, $i + 2, 4));
+            if ($val < 0x7f)
+                $ret .= chr($val);
+            else
+            if ($val < 0x800)
+                $ret .= chr(0xc0 | ($val >> 6)) . chr(0x80 | ($val & 0x3f));
+            else
+                $ret .= chr(0xe0 | ($val >> 12)) . chr(0x80 | (($val >> 6) & 0x3f)) . chr(0x80 | ($val & 0x3f));
+            $i += 5;
+        } else
+        if ($str[$i] == '%') {
+            $ret .= urldecode(substr($str, $i, 3));
+            $i += 2;
+        } else
+            $ret .= $str[$i];
+    }
+    return $ret;
+}
+
+/**
  * 字符截取
  * @param $string 需要截取的字符串
  * @param $length 长度
@@ -388,4 +427,161 @@ function str_cut($sourcestr, $length, $dot = '...') {
         $returnstr = $returnstr . $dot; //超过长度时在尾处加上省略号
     }
     return $returnstr;
+}
+
+/**
+ * flash上传初始化
+ * 初始化swfupload上传中需要的参数
+ * @param $module 模块名称
+ * @param $catid 栏目id
+ * @param $args 传递参数
+ * @param $userid 用户id
+ * @param $groupid 用户组id 默认游客
+ * @param $isadmin 是否为管理员模式
+ */
+function initupload($module, $catid, $args, $userid, $groupid = 8, $isadmin = false) {
+    if (empty($module)) {
+        return false;
+    }
+    //网站配置
+    $config = cache('Config');
+    //检查用户是否有上传权限
+    if ($isadmin) {
+        //后台用户
+        //上传大小
+        $file_size_limit = intval($config['uploadmaxsize']);
+        //上传处理地址
+        $upload_url = U('Attachment/Admin/swfupload');
+    } else {
+        //前台用户
+        $Member_group = cache("Member_group");
+        if ((int) $Member_group[$groupid]['allowattachment'] < 1 || empty($Member_group)) {
+            return false;
+        }
+        //上传大小
+        $file_size_limit = intval($config['qtuploadmaxsize']);
+        //上传处理地址
+        $upload_url = U('Attachment/Upload/swfupload');
+    }
+    //当前时间戳
+    $sess_id = time();
+    //生成验证md5
+    $swf_auth_key = md5(C("AUTHCODE") . $sess_id . ($isadmin ? 1 : 0));
+    //同时允许的上传个数, 允许上传的文件类型, 是否允许从已上传中选择, 图片高度, 图片宽度,是否添加水印1是
+    if (!is_array($args)) {
+        //如果不是数组传递，进行分割
+        $args = explode(',', $args);
+    }
+    //参数补充完整
+    if (empty($args[1])) {
+        //如果允许上传的文件类型为空，启用网站配置的 uploadallowext
+        if ($isadmin) {
+            $args[1] = $config['uploadallowext'];
+        } else {
+            $args[1] = $config['qtuploadallowext'];
+        }
+    }
+    //允许上传后缀处理
+    $arr_allowext = explode('|', $args[1]);
+    foreach ($arr_allowext as $k => $v) {
+        $v = '*.' . $v;
+        $array[$k] = $v;
+    }
+    $upload_allowext = implode(';', $array);
+
+    //上传个数
+    $file_upload_limit = (int) $args[0] ? (int) $args[0] : 8;
+    //swfupload flash 地址
+    $flash_url = CONFIG_SITEURL_MODEL . 'statics/js/swfupload/swfupload.swf';
+
+    $init = 'var swfu_' . $module . ' = \'\';
+    $(document).ready(function(){
+        Wind.use("swfupload",GV.DIMAUB+"statics/js/swfupload/handlers.js",function(){
+            swfu_' . $module . ' = new SWFUpload({
+                flash_url:"' . $flash_url . '?"+Math.random(),
+                upload_url:"' . $upload_url . '",
+                file_post_name : "Filedata",
+                post_params:{
+                    "sessid":"' . $sess_id . '",
+                    "module":"' . $module . '",
+                    "catid":"' . $catid . '",
+                    "uid":"' . $userid . '",
+                    "isadmin":"' . $isadmin . '",
+                    "groupid":"' . $groupid . '",
+                    "watermark_enable":"' . intval($args[5]) . '",
+                    "thumb_width":"' . intval($args[3]) . '",
+                    "thumb_height":"' . intval($args[4]) . '",
+                    "filetype_post":"' . $args[1] . '",
+                    "swf_auth_key":"' . $swf_auth_key . '"
+                  },
+               file_size_limit:"' . $file_size_limit . 'KB",
+               file_types:"' . $upload_allowext . '",
+               file_types_description:"All Files",
+               file_upload_limit:"' . $file_upload_limit . '",
+               custom_settings : {progressTarget : "fsUploadProgress",cancelButtonId : "btnCancel"},
+               button_image_url: "",
+               button_width: 75,
+               button_height: 28,
+               button_placeholder_id: "buttonPlaceHolder",
+               button_text_style: "",
+               button_text_top_padding: 3,
+               button_text_left_padding: 12,
+               button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+               button_cursor: SWFUpload.CURSOR.HAND,
+               file_dialog_start_handler : fileDialogStart,
+               file_queued_handler : fileQueued,
+               file_queue_error_handler:fileQueueError,
+               file_dialog_complete_handler:fileDialogComplete,
+               upload_progress_handler:uploadProgress,
+               upload_error_handler:uploadError,
+               upload_success_handler:uploadSuccess,
+               upload_complete_handler:uploadComplete
+        });
+    });
+})
+';
+    return $init;
+}
+
+/**
+ * 取得URL地址中域名部分
+ * @param type $url 
+ * @return \url 返回域名
+ */
+function urlDomain($url) {
+    if ($url) {
+        $pathinfo = parse_url($url);
+        return $pathinfo['scheme'] . "://" . $pathinfo['host'] . "/";
+    }
+    return false;
+}
+
+/**
+ * 获取当前页面完整URL地址
+ * @return type 地址
+ */
+function get_url() {
+    $sys_protocal = isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == '443' ? 'https://' : 'http://';
+    $php_self = $_SERVER['PHP_SELF'] ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
+    $path_info = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
+    $relate_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $php_self . (isset($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : $path_info);
+    return $sys_protocal . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '') . $relate_url;
+}
+
+/**
+ * 对URL中有中文的部分进行编码处理
+ * @param type $url 地址 http://www.abc3210.com/s?wd=博客
+ * @return type ur;编码后的地址 http://www.abc3210.com/s?wd=%E5%8D%9A%20%E5%AE%A2
+ */
+function cn_urlencode($url) {
+    $pregstr = "/[\x{4e00}-\x{9fa5}]+/u"; //UTF-8中文正则
+    if (preg_match_all($pregstr, $url, $matchArray)) {//匹配中文，返回数组
+        foreach ($matchArray[0] as $key => $val) {
+            $url = str_replace($val, urlencode($val), $url); //将转译替换中文
+        }
+        if (strpos($url, ' ')) {//若存在空格
+            $url = str_replace(' ', '%20', $url);
+        }
+    }
+    return $url;
 }

@@ -93,7 +93,7 @@ class content_update {
                                 $value = call_user_func($usfun, $this->modelid, $this->catid, $this->id, $value, $field, ACTION_NAME, $usparam);
                             } catch (Exception $exc) {
                                 //记录日志
-                                Log::write("模型id:" . $this->modelid . ",错误信息：调用自定义函数" . $usfun . "出现错误！");
+                                \Think\Log::record("模型id:" . $this->modelid . ",错误信息：调用自定义函数" . $usfun . "出现错误！");
                             }
                         }
                     }
@@ -113,7 +113,7 @@ class content_update {
                                     $value = call_user_func($usfun, $this->modelid, $this->catid, $this->id, $value, $field, ACTION_NAME, $usparam);
                                 } catch (Exception $exc) {
                                     //记录日志
-                                    Log::write("模型id:" . $this->modelid . ",错误信息：调用自定义函数" . $usfun . "出现错误！");
+                                    \Think\Log::record("模型id:" . $this->modelid . ",错误信息：调用自定义函数" . $usfun . "出现错误！");
                                 }
                             }
                         }

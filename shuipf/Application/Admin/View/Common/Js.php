@@ -2,7 +2,8 @@
 <script type="text/javascript">
 //全局变量
 var GV = {
-    JS_ROOT: "{$config_siteurl}statics/js/"
+    DIMAUB: "{$config_siteurl}",
+	JS_ROOT: "{$config_siteurl}statics/js/"
 };
 </script>
 <script src="{$config_siteurl}statics/js/wind.js"></script>

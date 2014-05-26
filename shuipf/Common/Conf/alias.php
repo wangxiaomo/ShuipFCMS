@@ -19,4 +19,7 @@ return array(
     'content_output' => RUNTIME_PATH . 'content_output.class.php',
     'content_update' => RUNTIME_PATH . 'content_update.class.php',
     'content_delete' => RUNTIME_PATH . 'content_delete.class.php',
+    'Image' => PROJECT_PATH . 'Libs/Util/Image.class.php',
+    'UploadFile' => PROJECT_PATH . 'Libs/Util/UploadFile.class.php',
+    'Ftp' => PROJECT_PATH . 'Libs/Util/Ftp.class.php',
 );

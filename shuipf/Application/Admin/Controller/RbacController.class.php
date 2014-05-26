@@ -30,11 +30,11 @@ class RbacController extends AdminBase {
             $roleList[$k]['operating'] = $operating;
         }
         $str = "<tr>
-          <td width='10%' align='center'>\$id</td>
-          <td width='15%'  >\$spacer\$name</td>
-          <td >\$remark</td>
-          <td width='5%'><font color='red'>√</font></td>
-          <td  class='text-c'>\$operating</td>
+          <td>\$id</td>
+          <td>\$spacer\$name</td>
+          <td>\$remark</td>
+          <td align='center'><font color='red'>√</font></td>
+          <td align='center'>\$operating</td>
         </tr>";
         $tree->init($roleList);
         $this->assign("role", $tree->get_tree(0, $str));

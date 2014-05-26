@@ -10,7 +10,7 @@
 
 namespace Common\Controller;
 
-abstract class ShuipFCMS extends \Think\Controller {
+class ShuipFCMS extends \Think\Controller {
 
     //缓存
     public static $Cache = array();
@@ -79,8 +79,7 @@ abstract class ShuipFCMS extends \Think\Controller {
      * @return type
      */
     protected function page($total, $size = 0, $number = 0, $config = array()) {
-        $Page = page($total, $size, $number, $config);
-        return $Page;
+        return page($total, $size, $number, $config);
     }
 
     /**

@@ -13,10 +13,6 @@ function textarea($field, $value, $fieldinfo) {
     if (empty($value)) {
         $value = $setting['defaultvalue'];
     }
-    $allow_empty = 'empty:true,';
-    if ($fieldinfo['minlength'] || $fieldinfo['pattern']) {
-        $allow_empty = '';
-    }
     //错误提示
     $errortips = $fieldinfo['errortips'];
     if ($fieldinfo['minlength']) {

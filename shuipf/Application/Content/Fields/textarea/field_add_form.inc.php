@@ -15,4 +15,12 @@
         <td>是否允许Html</td>
         <td><input type="radio" name="setting[enablehtml]" value="1"> 是 <input type="radio" name="setting[enablehtml]" value="0" checked> 否</td>
     </tr>
+    <td>字段类型</td>
+    <td>
+        <select name="setting[fieldtype]">
+            <option value="text">小型字符型(TEXT)</option>
+            <option value="mediumtext" selected>中型字符型(MEDIUMTEXT)</option>
+            <option value="longtext">大型字符型(LONGTEXT)</option>
+        </select> </span>
+    </td>
 </table>

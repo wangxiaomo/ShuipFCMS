@@ -25,7 +25,7 @@ function title($field, $value, $fieldinfo) {
         //验证不通过提示
         $this->formValidateMessages['info[' . $field . ']'] = array("required" => $errortips ? $errortips : "标题不能为空！");
     }
-    $str = '<input type="text" style="width:400px;' . ($style_color ? 'color:' . $style_color . ';' : '') . ($style_font_weight ? 'font-weight:' . $style_font_weight . ';' : '') . '" name="info[' . $field . ']" id="' . $field . '" value="' . $value . '" style="' . $style . '" class="input input_hd J_title_color" placeholder="请输入标题" onkeyup="strlen_verify(this, \'' . $field . '_len\', ' . $fieldinfo['maxlength'] . ')" />
+    $str = '<input type="text" style="width:400px;' . ($style_color ? 'color:' . $style_color . ';' : '') . ($style_font_weight ? 'font-weight:' . $style_font_weight . ';' : '') . '" name="info[' . $field . ']" id="' . $field . '" value="' . \Input::forTag($value) . '" style="' . $style . '" class="input input_hd J_title_color" placeholder="请输入标题" onkeyup="strlen_verify(this, \'' . $field . '_len\', ' . $fieldinfo['maxlength'] . ')" />
                 <input type="hidden" name="style_font_weight" id="style_font_weight" value="' . $style_font_weight . '">';
     //后台的情况下
     if (defined('IN_ADMIN') && IN_ADMIN)

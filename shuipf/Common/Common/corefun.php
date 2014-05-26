@@ -931,7 +931,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
             }
         }
         //U方法里的模块等于当前模块时，隐藏
-        if ($module == MODULE_NAME || $module == C('DEFAULT_MODULE')) {
+        if (/* $module == MODULE_NAME || */$module == C('DEFAULT_MODULE')) {
             $showModuleName = false;
         }
     }

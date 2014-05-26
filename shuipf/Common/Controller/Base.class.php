@@ -10,9 +10,11 @@
 
 namespace Common\Controller;
 
-//定义是后台
-defined('IN_ADMIN') or define('IN_ADMIN', false);
-
 class Base extends ShuipFCMS {
-    
+
+    //初始化
+    protected function _initialize() {
+        parent::_initialize();
+    }
+
 }
