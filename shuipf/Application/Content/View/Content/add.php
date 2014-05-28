@@ -71,7 +71,7 @@ if(is_array($forminfos['senior'])) {
           <td><b><?php echo $info['name']?></b><?php if($info['star']){ ?><font color="red">*</font><?php } ?></td>
         </tr>
         <tr>
-            <td><?php echo $info['form'];?><?php echo $info['tips'];?></td>
+            <td><?php echo $info['form'];?><span><?php echo $info['tips'];?></span></td>
         </tr>
 <?php
    }
@@ -120,12 +120,6 @@ if(is_array($forminfos['base'])) {
             <?php
 } }
 ?>
-        <!--<tr>
-          <th>标题</th>
-          <td><span class="must_red">*</span>
-            <input name="subject" type="text" class="input length_6" placeholder="请输入标题">
-            <span generated="true" class="tips_error">错误提示</span></td>
-        </tr>-->
         </tbody>
       </table>
     </div>
@@ -140,7 +134,7 @@ if(is_array($forminfos['base'])) {
   <input type="hidden" name="catid" value="{$catid}"/>
   </form>
 </div>
-<script type="text/javascript" src="{$config_siteurl}statics/js/common.js?v"></script>
+<script type="text/javascript" src="{$config_siteurl}statics/js/common.js"></script>
 <script type="text/javascript" src="{$config_siteurl}statics/js/content_addtop.js"></script>
 <script type="text/javascript"> 
 $(function () {

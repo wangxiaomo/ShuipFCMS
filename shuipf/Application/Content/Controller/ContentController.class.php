@@ -90,6 +90,9 @@ class ContentController extends AdminBase {
 
     //栏目信息列表
     public function classlist() {
+        if (IS_POST) {
+            $this->redirect('classlist', $_POST);
+        }
         //当前栏目信息
         $catInfo = getCategory($this->catid);
         if (empty($catInfo)) {
@@ -107,9 +110,6 @@ class ContentController extends AdminBase {
         if (getModel($modelid, 'disabled')) {
             $this->error('模型被禁用！');
         }
-        //当前栏目所属模型字段
-        $modelField = cache('ModelField');
-        $modelField = $modelField[$modelid]? : array();
         //搜索
         $search = I('get.search');
         if (!empty($search)) {
@@ -173,10 +173,10 @@ class ContentController extends AdminBase {
             $template = "Listtemplate:{$setting['list_customtemplate']}";
         }
         $this->assign($catInfo)
-                ->assign("Page", $page->show('Admin'))
-                ->assign("catid", $this->catid)
-                ->assign("count", $count)
-                ->assign("data", $data);
+                ->assign('Page', $page->show())
+                ->assign('catid', $this->catid)
+                ->assign('count', $count)
+                ->assign('data', $data);
         $this->display($template);
     }
 
@@ -215,9 +215,7 @@ class ContentController extends AdminBase {
                     if ($_POST['extend']) {
                         D('Content/Category')->extendField($catid, $_POST);
                     }
-//                    import('Html');
-//                    $html = get_instance_of('Html');
-//                    $html->category($catid);
+                    $this->Html->category($catid);
                     $this->success('操作成功！');
                 } else {
                     $error = $db->getError();

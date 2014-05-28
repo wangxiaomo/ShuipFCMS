@@ -40,7 +40,7 @@
           <option value='3' <if condition=" $searchtype == '3' "> selected</if>>ID</option>
         </select>
         关键字：
-        <input type="text" class="input length_2" name="keyword" style="width:200px;" value="" placeholder="请输入关键字...">
+        <input type="text" class="input length_2" name="keyword" style="width:200px;" value="{$_GET.keyword}" placeholder="请输入关键字...">
         <button class="btn">搜索</button>
         </span>
       </div>

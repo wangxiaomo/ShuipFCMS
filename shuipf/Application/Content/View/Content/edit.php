@@ -46,11 +46,6 @@ body fieldset legend {
 </head>
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
-  <div class="nav">
-    <ul class="cc">
-      <li class="current"><a href="{:U('Content/classlist', array('catid'=>$catid)  )}">{$category.catname}列表</a></li>
-    </ul>
-  </div>
   <form name="myform" id="myform" action="{:U("Content/edit")}" method="post" class="J_ajaxForms" enctype="multipart/form-data">
   <div class="col-right">
     <div class="table_full">
@@ -76,7 +71,7 @@ if(is_array($forminfos['senior'])) {
           <td><b><?php echo $info['name']?></b><?php if($info['star']){ ?><font color="red">*</font><?php } ?></td>
         </tr>
         <tr>
-          <td><?php echo $info['form'];?><?php echo $info['tips'];?></td>
+          <td><?php echo $info['form'];?><span><?php echo $info['tips'];?></span></td>
         </tr>
 <?php
    }
@@ -120,17 +115,11 @@ if(is_array($forminfos['base'])) {
               <th width="80">
                 <?php echo $info['name'];?> 
                </th>
-              <td><?php if($info['star']){ ?><span class="must_red">*</span><?php } ?><?php echo $info['form'];?> <?php echo $info['tips'];?></td>
+              <td><?php if($info['star']){ ?><span class="must_red">*</span><?php } ?><?php echo $info['form'];?> <span><?php echo $info['tips'];?></span></td>
             </tr>
             <?php
 } }
 ?>
-        <!--<tr>
-          <th>标题</th>
-          <td><span class="must_red">*</span>
-            <input name="subject" type="text" class="input length_6" placeholder="请输入标题">
-            <span generated="true" class="tips_error">错误提示</span></td>
-        </tr>-->
         </tbody>
       </table>
     </div>
@@ -145,7 +134,7 @@ if(is_array($forminfos['base'])) {
   </div>
   </form>
 </div>
-<script type="text/javascript" src="{$config_siteurl}statics/js/common.js?v"></script>
+<script type="text/javascript" src="{$config_siteurl}statics/js/common.js"></script>
 <script type="text/javascript" src="{$config_siteurl}statics/js/content_addtop.js"></script>
 <script type="text/javascript"> 
 $(function () {
