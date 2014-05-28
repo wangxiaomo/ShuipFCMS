@@ -34,7 +34,7 @@ function image($field, $value, $fieldinfo) {
                         return false;
                     }
                     Wind.use('artDialog','iframeTools',function(){
-                      art.dialog.open(GV.DIMAUB+'index.php?a=public_imagescrop&m=Content&g=Contents&catid='+catid+'&picurl='+encodeURIComponent(id)+'&input=$field&preview=" . ($setting['show_type'] && defined('IN_ADMIN') ? $field . "_preview" : '') . "', {
+                      art.dialog.open(GV.DIMAUB+'index.php?a=public_imagescrop&m=Content&g=Content&catid='+catid+'&picurl='+encodeURIComponent(id)+'&input=$field&preview=" . ($setting['show_type'] && defined('IN_ADMIN') ? $field . "_preview" : '') . "', {
                         title:'裁减图片', 
                         id:'crop',
                         ok: function () {

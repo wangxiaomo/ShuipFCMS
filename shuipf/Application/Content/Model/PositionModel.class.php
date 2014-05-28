@@ -87,11 +87,11 @@ class PositionModel extends Model {
             $this->error = '请指定需要删除的推荐位！';
             return false;
         }
-        if ($this->where(array("posid" => $posid))->delete() !== false) {
-            $d = M("PositionData")->where(array("posid" => $posid))->select();
-            $Attachment = service("Attachment");
+        if ($this->where(array('posid' => $posid))->delete() !== false) {
+            $d = M('PositionData')->where(array("posid" => $posid))->select();
+            $Attachment = service('Attachment');
             foreach ($d as $k => $v) {
-                M("PositionData")->where(array("posid" => $v['posid'], "id" => $v['id']))->delete();
+                M('PositionData')->where(array("posid" => $v['posid'], "id" => $v['id']))->delete();
                 $Attachment->api_delete('position-' . $v['modelid'] . '-' . $v['id']);
             }
             $this->position_cache();
@@ -114,9 +114,9 @@ class PositionModel extends Model {
      * @param string $model 调取的数据模型
      * 调用方式
      * $push = D("Position");
-     * $push->position_update(323, 25, 45, array(20,21), array('title'=>'文章标题','thumb'=>'缩略图路径','inputtime'='时间戳'));
+     * $push->positionUpdate(323, 25, 45, array(20,21), array('title'=>'文章标题','thumb'=>'缩略图路径','inputtime'='时间戳'));
      */
-    public function position_update($id, $modelid, $catid, $posid, $data, $expiration = 0, $undel = 0, $model = 'content') {
+    public function positionUpdate($id, $modelid, $catid, $posid, $data, $expiration = 0, $undel = 0, $model = 'content') {
         $arr = $param = array();
         $id = intval($id);
         if (empty($id)) {
@@ -149,7 +149,7 @@ class PositionModel extends Model {
      */
     private function position_del($catid, $id, $input_posid) {
         $array = array();
-        $pos_data = M("PositionData");
+        $pos_data = M('PositionData');
         //查找已存在推荐位
         $olPosid = $pos_data->where(array('id' => $id, 'catid' => $catid))->getField('posid', true);
         if (empty($olPosid)) {
@@ -161,13 +161,13 @@ class PositionModel extends Model {
             return false;
         }
         $where = array();
-        $where['catid'] = array("EQ", $catid);
+        $where['catid'] = array('EQ', $catid);
         $where['modelid'] = getCategory($catid, 'modelid');
-        $where['id'] = array("EQ", $id);
-        $where['posid'] = array("IN", $real_posid);
+        $where['id'] = array('EQ', $id);
+        $where['posid'] = array('IN', $real_posid);
         $status = $pos_data->where($where)->delete();
         if (false !== $status) {
-            service("Attachment")->api_delete('position-' . $where['modelid'] . '-' . $where['id']);
+            service('Attachment')->api_delete('position-' . $where['modelid'] . '-' . $where['id']);
             return true;
         } else {
             return false;
@@ -202,8 +202,8 @@ class PositionModel extends Model {
      */
     public function position_list($param = array(), $arr = array(), $expiration = 0, $model = 'content') {
         if ($arr['dosubmit']) {
-            $pos_data = M("PositionData");
-            $position_info = cache("Position");
+            $pos_data = M('PositionData');
+            $position_info = cache('Position');
             $modelid = intval($arr['modelid']);
             $catid = intval($arr['catid']);
             $info = $r = array();
@@ -212,7 +212,6 @@ class PositionModel extends Model {
 
             if (is_array($arr['posid']) && !empty($arr['posid']) && is_array($param) && !empty($param)) {
                 foreach ($arr['posid'] as $pid) {
-
                     foreach ($param as $d) {
                         $info['id'] = $info['listorder'] = $d['id'];
                         $info['catid'] = $catid;
@@ -257,7 +256,7 @@ class PositionModel extends Model {
                     if ($r && $position_info[$pid]['maxnum']) {
                         foreach ($r as $k => $v) {
                             $pos_data->where(array('id' => $v['id'], 'posid' => $v['posid'], 'catid' => $v['catid']))->delete();
-                            service("Attachment")->api_delete('position-' . $v['modelid'] . '-' . $v['id']);
+                            service('Attachment')->api_delete('position-' . $v['modelid'] . '-' . $v['id']);
                             $this->content_pos($v['id'], $v['modelid']);
                         }
                     }
@@ -277,7 +276,7 @@ class PositionModel extends Model {
         foreach($data as $rs){
             $cache[$rs['posid']] = $rs;
         }
-        cache("Position", $cache);
+        cache('Position', $cache);
         return $data;
     }
 

@@ -418,7 +418,7 @@ class ModelModel extends Model {
      * @return type
      */
     public function getModelAll($type = null) {
-        $where = array("disabled" => 0);
+        $where = array('disabled' => 0);
         if (!is_null($type)) {
             $where['type'] = $type;
         }
@@ -436,7 +436,7 @@ class ModelModel extends Model {
      */
     public function model_cache() {
         $data = $this->getModelAll();
-        cache("Model", $data);
+        cache('Model', $data);
         return $data;
     }
 

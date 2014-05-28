@@ -11,7 +11,7 @@ function posid($field, $value, $fieldinfo) {
     //扩展配置
     $setting = unserialize($fieldinfo['setting']);
     //推荐位缓存
-    $position = cache("Position");
+    $position = cache('Position');
     if (empty($position)) {
         return '';
     }
@@ -33,8 +33,7 @@ function posid($field, $value, $fieldinfo) {
     }
     $posids = array();
     if (ACTION_NAME == 'edit') {
-        $this->position_data_db = M('PositionData');
-        $result = $this->position_data_db->where(array('id' => $this->id, 'modelid' => $this->modelid))->getField("posid,id,catid,posid,module,modelid,thumb,data,listorder,expiration,extention,synedit");
+        $result = M('PositionData')->where(array('id' => $this->id, 'modelid' => $this->modelid))->getField("posid,id,catid,posid,module,modelid,thumb,data,listorder,expiration,extention,synedit");
         $posids = implode(',', array_keys($result));
     } else {
         $posids = $setting['defaultvalue'];

@@ -24,8 +24,8 @@ class content_update {
     // 数据表名（不包含表前缀）
     protected $tablename = '';
 
-    function __construct($modelid) {
-        $this->model = cache("Model");
+    public function __construct($modelid) {
+        $this->model = cache('Model');
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {
             return false;
@@ -83,7 +83,7 @@ class content_update {
                 $usfun = $backstagefun[0];
                 $usparam = $backstagefun[1];
                 //前后台
-                if (defined("IN_ADMIN") && IN_ADMIN) {
+                if (defined('IN_ADMIN') && IN_ADMIN) {
                     //检查方法是否存在
                     if (function_exists($usfun)) {
                         //判断是入库执行类型

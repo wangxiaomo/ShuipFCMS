@@ -31,7 +31,7 @@ class content_form {
      * @param type $modelid 模型ID
      * @param type $catid 栏目id
      */
-    function __construct($modelid, $catid) {
+    public function __construct($modelid, $catid) {
         $this->model = cache("Model");
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {

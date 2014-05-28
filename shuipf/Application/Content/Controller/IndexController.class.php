@@ -15,11 +15,18 @@ use Common\Controller\Base;
 class IndexController extends Base {
 
     public function index() {
+//        print_r($this->Content->check(64, 1, 99));
+//        $model = \Content\Model\ContentModel::getInstance(13);
+//        $data = $model->relation(true)->find(64);
+//        $this->Html->show($data);
+//        exit;
         $url = new \Libs\System\Url();
         $model = \Content\Model\ContentModel::getInstance(13);
-        $data = $model->relation(true)->find(1);
+        //$data = $model->relation(true)->find(1);
         $html = new \Libs\System\Html();
-        print_r($html->show($data, 0));
+        //$content = \Libs\System\Content::getInstance()->add();
+        //print_r($content);exit;
+//        print_r($html->index());
 //        service('Attachment');
 //        G('begin');
 //        for ($i = 0; $i < 1000; $i++) {

@@ -42,6 +42,34 @@ function cache($name, $value = '', $options = null) {
 }
 
 /**
+ * 调试，用于保存数组到txt文件 正式生产删除
+ * 用法：array2file($info, SITE_PATH.'/post.txt');
+ * @param type $array
+ * @param type $filename
+ */
+function array2file($array, $filename) {
+    if (defined("APP_DEBUG") && APP_DEBUG) {
+        //修改文件时间
+        file_exists($filename) or touch($filename);
+        if (is_array($array)) {
+            $str = var_export($array, TRUE);
+        } else {
+            $str = $array;
+        }
+        return file_put_contents($filename, $str);
+    }
+    return false;
+}
+
+/**
+ * 返回ShuipFCMS对象
+ * @return Object
+ */
+function ShuipFCMS() {
+    return \Common\Controller\ShuipFCMS::app();
+}
+
+/**
  * 快捷方法取得服务
  * @param type $name 服务类型
  * @param type $params 参数
@@ -567,7 +595,7 @@ function parseTemplateFile($templateFile = '') {
         $templateFile = str_replace($TemplatePath . $Theme, $TemplatePath . 'Default', $templateFile);
         //判断默认主题是否存在，不存在直接报错提示
         if (!file_exists_case($templateFile)) {
-            if(defined('APP_DEBUG') && APP_DEBUG){
+            if (defined('APP_DEBUG') && APP_DEBUG) {
                 E($log);
             }
             $TemplateFileCache[$key] = false;

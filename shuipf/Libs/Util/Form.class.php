@@ -191,19 +191,19 @@ class Form {
      */
     public static function select_category($catid = 0, $str = '', $default_option = '', $modelid = 0, $type = -1, $onlysub = 0, $is_push = 0) {
         $tree = new \Tree();
-        $result = cache("Category");
+        $result = cache('Category');
         $string = '<select ' . $str . '>';
         if ($default_option)
-            $string .= "<option value='0'>$default_option</option>";
+            $string .= "<option value='0'>{$default_option}</option>";
         //加载权限表模型 ,获取会员组ID值,以备下面投入判断用
         if ($is_push) {
-            $priv = M("Category_priv");
+            $priv = M('CategoryPriv');
             //用户组
-            if (defined("IN_ADMIN") && IN_ADMIN) {
+            if (defined('IN_ADMIN') && IN_ADMIN) {
                 //后台
-                $user_groupid = session("roleid");
+                $user_groupid = \Admin\Service\User::getInstance()->role_id;
             } else {
-                $user_groupid = SiteCookie('groupid') ? SiteCookie('groupid') : 8;
+                $user_groupid = service('Passport')->groupid ? : 8;
             }
         }
 

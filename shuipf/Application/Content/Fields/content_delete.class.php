@@ -24,7 +24,7 @@ class content_delete {
     // 数据表名（不包含表前缀）
     protected $tablename = '';
 
-    function __construct($modelid) {
+    public function __construct($modelid) {
         $this->model = cache("Model");
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {

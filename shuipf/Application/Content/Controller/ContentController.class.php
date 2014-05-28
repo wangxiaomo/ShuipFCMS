@@ -13,7 +13,6 @@ namespace Content\Controller;
 use Common\Controller\AdminBase;
 use Admin\Service\User;
 use Content\Model\ContentModel;
-use Libs\System\Content;
 
 class ContentController extends AdminBase {
 
@@ -25,7 +24,7 @@ class ContentController extends AdminBase {
     //初始化
     protected function _initialize() {
         parent::_initialize();
-        $this->catid = I('catid', 0, 'intval');
+        $this->catid = I('request.catid', 0, 'intval');
         $this->model = cache('Model');
     }
 
@@ -42,13 +41,13 @@ class ContentController extends AdminBase {
         //栏目权限 超级管理员例外
         if ($isAdministrator !== true) {
             $role_id = User::getInstance()->role_id;
-            $priv_result = M("CategoryPriv")->where(array("roleid" => $role_id, 'action' => 'init'))->select();
+            $priv_result = M('CategoryPriv')->where(array('roleid' => $role_id, 'action' => 'init'))->select();
             foreach ($priv_result as $_v) {
                 $priv_catids[] = $_v['catid'];
             }
         }
         $json = array();
-        $categorys = cache("Category");
+        $categorys = cache('Category');
         foreach ($categorys as $rs) {
             $rs = getCategory($rs['catid']);
             if ($rs['type'] == 2 && $rs['child'] == 0) {
@@ -70,18 +69,18 @@ class ContentController extends AdminBase {
             );
             //终极栏目
             if ($rs['child'] == 0) {
-                $data['target'] = "right";
-                $data['url'] = U("Content/classlist", array("catid" => $rs['catid']));
+                $data['target'] = 'right';
+                $data['url'] = U('Content/classlist', array('catid' => $rs['catid']));
                 //设置图标 
-                $data['icon'] = self::$Cache['Config']['siteurl'] . "statics/js/zTree/zTreeStyle/img/diy/10.png";
+                $data['icon'] = self::$Cache['Config']['siteurl'] . 'statics/js/zTree/zTreeStyle/img/diy/10.png';
             } else {
                 $data['isParent'] = true;
             }
             //单页
             if ($rs['type'] == 1 && $rs['child'] == 0) {
-                $data['url'] = U("Content/add", array("catid" => $rs['catid']));
+                $data['url'] = U('Content/add', array('catid' => $rs['catid']));
                 //设置图标 
-                $data['icon'] = self::$Cache['Config']['siteurl'] . "statics/js/zTree/zTreeStyle/img/diy/2.png";
+                $data['icon'] = self::$Cache['Config']['siteurl'] . 'statics/js/zTree/zTreeStyle/img/diy/2.png';
             }
             $json[] = $data;
         }
@@ -197,16 +196,16 @@ class ContentController extends AdminBase {
             //栏目类型为0
             if ($category['type'] == 0) {
                 //模型ID
-                $this->modelid = getCategory($catid, 'modelid');
+                $modelid = getCategory($catid, 'modelid');
                 //检查模型是否被禁用
-                if ($this->model[$this->modelid]['disabled'] == 1) {
+                if ($this->model[$modelid]['disabled'] == 1) {
                     $this->error("模型被禁用！");
                 }
-                $status = Content::getInstance()->data($_POST['info'])->add();
+                $status = $this->Content->data($_POST['info'])->add();
                 if ($status) {
                     $this->success("添加成功！");
                 } else {
-                    $error = Content::getInstance()->getError();
+                    $error = $this->Content->getError();
                     $this->error($error ? $error : '添加失败！');
                 }
             } else if ($category['type'] == 1) {//单页栏目
@@ -320,15 +319,15 @@ class ContentController extends AdminBase {
             //如果有自定义文件名，需要删除原来生成的静态文件
             if ($_POST['info']['prefix'] != $data['prefix'] && $cat_setting['content_ishtml']) {
                 //删除原来的生成的静态页面
-                Content::getInstance()->deleteHtml($this->catid, $id, $data['inputtime'], $data['prefix'], $data);
+                $this->Content->data($data)->deleteHtml();
             }
-            $status = Content::getInstance()->data($_POST['info'])->edit();
+            $status = $this->Content->data($_POST['info'])->edit();
             if ($status) {
                 //解除信息锁定
                 M("Locking")->where(array("userid" => User::getInstance()->id, "catid" => $catid, "id" => $id))->delete();
                 $this->success("修改成功！");
             } else {
-                $this->error(Content::getInstance()->getError());
+                $this->error($this->Content->getError());
             }
         } else {
             //取得数据，这里使用关联查询
@@ -370,7 +369,517 @@ class ContentController extends AdminBase {
 
     //删除
     public function delete() {
+        if (IS_POST) {
+            $this->catid = I('get.catid', 0, 'intval');
+            $Categorys = getCategory($this->catid);
+            if (empty($Categorys)) {
+                $this->error("该栏目不存在！");
+            }
+            //模型ID
+            $modelid = $Categorys['modelid'];
+            if (empty($_POST['ids'])) {
+                $this->error('没有信息被选中！');
+            }
+            $model = ContentModel::getInstance($modelid);
+            foreach ($_POST['ids'] as $id) {
+                //检查是否锁定
+                if (false === $model->locking($this->catid, $id)) {
+                    $this->error($model->getError());
+                }
+                $this->Content->delete($id, $this->catid);
+            }
+            $this->success('删除成功！');
+        } else {
+            $this->catid = I('get.catid', 0, 'intval');
+            $id = I('get.id', 0, 'intval');
+            $Categorys = getCategory($this->catid);
+            if (empty($Categorys)) {
+                $this->error('该栏目不存在！');
+            }
+            //模型ID
+            $modelid = $Categorys['modelid'];
+            $model = ContentModel::getInstance($modelid);
+            //检查是否锁定
+            if (false === $model->locking($this->catid, $id)) {
+                $this->error($model->getError());
+            }
+            if ($this->Content->delete($id, $this->catid)) {
+                $this->success('删除成功！');
+            } else {
+                $this->error('删除失败！');
+            }
+        }
+    }
+
+    //文章审核
+    public function public_check() {
+        if (IS_POST) {
+            $ids = $_POST['ids'];
+            if (!$ids) {
+                $this->error('没有信息被选中！');
+            }
+            foreach ($ids as $id) {
+                $this->Content->check($this->catid, $id, 99);
+            }
+            $this->success('审核成功！');
+        } else {
+            $id = I('get.id', 0, 'intval');
+            if (!$id) {
+                $this->error('没有信息被选中！');
+            }
+            if ($this->Content->check($this->catid, $id, 99)) {
+                $this->success('审核成功！');
+            } else {
+                $this->error('审核失败！');
+            }
+        }
+    }
+
+    //取消审核
+    public function public_nocheck() {
+        if (IS_POST) {
+            $ids = $_POST['ids'];
+            if (!$ids) {
+                $this->error('没有信息被选中！');
+            }
+            foreach ($ids as $id) {
+                $this->Content->check($this->catid, $id, 1);
+            }
+            $this->success('取消审核成功！');
+        } else {
+            $id = I('get.id', 0, 'intval');
+            if (!$id) {
+                $this->error('没有信息被选中！');
+            }
+            if ($this->Content->check($this->catid, $id, 1)) {
+                $this->success('取消审核成功！');
+            } else {
+                $this->error('取消审核失败！');
+            }
+        }
+    }
+
+    //排序
+    public function listorder() {
+        $listorders = $_POST['listorders'];
+        if (is_array($listorders)) {
+            $modelid = getCategory($this->catid, 'modelid');
+            if (empty($modelid)) {
+                $this->error('模型不存在！');
+            }
+            $db = ContentModel::getInstance($modelid);
+            foreach ($listorders as $id => $v) {
+                $db->where(array('id' => $id))->save(array('listorder' => $v));
+            }
+            $this->success('更新成功！', U('classlist', array('catid' => $this->catid)));
+        } else {
+            $this->error('参数错误！');
+        }
+    }
+
+    //检测标题是否存在
+    public function public_check_title() {
+        $title = I('get.data');
+        $catid = $this->catid;
+        if (empty($title)) {
+            $this->ajaxReturn(array('status' => 1, 'info' => '标题没有重复！'));
+            return false;
+        }
+        $count = ContentModel::getInstance(getCategory($catid, 'modelid'))->where(array('title' => $title))->count();
+        if ($count > 0) {
+            $this->ajaxReturn(array('status' => 0, 'info' => '标题有重复！'));
+        } else {
+            $this->ajaxReturn(array('status' => 1, 'info' => '标题没有重复！'));
+        }
+    }
+
+    //相关文章选择
+    public function public_relationlist() {
+        if (IS_POST) {
+            $this->redirect('public_relationlist', $_POST);
+        }
+        $modelid = I('get.modelid', 0, 'intval');
+        if (empty($modelid)) {
+            $this->error('缺少参数！');
+        } else {
+            $modelid = I('get.modelid', 0, 'intval');
+            $model = ContentModel::getInstance($modelid);
+            $where = array();
+            $catid = $this->catid;
+            if ($catid) {
+                $where['catid'] = $catid;
+            }
+            $where['status'] = 99;
+            if (isset($_GET['keywords'])) {
+                $keywords = trim($_GET['keywords']);
+                $field = $_GET['searchtype'];
+                if (in_array($field, array('id', 'title', 'keywords', 'description'))) {
+                    if ($field == 'id') {
+                        $where['id'] = array('eq', $keywords);
+                    } else {
+                        $where[$field] = array('like', '%' . $keywords . '%');
+                    }
+                }
+            }
+            $count = $model->where($where)->count();
+            $page = $this->page($count, 12);
+            $data = $model->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array('id' => "DESC"))->select();
+            $this->assign('Formcategory', \Form::select_category($catid, 'name="catid"', "不限栏目", $modelid, 0, 1));
+            $this->assign('data', $data);
+            $this->assign('Page', $page->show());
+            $this->assign('modelid', $modelid);
+            $this->display('relationlist');
+        }
+    }
+
+    //加载相关文章列表 
+    public function public_getjson_ids() {
+        $modelid = I('get.modelid', 0, 'intval');
+        $id = I('get.id', 0, 'intval');
+        $model = ContentModel::getInstance($modelid);
+        if (empty($model)) {
+            return false;
+        }
+        $r = $model->relation(true)->where(array('id' => $id))->find();
+        $model->dataMerger($r);
+        $where = array();
+        if ($r['relation']) {
+            $relation = str_replace('|', ',', $r['relation']);
+            $where['id'] = array("in", $relation);
+            $datas = $model->where($where)->select();
+            foreach ($datas as $_v) {
+                $_v['sid'] = 'v' . $_v['id'];
+                $infos[] = $_v;
+            }
+        }
+        $this->ajaxReturn(array('data' => $infos, 'status' => 1));
+    }
+
+    //文章预览 
+    public function public_preview() {
         
+    }
+
+    //图片裁减 
+    public function public_imagescrop() {
+        $picurl = I('get.picurl');
+        $catid = I('get.catid', $this->catid, 'intval');
+        if (!$catid) {
+            $this->error('栏目不存在！');
+        }
+        if ($picurl) {
+            $picurl = str_replace(urlDomain($picurl), '/', $picurl);
+        }
+        $module = I('get.module', MODULE_NAME);
+        $this->assign('picurl', $picurl);
+        $this->assign('catid', $catid);
+        $this->assign('module', $module);
+        $this->display('imagescrop');
+    }
+
+    //批量移动文章
+    public function remove() {
+        if (IS_POST && isset($_POST['fromtype'])) {
+            $catid = I('get.catid', '', 'intval');
+            if (!$catid) {
+                $this->error("请指定栏目！");
+            }
+            //移动类型
+            $fromtype = I('post.fromtype', '', 'intval');
+            //需要移动的信息ID集合
+            $ids = $_POST['ids'];
+            //需要移动的栏目ID集合
+            $fromid = $_POST['fromid'];
+            //目标栏目
+            $tocatid = I('post.tocatid', '', 'intval');
+            if (!$tocatid) {
+                $this->error("目标栏目不正确！");
+            }
+            switch ($fromtype) {
+                //信息移动
+                case 0:
+                    if ($ids) {
+                        if ($tocatid == $catid) {
+                            $this->error('目标栏目和当前栏目是同一个栏目！');
+                        }
+                        $modelid = getCategory($tocatid, 'modelid');
+                        if (!$modelid) {
+                            $this->error('该模型不存在！');
+                        }
+                        $model = ContentModel::getInstance($modelid);
+                        if (!$ids) {
+                            $this->error('请选择需要移动信息！');
+                        }
+                        $ids = array_filter(explode('|', $_POST['ids']), 'intval');
+                        //删除静态文件
+                        foreach ($ids as $sid) {
+                            $data = $model->where(array('catid' => $catid, 'id' => $sid))->find();
+                            $this->Content->data($data)->deleteHtml();
+                            $data['catid'] = $tocatid;
+                            $urls = $this->Url->show($data);
+                            $model->where(array('catid' => $catid, 'id' => $sid))->save(array('catid' => $tocatid, 'url' => $urls['url']));
+                        }
+                        $this->success('移动成功！', U('Createhtml/update_urls'));
+                    } else {
+                        $this->error('请选择需要移动的信息！');
+                    }
+                    break;
+                //栏目移动
+                case 1:
+                    if (!$fromid) {
+                        $this->error('请选择需要移动的栏目！');
+                    }
+                    $where = array();
+                    $where['catid'] = array('IN', $fromid);
+                    $modelid = getCategory($catid, 'modelid');
+                    if (!$modelid) {
+                        $this->error("该模型不存在！");
+                    }
+                    $model = ContentModel::getInstance($modelid);
+                    //进行栏目id更改
+                    if ($model->where($where)->save(array('catid' => $tocatid, 'url' => ''))) {
+                        $this->success('移动成功，请使用《批量更新URL》更新新的地址！！', U('Createhtml/update_urls'));
+                    } else {
+                        $this->error('移动失败！');
+                    }
+                    break;
+                default:
+                    $this->error('请选择移动类型！');
+                    break;
+            }
+        } else {
+            $ids = I('request.ids', '', '');
+            $ids = is_array($ids) ? implode("|", $ids) : $ids;
+            $catid = I('get.catid', '', 'intval');
+            if (!$catid) {
+                $this->error("请指定栏目！");
+            }
+            $modelid = getCategory($catid, 'modelid');
+            $tree = new \Tree();
+            $tree->icon = array('&nbsp;&nbsp;│ ', '&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;└─ ');
+            $tree->nbsp = '&nbsp;&nbsp;';
+            $categorys = array();
+            $categorysList = cache('Category');
+            foreach ($categorysList as $cid => $r) {
+                $r = getCategory($r['catid']);
+                if ($r['type'])
+                    continue;
+                if ($modelid && $modelid != $r['modelid'])
+                    continue;
+                $r['disabled'] = $r['child'] ? 'disabled' : '';
+                $r['selected'] = $cid == $catid ? 'selected' : '';
+                $categorys[$cid] = $r;
+            }
+            $str = "<option value='\$catid' \$selected \$disabled>\$spacer \$catname</option>";
+            $tree->init($categorys);
+            $string .= $tree->get_tree(0, $str);
+
+            $str = "<option value='\$catid'>\$spacer \$catname</option>";
+            $source_string = '';
+            $tree->init($categorys);
+            $source_string .= $tree->get_tree(0, $str);
+
+            $this->assign("ids", $ids);
+            $this->assign("string", $string);
+            $this->assign("source_string", $source_string);
+            $this->assign("catid", $catid);
+            $this->display();
+        }
+    }
+
+    //显示栏目列表，树状
+    public function public_getsite_categorys() {
+        $catid = $this->catid;
+        $tree = new \Tree();
+        $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
+        $tree->nbsp = '&nbsp;&nbsp;&nbsp;';
+        $categorys = array();
+        if (User::getInstance()->isAdministrator() !== true) {
+            $this->priv_db = M('CategoryPriv');
+            $priv_result = $this->priv_db->where(array('action' => 'add', 'roleid' => User::getInstance()->role_id, 'is_admin' => 1))->select();
+            $priv_catids = array();
+            foreach ($priv_result as $_v) {
+                $priv_catids[] = $_v['catid'];
+            }
+            if (empty($priv_catids))
+                return '';
+        }
+        $categorysList = cache('Category');
+        foreach ($categorysList as $r) {
+            $r = getCategory($r['catid']);
+            if ($r['type'] != 0)
+                continue;
+            if (User::getInstance()->role_id != 1 && !in_array($r['catid'], $priv_catids)) {
+                $arrchildid = explode(',', $r['arrchildid']);
+                $array_intersect = array_intersect($priv_catids, $arrchildid);
+                if (empty($array_intersect))
+                    continue;
+            }
+            $r['modelname'] = $this->model[$r['modelid']]['name'];
+            $r['style'] = $r['child'] ? 'color:#8A8A8A;' : '';
+            $r['click'] = $r['child'] ? '' : " id=\"cv" . $r['catid'] . "\" onclick=\"select_list(this,'" . \Input::forTag($r['catname']) . "'," . $r['catid'] . ")\" class='cu' title='" . \Input::forTag($r['catname']) . "'";
+            $categorys[$r['catid']] = $r;
+        }
+        $str = "<tr \$click >
+					<td align='center'>\$id</td>
+					<td style='\$style'>\$spacer\$catname</td>
+					<td align='center'>\$modelname</td>
+				</tr>";
+        $tree->init($categorys);
+        $categorys = $tree->get_tree(0, $str);
+        exit($categorys);
+    }
+
+    //文章推送
+    public function push() {
+        if (IS_POST) {
+            $id = I('post.id');
+            $modelid = I('post.modelid');
+            $catid = I('post.catid');
+            $action = I('get.action');
+            if (!$id || !$action || !$modelid || !$catid) {
+                $this->error('参数不正确');
+            }
+            switch ($action) {
+                //推荐位
+                case "position_list":
+                    $posid = $_POST['posid'];
+                    if ($posid && is_array($posid)) {
+                        $position_data_db = D('Content/Position');
+                        $ModelField = cache('ModelField');
+                        $fields = $ModelField[$modelid];
+                        $ids = explode('|', $id);
+                        $model = ContentModel::getInstance($modelid);
+                        foreach ($ids as $k => $aid) {
+                            //取得信息
+                            $re = $model->relation(true)->where(array('id' => $aid))->find();
+                            if ($re) {
+                                $model->dataMerger($re);
+                                //推送数据
+                                $textcontent = array();
+                                foreach ($fields AS $_key => $_value) {
+                                    //判断字段是否入库到推荐位字段
+                                    if ($_value['isposition']) {
+                                        $textcontent[$_key] = $re[$_key];
+                                    }
+                                }
+                                //样式进行特别处理
+                                $textcontent['style'] = $re['style'];
+                                //推送到推荐位
+                                $position_data_db->positionUpdate($aid, $modelid, $catid, $posid, $textcontent, 0, 1);
+                                $r = $re = null;
+                            }
+                        }
+                        $this->success('推送到推荐位成功！');
+                    } else {
+                        $this->error('请选择推荐位！');
+                    }
+                    break;
+                //同步发布到其他栏目
+                case 'push_to_category':
+                    $ids = explode('|', $id);
+                    $relation = I('post.relation');
+                    if (!$relation) {
+                        $this->error('请选择需要推送的栏目！');
+                    }
+                    $relation = explode('|', $relation);
+                    if (is_array($relation)) {
+                        //过滤相同栏目和自身栏目
+                        foreach ($relation as $k => $classid) {
+                            if ($classid == $catid) {
+                                $this->error('推送的栏目不能是当前栏目！');
+                            }
+                        }
+                        //去除重复
+                        $relation = array_unique($relation);
+                        if (count($relation) < 1) {
+                            $this->error('请选择需要推送的栏目！');
+                        }
+                        $model = ContentModel::getInstance($modelid);
+                        foreach ($ids as $k => $aid) {
+                            //取得信息
+                            $r = $model->relation(true)->where(array('id' => $aid))->find();
+                            $linkurl = $r['url'];
+                            if ($r) {
+                                $this->Content->othor_catid($relation, $linkurl, $r, $modelid);
+                            }
+                        }
+                        $this->success('推送其他栏目成功！');
+                    } else {
+                        $this->error('请选择需要推送的栏目！');
+                    }
+                    break;
+                default:
+                    $this->error('请选择操作！');
+                    break;
+            }
+        } else {
+            $id = I('get.id');
+            $action = I('get.action');
+            $modelid = I('get.modelid');
+            $catid = I("get.catid");
+            if (!$id || !$action || !$modelid || !$catid) {
+                $this->error('参数不正确！');
+            }
+            $tpl = $action == 'position_list' ? 'push_list' : 'push_to_category';
+
+            switch ($action) {
+                //推荐位
+                case 'position_list':
+                    $position = cache('Position');
+                    if (!empty($position)) {
+                        $array = array();
+                        foreach ($position as $_key => $_value) {
+                            //如果有设置模型，检查是否有该模型
+                            if ($_value['modelid'] && !in_array($modelid, explode(',', $_value['modelid']))) {
+                                continue;
+                            }
+                            //如果设置了模型，又设置了栏目
+                            if ($_value['modelid'] && $_value['catid'] && !in_array($catid, explode(',', $_value['catid']))) {
+                                continue;
+                            }
+                            //如果设置了栏目
+                            if ($_value['catid'] && !in_array($catid, explode(',', $_value['catid']))) {
+                                continue;
+                            }
+                            $array[$_key] = $_value['name'];
+                        }
+                        $this->assign('Position', $array);
+                    }
+                    break;
+                //同步发布到其他栏目
+                case 'push_to_category':
+                    break;
+                default:
+                    $this->error('请选择操作！');
+                    break;
+            }
+
+            $this->assign('id', $id)
+                    ->assign('action', $action)
+                    ->assign('modelid', $modelid)
+                    ->assign('catid', $catid)
+                    ->assign('show_header', true)
+                    ->display($tpl);
+        }
+    }
+
+    //同时发布到其他栏目选择页面
+    public function public_othors() {
+        $catid = I('get.catid', 0, 'intval');
+        $this->assign('catid', $catid)
+                ->display('add_othors');
+    }
+
+    //锁定时间续期
+    public function public_lock_renewal() {
+        $catid = I('get.catid', 0, 'intval');
+        $id = I('get.id', 0, 'intval');
+        $userid = User::getInstance()->id;
+        $time = time();
+        if ($catid && $id && $userid) {
+            M('Locking')->where(array('id' => $id, 'catid' => $catid, 'userid' => $userid))->save(array('locktime' => $time));
+        }
     }
 
 }

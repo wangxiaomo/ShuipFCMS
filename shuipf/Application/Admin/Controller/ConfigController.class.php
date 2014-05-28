@@ -33,7 +33,25 @@ class ConfigController extends AdminBase {
                 $this->error($error ? $error : "配置更新失败！");
             }
         } else {
-            $this->display();
+            //首页模板
+            $filepath = TEMPLATE_PATH . (empty(self::$Cache["Config"]['theme']) ? 'Default' : self::$Cache["Config"]['theme']) . '/Content/Index/';
+            $indextp = str_replace($filepath, '', glob($filepath . 'index*'));
+            //URL规则
+            $Urlrules = cache('Urlrules');
+            $IndexURL = array();
+            $TagURL = array();
+            foreach ($Urlrules as $k => $v) {
+                if ($v['module'] == 'tags' && $v['file'] == 'tags') {
+                    $TagURL[$v['urlruleid']] = $v['example'];
+                }
+                if ($v['module'] == 'content' && $v['file'] == 'index') {
+                    $IndexURL[$v['ishtml']][$v['urlruleid']] = $v['example'];
+                }
+            }
+            $this->assign('TagURL', $TagURL)
+                    ->assign('IndexURL', $IndexURL)
+                    ->assign('indextp', $indextp)
+                    ->display();
         }
     }
 

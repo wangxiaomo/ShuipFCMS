@@ -1,35 +1,34 @@
-
 //弹出对话框
 function omnipotent(id, linkurl, title, close_type, w, h) {
     if (!w) w = 700;
     if (!h) h = 500;
-    Wind.use("artDialog","iframeTools",function(){
+    Wind.use("artDialog", "iframeTools", function () {
         art.dialog.open(linkurl, {
-        id: id,
-        title: title,
-        width: w,
-        height: h,
-        lock: true,
-        fixed: true,
-        background:"#CCCCCC",
-        opacity:0,
-        button: [{
-            name: '确定',
-            callback: function () {
-                if (close_type == 1) {
-                    return true;
-                } else {
-                    var d = this.iframe.contentWindow;
-                    var form = d.document.getElementById('dosubmit');
-                    form.click();
-                }
-                return false;
-           },
-           focus: true
-        }]
+            id: id,
+            title: title,
+            width: w,
+            height: h,
+            lock: true,
+            fixed: true,
+            background: "#CCCCCC",
+            opacity: 0,
+            button: [{
+                name: '确定',
+                callback: function () {
+                    if (close_type == 1) {
+                        return true;
+                    } else {
+                        var d = this.iframe.contentWindow;
+                        var form = d.document.getElementById('dosubmit');
+                        form.click();
+                    }
+                    return false;
+                },
+                focus: true
+            }]
+        });
     });
-    });
-    
+
 }
 
 /**
@@ -96,7 +95,7 @@ function change_images(uploadid, returnid) {
     var filenames = in_filename.split('|');
     $('#' + returnid + '_tips').css('display', 'none');
     if (contents == '') return true;
-    $.each(contents, function(i, n) {
+    $.each(contents, function (i, n) {
         var ids = parseInt(Math.random() * 10000 + 10 * i);
         var filename = filenames[i].substr(0, filenames[i].indexOf('.'));
         str += "<li id='image" + ids + "'><input type='text' name='" + returnid + "_url[]' value='" + n + "' style='width:310px;' ondblclick='image_priview(this.value);' class='input'> <input type='text' name='" + returnid + "_alt[]' value='" + filename + "' style='width:160px;' class='input' onfocus=\"if(this.value == this.defaultValue) this.value = ''\" onblur=\"if(this.value.replace(' ','') == '') this.value = this.defaultValue;\"> <a href=\"javascript:remove_div('image" + ids + "')\">移除</a> </li>";
@@ -106,10 +105,10 @@ function change_images(uploadid, returnid) {
 }
 
 //编辑器ue附件上传
-function ueAttachment(uploadid, returnid){
+function ueAttachment(uploadid, returnid) {
     var d = uploadid.iframe.contentWindow;
     var in_content = d.$("#att-status").html().substring(1);
-    if (in_content == ''){
+    if (in_content == '') {
         return false;
     }
     in_content = in_content.split("|");
@@ -117,12 +116,12 @@ function ueAttachment(uploadid, returnid){
     var in_filename = d.$("#att-name").html().substring(1);
     var filenames = in_filename.split('|');
 
-    eval("var ue = editor"+ returnid);
-    
-    for(i=0; i<in_content.length; i++){
-        ue.execCommand('inserthtml', '<a href="'+in_content[i]+'" target="_blank">附件：'+filenames[i]+'</a>');
+    eval("var ue = editor" + returnid);
+
+    for (i = 0; i < in_content.length; i++) {
+        ue.execCommand('inserthtml', '<a href="' + in_content[i] + '" target="_blank">附件：' + filenames[i] + '</a>');
     }
-    
+
 }
 
 //多文件上传回调
@@ -135,7 +134,7 @@ function change_multifile(uploadid, returnid) {
     var filenames = in_filename.split('|');
     $('#' + returnid + '_tips').css('display', 'none');
     if (contents == '') return true;
-    $.each(contents, function(i, n) {
+    $.each(contents, function (i, n) {
         var ids = parseInt(Math.random() * 10000 + 10 * i);
         var filename = filenames[i].substr(0, filenames[i].indexOf('.'));
         str += "<li id='multifile" + ids + "'><input type='text' name='" + returnid + "_fileurl[]' value='" + n + "' style='width:310px;' class='input'> <input type='text' name='" + returnid + "_filename[]' value='" + filename + "' style='width:160px;' class='input' onfocus=\"if(this.value == this.defaultValue) this.value = ''\" onblur=\"if(this.value.replace(' ','') == '') this.value = this.defaultValue;\"> <a href=\"javascript:remove_div('multifile" + ids + "')\">移除</a> </li>";
@@ -162,19 +161,19 @@ function thumb_images(uploadid, returnid) {
 }
 
 //提示框 alert
-function isalert(content,icon){
-    if(content == ''){
+function isalert(content, icon) {
+    if (content == '') {
         return;
     }
-    icon = icon|| "error";
-    Wind.use("artDialog",function(){
+    icon = icon || "error";
+    Wind.use("artDialog", function () {
         art.dialog({
-            id:icon,
+            id: icon,
             icon: icon,
             fixed: true,
             lock: true,
-            background:"#CCCCCC",
-            opacity:0,
+            background: "#CCCCCC",
+            opacity: 0,
             content: content,
             cancelVal: '确定',
             cancel: true
@@ -184,23 +183,23 @@ function isalert(content,icon){
 
 //图片使用dialog查看
 function image_priview(img) {
-    if(img == ''){
+    if (img == '') {
         return;
     }
     if (!IsImg(img)) {
         isalert('选择的类型必须为图片类型！');
         return false;
     }
-    Wind.use("artDialog",function(){
+    Wind.use("artDialog", function () {
         art.dialog({
             title: '图片查看',
             fixed: true,
-            width:"600px",
+            width: "600px",
             height: '420px',
-            id:"image_priview",
+            id: "image_priview",
             lock: true,
-            background:"#CCCCCC",
-            opacity:0,
+            background: "#CCCCCC",
+            opacity: 0,
             content: '<img src="' + img + '" />',
             time: 5
         });
@@ -240,7 +239,7 @@ function remove_relation(sid, id) {
 
 //显示相关文章
 function show_relation(modelid, id) {
-    $.getJSON(GV.DIMAUB+"index.php?a=public_getjson_ids&m=Content&g=Contents&modelid=" + modelid + "&id=" + id, function (json) {
+    $.getJSON(GV.DIMAUB + "index.php?a=public_getjson_ids&m=Content&g=Content&modelid=" + modelid + "&id=" + id, function (json) {
         var newrelation_ids = '';
         if (json.data == null) {
             isalert('没有添加相关文章！');
@@ -267,7 +266,7 @@ function submit_attachment(uploadid, returnid) {
     var d = uploadid.iframe.contentWindow;
     var in_content = d.$("#att-status").html().substring(1);
     var in_content = in_content.split('|');
-   $('#' + returnid).attr("value", in_content[0]);
+    $('#' + returnid).attr("value", in_content[0]);
 }
 
 //移除ID
@@ -299,6 +298,7 @@ function strlen_verify(obj, checklen, maxlen) {
 function strlen(str) {
     return ($.browser.msie && str.indexOf('\n') != -1) ? str.replace(/\r?\n/g, '_').length : str.length;
 }
+
 function mb_cutstr(str, maxlen, dot) {
     var len = 0;
     var ret = '';

@@ -22,4 +22,5 @@ return array(
     'Image' => PROJECT_PATH . 'Libs/Util/Image.class.php',
     'UploadFile' => PROJECT_PATH . 'Libs/Util/UploadFile.class.php',
     'Ftp' => PROJECT_PATH . 'Libs/Util/Ftp.class.php',
+    'Libs\Util\Encrypt' => PROJECT_PATH . 'Libs/Util/Encrypt.class.php',
 );

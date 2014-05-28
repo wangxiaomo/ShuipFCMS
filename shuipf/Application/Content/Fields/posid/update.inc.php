@@ -23,12 +23,13 @@ function posid($field, $value) {
                 $textcontent['style'] = $textcontent['style'] . ';' . strip_tags($_POST['style_font_weight']);
             }
             $posid = array();
+            $catid = $this->data['catid'];
             foreach ($value as $r) {
                 if ($r != '-1') {
                     $posid[] = $r;
                 }
             }
-            $position_data_db->position_update($this->id, $this->modelid, $this->data['catid'], $posid, $textcontent, 0, 1);
+            $position_data_db->positionUpdate($this->id, $this->modelid, $catid, $posid, $textcontent, 0, 1);
         } else {
             $posids = array();
             $catid = $this->data['catid'];
@@ -49,7 +50,7 @@ function posid($field, $value) {
                 $textcontent['style'] = $textcontent['style'] . ';' . strip_tags($_POST['style_font_weight']);
             }
             //颜色选择为隐藏域 在这里进行取值
-            $position_data_db->position_update($this->id, $this->modelid, $catid, $posids, $textcontent);
+            $position_data_db->positionUpdate($this->id, $this->modelid, $catid, $posids, $textcontent);
         }
     }
 }

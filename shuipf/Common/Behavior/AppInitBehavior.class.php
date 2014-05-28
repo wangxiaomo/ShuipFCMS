@@ -79,7 +79,7 @@ class AppInitBehavior {
             return;
         }
         echo '错误：' . $class . '<br/>';
-        exit;
+        //exit;
     }
 
 }

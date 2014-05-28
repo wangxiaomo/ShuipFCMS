@@ -20,10 +20,7 @@
     <a href="{$url}" target="_blank"  class="btn" title="访问该栏目">访问该栏目</a>
   </div>
   <div class="h_a">搜索</div>
-  <form method="get" action="">
-  <input type="hidden" value="Contents" name="g">
-  <input type="hidden" value="Content" name="m">
-  <input type="hidden" value="classlist" name="a">
+  <form method="post" action="{:U('classlist',array('catid'=>$catid))}">
   <input type="hidden" value="{$catid}" name="catid">
   <input type="hidden" value="0" name="steps">
   <input type="hidden" value="1" name="search">
@@ -149,7 +146,7 @@ $(function () {
                 return false;
             }
             var $this = $(this);
-            art.dialog.open("{$config_siteurl}index.php?g=Contents&m=Content&a=remove&catid={$catid}&ids=" + id, {
+            art.dialog.open("{$config_siteurl}index.php?g=Content&m=Content&a=remove&catid={$catid}&ids=" + id, {
                 title: "批量移动"
             });
         });
@@ -197,7 +194,7 @@ function pushs() {
         return false;
     }
     Wind.use('artDialog','iframeTools', function () {
-         art.dialog.open("{$config_siteurl}index.php?g=Contents&m=Content&a=push&action=position_list&modelid={$modelid}&catid={$catid}&id=" + id, {
+         art.dialog.open("{$config_siteurl}index.php?g=Content&m=Content&a=push&action=position_list&modelid={$modelid}&catid={$catid}&id=" + id, {
             title: "信息推送"
         });
     });

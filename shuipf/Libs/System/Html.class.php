@@ -19,6 +19,8 @@ class Html extends Base {
     protected $data = array();
     //错误信息
     protected $error = NULL;
+    //Url对象
+    protected $urlClass = NULL;
 
     //初始化
     protected function _initialize() {
@@ -135,7 +137,7 @@ class Html extends Base {
                 $pagenumber = count($contents);
                 for ($i = 1; $i <= $pagenumber; $i++) {
                     //URL地址处理
-                    $urlrules = $this->generateUrl($data, $i);
+                    $urlrules = $this->generateShowUrl($data, $i);
                     //用于分页导航
                     if (!isset($pageurl['index'])) {
                         $pageurl['index'] = $urlrules['page']['index'];
@@ -153,7 +155,7 @@ class Html extends Base {
                     //分页
                     $this->assign("pages", $pages);
                     $this->assign("content", $content);
-                    $this->buildHtml($urls['path'], SITE_PATH . '/', $templatePath);
+                    $this->buildHtml($urls['path'], SITE_PATH, $templatePath);
                 }
                 return true;
             }
@@ -169,10 +171,10 @@ class Html extends Base {
         do {
             $this->assign(C("VAR_PAGE"), $page);
             //生成路径
-            $category_url = $this->generateUrl($data, $page);
+            $category_url = $this->generateShowUrl($data, $page);
             $GLOBALS['URLRULE'] = $category_url['page'];
             //生成
-            $this->buildHtml($category_url["path"], SITE_PATH . '/', $templatePath);
+            $this->buildHtml($category_url["path"], SITE_PATH, $templatePath);
             $page++;
             $j++;
             $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : (int) $GLOBALS["Total_Pages"];
@@ -183,12 +185,8 @@ class Html extends Base {
     /**
      * 根据页码生成栏目
      * @param $catid 栏目id
-     * @param $page 当前页数
      */
-    public function category($catid, $page = 1) {
-        if (!$catid) {
-            return false;
-        }
+    public function category($catid) {
         //获取栏目数据
         $category = getCategory($catid);
         if (empty($category)) {
@@ -213,17 +211,14 @@ class Html extends Base {
             unset($GLOBALS['dynamicRules']);
             return true;
         }
-        //分页
-        $page = intval($page);
         //父目录
         $parentdir = $category['parentdir'];
         //目录
         $catdir = $category['catdir'];
         //生成路径
-        $category_url = $this->url->category_url($catid, $page);
+        $category_url = $this->generateCategoryUrl($catid, $page);
         //取得URL规则
         $urls = $category_url['page'];
-
         //生成类型为0的栏目
         if ($category['type'] == 0) {
             //栏目首页模板
@@ -231,102 +226,82 @@ class Html extends Base {
             //栏目列表页模板
             $template_list = $setting['list_template'] ? $setting['list_template'] : 'list';
             //判断使用模板类型，如果有子栏目使用频道页模板，终极栏目使用的是列表模板
-            $template = $category['child'] ? "Category:" . $template : "List:" . $template_list;
+            $template = $category['child'] ? "Category/{$template}" : "List/{$template_list}";
             //去除后缀开始
-            $tpar = explode(".", $template, 2);
+            $tpar = explode('.', $template, 2);
             //去除完后缀的模板
             $template = $tpar[0];
-            unset($tpar);
-            //模板检测
+            //模板文件路径
             $template = parseTemplateFile($template);
             $GLOBALS['URLRULE'] = $urls;
         } else if ($category['type'] == 1) {//单页
-            $db = D('Page');
+            $db = D('Content/Page');
             $template = $setting['page_template'] ? $setting['page_template'] : 'page';
             //判断使用模板类型，如果有子栏目使用频道页模板，终极栏目使用的是列表模板
-            $template = "Page:" . $template;
+            $template = "Page/{$template}";
             //去除后缀开始
-            $tpar = explode(".", $template, 2);
+            $tpar = explode('.', $template, 2);
             //去除完后缀的模板
             $template = $tpar[0];
-            unset($tpar);
+            //模板文件路径
+            $template = parseTemplateFile($template);
             $GLOBALS['URLRULE'] = $urls;
             $info = $db->getPage($catid);
             $this->assign($category['setting']['extend']);
             $this->assign($info);
         }
-        //把分页分配到模板
-        $this->assign(C("VAR_PAGE"), $page);
         //分配变量到模板 
         $this->assign($category);
         //seo分配到模板
         $seo = seo($catid, $setting['meta_title'], $setting['meta_description'], $setting['meta_keywords']);
-        $this->assign("SEO", $seo);
-        //生成
-        $this->buildHtml($category_url["path"], SITE_PATH . "/", $template);
-    }
+        $this->assign('SEO', $seo);
 
-    /**
-     * 生成栏目列表
-     * @param $catid 栏目id
-     */
-    public function HtmlCategory($catid) {
         $page = 1;
         $j = 1;
-        //开始生成列表
         unset($GLOBALS["Total_Pages"]);
         do {
-            $this->category($catid, $page);
+            //把分页分配到模板
+            $this->assign(C("VAR_PAGE"), $page);
+            //生成
+            $this->buildHtml($category_url["path"], SITE_PATH, $template);
             $page++;
             $j++;
             //如果GET有total_number参数则直接使用GET的，如果没有则根据$GLOBALS["Total_Pages"]获取分页总数
             $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : $GLOBALS["Total_Pages"];
         } while ($j <= $total_number);
-
-        return true;
     }
 
     /**
-     * 更新首页
-     * @param $page 页码，默认1
+     * 生成首页
+     * @return boolean
      */
-    public function index($page = 1) {
-        $page = max($page, 1);
-        if (CONFIG_GENERATE == '0' || CONFIG_GENERATE < 1) {
+    public function index() {
+        $config = cache('Config');
+        if (empty($config['generate'])) {
             return false;
         }
         //初始化一些模板分配变量
         $this->assignInitialize();
         //模板处理
-        $tp = explode(".", CONFIG_INDEXTP);
-        $template = parseTemplateFile("Index:" . $tp[0]);
-        if ($template == false && $tp[0] != "index") {
-            //模板不存在，重新使用默认模板
-            $template = "index";
-            $template = parseTemplateFile("Index:" . $template);
-            if ($template == false) {
-                $this->error("首页模板不存在！");
-            }
-        } else if ($template == false) {
-            $this->error("首页模板不存在！");
-        }
-
-        $SEO = seo("", "", AppframeAction::$Cache['Config']['siteinfo'], AppframeAction::$Cache['Config']['sitekeywords']);
+        $tp = explode('.', $config['indextp'], 2);
+        $template = parseTemplateFile("Index/{$tp[0]}");
+        $seo = seo('', '', $config['siteinfo'], $config['sitekeywords']);
+        //seo分配到模板
+        $this->assign('SEO', $seo);
         unset($GLOBALS["Total_Pages"]);
         $j = 1;
+        $page = 1;
         //分页生成
         do {
             //把分页分配到模板
             $this->assign(C("VAR_PAGE"), $page);
-            //seo分配到模板
-            $this->assign("SEO", $SEO);
             //生成路径
-            $urls = $this->url->index($page);
+            $urls = $this->generateIndexUrl($page);
             $GLOBALS['URLRULE'] = $urls['page'];
             $filename = $urls['path'];
             //判断是否生成和入口文件同名，如果是，不生成！
-            if ($filename != "/index.php") {
-                $this->buildHtml($filename, SITE_PATH . "/", $template);
+            if ($filename != '/index.php') {
+                $this->buildHtml($filename, SITE_PATH, $template);
             }
             //如果GET有total_number参数则直接使用GET的，如果没有则根据$GLOBALS["Total_Pages"]获取分页总数
             $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : $GLOBALS["Total_Pages"];
@@ -336,30 +311,24 @@ class Html extends Base {
     }
 
     /**
-     * 生成相关栏目列表
+     * 生成父栏目列表
      * @param $catid
      */
-    public function create_relation_html($catid) {
-        unset($GLOBALS["Total_Pages"]);
-        $page = 1;
-        $j = 1;
-        //开始生成列表
-        do {
-            $this->category($catid, $page);
-            $page++;
-            $j++;
-            //如果GET有total_number参数则直接使用GET的，如果没有则根据$GLOBALS["Total_Pages"]获取分页总数
-            $total_number = isset($_GET['total_number']) ? (int) $_GET['total_number'] : $GLOBALS["Total_Pages"];
-        } while ($j <= $total_number && $j < 7);
+    public function createRelationHtml($catid) {
+        if (empty($catid)) {
+            return false;
+        }
         //检查当前栏目的父栏目，如果存在则生成
         $arrparentid = getCategory($catid, 'arrparentid');
         if ($arrparentid) {
             $arrparentid = explode(',', $arrparentid);
-            foreach ($arrparentid as $catid) {
-                if ($catid)
-                    $this->category($catid, 1);
+            foreach ($arrparentid as $cid) {
+                if ($cid) {
+                    $this->category($cid);
+                }
             }
         }
+        return true;
     }
 
     /**
@@ -390,20 +359,39 @@ class Html extends Base {
         }
         //写入文件
         if (false === file_put_contents($htmlpath, $content)) {
-            throw_exception("自定义页面生成失败：" . $htmlpath);
+            E("自定义页面生成失败：{$htmlpath}");
         }
         return true;
     }
 
     /**
-     * 获取URL规则处理后的
+     * 获取首页页URL规则处理后的
      * @param type $data 数据
      * @param type $page 分页号
      * @return type
      */
-    protected function generateUrl($data, $page = 1) {
-        $url = new Url();
-        return $url->show($data, $page);
+    protected function generateIndexUrl($page = 1) {
+        return $this->Url->index($page);
+    }
+
+    /**
+     * 获取内容页URL规则处理后的
+     * @param type $data 数据
+     * @param type $page 分页号
+     * @return type
+     */
+    protected function generateShowUrl($data, $page = 1) {
+        return $this->Url->show($data, $page);
+    }
+
+    /**
+     * 获取栏目页URL规则处理后的
+     * @param type $catid 栏目ID
+     * @param type $page 分页号
+     * @return type
+     */
+    protected function generateCategoryUrl($catid, $page = 1) {
+        return $this->Url->category_url($catid, $page);
     }
 
     /**

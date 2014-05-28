@@ -12,7 +12,7 @@ namespace Libs\System;
 
 use Content\Model\ContentModel;
 
-class Content {
+class Content extends Components {
 
     //数据
     protected $data = array();
@@ -31,7 +31,7 @@ class Content {
     static public function getInstance($options = array()) {
         static $systemHandier;
         if (empty($systemHandier)) {
-            $systemHandier = new Content($options);
+            $systemHandier = new self($options);
         }
         return $systemHandier;
     }
@@ -86,7 +86,7 @@ class Content {
         //取得表单令牌验证码
         $data[C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
         //标签
-        tag("content_add_begin", $data);
+        tag('content_add_begin', $data);
         //栏目数据
         $catidinfo = getCategory($data['catid']);
         if (empty($catidinfo)) {
@@ -176,7 +176,7 @@ class Content {
             $this->search_api($id, $data);
         }
         $content_update = new \content_update($this->modelid);
-        $content_update->update($data);
+        $status = $content_update->update($oldata);
         //发布到其他栏目,只能后台发布才可以使用该功能
         if (defined('IN_ADMIN') && IN_ADMIN) {
             if (is_array($_POST['othor_catid'])) {
@@ -197,7 +197,62 @@ class Content {
         $attachment = service('Attachment');
         $attachment->api_update('', 'c-' . $data['catid'] . '-' . $id, 2);
         //标签
-        tag("content_add_end", $data);
+        tag('content_add_end', $data);
+        //生成相关
+        $generatelish = 0;
+        if (defined('IN_ADMIN') && IN_ADMIN) {
+            //是否生成内容页
+            if ($catidsetting['generatehtml']) {
+                //生成静态
+                if ($catidsetting['content_ishtml'] && $data['status'] == 99) {
+                    $this->Html->show($data);
+                }
+            }
+            //生成列表
+            if ((int) $catidsetting['generatelish'] > 0) {
+                $generatelish = (int) $catidsetting['generatelish'];
+            }
+        }
+        switch ($generatelish) {
+            //生成当前栏目
+            case 1:
+                $this->Html->category($data['catid']);
+                break;
+            //生成首页
+            case 2:
+                $this->Html->index();
+                break;
+            //生成父栏目
+            case 3:
+                if ($catidinfo['parentid']) {
+                    $this->Html->category($catidinfo['parentid']);
+                }
+                break;
+            //生成当前栏目与父栏目
+            case 4:
+                $this->Html->category($data['catid']);
+                if ($catidinfo['parentid']) {
+                    $this->Html->category($catidinfo['parentid']);
+                }
+                break;
+            //生成父栏目与首页
+            case 5:
+                if ($catidinfo['parentid']) {
+                    $this->Html->category($catidinfo['parentid']);
+                }
+                $this->Html->index();
+                break;
+            //生成当前栏目、父栏目与首页
+            case 6:
+                $this->Html->category($data['catid']);
+                $this->Html->createRelationHtml($data['catid']);
+                $this->Html->index();
+                break;
+        }
+        //生成上一篇下一篇
+        if ($data['status'] == 99) {
+            $this->relatedContent($data['catid'], $id, 'add');
+        }
         return $id;
     }
 
@@ -223,7 +278,7 @@ class Content {
         //取得表单令牌验证码
         $data[C("TOKEN_NAME")] = $_POST[C("TOKEN_NAME")];
         //标签
-        tag("content_edit_begin", $data);
+        tag('content_edit_begin', $data);
         //栏目数据
         $catidinfo = getCategory($this->catid);
         if (empty($catidinfo)) {
@@ -241,7 +296,7 @@ class Content {
         }
         $model = ContentModel::getInstance($this->modelid);
         //真实发布时间
-        $data['inputtime'] = $inputtime = $model->where(array("id" => $this->id))->getField("inputtime");
+        $data['inputtime'] = $inputtime = $model->where(array("id" => $this->id))->getField('inputtime');
         //更新时间处理
         if ($data['updatetime'] && !is_numeric($data['updatetime'])) {
             $data['updatetime'] = strtotime($data['updatetime']);
@@ -299,8 +354,303 @@ class Content {
             $this->search_api($id, $data, 'delete');
         }
         //标签
-        tag("content_edit_end", $data);
+        tag('content_edit_end', $data);
+        //生成相关
+        $generatelish = 0;
+        if (defined('IN_ADMIN') && IN_ADMIN) {
+            //是否生成内容页
+            if ($catidsetting['generatehtml']) {
+                //生成静态
+                if ($catidsetting['content_ishtml'] && $data['status'] == 99) {
+                    $this->Html->show($data);
+                }
+            }
+            //如果是未审核，删除已经生成
+            if ($catidsetting['content_ishtml'] && !$data['islink'] && $data['status'] != 99) {
+                $this->data($data)->deleteHtml();
+            }
+            //生成列表
+            if ((int) $catidsetting['generatelish'] > 0) {
+                $generatelish = (int) $catidsetting['generatelish'];
+            }
+        } else {
+            //投稿内容页生成，直接审核通过的直接生成内容页
+            if ($data['status'] == 99) {
+                //生成静态
+                if ($catidsetting['content_ishtml']) {
+                    $this->Html->show($data);
+                }
+            } else {
+                if ($catidsetting['content_ishtml'] && !$data['islink']) {
+                    $this->data($data)->deleteHtml();
+                }
+            }
+            //列表生成
+            if ((int) $catidsetting['member_generatelish'] > 0) {
+                $generatelish = (int) $catidsetting['member_generatelish'];
+            }
+        }
+        //列表生成
+        switch ($generatelish) {
+            //生成当前栏目
+            case 1:
+                $this->Html->category($data['catid']);
+                break;
+            //生成首页
+            case 2:
+                $this->Html->index();
+                break;
+            //生成父栏目
+            case 3:
+                if ($catidinfo['parentid']) {
+                    $this->Html->category($catidinfo['parentid']);
+                }
+                break;
+            //生成当前栏目与父栏目
+            case 4:
+                $this->Html->category($data['catid']);
+                if ($catidinfo['parentid']) {
+                    $this->Html->category($catidinfo['parentid']);
+                }
+                break;
+            //生成父栏目与首页
+            case 5:
+                if ($catidinfo['parentid']) {
+                    $this->Html->category($catidinfo['parentid']);
+                }
+                $this->Html->index();
+                break;
+            //生成当前栏目、父栏目与首页
+            case 6:
+                $this->Html->category($data['catid']);
+                $this->Html->createRelationHtml($data['catid']);
+                $this->Html->index();
+                break;
+        }
+        //生成上一篇下一篇
+        $this->relatedContent($data['catid'], $id, 'edit');
+        return true;
+    }
 
+    /**
+     * 信息审核
+     * @param type $catid 栏目ID
+     * @param type $id 信息ID
+     * @param type $status 1为未审核，99为审核通过
+     * @return boolean 
+     */
+    public function check($catid = '', $id = '', $status = 99) {
+        if (empty($catid) && empty($id)) {
+            if (!empty($this->data)) {
+                $data = $this->data;
+                $catid = $data['catid'];
+                $id = $data['id'];
+                //模型ID
+                $this->modelid = getCategory($catid, 'modelid');
+                // 重置数据
+                $this->data = array();
+            } else {
+                $this->error = L('_DATA_TYPE_INVALID_');
+                return false;
+            }
+        } else if (is_array($catid)) {
+            $data = $catid;
+            $catid = $data['catid'];
+            $id = $data['id'];
+            //模型ID
+            $this->modelid = getCategory($catid, 'modelid');
+        } else {
+            //模型ID
+            $this->modelid = getCategory($catid, 'modelid');
+            $data = ContentModel::getInstance($this->modelid)->relation(true)->where(array('id' => $id, 'catid' => $catid))->find();
+        }
+        ContentModel::getInstance($this->modelid)->dataMerger($data);
+        C('TOKEN_ON', false);
+        //是否生成HTML
+        $sethtml = getCategory($catid, 'sethtml');
+        //栏目配置信息
+        $setting = getCategory($catid, 'setting');
+        $content_ishtml = $setting['content_ishtml'];
+        $model = ContentModel::getInstance($this->modelid);
+        tag('content_check_begin', $data);
+        $data['status'] = $status;
+        if ($data) {
+            if ($model->where(array('id' => $id, 'catid' => $catid))->save(array('status' => $status)) !== false) {
+                //判断是否前台投稿
+                if ($data['sysadd'] == 0 && $status == 99 && isModuleInstall('Member')) {
+                    //检查是否已经赠送过积分
+                    $integral = M('MemberContent')->where(array('content_id' => $id, 'catid' => $catid))->getField('integral');
+                    if (!$integral) {
+                        if (service('Passport')->user_integral($data['username'], $setting['member_addpoint'])) {
+                            M('MemberContent')->where(array('content_id' => $id, 'catid' => $catid))->save(array('integral' => 1));
+                        }
+                    }
+                }
+                //生成内容页
+                if ($content_ishtml && !$data['islink'] && $status == 99) {
+                    $this->Html->data($data)->show();
+                    //生成上下篇
+                    $this->relatedContent($catid, $id);
+                }
+                //如果是取消审核
+                if ($content_ishtml && $status != 99) {
+                    //则删除生成静态的文件
+                    $this->data($data)->deleteHtml();
+                    //删除全站搜索数据
+                    $this->search_api($id, $data, 'delete');
+                    //删除tags
+                    D('Content/Tags')->deleteAll($data['id'], $data['catid'], $this->modelid);
+                } elseif ($status == 99) {
+                    //更新全站搜索数据
+                    $this->search_api($id, $data);
+                    //更新tags
+                    if (strpos($data['tags'], ',') === false) {
+                        $tags = explode(' ', $data['tags']);
+                    } else {
+                        $tags = explode(',', $data['tags']);
+                    }
+                    $tags = array_unique($tags);
+                    D('Content/Tags')->updata($tags, $data['id'], $data['catid'], $this->modelid, array(
+                        'url' => $data['url'],
+                        'title' => $data['title'],
+                    ));
+                }
+            }
+        }
+        tag('content_check_end', $data);
+        return true;
+    }
+
+    /**
+     * 删除信息
+     * @param type $id 数组/信息id
+     * @param type $catid 栏目id
+     * @return boolean
+     */
+    public function delete($id = '', $catid = '') {
+        if (empty($id) || empty($catid)) {
+            if (!empty($this->data)) {
+                $data = $this->data;
+                $id = $data['id'];
+                $this->catid = $catid = $data['catid'];
+                //模型ID
+                $this->modelid = getCategory($this->catid, 'modelid');
+                // 重置数据
+                $this->data = array();
+            } else {
+                $this->error = L('_DATA_TYPE_INVALID_');
+                return false;
+            }
+        } else if (is_array($id)) {
+            $data = $id;
+            $id = $data['id'];
+            $this->catid = $catid = $data['catid'];
+            //模型ID
+            $this->modelid = getCategory($this->catid, 'modelid');
+        } else {
+            $this->catid = $catid;
+            //模型ID
+            $this->modelid = getCategory($this->catid, 'modelid');
+            $model = ContentModel::getInstance($this->modelid);
+            $data = $model->relation(true)->where(array('id' => $id))->find();
+        }
+        ContentModel::getInstance($this->modelid)->dataMerger($data);
+        if (getCategory($this->catid) == false) {
+            $this->error = '获取不到栏目信息！';
+            return false;
+        }
+        //栏目配置信息
+        $setting = getCategory($this->catid, 'setting');
+        //内容页是否生成静态
+        $content_ishtml = $setting['content_ishtml'];
+        if (!$content_ishtml) {
+            return true;
+        }
+        if (empty($data)) {
+            $this->error = '该信息不存在！';
+            return false;
+        }
+        tag('content_delete_begin', $data);
+        if ($content_ishtml && !$data['islink']) {
+            $this->data($data)->deleteHtml();
+        }
+        //调用 content_delete
+        $content_update = new \content_delete($this->modelid);
+        $content_update->get($data);
+        //删除内容
+        ContentModel::getInstance($this->modelid)->relation(true)->where(array('id' => $id))->delete();
+        //删除评论
+        if (isModuleInstall('Comments')) {
+            $comment_id = "c-{$this->catid}-{$id}";
+            D('Comments/Comments')->deleteCommentsMark($comment_id);
+        }
+        //删除附件
+        $Attachment = service('Attachment');
+        $Attachment->api_delete('c-' . $this->catid . '-' . $id);
+        //删除全站搜索数据
+        $this->search_api($id, $data, 'delete');
+        //删除推荐位的信息
+        if (!empty($data['posid'])) {
+            D('Content/PositionData')->deleteByModeId($this->modelid, $id);
+        }
+        //标签
+        tag('content_delete_end', $data);
+        return true;
+    }
+
+    /**
+     * 删除静态生成的文章文件 
+     * @param type $catid 栏目ID,可以是信息数组
+     * @param type $id 信息ID
+     * @param type $inputtime 真实发布时间
+     * @param type $prefix 自定义文件名
+     * @return type 
+     */
+    public function deleteHtml($catid = '', $id = '', $inputtime = '', $prefix = '') {
+        if (empty($catid) && empty($id) && empty($inputtime)) {
+            if (!empty($this->data)) {
+                $data = $this->data;
+                $id = $data['id'];
+                $inputtime = $data['inputtime'];
+                $prefix = $data['prefix'];
+                $this->catid = $catid = $data['catid'];
+                $this->modelid = getCategory($this->catid, 'modelid');
+                // 重置数据
+                $this->data = array();
+            } else {
+                $this->error = L('_DATA_TYPE_INVALID_');
+                return false;
+            }
+        } else if (is_array($catid)) {
+            $data = $catid;
+            $id = $data['id'];
+            $inputtime = $data['inputtime'];
+            $prefix = $data['prefix'];
+            $this->catid = $catid = $data['catid'];
+            $this->modelid = getCategory($this->catid, 'modelid');
+        } else {
+            $this->catid = $catid;
+            $this->modelid = getCategory($this->catid, 'modelid');
+            $model = ContentModel::getInstance($this->modelid);
+            $data = $model->relation(true)->where(array('id' => $id, 'catid' => $catid))->find();
+        }
+        ContentModel::getInstance($this->modelid)->dataMerger($data);
+        //获取信息生成地址和url
+        $urls = $this->generateUrl($data);
+        $fileurl = $urls['path'];
+        //删除静态文件
+        $lasttext = strrchr($fileurl, '.');
+        $len = -strlen($lasttext);
+        $path = substr($fileurl, 0, $len);
+        $path = ltrim($path, '/');
+        $filelist = glob(SITE_PATH . $path . '*');
+        foreach ($filelist as $delfile) {
+            $lasttext = strrchr($delfile, '.');
+            if (!in_array($lasttext, array('.htm', '.html', '.shtml'))) {
+                continue;
+            }
+            @unlink($delfile);
+        }
         return true;
     }
 
@@ -379,6 +729,43 @@ class Content {
     }
 
     /**
+     * 生成上下篇
+     * @param type $catid 栏目ID
+     * @param type $id 信息ID
+     * @param type $action 新增还是修改
+     * @return boolean
+     */
+    public function relatedContent($catid, $id, $action = 'edit') {
+        if (!$catid || !$id) {
+            return;
+        }
+        $modelid = getCategory($catid, 'modelid');
+        $db = ContentModel::getInstance($modelid);
+        $where = array();
+        $where['catid'] = $catid;
+        $where['status'] = 99;
+        $where['id'] = array('LT', $id);
+        $data[] = $db->relation(true)->where($where)->order(array('id' => 'DESC'))->find();
+        if ($action == 'edit') {
+            $where['id'] = array('GT', $id);
+            $data[] = $db->relation(true)->where($where)->find();
+        }
+        foreach ($data as $r) {
+            if ($r['islink'] || empty($r)) {
+                continue;
+            }
+            $db->dataMerger($r);
+            $setting = getCategory($r['catid'], 'setting');
+            $content_ishtml = $setting['content_ishtml'];
+            if (!$content_ishtml) {
+                continue;
+            }
+            $this->Html->data($r)->show();
+        }
+        return true;
+    }
+
+    /**
      * 更新搜索数据
      * @param type $id 信息id
      * @param type $data 数据
@@ -390,7 +777,7 @@ class Content {
         }
         $db = D('Search/Search');
         //检查当前模型是否有在搜索数据源中
-        $searchConfig = cache("Search_config");
+        $searchConfig = cache('Search_config');
         if (!in_array($this->modelid, $searchConfig['modelid'])) {
             return false;
         }
@@ -402,9 +789,8 @@ class Content {
      * @param type $data
      * @return type
      */
-    protected function generateUrl($data,$page = 1) {
-        $url = new Url();
-        return $url->show($data);
+    protected function generateUrl($data) {
+        return $this->Url->show($data);
     }
 
     /**

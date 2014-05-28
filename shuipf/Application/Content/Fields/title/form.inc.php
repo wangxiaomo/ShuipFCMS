@@ -29,7 +29,7 @@ function title($field, $value, $fieldinfo) {
                 <input type="hidden" name="style_font_weight" id="style_font_weight" value="' . $style_font_weight . '">';
     //后台的情况下
     if (defined('IN_ADMIN') && IN_ADMIN)
-        $str .= '<input type="button" class="btn" id="check_title_alt" value="标题检测" onclick="$.get(\'' . U('Contents/Content/public_check_title',array('catid'=>$this->catid)) . '\', {data:$(\'#title\').val()}, function(data){if(data.status==false) {$(\'#check_title_alt\').val(\'标题重复\');$(\'#check_title_alt\').css(\'background-color\',\'#FFCC66\');} else if(data.status==true) {$(\'#check_title_alt\').val(\'标题不重复\');$(\'#check_title_alt\').css(\'background-color\',\'#F8FFE1\')}},\'json\')" style="width:73px;"/>
+        $str .= '<input type="button" class="btn" id="check_title_alt" value="标题检测" onclick="$.get(\'' . U('Content/Content/public_check_title',array('catid'=>$this->catid)) . '\', {data:$(\'#title\').val()}, function(data){if(data.status==false) {$(\'#check_title_alt\').val(\'标题重复\');$(\'#check_title_alt\').css(\'background-color\',\'#FFCC66\');} else if(data.status==true) {$(\'#check_title_alt\').val(\'标题不重复\');$(\'#check_title_alt\').css(\'background-color\',\'#F8FFE1\')}},\'json\')" style="width:73px;"/>
                     <span class="color_pick J_color_pick"><em style="background:' . $style_color . ';" class="J_bg"></em></span><input type="hidden" name="style_color" id="style_color" class="J_hidden_color" value="' . $style_color . '">
                     <img src="' . CONFIG_SITEURL_MODEL . 'statics/images/icon/bold.png" width="10" height="10" onclick="input_font_bold()" style="cursor:hand"/>';
     $str .= ' 还可输入<B><span id="title_len">' . $fieldinfo['maxlength'] . '</span></B> 个字符';

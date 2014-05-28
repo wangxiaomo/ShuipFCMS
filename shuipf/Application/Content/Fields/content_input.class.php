@@ -31,7 +31,7 @@ class content_input {
      * @param type $modelid 模型ID
      * @param type $Action 传入this
      */
-    function __construct($modelid) {
+    public function __construct($modelid) {
         $this->model = cache("Model");
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {

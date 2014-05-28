@@ -10,16 +10,41 @@
 
 namespace Common\Controller;
 
+use Libs\System\Components;
+
 class ShuipFCMS extends \Think\Controller {
 
     //缓存
     public static $Cache = array();
+    //当前对象
+    private static $_app;
+
+    public function __get($name) {
+        $parent = parent::__get($name);
+        if (empty($parent)) {
+            return Components::getInstance()->$name;
+        }
+        return $parent;
+    }
+
+    public function __construct() {
+        parent::__construct();
+        self::$_app = $this;
+    }
 
     //初始化
     protected function _initialize() {
         $this->initSite();
         //默认跳转时间
         $this->assign("waitSecond", 3000);
+    }
+
+    /**
+     * 获取ShuipFCMS 对象
+     * @return type
+     */
+    public static function app() {
+        return self::$_app;
     }
 
     /**
@@ -66,7 +91,7 @@ class ShuipFCMS extends \Think\Controller {
                 exit($data);
             default :
                 // 用于扩展其他返回格式数据
-                Hook::listen('ajax_return', $data);
+                tag('ajax_return', $data);
         }
     }
 
