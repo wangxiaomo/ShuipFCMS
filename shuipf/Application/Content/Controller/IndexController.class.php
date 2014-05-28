@@ -15,7 +15,18 @@ use Common\Controller\Base;
 class IndexController extends Base {
 
     public function index() {
-        print_r(service('Attachment'));
+        $url = new \Libs\System\Url();
+        $model = \Content\Model\ContentModel::getInstance(13);
+        $data = $model->relation(true)->find(1);
+        $html = new \Libs\System\Html();
+        print_r($html->show($data, 0));
+//        service('Attachment');
+//        G('begin');
+//        for ($i = 0; $i < 1000; $i++) {
+//            service('Attachment');
+//        }
+//        G('end');
+//        echo G('begin', 'end', 6);
         echo '网站首页';
     }
 

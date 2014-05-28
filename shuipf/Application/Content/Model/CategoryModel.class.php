@@ -491,9 +491,12 @@ class CategoryModel extends Model {
             $info['setting']['extend'] = $extend;
         }
         //更新栏目
-        return $this->where(array('catid' => $catid))->save(array(
-                    'setting' => serialize($info['setting']),
+        $status = $this->where(array('catid' => $catid))->save(array(
+            'setting' => serialize($info['setting']),
         ));
+        //删除缓存
+        getCategory($catid, '', true);
+        return $status !== false ? true : false;
     }
 
     //刷新栏目索引缓存

@@ -79,7 +79,7 @@ class ContentModel extends RelationModel {
             $this->_link = array(
                 //主表 附表关联
                 $this->getRelationName($tableName) => array(
-                    "mapping_type" => HAS_ONE,
+                    "mapping_type" => self::HAS_ONE,
                     "class_name" => $tableName . "_data",
                     "foreign_key" => "id"
                 ),
@@ -155,7 +155,7 @@ class ContentModel extends RelationModel {
                     //关联类型
                     $mappingType = !empty($val['mapping_type']) ? $val['mapping_type'] : $val;
                     switch ($mappingType) {
-                        case HAS_ONE:
+                        case self::HAS_ONE:
                             //是否有副表数据
                             $isLinkData = false;
                             //数据
@@ -297,6 +297,38 @@ class ContentModel extends RelationModel {
             }
         }
         return $this->_auto;
+    }
+    
+    /**
+     * 信息锁定
+     * @param type $catid 栏目ID
+     * @param type $id 信息ID
+     * @param type $userid 用户名ID
+     * @param type $username 用户名
+     * @return type
+     */
+    public function locking($catid, $id, $userid = 0) {
+        $db = M("Locking");
+        $time = time();
+        //锁定有效时间
+        $Lock_the_effective_time = 300;
+        if (empty($userid)) {
+            $userid = \Admin\Service\User::getInstance()->id;
+        }
+        $where = array();
+        $where['catid'] = array("EQ", $catid);
+        $where['id'] = array("EQ", $id);
+        $where['locktime'] = array("EGT", $time - $Lock_the_effective_time);
+        $info = $db->where($where)->find();
+        if ($info && $info['userid'] != \Admin\Service\User::getInstance()->id) {
+            $this->error = 'o(︶︿︶)o 唉，该信息已经被用户【<font color=\"red\">' . $info['username'] . '</font>】锁定~请稍后在修改！';
+            return false;
+        }
+        //删除失效的
+        $where = array();
+        $where['locktime'] = array("LT", $time - $Lock_the_effective_time);
+        $db->where($where)->delete();
+        return true;
     }
 
     /**

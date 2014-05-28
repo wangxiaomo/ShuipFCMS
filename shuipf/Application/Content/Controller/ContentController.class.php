@@ -13,16 +13,20 @@ namespace Content\Controller;
 use Common\Controller\AdminBase;
 use Admin\Service\User;
 use Content\Model\ContentModel;
+use Libs\System\Content;
 
 class ContentController extends AdminBase {
 
     //当前栏目id
     public $catid = 0;
+    //模型缓存
+    protected $model = array();
 
     //初始化
     protected function _initialize() {
         parent::_initialize();
         $this->catid = I('catid', 0, 'intval');
+        $this->model = cache('Model');
     }
 
     //显示内容管理首页
@@ -181,7 +185,7 @@ class ContentController extends AdminBase {
     public function add() {
         if (IS_POST) {
             //栏目ID
-            $catid = $_POST['info']['catid'] = intval($_POST['info']['catid']);
+            $catid = intval($_POST['info']['catid']);
             if (empty($catid)) {
                 $this->error("请指定栏目ID！");
             }
@@ -198,25 +202,23 @@ class ContentController extends AdminBase {
                 if ($this->model[$this->modelid]['disabled'] == 1) {
                     $this->error("模型被禁用！");
                 }
-                $status = \Libs\System\Content::getInstance()->add($_POST['info']);
+                $status = Content::getInstance()->data($_POST['info'])->add();
                 if ($status) {
                     $this->success("添加成功！");
                 } else {
-                    $error = \Libs\System\Content::getInstance()->getError();
+                    $error = Content::getInstance()->getError();
                     $this->error($error ? $error : '添加失败！');
                 }
             } else if ($category['type'] == 1) {//单页栏目
-                $db = D('Page');
+                $db = D('Content/Page');
                 if ($db->savePage($_POST)) {
                     //扩展字段处理
                     if ($_POST['extend']) {
-                        D("Category")->extendField($catid, $_POST);
-                        //更新缓存
-                        getCategory($this->catid, '', true);
+                        D('Content/Category')->extendField($catid, $_POST);
                     }
-                    import('Html');
-                    $html = get_instance_of('Html');
-                    $html->category($catid);
+//                    import('Html');
+//                    $html = get_instance_of('Html');
+//                    $html->category($catid);
                     $this->success('操作成功！');
                 } else {
                     $error = $db->getError();
@@ -265,7 +267,7 @@ class ContentController extends AdminBase {
                 $this->assign("category", $category);
                 $this->display();
             } else if ($category['type'] == 1) {//单网页模型
-                $info = D('Page')->getPage($this->catid);
+                $info = D('Content/Page')->getPage($this->catid);
                 if ($info && $info['style']) {
                     $style = explode(';', $info['style']);
                     $info['style_color'] = $style[0];
@@ -289,7 +291,81 @@ class ContentController extends AdminBase {
 
     //编辑信息 
     public function edit() {
-        
+        $this->catid = (int) $_POST['info']['catid'] ? : $this->catid;
+        //信息ID
+        $id = I('request.id', 0, 'intval');
+        $Categorys = getCategory($this->catid);
+        if (empty($Categorys)) {
+            $this->error("该栏目不存在！");
+        }
+        //栏目setting配置
+        $cat_setting = $Categorys['setting'];
+        //模型ID
+        $modelid = $Categorys['modelid'];
+        //检查模型是否被禁用
+        if ($this->model[$Categorys['modelid']]['disabled'] == 1) {
+            $this->error("模型被禁用！");
+        }
+        $model = ContentModel::getInstance($modelid);
+        //检查是否锁定
+        if (false === $model->locking($this->catid, $id)) {
+            $this->error($model->getError());
+        }
+        if (IS_POST) {
+            if (trim($_POST['info']['title']) == '') {
+                $this->error("标题不能为空！");
+            }
+            //取得原有文章信息
+            $data = $model->where(array("id" => $id))->find();
+            //如果有自定义文件名，需要删除原来生成的静态文件
+            if ($_POST['info']['prefix'] != $data['prefix'] && $cat_setting['content_ishtml']) {
+                //删除原来的生成的静态页面
+                Content::getInstance()->deleteHtml($this->catid, $id, $data['inputtime'], $data['prefix'], $data);
+            }
+            $status = Content::getInstance()->data($_POST['info'])->edit();
+            if ($status) {
+                //解除信息锁定
+                M("Locking")->where(array("userid" => User::getInstance()->id, "catid" => $catid, "id" => $id))->delete();
+                $this->success("修改成功！");
+            } else {
+                $this->error(Content::getInstance()->getError());
+            }
+        } else {
+            //取得数据，这里使用关联查询
+            $data = $model->relation(true)->where(array("id" => $id))->find();
+            if (empty($data)) {
+                $this->error("该信息不存在！");
+            }
+            $model->dataMerger($data);
+            //锁定信息
+            M("Locking")->add(array(
+                "userid" => User::getInstance()->id,
+                "username" => User::getInstance()->username,
+                "catid" => $this->catid,
+                "id" => $id,
+                "locktime" => time()
+            ));
+            //引入输入表单处理类
+            $content_form = new \content_form($modelid, $this->catid);
+            //字段内容
+            $forminfos = $content_form->get($data);
+            //生成对应的JS验证规则
+            $formValidateRules = $content_form->formValidateRules;
+            //js验证不通过提示语
+            $formValidateMessages = $content_form->formValidateMessages;
+            //js
+            $formJavascript = $content_form->formJavascript;
+            $this->assign("category", $Categorys);
+            $this->assign("data", $data);
+            $this->assign("catid", $this->catid);
+            $this->assign("id", $id);
+            $this->assign("content_form", $content_form);
+            $this->assign("forminfos", $forminfos);
+            $this->assign("formValidateRules", $formValidateRules);
+            $this->assign("formValidateMessages", $formValidateMessages);
+            $this->assign("formJavascript", $formJavascript);
+            $this->display();
+        }
     }
 
     //删除

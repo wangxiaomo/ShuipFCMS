@@ -11,10 +11,10 @@
   <div class="mb10">
 		<a href="javascript:void(0)" onClick="javascript:openwinx('{:U("Content/add",array("catid"=>$catid))}','')" class="btn" title="添加内容"><span class="add"></span>添加内容</a>
          栏目列表生成：<select class="select_2" onChange="window.location.href=''+this.value+''">
-       <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$catid))}" >列表生成</option>
-       <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$catid))}">生成当前栏目列表</option>
+       <option value="{:U('Createhtml/categoryhtml',array('catid'=>$catid))}" >列表生成</option>
+       <option value="{:U('Createhtml/categoryhtml',array('catid'=>$catid))}">生成当前栏目列表</option>
        <if condition=" $parentid "> 
-       <option value="{:U('Contents/Createhtml/categoryhtml',array('catid'=>$parentid))}">生成父栏目列表</option>
+       <option value="{:U('Createhtml/categoryhtml',array('catid'=>$parentid))}">生成父栏目列表</option>
        </if>
     </select>
     <a href="{$url}" target="_blank"  class="btn" title="访问该栏目">访问该栏目</a>
@@ -78,7 +78,7 @@
           <tr>
             <td><input type="checkbox" class="J_check" data-yid="J_check_y" data-xid="J_check_x" name="ids[]" value="{$vo.id}"></td>
             <td><input name='listorders[{$vo.id}]' class="input mr5"  type='text' size='3' value='{$vo.listorder}'></td>
-            <td><a href="{:U("Contents/Createhtml/batch_show", array("catid"=>$vo['catid'] ,"steps"=>"0" ,"ids"=>$vo['id'])  )}" title="点击生成">{$vo.id}</a></td>
+            <td><a href="{:U("Createhtml/batch_show", array("catid"=>$vo['catid'] ,"steps"=>"0" ,"ids"=>$vo['id'])  )}" title="点击生成">{$vo.id}</a></td>
             <td><a href="{$vo.url}" target="_blank"><span style="" >
               <if condition=" $vo['status']==99 ">{$vo.title}
                 <else/>
@@ -92,7 +92,7 @@
                 <else />
                 <font color="#FF0000">{$vo.username}</font><img src="{$config_siteurl}statics/images/icon/contribute.png" title="会员投稿"></if></td>
             <td>{$vo.updatetime|date="Y-m-d H:i:s",###}</td>
-            <td><a href="javascript:;;" onClick="javascript:openwinx('{:U("Contents/Content/edit",array("catid"=>$vo['catid'],"id"=>$vo['id']))}','')">修改</a> | <a href="{:U("Contents/Content/delete",array("catid"=>$vo['catid'],"id"=>$vo['id']))}" class="J_ajax_del" >删除</a> | <a  data-title="{$vo.title}" href="{:U('Comments/Comments/index',array('searchtype'=>2,'keyword'=>'c-'.$vo['catid'].'-'.$vo['id'].''))}" target="_blank">评论</a></td>
+            <td><a href="javascript:;;" onClick="javascript:openwinx('{:U("Content/edit",array("catid"=>$vo['catid'],"id"=>$vo['id']))}','')">修改</a> | <a href="{:U("Content/delete",array("catid"=>$vo['catid'],"id"=>$vo['id']))}" class="J_ajax_del" >删除</a> | <a  data-title="{$vo.title}" href="{:U('Comments/Comments/index',array('searchtype'=>2,'keyword'=>'c-'.$vo['catid'].'-'.$vo['id'].''))}" target="_blank">评论</a></td>
           </tr>
         </volist>
       </table>
@@ -102,13 +102,13 @@
     <div class="btn_wrap">
       <div class="btn_wrap_pd">
         <label class="mr20"><input type="checkbox" class="J_check_all" data-direction="y" data-checklist="J_check_y">全选</label>                
-        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Contents/Content/listorder',array('catid'=>$catid))}">排序</button>
-        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Contents/Content/public_check',array('catid'=>$catid))}">审核</button>
-        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Contents/Content/public_nocheck',array('catid'=>$catid))}">取消审核</button>
-        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Contents/Content/delete',array('catid'=>$catid))}">删除</button>
+        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Content/listorder',array('catid'=>$catid))}">排序</button>
+        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Content/public_check',array('catid'=>$catid))}">审核</button>
+        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Content/public_nocheck',array('catid'=>$catid))}">取消审核</button>
+        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Content/delete',array('catid'=>$catid))}">删除</button>
         <button class="btn" type="button" onClick="pushs()">推送</button>
         <button class="btn" type="button" id="J_Content_remove">批量移动</button>
-        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Contents/Createhtml/batch_show',array('catid'=>$catid,'steps'=>0))}">批量生成HTML</button>
+        <button class="btn J_ajax_submit_btn" type="submit" data-action="{:U('Createhtml/batch_show',array('catid'=>$catid,'steps'=>0))}">批量生成HTML</button>
       </div>
     </div>
   </form>

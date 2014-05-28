@@ -93,6 +93,8 @@ class Url {
             return false;
         }
         $guid = to_guid_string($data);
+        //网站配置
+        $config = cache("Config");
         //栏目id
         $catid = (int) $data['catid'];
         //信息id
@@ -243,9 +245,9 @@ class Url {
 
         //判断是否有加域名
         if (!isset($parse_url['host'])) {
-            $url['url'] = CONFIG_SITEURL . $url['url'];
-            $url['page']['index'] = CONFIG_SITEURL . $url['page']['index'];
-            $url['page']['list'] = CONFIG_SITEURL . $url['page']['list'];
+            $url['url'] = $config['siteurl'] . $url['url'];
+            $url['page']['index'] = $config['siteurl'] . $url['page']['index'];
+            $url['page']['list'] = $config['siteurl'] . $url['page']['list'];
         }
 
         if (strpos($url["url"], '://') === false) {
