@@ -121,8 +121,6 @@ div.edui-box {
     padding: 1px;
     overflow: hidden; /*全屏下单独一行不占位*/
     zoom: 1;
-    width:auto;
-    height:auto;
 }
 
 .edui-default .edui-toolbar .edui-button,
@@ -141,10 +139,7 @@ div.edui-box {
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
-.edui-editor div{
-    width:auto;
-    height:auto;
-}
+
 .edui-default .edui-editor-toolbarbox {
     position: relative;
     zoom: 1;
@@ -165,9 +160,9 @@ div.edui-box {
     background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
     background-repeat: repeat-x;
     /*border: 1px solid #d4d4d4;*/
-    -webkit-border-radius: 4px 4px 0 0;
-    -moz-border-radius: 4px 4px 0 0;
-    border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
     *zoom: 1;
     -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
@@ -522,7 +517,6 @@ div.edui-box {
     opacity: 0.3;
     filter: alpha(opacity = 30);
 }
-
 /* toolbar icons */
 .edui-default .edui-for-undo .edui-icon {
     background-position: -160px 0;
@@ -628,7 +622,7 @@ div.edui-box {
 }
 
 .edui-default  .edui-for-insertimage .edui-icon {
-    background-position: -726px -77px;
+    background-position: -380px 0;
 }
 
 .edui-default  .edui-for-insertframe .edui-icon {
@@ -712,7 +706,7 @@ div.edui-box {
 }
 
 .edui-default  .edui-for-source .edui-icon {
-    background-position: -261px -0px;
+    background-position: -260px -0px;
 }
 
 .edui-default  .edui-for-removeformat .edui-icon {
@@ -855,6 +849,10 @@ div.edui-box {
     background-position: -620px -40px;
 }
 
+.edui-default  .edui-for-attachments .edui-icon {
+    background-position: -620px -40px;
+}
+
 .edui-default  .edui-for-edittd .edui-icon {
     background-position: -700px -40px;
 }
@@ -868,7 +866,7 @@ div.edui-box {
 }
 
 .edui-default  .edui-for-background .edui-icon {
-    background-position: -680px -40px;
+    background-position: -678px -40px;
 }
 
 .edui-default  .edui-for-music .edui-icon {
@@ -937,10 +935,6 @@ div.edui-box {
 
 .edui-default  .edui-for-deletetitlecol  .edui-icon {
     background-position: -698px -76px;
-}
-
-.edui-default  .edui-for-simpleupload  .edui-icon {
-    background-position: -380px 0px;
 }
 /*splitbutton*/
 .edui-default .edui-toolbar .edui-splitbutton-body .edui-arrow,
@@ -1031,8 +1025,6 @@ div.edui-box {
 .edui-default .edui-popup {
     z-index: 3000;
     background-color: #ffffff;
-    width:auto;
-    height:auto;
 
 }
 
@@ -1096,19 +1088,10 @@ div.edui-box {
     border-right: 1px solid gray;
 }
 
-.edui-popup div{
-    width:auto;
-    height:auto;
-}
 /* 弹出对话框按钮和对话框大小 */
 .edui-default .edui-dialog {
     z-index: 2000;
     position: absolute;
-
-}
-
-.edui-dialog div{
-    width:auto;
 }
 
 .edui-default .edui-dialog-wrap {
@@ -1294,8 +1277,8 @@ div.edui-box {
 
 /*image-dialog*/
 .edui-default .edui-for-insertimage .edui-dialog-content {
-    width: 650px;
-    height: 400px;
+    width: 640px;
+    height: 390px;
     overflow: hidden;
 }
 /*webapp-dialog*/
@@ -1322,8 +1305,15 @@ div.edui-box {
 
 /*attachment-dialog*/
 .edui-default .edui-for-attachment .edui-dialog-content {
-    width: 650px;
-    height: 400px;
+    width: 480px;
+    height: 360px;
+    overflow: hidden;
+}
+
+/*attachments-dialog*/
+.edui-default .edui-for-attachments .edui-dialog-content {
+    width: 480px;
+    height: 360px;
     overflow: hidden;
 }
 
@@ -1395,6 +1385,13 @@ div.edui-box {
     height: 360px;
 }
 
+/*preview-dialog*/
+.edui-default .edui-for-preview .edui-dialog-content {
+    width: 620px;
+    height: 500px;
+    *width: 630px;
+    *height: 570px;
+}
 /*段落弹出菜单*/
 .edui-default .edui-for-paragraph .edui-listitem-label {
     font-family: Tahoma, Verdana, Arial, Helvetica;
@@ -1682,8 +1679,8 @@ div.edui-box {
     width: 2px;
     height: 20px;
     margin: 2px 4px 2px 3px;
-    background: url(../images/icons.png) -181px 0;
-    background: url(../images/icons.gif) -181px 0 \9;
+    background: url(../images/icons.png) -180px 0;
+    background: url(../images/icons.gif) -180px 0 \9;
 }
 
 /*颜色按钮 */

@@ -20,10 +20,10 @@ class IndexController extends Base {
 //        $data = $model->relation(true)->find(64);
 //        $this->Html->show($data);
 //        exit;
-        $url = new \Libs\System\Url();
-        $model = \Content\Model\ContentModel::getInstance(13);
+//        $url = new \Libs\System\Url();
+//        $model = \Content\Model\ContentModel::getInstance(13);
         //$data = $model->relation(true)->find(1);
-        $html = new \Libs\System\Html();
+//        $html = new \Libs\System\Html();
         //$content = \Libs\System\Content::getInstance()->add();
         //print_r($content);exit;
 //        print_r($html->index());
@@ -34,7 +34,8 @@ class IndexController extends Base {
 //        }
 //        G('end');
 //        echo G('begin', 'end', 6);
-        echo '网站首页';
+        //echo '网站首页';
+        $this->display();
     }
 
     public function lists() {
