@@ -35,13 +35,15 @@ function posid($field, $value) {
             $catid = $this->data['catid'];
             $position_data_db = D('Content/Position');
             foreach ($value as $r) {
-                if ($r != '-1')
+                if ($r != '-1'){
                     $posids[] = $r;
+                }
             }
             $textcontent = array();
-            foreach ($this->fields AS $_key => $_value) {
+            foreach ($this->fields AS  $_value) {
+                $field = $_value['field'];
                 if ($_value['isposition']) {
-                    $textcontent[$_key] = $this->data[$_key];
+                    $textcontent[$field] = $this->data[$field];
                 }
             }
             //颜色选择为隐藏域 在这里进行取值

@@ -1,4 +1,4 @@
-<tags action="top"  num="4"  order="tagid DESC">
+<content action="lists" catid="66"  order="id DESC" num="4" page="$page" output="1">
 循环列表，默认返回数据是$data
 <?php
 print_r($data);
@@ -9,4 +9,4 @@ print_r($data);
 </volist>
 </ul>
 分页：{$pages}
-</tags>
+</content>

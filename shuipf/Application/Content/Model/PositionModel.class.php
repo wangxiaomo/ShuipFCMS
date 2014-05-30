@@ -209,7 +209,6 @@ class PositionModel extends Model {
             $info = $r = array();
             $ModelField = cache('ModelField');
             $fulltext_array = $ModelField[$modelid];
-
             if (is_array($arr['posid']) && !empty($arr['posid']) && is_array($param) && !empty($param)) {
                 foreach ($arr['posid'] as $pid) {
                     foreach ($param as $d) {
@@ -218,15 +217,14 @@ class PositionModel extends Model {
                         $info['posid'] = $pid;
                         $info['module'] = $model;
                         $info['modelid'] = $modelid;
-
-                        foreach ($fulltext_array AS $key => $value) {
+                        foreach ($fulltext_array AS $value) {
+                            $field = $value['field'];
                             //判断字段是否入库到推荐位字段
                             if ($value['isposition']) {
-                                if ($d[$key])
-                                    $info['data'][$key] = $d[$key];
+                                if ($d[$field])
+                                    $info['data'][$field] = $d[$field];
                             }
                         }
-
                         //颜色选择为隐藏域 在这里进行取值
                         $info['data']['style'] = $d['style'];
                         $info['thumb'] = $info['data']['thumb'] ? 1 : 0;

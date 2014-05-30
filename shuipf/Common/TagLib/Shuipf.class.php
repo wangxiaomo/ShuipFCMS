@@ -50,7 +50,7 @@ class Shuipf extends TagLib {
         //sp模块调用标签
         //'spf' => array('attr' => 'module,action,cache,num,page,pagetp,pagefun,return,where,order', 'level' => 3),
         //内容标签
-        'content' => array('attr' => 'action,cache,num,page,pagetp,pagefun,return,where,moreinfo,thumb,order,day,catid', 'level' => 3),
+        'content' => array('attr' => 'action,cache,num,page,pagetp,pagefun,return,where,moreinfo,thumb,order,day,catid,output', 'level' => 3),
     );
 
     /**
@@ -339,7 +339,7 @@ class Shuipf extends TagLib {
     }
 
     /**
-     * 内容标签
+     * 内容标签 output参数等于1时，调用content_output.class.php处理
      * 标签：<content></content>
      * 作用：内容模型相关标签，可调用栏目，列表等常用信息
      * 用法示例：<content action="lists" catid="$catid"  order="id DESC" num="4" page="$page"> .. HTML ..</content>
@@ -354,7 +354,7 @@ class Shuipf extends TagLib {
      * 		@pagefun                      分页函数，默认page
      * 		@pagetp		分页模板，必须是变量传递
      * 		@return		返回值变量名称，默认data
-     * 	#当action为lists时，调用栏目列表标签
+     * 	#当action为lists时，调用栏目信息列表标签
      * 	#用法示例：<content action="lists" catid="$catid"  order="id DESC" num="4" page="$page"> .. HTML ..</content>
      * 	独有参数：
      * 		@order		排序，例如“id DESC”

@@ -755,10 +755,11 @@ class ContentController extends AdminBase {
                                 $model->dataMerger($re);
                                 //推送数据
                                 $textcontent = array();
-                                foreach ($fields AS $_key => $_value) {
+                                foreach ($fields AS $_value) {
+                                    $field = $_value['field'];
                                     //判断字段是否入库到推荐位字段
                                     if ($_value['isposition']) {
-                                        $textcontent[$_key] = $re[$_key];
+                                        $textcontent[$field] = $re[$field];
                                     }
                                 }
                                 //样式进行特别处理

@@ -104,7 +104,8 @@ return array(
     'TMPL_CONTENT_TYPE' => 'text/html', // 默认模板输出类型
     'TMPL_ACTION_ERROR' => APP_PATH . 'Admin/View/error.php', // 默认错误跳转对应的模板文件
     'TMPL_ACTION_SUCCESS' => APP_PATH . 'Admin/View/success.php', // 默认成功跳转对应的模板文件
-    'TMPL_EXCEPTION_FILE' => THINK_PATH . 'Tpl/think_exception.tpl', // 异常页面的模板文件
+    'TMPL_EXCEPTION_FILE' => APP_PATH . 'Admin/View/Common/Exception.php', // 异常页面的模板文件
+    'TMPL_TRACE_FILE' => APP_PATH . 'Admin/View/Common/Trace.php',
     'TMPL_DETECT_THEME' => false, // 自动侦测模板主题
     'TMPL_TEMPLATE_SUFFIX' => '.php', // 默认模板文件后缀
     'TMPL_FILE_DEPR' => '/', //模板文件CONTROLLER_NAME与ACTION_NAME之间的分割符
@@ -170,4 +171,6 @@ return array(
     /* 上传路径配置 */
     "UPLOADFILEPATH" => SITE_PATH . '/d/file/', //上传附件路径
     'HTML_FILE_SUFFIX' => '', // 设置静态缓存文件后缀
+    'COMPONENTS' => array(
+    ),
 );

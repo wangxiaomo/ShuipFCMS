@@ -43,7 +43,7 @@ function cache($name, $value = '', $options = null) {
 
 /**
  * 调试，用于保存数组到txt文件 正式生产删除
- * 用法：array2file($info, SITE_PATH.'/post.txt');
+ * 用法：array2file($info, SITE_PATH.'post.txt');
  * @param type $array
  * @param type $filename
  */

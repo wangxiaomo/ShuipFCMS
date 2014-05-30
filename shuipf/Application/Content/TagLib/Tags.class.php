@@ -14,7 +14,7 @@ class Tags {
 
     public $db, $where;
 
-    function __construct() {
+    public function __construct() {
         $this->db = M('Tags');
     }
 
@@ -32,26 +32,26 @@ class Tags {
         if (isset($data['tagid'])) {
             if (strpos($data['tagid'], ',') !== false) {
                 $tagid = explode(',', $data['tagid']);
-                $r = $this->db->where(array("tagid" => array("in", $tagid)))->getField('tagid,tag');
-                $where['tag'] = array("IN", $r);
+                $r = $this->db->where(array('tagid' => array('in', $tagid)))->getField('tagid,tag');
+                $where['tag'] = array('IN', $r);
             } else {
-                $r = $this->db->where(array("tagid" => (int) $data['tagid']))->find();
+                $r = $this->db->where(array('tagid' => (int) $data['tagid']))->find();
                 $where['tag'] = $r['tag'];
             }
         } else {
             if (is_array($data['tag'])) {
-                $where['tag'] = array("IN", $data['tag']);
+                $where['tag'] = array('IN', $data['tag']);
             } else {
                 $tags = strpos($data['tag'], ',') !== false ? explode(',', $data['tag']) : explode(' ', $data['tag']);
                 if (count($tags) == 1) {
-                    $where['tag'] = array("EQ", $data['tag']);
+                    $where['tag'] = array('EQ', $data['tag']);
                 } else {
-                    $where['tag'] = array("IN", $tags);
+                    $where['tag'] = array('IN', $tags);
                 }
             }
         }
         $this->where = $where;
-        return $this->where;
+        return $where;
     }
 
     /**
@@ -83,7 +83,6 @@ class Tags {
         }
         //查询条件
         $this->where($data);
-
         //判断是否启用分页，如果没启用分页则显示指定条数的内容
         if (!isset($data['limit'])) {
             $data['limit'] = (int) $data['num'] == 0 ? 10 : (int) $data['num'];
@@ -101,7 +100,6 @@ class Tags {
                 $return[$k] = array_merge($v, $r);
             }
         }
-
         if ($cache) {
             S($cacheID, $return, $cache);
         }

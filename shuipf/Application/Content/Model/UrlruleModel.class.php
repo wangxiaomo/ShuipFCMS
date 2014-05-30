@@ -22,9 +22,6 @@ class UrlruleModel extends Model {
         array('example', 'require', 'URL示例必须填写！'),
         array('urlrule', 'require', 'URL规则必须填写！'),
     );
-    //array(填充字段,填充内容,[填充条件,附加规则])
-    protected $_auto = array(
-    );
 
     /**
      * 更新URL规则 缓存
@@ -35,7 +32,7 @@ class UrlruleModel extends Model {
         foreach ($this->select() as $roleid => $r) {
             $data[$r['urlruleid']] = $r;
         }
-        cache("Urlrules", $data);
+        cache('Urlrules', $data);
         return $data;
     }
 

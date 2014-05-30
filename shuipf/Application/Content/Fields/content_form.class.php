@@ -33,6 +33,20 @@ class content_form {
      */
     public function __construct($modelid, $catid) {
         $this->model = cache("Model");
+        if ($modelid) {
+            $this->setModelid($modelid,$catid);
+        }
+    }
+    
+    /**
+     * 初始化
+     * @param type $modelid
+     * @return boolean
+     */
+    public function setModelid($modelid, $catid) {
+        if (empty($modelid)) {
+            return false;
+        }
         $this->modelid = $modelid;
         if (empty($this->model[$this->modelid])) {
             return false;

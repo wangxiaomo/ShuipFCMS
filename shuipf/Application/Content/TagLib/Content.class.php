@@ -54,14 +54,15 @@ class Content {
     /**
      * 初始化模型
      * @param $catid
-     * @param $tablename
      */
-    public function set_modelid($catid = 0, $tablename = false) {
-        if ($catid) {
+    public function set_modelid($catid = 0, $isModelid = false) {
+        if ($catid && !$isModelid) {
             if (getCategory($catid, 'type') && getCategory($catid, 'type') != 0) {
                 return false;
             }
             $this->modelid = getCategory($catid, 'modelid');
+        } else {
+            $this->modelid = $catid;
         }
         return $this->db = \Content\Model\ContentModel::getInstance($this->modelid);
     }
@@ -107,44 +108,31 @@ class Content {
         }
         //排序
         if (empty($data['order'])) {
-            $data['order'] = array("updatetime" => "DESC", "id" => "DESC");
+            $data['order'] = array('updatetime' => 'DESC', 'id' => 'DESC');
         }
-        $dataList = $this->db->where($this->where)->limit($data['limit'])->order($data['order'])->select();
+        $dataList = $this->db->relation($data['moreinfo'] ? true : false)->where($this->where)->limit($data['limit'])->order($data['order'])->select();
+        $getLastSql[] = $this->db->getLastSql();
+        //是否经过ContentOutput处理
+        if ($data['output']) {
+            ShuipFCMS()->ContentOutput->setModelid($this->modelid);
+        }
         //把数据组合成以id为下标的数组集合
         if ($dataList) {
             $return = array();
             foreach ($dataList as $r) {
                 $return[$r['id']] = $r;
+                //调用副表的数据
+                if (isset($data['moreinfo']) && intval($data['moreinfo']) == 1) {
+                    $this->db->dataMerger($return[$r['id']]);
+                }
+                if ($data['output']) {
+                    $_original = $return[$r['id']];
+                    $return[$r['id']] = ShuipFCMS()->ContentOutput->get($return[$r['id']]);
+                    $return[$r['id']]['_original'] = $_original;
+                }
             }
         } else {
             return false;
-        }
-        $getLastSql .= $this->db->getLastSql() . "|";
-        //调用副表的数据
-        if (isset($data['moreinfo']) && intval($data['moreinfo']) == 1) {
-            $ids = array();
-            foreach ($return as $v) {
-                if (isset($v['id']) && !empty($v['id'])) {
-                    $ids[] = $v['id'];
-                } else {
-                    continue;
-                }
-            }
-            if (!empty($ids)) {
-                //从新初始化模型
-                $this->set_modelid(0, $this->table_name . '_data');
-                $where = array();
-                $where['id'] = array("IN", $ids);
-                $r = $this->db->where($where)->select();
-                $getLastSql .= $this->db->getLastSql() . "|";
-                if (!empty($r)) {
-                    foreach ($r as $v) {
-                        if (isset($return[$v['id']])) {
-                            $return[$v['id']] = array_merge($v, $return[$v['id']]);
-                        }
-                    }
-                }
-            }
         }
         //结果进行缓存
         if ($cache) {
@@ -152,9 +140,9 @@ class Content {
         }
         //log
         if (APP_DEBUG) {
-            $msg = "ContentTagLib标签->lists：参数：catid=$catid ,modelid=$modelid ,order=" . $data['order'] . " ,
-            SQL:" . $getLastSql;
-            Log::write($msg);
+            $msg = "Content标签->lists：参数：catid={$catid} ,modelid={$modelid} ,order={$data['order']}\n";
+            $msg .="SQL:" . implode("\n", $getLastSql);
+            \Think\Log::record($msg, \Think\Log::DEBUG);
         }
         return $return;
     }
@@ -181,17 +169,12 @@ class Content {
         }
         //初始化模型
         if ($modelid) {
-            $this->modelid = $modelid;
-            $tablename = ucwords(getModel($this->modelid, 'tablename'));
-            $this->table_name = $tablename;
-            $this->db = M($this->table_name);
+            $this->set_modelid($catid, true);
         } elseif ($catid) {
             $this->set_modelid($catid);
         } else {
             return false;
         }
-
-        $desc = $ids = '';
         $where = $array = array();
         //设置SQL where 部分
         if (isset($data['where']) && $data['where']) {
@@ -208,41 +191,46 @@ class Content {
             $num = 10;
         }
         if ($catid) {
-            $where['catid'] = array("EQ", $catid);
+            $where['catid'] = array('EQ', $catid);
         }
         //如果调用的栏目是存在子栏目的情况下
         if ($catid && getCategory($catid, 'child')) {
             $catids_str = getCategory($catid, 'arrchildid');
             $pos = strpos($catids_str, ',') + 1;
             $catids_str = substr($catids_str, $pos);
-            $where['catid'] = array("IN", $catids_str);
-        }
-        //模型id条件
-        if ($modelid) {
-            $where['modelid'] = array("EQ", $modelid);
+            $where['catid'] = array('IN', $catids_str);
         }
         //调用多少天内
         if (isset($data['day'])) {
-            $updatetime = time() - intval($data['day']) * 86400;
-            $where['updatetime'] = array("GT", $updatetime);
+            $updatetime = time() - (intval($data['day']) * 86400);
+            $where['updatetime'] = array('GT', $updatetime);
         }
-
-        $hits = array();
-        $data = $this->db->where($where)->order($order)->limit($num)->select();
-        foreach ($data as $r) {
+        $dataList = $this->db->relation($data['moreinfo'] ? true : false)->where($where)->order($order)->limit($num)->select();
+        $getLastSql[] = $this->db->getLastSql();
+        //是否经过ContentOutput处理
+        if ($data['output']) {
+            ShuipFCMS()->ContentOutput->setModelid($this->modelid);
+        }
+        foreach ($dataList as $r) {
             $array[$r['id']] = $r;
+            //调用副表的数据
+            if (isset($data['moreinfo']) && intval($data['moreinfo']) == 1) {
+                $this->db->dataMerger($array[$r['id']]);
+            }
+            if ($data['output']) {
+                $_original = $array[$r['id']];
+                $array[$r['id']] = ShuipFCMS()->ContentOutput->get($array[$r['id']]);
+                $array[$r['id']]['_original'] = $_original;
+            }
         }
-
         //结果进行缓存
         if ($cache) {
             S($cacheID, $array, $cache);
         }
-
-        //log
         if (APP_DEBUG) {
-            $msg = "ContentTagLib标签->hits：参数：catid=$catid ,modelid=$modelid ,order=$order ,
-            SQL:" . $this->db->getLastSql();
-            Log::write($msg);
+            $msg = "Content标签->hits：参数：catid={$catid} ,modelid={$modelid} ,order={$data['order']}\n";
+            $msg .="SQL:" . implode("\n", $getLastSql);
+            \Think\Log::record($msg, \Think\Log::DEBUG);
         }
         return $array;
     }
@@ -288,24 +276,37 @@ class Content {
         //数据
         $key_array = array();
         $number = 0;
+        //是否经过ContentOutput处理
+        if ($data['output']) {
+            ShuipFCMS()->ContentOutput->setModelid($this->modelid);
+        }
         //根据手动添加的相关文章
         if ($data['relation']) {
             $relations = explode('|', $data['relation']);
             $relations = array_diff($relations, array(null));
             $relations = implode(',', $relations);
-            $where['id'] = array("IN", $relations);
-            $_key_array = $this->db->where($where)->limit($limit)->order($order)->select();
+            $where['id'] = array('IN', $relations);
+            $_key_array = $this->db->relation($data['moreinfo'] ? true : false)->where($where)->limit($limit)->order($order)->select();
+            $getLastSql[] = $this->db->getLastSql();
             foreach ($_key_array as $r) {
                 $key_array[$r['id']] = $r;
+                //调用副表的数据
+                if (isset($data['moreinfo']) && intval($data['moreinfo']) == 1) {
+                    $this->db->dataMerger($key_array[$r['id']]);
+                }
+                if ($data['output']) {
+                    $_original = $key_array[$r['id']];
+                    $key_array[$r['id']] = ShuipFCMS()->ContentOutput->get($key_array[$r['id']]);
+                    $key_array[$r['id']]['_original'] = $_original;
+                }
             }
             $number = count($key_array);
             //删除id条件
             if (isset($where['id'])) {
                 unset($where['id']);
             }
-            $getLastSql .= $this->db->getLastSql() . "|";
         }
-
+        //根据关键字，进行标题匹配
         if ($data['keywords'] && $limit > $number) {//根据关键字的相关文章
             $limit = ($limit - $number <= 0) ? 0 : ($limit - $number);
             $keywords_arr = $data['keywords'];
@@ -320,13 +321,22 @@ class Content {
             foreach ($keywords_arr as $_k) {
                 $_k = str_replace('%', '', $_k);
                 $where['keywords'] = array("LIKE", '%' . $_k . '%');
-                $_r = $this->db->where($where)->limit($limit)->order($order)->select();
+                $_r = $this->db->relation($data['moreinfo'] ? true : false)->where($where)->limit($limit)->order($order)->select();
+                $getLastSql[] = $this->db->getLastSql();
                 //数据重组
                 $r = array();
                 foreach ($_r as $rs) {
                     $r[$rs['id']] = $rs;
+                    //调用副表的数据
+                    if (isset($data['moreinfo']) && intval($data['moreinfo']) == 1) {
+                        $this->db->dataMerger($r[$rs['id']]);
+                    }
+                    if ($data['output']) {
+                        $_original = $r[$rs['id']];
+                        $r[$rs['id']] = ShuipFCMS()->ContentOutput->get($r[$rs['id']]);
+                        $r[$rs['id']]['_original'] = $_original;
+                    }
                 }
-                $getLastSql .= $this->db->getLastSql() . "|";
                 $number += count($r);
                 foreach ($r as $id => $v) {
                     if ($i <= $data['num'] && !in_array($id, $key_array)) {
@@ -339,39 +349,19 @@ class Content {
             }
             unset($where['keywords']);
         }
-
         //去除排除信息
         if ($data['nid']) {
             unset($key_array[$data['nid']]);
         }
-
-        //差额补齐
-        if (count($key_array) < $data['num']) {
-            $difference = $data['num'] - count($key_array);
-            if ($difference) {
-                $where['catid'] = $catid;
-                //进行随机读取
-                $count = $this->db->where($where)->count();
-                $rand = mt_rand(1, $count - 1 < 1 ? 1 : $count - 1);
-                $differenceList = $this->db->where($where)->limit($rand, $difference)->select();
-                foreach ($differenceList as $r) {
-                    $key_array[$r['id']] = $r;
-                }
-            }
-        }
-
         //结果进行缓存
         if ($cache) {
             S($cacheID, $key_array, $cache);
         }
-
-        //log
         if (APP_DEBUG) {
-            $msg = "ContentTagLib标签->relation：参数：catid=$catid ,order=$order ,
-            SQL:" . $getLastSql;
-            Log::write($msg);
+            $msg = "Content标签->relation：参数：catid={$catid} ,modelid={$modelid} ,order={$data['order']}\n";
+            $msg .="SQL:" . implode("\n", $getLastSql);
+            \Think\Log::record($msg, \Think\Log::DEBUG);
         }
-
         return $key_array;
     }
 
@@ -395,11 +385,11 @@ class Content {
         if (isset($data['where']) && $data['where']) {
             $where['_string'] = $data['where'];
         }
-        $db = M("Category");
+        $db = M('Category');
         $num = (int) $data['num'];
         if (isset($data['catid'])) {
-            $where['ismenu'] = array("EQ", 1);
-            $where['parentid'] = array("EQ", $data['catid']);
+            $where['ismenu'] = 1;
+            $where['parentid'] = $data['catid'];
         }
         //如果条件不为空，进行查库
         if (!empty($where)) {
