@@ -19,8 +19,6 @@ class Html extends Base {
     protected $data = array();
     //错误信息
     protected $error = NULL;
-    //Url对象
-    protected $urlClass = NULL;
 
     //初始化
     protected function _initialize() {
@@ -93,7 +91,7 @@ class Html extends Base {
             ContentModel::getInstance($this->modelid)->dataMerger($data);
         }
         //原始数据
-        $this->assign('_data', $data);
+        $this->assign('_original', $data);
         //分页方式
         if (isset($data['paginationtype'])) {
             //分页方式 
@@ -145,16 +143,16 @@ class Html extends Base {
                     }
                     $pageurls[$i] = $urlrules;
                 }
-                $pages = "";
+                $pages = '';
                 //生成分页
                 foreach ($pageurls as $page => $urls) {
                     //$pagenumber 分页总数
-                    $_GET[C("VAR_PAGE")] = $page;
+                    $_GET[C('VAR_PAGE')] = $page;
                     $pages = page($pagenumber, 1, $page, array('isrule' => true, 'rule' => $pageurl,))->show();
                     $content = $contents[$page];
                     //分页
-                    $this->assign("pages", $pages);
-                    $this->assign("content", $content);
+                    $this->assign('pages', $pages);
+                    $this->assign('content', $content);
                     $this->buildHtml($urls['path'], SITE_PATH, $templatePath);
                 }
                 return true;
@@ -332,13 +330,31 @@ class Html extends Base {
     }
 
     /**
-     * 生成自定义页面 
-     * @param $temptext 模板内容
-     * @param $data 数据
+     * 生成自定义页面
+     * @param type $data
+     * @return boolean
      */
-    public function createhtml($temptext, $data) {
-        if (!$temptext || !is_array($data)) {
-            return false;
+    public function createHtml($data = '') {
+        if (empty($data)) {
+            if (!empty($this->data)) {
+                $data = $this->data;
+                // 重置数据
+                $this->data = array();
+            } else {
+                $this->error = '没有数据';
+                return false;
+            }
+        } else if (is_integer($data)) {
+            $data = M('Customtemp')->where(array('tempid' => $data))->find();
+            if (empty($data)) {
+                $this->error = '没有数据';
+                return false;
+            }
+        }
+        //模板内容
+        $temptext = $data['temptext'];
+        if (empty($temptext)) {
+            return true;
         }
         //初始化一些模板分配变量
         $this->assignInitialize();
@@ -361,6 +377,99 @@ class Html extends Base {
         if (false === file_put_contents($htmlpath, $content)) {
             E("自定义页面生成失败：{$htmlpath}");
         }
+        return true;
+    }
+
+    /**
+     * 生成自定义列表页面
+     * @param type $data
+     * @return boolean
+     */
+    public function createListHtml($data = '') {
+        if (empty($data)) {
+            if (!empty($this->data)) {
+                $data = $this->data;
+                // 重置数据
+                $this->data = array();
+            } else {
+                $this->error = '没有数据';
+                return false;
+            }
+        } else if (is_integer($data)) {
+            $data = D('Template/Customlist')->where(array('id' => $data))->find();
+            if (empty($data)) {
+                $this->error = '没有数据';
+                return false;
+            }
+        }
+        $model = D('Template/Customlist');
+        //初始化一些模板分配变量
+        $this->assignInitialize();
+        //计算总数
+        $countArray = $model->query($data['totalsql']);
+        if (!empty($countArray)) {
+            $count = $countArray[0]['total'];
+        } else {
+            return false;
+        }
+        //seo分配到模板
+        load("Content/function");
+        $seo = seo(0, $data['title'], $data['description'], $data['keywords']);
+        $this->assign("SEO", $seo);
+        //分页总数
+        $paging = ceil($count / $data['lencord']);
+        $pagehao = 1;
+        do {
+            //生成路径
+            $customlistUrl = $this->Url->createListUrl($data, $pagehao);
+            if ($customlistUrl == false) {
+                return false;
+            }
+            //取得URL规则
+            $urls = $customlistUrl['page'];
+            $page = page($count, $data['lencord'], $pagehao, array(
+                'isrule' => true,
+                'rule' => $urls,
+            ));
+            $listData = $model->query($data['listsql'] . " LIMIT {$page->firstRow},{$page->listRows}");
+            //把分页分配到模板
+            $this->assign(C("VAR_PAGE"), $pagehao);
+            $this->assign('listData', $listData);
+            $this->assign("pages", $page->show());
+
+            if (empty($data['listpath'])) {
+                //生成路径
+                $htmlpath = SITE_PATH . $customlistUrl["path"];
+                // 页面缓存
+                ob_start();
+                ob_implicit_flush(0);
+                //渲染模板
+                parent::show($data['template']);
+                // 获取并清空缓存
+                $content = ob_get_clean();
+                //检查目录是否存在
+                if (!is_dir(dirname($htmlpath))) {
+                    // 如果静态目录不存在 则创建
+                    mkdir(dirname($htmlpath), 0777, true);
+                }
+                //写入文件
+                if (false === file_put_contents($htmlpath, $content)) {
+                    throw_exception("自定义列表生成失败：" . $htmlpath);
+                }
+            } else {
+                //去除后缀开始
+                $tpar = explode(".", "List/{$data['listpath']}", 2);
+                //去除完后缀的模板
+                $template = $tpar[0];
+                unset($tpar);
+                //模板检测
+                $template = parseTemplateFile($template);
+                //生成
+                $this->buildHtml($customlistUrl['path'], SITE_PATH, $template);
+            }
+
+            $pagehao++;
+        } while ($pagehao <= $paging);
         return true;
     }
 
@@ -402,9 +511,9 @@ class Html extends Base {
         //栏目ID
         $this->assign('catid', NULL);
         //分页号
-        $this->assign(C("VAR_PAGE"), NULL);
+        $this->assign(C('VAR_PAGE'), NULL);
         //seo分配到模板
-        $this->assign("SEO", NULL);
+        $this->assign('SEO', NULL);
         $this->assign('content', NULL);
         $this->assign('pages', NULL);
     }

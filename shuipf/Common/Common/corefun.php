@@ -946,7 +946,19 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
         if ($var[C('VAR_ACTION')] == C('DEFAULT_ACTION')) {
             unset($var[C('VAR_ACTION')]);
         }
-        $url = $appUrl . (!empty($var) ? '?' . ($showModuleName && $module ? C('VAR_MODULE') . "={$module}&" : "") . http_build_query(array_reverse($var)) : '');
+        $url = $appUrl;
+        //如果$var参数不为空，或者$module也不为空时显示
+        if (!empty($var) || ($showModuleName && $module)) {
+            $url .= '?';
+            //是否显示模块部分
+            if ($showModuleName && $module) {
+                $var[C('VAR_MODULE')] = $module;
+            }
+            //其余参数
+            if (!empty($var)) {
+                $url.= http_build_query(array_reverse($var));
+            }
+        }
         if ($urlCase) {
             $url = strtolower($url);
         }

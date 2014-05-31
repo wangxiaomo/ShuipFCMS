@@ -19,7 +19,8 @@ class PublicController extends AdminBase {
     public function login() {
         //如果已经登录
         if (User::getInstance()->id) {
-            $this->redirect(U('Index/index'));
+            echo U('Admin/Index/index');exit;
+            $this->redirect('Admin/Index/index');
         }
         $this->display();
     }

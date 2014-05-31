@@ -14,10 +14,43 @@ class Url {
 
     //内容URL规则缓存
     private $urlrules;
+    //数据
+    protected $data = array();
+    //错误信息
+    protected $error = NULL;
 
     public function __construct() {
         //获取URL生成规则缓存
-        $this->urlrules = cache("Urlrules");
+        $this->urlrules = cache('Urlrules');
+    }
+
+    /**
+     * 获取错误提示
+     * @return type
+     */
+    public function getError() {
+        return $this->error;
+    }
+
+    /**
+     * 设置数据对象值
+     * @access public
+     * @param mixed $data 数据
+     * @return Model
+     */
+    public function data($data = '') {
+        if ('' === $data && !empty($this->data)) {
+            return $this->data;
+        }
+        if (is_object($data)) {
+            $data = get_object_vars($data);
+        } elseif (is_string($data)) {
+            parse_str($data, $data);
+        } elseif (!is_array($data)) {
+            E('数据类型错误！');
+        }
+        $this->data = $data;
+        return $this;
     }
 
     /**
@@ -87,8 +120,18 @@ class Url {
      *     )
      * )
      */
-    public function show($data, $page = 1) {
+    public function show($data = '', $page = 1) {
         static $_show = array();
+        if (empty($data)) {
+            if (!empty($this->data)) {
+                $data = $this->data;
+                // 重置数据
+                $this->data = array();
+            } else {
+                $this->error = '没有数据';
+                return false;
+            }
+        }
         if (!$data['inputtime'] || !$data['id'] || !$data['catid']) {
             return false;
         }
@@ -125,7 +168,7 @@ class Url {
             }
             //使用自定义函数生成规则
             if (substr($urlrule, 0, 1) == '=') {
-                load("@.urlrule");
+                load("Content/urlrule");
                 $fun = str_replace(substr($urlrule, 0, 1), "", $urlrule);
                 $urlrule = call_user_func_array(trim($fun), array(
                     "data" => $data,
@@ -278,7 +321,7 @@ class Url {
     public function category_url($catid, $page = 1, $category_ruleid = false) {
         //栏目数据
         $category = getCategory($catid);
-        if(empty($category)){
+        if (empty($category)) {
             return false;
         }
         //外部链接直接返回外部地址
@@ -299,7 +342,7 @@ class Url {
             $urlrule = $this->urlrules[$category_ruleid]['urlrule'];
             //使用自定义函数生成规则
             if (substr($urlrule, 0, 1) == '=') {
-                load("@.urlrule");
+                load("Content/urlrule");
                 $fun = str_replace(substr($urlrule, 0, 1), "", $urlrule);
                 $urlrule = call_user_func_array(trim($fun), array(
                     "catid" => $catid,
@@ -416,8 +459,18 @@ class Url {
      * @param type $ruleid 规则ID
      * @return type
      */
-    public function tags($data, $page = 1, $ruleid = 9) {
+    public function tags($data = '', $page = 1, $ruleid = 9) {
         static $_tags = array();
+        if (empty($data)) {
+            if (!empty($this->data)) {
+                $data = $this->data;
+                // 重置数据
+                $this->data = array();
+            } else {
+                $this->error = '没有数据';
+                return false;
+            }
+        }
         $guid = to_guid_string($data);
         //网站配置
         $config = cache('Config');
@@ -467,6 +520,125 @@ class Url {
         $url['page']['list'] = $config['siteurl'] . $url['page']['list'];
         //替换分页号
         $url['url'] = str_replace('{$page}', $page, $url["url"]);
+        return $url;
+    }
+
+    /**
+     * 生成自定义列表相关地址
+     * @staticvar array $_createListUrl
+     * @param type $data
+     * @param type $page
+     * @return boolean
+     * Array
+     * (
+     *     [url] => http://news.abc.com/1970/web_01/2.html 访问路径
+     *     [path] => /record/1970/web_01/2.html 生成路径 动态木有
+     *     [page] => Array
+     *     (
+     *         [index] => http://news.abc.com/1970/web_01/2.html
+     *         [list] => http://news.abc.com/1970/web_01/2_{$page}.html
+     *     )
+     * )
+     */
+    public function createListUrl($data = '', $page = 1) {
+        if (empty($data)) {
+            if (!empty($this->data)) {
+                $data = $this->data;
+                // 重置数据
+                $this->data = array();
+            } else {
+                $this->error = '没有数据';
+                return false;
+            }
+        } else if (is_integer($data)) {
+            $data = M('Customlist')->where(array('id' => $data))->find();
+            if (empty($data)) {
+                $this->error = '没有数据';
+                return false;
+            }
+        }
+        static $_createListUrl = array();
+        //网站配置
+        $config = cache('Config');
+        //页码
+        $page = max(intval($page), 1);
+        //取得规则
+        if (empty($data['urlruleid'])) {
+            $urlrule = $data['urlrule'];
+        } else {
+            $urlrule = $this->urlrules[$data['urlruleid']]['urlrule'];
+        }
+        //如果规则为空
+        if (empty($urlrule)) {
+            return false;
+        }
+        $guid = to_guid_string($data);
+        if (!isset($_createListUrl[$guid])) {
+            //使用自定义函数生成规则
+            if (substr($urlrule, 0, 1) == '=') {
+                load("Content/urlrule");
+                $fun = str_replace(substr($urlrule, 0, 1), "", $urlrule);
+                $urlrule = call_user_func_array(trim($fun), array(
+                    "id" => $id,
+                    "page" => $page,
+                ));
+            }
+
+            $replace_l = array(); //需要替换的标签
+            $replace_r = array(); //替换的内容
+            //年份
+            if (strstr($urlrule, '{$year}')) {
+                $replace_l[] = '{$year}';
+                $replace_r[] = date('Y', $data['createtime']);
+            }
+            //月份
+            if (strstr($urlrule, '{$month}')) {
+                $replace_l[] = '{$month}';
+                $replace_r[] = date('m', $data['createtime']);
+            }
+            //日期
+            if (strstr($urlrule, '{$day}')) {
+                $replace_l[] = '{$day}';
+                $replace_r[] = date('d', $data['createtime']);
+            }
+            $replace_l[] = '{$id}';
+            $replace_r[] = $data['id'];
+            //标签替换
+            $urlrule = str_replace($replace_l, $replace_r, $urlrule); 
+            $urlrule = explode('|', $urlrule);
+            $_createListUrl[$guid] = $urlrule;
+        } else {
+            $urlrule = $_createListUrl[$guid];
+        }
+
+        $url = array(
+            "url" => ($page > 1 ? $urlrule[1] : $urlrule[0]),
+            "path" => "",
+        );
+        //用于分页使用
+        $url['page'] = array(
+            "index" => $urlrule[0],
+            "list" => $urlrule[1],
+        );
+        //如果绑定域名，分析真实的生成目录
+        $parse_url = parse_url($url['url']);
+        $url['path'] = "/" . str_replace(array("//", "\\"), '/', $parse_url['path']);
+        //判断是否为首页文件，如果是，就不显示文件名，隐藏
+        if (in_array(basename($url["url"]), array('index.html', 'index.htm', 'index.shtml'))) {
+            $url["url"] = dirname($url["url"]) . '/';
+        }
+        //判断是否有加域名
+        if (!isset($parse_url['host'])) {
+            $url['url'] = $config['siteurl'] . $url['url'];
+            $url['page']['index'] = $config['siteurl'] . $url['page']['index'];
+            $url['page']['list'] = $config['siteurl'] . $url['page']['list'];
+        }
+        if (strpos($url["url"], '://') === false) {
+            $url["url"] = str_replace('//', '/', $url["url"]);
+        }
+        $url["url"] = str_replace('{$page}', $page, $url["url"]);
+        //把生成路径中的分页标签替换
+        $url['path'] = str_replace('{$page}', $page, $url['path']);
         return $url;
     }
 

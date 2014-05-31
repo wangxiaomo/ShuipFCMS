@@ -117,10 +117,30 @@ class ShuipFCMS extends \Think\Controller {
             $model = M(ucwords($model));
         } else if (strpos($model, '/') && is_string($model)) {
             $model = D($model);
+        } else if (is_object($model)) {
+            return $model;
         } else {
             $model = M();
         }
         return $model;
+    }
+
+    /**
+     * 基本信息分页列表方法
+     * @param type $model 可以是模型对象，或者表名，自定义模型请传递完整（例如：Content/Model）
+     * @param type $where 条件表达式
+     * @param type $order 排序
+     * @param type $limit 每次显示多少
+     */
+    protected function basePage($model, $where = '', $order = '', $limit = 20) {
+        $model = $this->getModelObject($model);
+        $count = $model->where($where)->count();
+        $page = $this->page($count, $limit);
+        $data = $model->where($where)->order($order)->limit($page->firstRow . ',' . $page->listRows)->select();
+        $this->assign('Page', $page->show());
+        $this->assign('data', $data);
+        $this->assign('count', $count);
+        $this->display();
     }
 
     /**

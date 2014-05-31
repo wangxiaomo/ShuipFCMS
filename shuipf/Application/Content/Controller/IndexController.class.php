@@ -14,6 +14,7 @@ use Common\Controller\Base;
 
 class IndexController extends Base {
 
+    //首页
     public function index() {
 //        print_r($this->Content->check(64, 1, 99));
 //        $model = \Content\Model\ContentModel::getInstance(13);
@@ -35,15 +36,30 @@ class IndexController extends Base {
 //        G('end');
 //        echo G('begin', 'end', 6);
         //echo '网站首页';
+        echo md5('ShuipFCMS_Attachment');exit;
         $this->display();
     }
 
+    //列表
     public function lists() {
         echo '列表页';
     }
 
+    //内容页
     public function shows() {
         echo '内容页';
+    }
+
+    //tags标签
+    public function tags() {
+        $tagid = I('get.tagid', 0, 'intval');
+        $tag = I('get.tag', '', '');
+        $where = array();
+        if (!empty($tagid)) {
+            $where['tagid'] = $tagid;
+        } else if (!empty($tag)) {
+            $where['tag'] = $tag;
+        }
     }
 
 }

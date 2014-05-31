@@ -135,6 +135,8 @@ class IndexController extends Controller {
 
     //安装完成
     public function step_5() {
+        //更新全部内置模块安装时间
+        M('Module')->where(array('iscore' => 1))->save(array('installtime' => time(), 'updatetime' => time()));
         @touch(MODULE_PATH . 'install.lock');
         $this->display();
     }

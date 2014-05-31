@@ -29,7 +29,7 @@ class Module {
     }
 
     /**
-     * 连接缓存系统
+     * 连接
      * @access public
      * @return void
      */
@@ -210,6 +210,10 @@ class Module {
         $info = $model->where(array('module' => $moduleName))->find();
         if (empty($info)) {
             $this->error = '该模块未安装，无需卸载！';
+            return false;
+        }
+        if ($info['iscore']) {
+            $this->error = '内置模块，不能卸载！';
             return false;
         }
         //删除

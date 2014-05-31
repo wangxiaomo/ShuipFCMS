@@ -17,8 +17,8 @@ class TagsModel extends Model {
     //自动验证
     protected $_validate = array(
         //array(验证字段,验证规则,错误提示,验证条件,附加规则,验证时间)
-        array('tag', 'require', 'TAG不能为空！', 1, 'regex', 3),
-        array('tag', '', '该TAG已经存在！', 0, 'unique', 3),
+        array('tag', 'require', 'Tags不能为空！', 1, 'regex', 3),
+        array('tag', '', '该Tags已经存在！', 0, 'unique', 3),
     );
 
     /**
@@ -61,7 +61,7 @@ class TagsModel extends Model {
                     "updatetime" => $time,
                 );
             }
-            M("TagsContent")->addAll($newdata);
+            M('TagsContent')->addAll($newdata);
         } else {
             if (empty($tagname) || $tagname == '') {
                 return false;

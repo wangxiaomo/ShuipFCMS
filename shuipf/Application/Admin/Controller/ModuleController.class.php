@@ -20,7 +20,7 @@ class ModuleController extends AdminBase {
     //已安装模块列表
     protected $moduleList = array();
     //系统模块，隐藏
-    protected $systemModuleList = array('Admin', 'Api', 'Install');
+    protected $systemModuleList = array('Admin', 'Api', 'Install', 'Attachment');
 
     //初始化
     protected function _initialize() {
@@ -62,12 +62,12 @@ class ModuleController extends AdminBase {
         //根据分页取到对应的模块列表数据
         $directory = $dirs_arr[intval($page - 1)];
         foreach ($directory as $module) {
-            $moduleList[$module] = Module::getInstance()->config($module);
+            $moduleList[$module] = $this->Module->config($module);
         }
         //进行分页
         $Page = $this->page($count, 10);
 
-        $this->assign("Page", $Page->show("Admin"));
+        $this->assign("Page", $Page->show());
         $this->assign("data", $moduleList);
         $this->assign("modules", $this->moduleList);
         $this->display();
@@ -81,10 +81,10 @@ class ModuleController extends AdminBase {
             if (empty($module)) {
                 $this->error('请选择需要安装的模块！');
             }
-            if (Module::getInstance()->install($module)) {
+            if ($this->Module->install($module)) {
                 $this->success('模块安装成功！', U('Admin/Module/index'));
             } else {
-                $error = Module::getInstance()->error;
+                $error = $this->Module->error;
                 $this->error($error ? $error : '模块安装失败！');
             }
         } else {
@@ -93,10 +93,10 @@ class ModuleController extends AdminBase {
                 $this->error('请选择需要安装的模块！');
             }
             //检查是否已经安装过
-            if (Module::getInstance()->isInstall($module) !== false) {
+            if ($this->Module->isInstall($module) !== false) {
                 $this->error('该模块已经安装！');
             }
-            $config = Module::getInstance()->config($module);
+            $config = $this->Module->config($module);
             //版本检查
             if ($config['adaptation']) {
                 $version = version_compare(SHUIPF_VERSION, $config['adaptation'], '>=');
@@ -113,10 +113,10 @@ class ModuleController extends AdminBase {
         if (empty($module)) {
             $this->error('请选择需要安装的模块！');
         }
-        if (Module::getInstance()->uninstall($module)) {
+        if ($this->Module->uninstall($module)) {
             $this->success("模块卸载成功，请及时更新缓存！", U("Module/index"));
         } else {
-            $error = Module::getInstance()->error;
+            $error = $this->Module->error;
             $this->error($error ? $error : "模块卸载失败！", U("Module/index"));
         }
     }

@@ -560,6 +560,16 @@ function parseTemplateFile($templateFile = '') {
     $Theme = empty(\Common\Controller\ShuipFCMS::$Cache["Config"]['theme']) ? 'Default' : \Common\Controller\ShuipFCMS::$Cache["Config"]['theme'];
     //如果有指定 GROUP_MODULE 则模块名直接是GROUP_MODULE，否则使用 MODULE_NAME，这样做的目的是防止其他模块需要生成
     $group = defined('GROUP_MODULE') ? GROUP_MODULE : MODULE_NAME;
+    //兼容 Add:ss 这种写法
+    if (!empty($templateFile) && strpos($templateFile, ':')) {
+        if (strpos($templateFile, '://')) {
+            $temp = explode('://', $templateFile);
+            $fxg = str_replace(':', '/', $temp[1]);
+            $templateFile = $temp[0] . $fxg;
+        } else {
+            $templateFile = str_replace(':', '/', $templateFile);
+        }
+    }
     if ($templateFile != '' && strpos($templateFile, '://')) {
         $exp = explode('://', $templateFile);
         $Theme = $exp[0];

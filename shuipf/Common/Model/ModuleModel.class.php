@@ -46,6 +46,10 @@ class ModuleModel extends Model {
             $this->error = '该模块未安装，无需进行此操作！';
             return false;
         }
+        if ($info['iscore']) {
+            $this->error = '内置模块，不能禁用！';
+            return false;
+        }
         $disabled = $info['disabled'] ? 0 : 1;
         if (false !== $this->where(array('module' => $module))->save(array('disabled' => $disabled))) {
             //更新缓存

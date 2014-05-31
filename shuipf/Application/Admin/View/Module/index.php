@@ -50,13 +50,18 @@
 		  if(empty($vo['installtime'])){
 			  $op[] = '<a href="'.U('install',array('module'=>$vo['module'])).'" class="btn btn_submit mr5">安装</a>';
 		  }else{
-			  $op[] = '<a href="'.U('uninstall',array('module'=>$vo['module'])).'" class="J_ajax_upgrade btn">卸载</a>';
+			  if($vo['iscore'] == 0){
+				  $op[] = '<a href="'.U('uninstall',array('module'=>$vo['module'])).'" class="J_ajax_upgrade btn">卸载</a>';
+			  }
 			  if($vo['disabled']){
-				  $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn mr5">禁用</a>';
+				  if($vo['iscore'] == 0){
+					 $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn mr5">禁用</a>'; 
+				  }
 			  }else{
 				  $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn btn_submit  mr5">启用</a>';
 			  }
 		  }
+		  $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn btn_submit  mr5">升级</a>';
 		  echo implode('  ',$op);
 		  ?>
         </td>
