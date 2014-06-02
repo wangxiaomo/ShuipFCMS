@@ -19,8 +19,6 @@ class AddonsController extends AdminBase {
     protected function _initialize() {
         parent::_initialize();
         $this->addons = D('Addons/Addons');
-        //载入Addon类
-        import('Util.Addon', BASE_LIB_PATH);
     }
 
     //显示插件列表
@@ -29,7 +27,7 @@ class AddonsController extends AdminBase {
         if (!empty($addons)) {
             //遍历检查是否有前台
             foreach ($addons as $key => $rs) {
-                $path = $this->addons->getAddonsPath() . $rs['name'] . "/Action/IndexAction.class.php";
+                $path = $this->addons->getAddonsPath() . "{$rs['name']}/Controller/IndexController.class.php";
                 if (file_exists($path)) {
                     $addons[$key]['url'] = U("Addons/{$rs['name']}/index");
                 } else {

@@ -28,4 +28,12 @@ return array(
     'sign' => '912b7e22bd9d86dddb1d460ca90581eb',
     //依赖模块
     'depend' => array(),
+    //缓存，格式：缓存key=>array('module','model','action')
+    'cache' => array(
+        'Addons' => array(
+            'name' => '插件列表',
+            'model' => 'Addons',
+            'action' => 'addons_cache',
+        ),
+    ),
 );

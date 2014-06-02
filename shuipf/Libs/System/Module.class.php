@@ -20,6 +20,10 @@ class Module {
     public $extresPath = NULL;
     //错误信息
     public $error = NULL;
+    //插件配置
+    private $config = array();
+    //当前模块名称
+    private $moduleName = NULL;
 
     /**
      * 构造方法
@@ -42,13 +46,39 @@ class Module {
     }
 
     /**
+     * 获取错误信息
+     * @return string
+     */
+    public function getError() {
+        return $this->error;
+    }
+
+    /**
+     * 设置当前模块名称
+     * @param type $name 模块名
+     * @return \Libs\System\Module
+     */
+    public function setName($name) {
+        $this->moduleName = $name;
+        return $this;
+    }
+
+    /**
      * 获取模块基本配置信息
      * @param type $moduleName 模块名(目录名)
      * @return boolean
      */
-    public function config($moduleName) {
+    public function config($moduleName = '') {
+        if (!empty($this->config)) {
+            return $this->config;
+        }
         if (empty($moduleName)) {
-            return false;
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '模块名称不能为空！';
+                return false;
+            }
         }
         $moduleName = ucwords($moduleName);
         $config = array(
@@ -78,6 +108,8 @@ class Module {
             'depend' => array(),
             //行为
             'tags' => array(),
+            //缓存
+            'cache' => array(),
         );
         //加载安装配置文件
         if (file_exists($this->appPath . $moduleName . '/Config.inc.php')) {
@@ -94,6 +126,7 @@ class Module {
             $moduleList = cache('Module');
             $config = array_merge($config, $moduleList[$moduleName]);
         }
+        $this->config = $config;
         return $config;
     }
 
@@ -102,9 +135,14 @@ class Module {
      * @param type $moduleName 模块名(目录名)
      * @return boolean
      */
-    public function isInstall($moduleName) {
+    public function isInstall($moduleName = '') {
         if (empty($moduleName)) {
-            return false;
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '模块名称不能为空！';
+                return false;
+            }
         }
         $moduleList = cache('Module');
         return (isset($moduleList[$moduleName]) && $moduleList[$moduleName]) ? true : false;
@@ -115,11 +153,15 @@ class Module {
      * @param type $moduleName 模块名(目录名)
      * @return boolean
      */
-    public function install($moduleName) {
+    public function install($moduleName = '') {
         defined('INSTALL') or define("INSTALL", true);
         if (empty($moduleName)) {
-            $this->error = '请选择需要安装的模块！';
-            return false;
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '请选择需要安装的模块！';
+                return false;
+            }
         }
         //已安装模块列表
         $moduleList = cache('Module');
@@ -153,7 +195,7 @@ class Module {
         }
         $model = D('Common/Module');
         if (!$model->create($config, 1)) {
-            $this->error = $model->getError();
+            $this->error = $model->getError()? : '安装初始化失败！';
             return false;
         }
         if ($model->add() == false) {
@@ -167,6 +209,19 @@ class Module {
         }
         //执行数据库脚本安装
         $this->runSQL($moduleName);
+        //执行菜单项安装
+        if ($this->installMenu($moduleName) !== true) {
+            $this->installRollback($moduleName);
+            return false;
+        }
+        //缓存注册
+        if (!empty($config['cache'])) {
+            if (D('Common/Cache')->installModuleCache($config['cache'], $config) !== true) {
+                $this->error = D('Common/Cache')->getError();
+                $this->installRollback($moduleName);
+                return false;
+            }
+        }
         $Dir = new \Dir();
         //前台模板
         if (file_exists($this->appPath . "{$moduleName}/Install/Template/")) {
@@ -194,11 +249,15 @@ class Module {
      * @param type $moduleName 模块名(目录名)
      * @return boolean
      */
-    public function uninstall($moduleName) {
+    public function uninstall($moduleName = '') {
         defined('UNINSTALL') or define("UNINSTALL", true);
         if (empty($moduleName)) {
-            $this->error = '请选择需要卸载的模块！';
-            return false;
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '请选择需要卸载的模块！';
+                return false;
+            }
         }
         //设置脚本最大执行时间
         set_time_limit(0);
@@ -227,6 +286,10 @@ class Module {
         M("Admin/Menu")->where(array("app" => $moduleName))->delete();
         //去除对应行为规则
         D('Common/Behavior')->moduleBehaviorUninstall($moduleName);
+        //注销缓存
+        D('Common/Cache')->deleteCacheModule($moduleName);
+        //删除菜单项
+        $this->uninstallMenu($moduleName);
         //执行卸载脚本
         if (!$this->runInstallScript($moduleName, 'Uninstall')) {
             $this->installRollback($moduleName);
@@ -251,10 +314,14 @@ class Module {
      * @param type $moduleName 模块名(目录名)
      * @return boolean
      */
-    public function upgrade($moduleName) {
+    public function upgrade($moduleName = '') {
         if (empty($moduleName)) {
-            $this->error = '请选择需要升级的模块！';
-            return false;
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '请选择需要升级的模块！';
+                return false;
+            }
         }
         //设置脚本最大执行时间
         set_time_limit(0);
@@ -356,11 +423,70 @@ class Module {
     }
 
     /**
+     * 卸载菜单项项
+     * @param type $moduleName
+     * @return boolean
+     */
+    private function uninstallMenu($moduleName = '') {
+        if (empty($moduleName)) {
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '模块名称不能为空！';
+                return false;
+            }
+        }
+        M('Menu')->where(array('app' => $moduleName))->delete();
+        return true;
+    }
+
+    /**
+     * 安装菜单项
+     * @param type $moduleName 模块名称
+     * @param type $file 文件
+     * @return boolean
+     */
+    private function installMenu($moduleName = '', $file = 'Menu') {
+        if (empty($moduleName)) {
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '模块名称不能为空！';
+                return false;
+            }
+        }
+        $path = $this->appPath . "{$moduleName}/Install/{$file}.php";
+        //检查是否有安装脚本
+        if (!file_exists($path)) {
+            return true;
+        }
+        $menu = include $path;
+        if (empty($menu)) {
+            return true;
+        }
+        $status = D('Admin/Menu')->installModuleMenu($menu, $this->config($moduleName));
+        if ($status === true) {
+            return true;
+        } else {
+            $this->error = D('Admin/Menu')->getError()? : '安装菜单项出现错误！';
+            return false;
+        }
+    }
+
+    /**
      * 执行安装脚本
      * @param type $moduleName 模块名(目录名)
      * @return boolean
      */
-    private function runInstallScript($moduleName, $Dir = 'Install') {
+    private function runInstallScript($moduleName = '', $Dir = 'Install') {
+        if (empty($moduleName)) {
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '模块名称不能为空！';
+                return false;
+            }
+        }
         //检查是否有安装脚本
         if (require_cache($this->appPath . "{$moduleName}/{$Dir}/{$Dir}.class.php") !== true) {
             return true;
@@ -380,7 +506,15 @@ class Module {
      * @param type $moduleName 模块名(目录名)
      * @return boolean
      */
-    private function runInstallScriptEnd($moduleName, $Dir = 'Install') {
+    private function runInstallScriptEnd($moduleName = '', $Dir = 'Install') {
+        if (empty($moduleName)) {
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '模块名称不能为空！';
+                return false;
+            }
+        }
         //检查是否有安装脚本
         if (require_cache($this->appPath . "{$moduleName}/{$Dir}/{$Dir}.class.php") !== true) {
             return true;
@@ -400,7 +534,15 @@ class Module {
      * @param type $moduleName 模块名(目录名)
      * @return boolean
      */
-    private function runSQL($moduleName, $Dir = 'Install') {
+    private function runSQL($moduleName = '', $Dir = 'Install') {
+        if (empty($moduleName)) {
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '模块名称不能为空！';
+                return false;
+            }
+        }
         $path = $this->appPath . "{$moduleName}/{$Dir}/{$moduleName}.sql";
         if (!file_exists($path)) {
             return true;
@@ -419,9 +561,17 @@ class Module {
      * 安装回滚
      * @param type $moduleName 模块名(目录名)
      */
-    private function installRollback($moduleName) {
+    private function installRollback($moduleName = '') {
+        if (empty($moduleName)) {
+            if ($this->moduleName) {
+                $moduleName = $this->moduleName;
+            } else {
+                $this->error = '模块名称不能为空！';
+                return false;
+            }
+        }
         //删除安装状态
-        $this->where(array('module' => $moduleName))->delete();
+        M('Module')->where(array('module' => $moduleName))->delete();
         //更新缓存
         cache('Module', NULL);
     }

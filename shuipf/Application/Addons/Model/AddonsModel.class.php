@@ -1,18 +1,25 @@
 <?php
 
-/**
- * 插件模型
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
-class AddonsModel extends CommonModel {
+// +----------------------------------------------------------------------
+// | ShuipFCMS 插件模型
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
+
+namespace Addons\Model;
+
+use Common\Model\Model;
+
+class AddonsModel extends Model {
 
     //插件所处目录路径
     protected $addonsPath = NULL;
 
     protected function _initialize() {
         parent::_initialize();
-        $this->addonsPath = APP_PATH . 'Addons' . DIRECTORY_SEPARATOR;
+        $this->addonsPath = PROJECT_PATH . 'Addon/';
     }
 
     /**
@@ -39,7 +46,7 @@ class AddonsModel extends CommonModel {
                 return false;
             }
         }
-        $addonsCache = F('Addons');
+        $addonsCache = cache('Addons');
         if (false == $addonsCache) {
             $this->addons_cache();
         }
@@ -332,10 +339,9 @@ class AddonsModel extends CommonModel {
                 //获取类名
                 $class = $this->getAddonClassName($value);
                 //导入对应插件
-                require_cache($this->addonsPath . $value . "/{$value}Addon.class.php");
+                require_cache("{$this->addonsPath}{$value}/{$value}Addon.class.php");
                 //检查类名是否存在
                 if (!class_exists($class)) {
-                    Log::record('插件' . $value . '的入口文件不存在！');
                     continue;
                 }
                 //实例化插件入口类
@@ -565,7 +571,7 @@ class AddonsModel extends CommonModel {
                 $return[$r['name']] = $r;
             }
         }
-        F('Addons', $return);
+        cache('Addons', $return);
         return $return;
     }
 

@@ -108,4 +108,38 @@ class CacheModel extends Model {
         return false;
     }
 
+    /**
+     * 安装模块是，注册缓存
+     * @param array $cache 缓存配置
+     * @param array $config 模块配置
+     * @return boolean
+     */
+    public function installModuleCache(array $cache, array $config) {
+        if (empty($cache) || empty($config)) {
+            $this->error = '参数不完整！';
+            return false;
+        }
+        $module = $config['module'];
+        $data = array();
+        foreach ($cache as $key => $rs) {
+            $add = array(
+                'key' => $key,
+                'name' => $rs['name'],
+                'module' => $rs['module']? : $module,
+                'model' => $rs['model'],
+                'action' => $rs['action'],
+                'param' => $rs['param']? : '',
+                'system' => 0,
+            );
+            if (!$this->create($add)) {
+                return false;
+            }
+            $data[] = $this->data('');
+        }
+        if (!empty($data)) {
+            return $this->addAll($data) !== false ? true : false;
+        }
+        return true;
+    }
+
 }
