@@ -128,8 +128,8 @@ class MenuModel extends Model {
                 $action = $a['action'];
                 //附带参数
                 $fu = "";
-                if ($a['data']) {
-                    $fu = "?" . $a['data'];
+                if ($a['parameter']) {
+                    $fu = "?" . $a['parameter'];
                 }
                 $array = array(
                     "icon" => "",

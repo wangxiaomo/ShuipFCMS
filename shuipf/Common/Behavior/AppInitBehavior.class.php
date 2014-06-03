@@ -78,7 +78,7 @@ class AppInitBehavior {
             include $class;
             return;
         }
-        echo '错误：' . $class . '<br/>';
+        //echo '错误：' . $class . '<br/>';
         //exit;
     }
 

@@ -5,7 +5,12 @@
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
-class AdminAction extends AdminaddonbaseAction {
+
+namespace Addon\Controller;
+
+use Addons\Util\Adminaddonbase;
+
+class AdminController extends Adminaddonbase {
 
     //配置
     protected $databaseConfig = array();
@@ -44,7 +49,7 @@ class AdminAction extends AdminaddonbaseAction {
     public function restore() {
         //列出备份文件列表
         $path = $this->databaseConfig['path'];
-        $glob = glob($path.'*.gz',GLOB_BRACE);
+        $glob = glob($path . '*.gz', GLOB_BRACE);
         $list = array();
         foreach ($glob as $key => $file) {
             $fileInfo = pathinfo($file);

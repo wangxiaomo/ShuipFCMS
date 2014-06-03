@@ -1,11 +1,18 @@
 <?php
 
-/**
- * 前台插件类
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
-class Addons extends BaseAction {
+// +----------------------------------------------------------------------
+// | ShuipFCMS 前台插件基类
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
+
+namespace Addons\Util;
+
+use Common\Controller\Base;
+
+class AddonsBase extends Base {
 
     //插件标识
     public $addonName = NULL;
@@ -16,17 +23,13 @@ class Addons extends BaseAction {
 
     protected function _initialize() {
         parent::_initialize();
-        $this->act = ADDON_ACT;
         $this->addonName = MODULE_NAME;
-        $addons = F('Addons');
-        if (false == $addons) {
-            $addons = D('Addons')->addons_cache();
-        }
+        $addons = cache('Addons');
         $this->addonInfo = $addons[$this->addonName];
         if (empty($this->addonInfo)) {
             $this->error('该插件没有安装或者已经被禁用！');
         }
-        $this->addonPath = D('Addons')->getAddonsPath() . $this->addonName . '/';
+        $this->addonPath = D('Addons/Addons')->getAddonsPath() . $this->addonName . '/';
         //插件配置文件
         if (is_file($this->addonPath . 'Config.php')) {
             $this->configFile = $this->addonPath . 'Config.php';

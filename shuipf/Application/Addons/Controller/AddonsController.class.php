@@ -91,7 +91,6 @@ class AddonsController extends AdminBase {
                 $this->error('保存失败！');
             }
         } else {
-            import('Form');
             //插件名称
             $addonId = trim(I('get.id'));
             if (empty($addonId)) {
@@ -103,15 +102,8 @@ class AddonsController extends AdminBase {
                 $this->error('该插件没有安装！');
             }
             $info['config'] = unserialize($info['config']);
-            //获取类名
-            $class = $this->addons->getAddonClassName($info['name']);
-            //导入对应插件
-            require_cache($this->addons->getAddonsPath() . $info['name'] . "/{$info['name']}Addon.class.php");
-            if (!class_exists($class)) {
-                $this->error("插件{$info['name']}无法实例化！");
-            }
             //实例化插件入口类
-            $addonObj = new $class();
+            $addonObj = $this->addons->getAddonObject($info['name']);
             //标题
             $meta_title = '设置插件-' . $addonObj->info['title'];
             //载入插件配置数组
@@ -124,7 +116,6 @@ class AddonsController extends AdminBase {
                     }
                 }
             }
-
             $this->assign('meta_title', $meta_title);
             $this->assign('config', $fileConfig);
             $this->assign('info', $info);
@@ -358,7 +349,6 @@ class {$info['name']}Addon extends Addon {
 
     //打包下载
     public function unpack() {
-        import("Pclzip");
         $addonName = I('get.addonname');
         if (empty($addonName)) {
             $this->error('请选择需要打包的插件！');
@@ -368,7 +358,7 @@ class {$info['name']}Addon extends Addon {
         $basename = $addonName . '.zip';
         $file = RUNTIME_PATH . $basename;
         //创建压缩包
-        $zip = new PclZip($file);
+        $zip = new \PclZip($file);
         $path = explode(':', $addonsDir);
         $zip->create($addonsDir, PCLZIP_OPT_REMOVE_PATH, $path[1] ? $path[1] : $path[0]);
 

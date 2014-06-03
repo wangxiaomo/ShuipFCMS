@@ -1,14 +1,19 @@
 <?php
 
-/**
- * 插件后台公共Action
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
-class AdminaddonbaseAction extends AdminbaseAction {
+// +----------------------------------------------------------------------
+// | ShuipFCMS 插件管理
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
 
-    //方法
-    public $act = ADDON_ACT;
+namespace Addons\Util;
+
+use Common\Controller\AdminBase;
+
+class Adminaddonbase extends AdminBase {
+
     //插件标识
     public $addonName = NULL;
     //插件基本信息
@@ -18,15 +23,15 @@ class AdminaddonbaseAction extends AdminbaseAction {
 
     protected function _initialize() {
         parent::_initialize();
-        $this->addonName = MODULE_NAME;
-        $this->addonInfo = D('Addons')->where(array('name' => $this->addonName))->find();
+        $this->addonName = CONTROLLER_NAME;
+        $this->addonInfo = D('Addons/Addons')->where(array('name' => $this->addonName))->find();
         if (empty($this->addonInfo)) {
             $this->error('该插件没有安装！');
         }
         if (!$this->addonInfo['status']) {
             $this->error('该插件已被禁用！');
         }
-        $this->addonPath = D('Addons')->getAddonsPath() . $this->addonName . '/';
+        $this->addonPath = D('Addons/Addons')->getAddonsPath() . $this->addonName . '/';
     }
 
     /**

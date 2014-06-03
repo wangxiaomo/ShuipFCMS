@@ -20,7 +20,7 @@
             <input type="text" name="config[{$o_key}]" class="text input" value="{$vo.value}" style="{$vo.style}">
           </div>
         	</td>
-    		<td><div class="fun_tips"></div></td>
+    		<td><div class="fun_tips">{$vo.tips}</div></td>
     	</tr>
         </case>
         <case value="password">
@@ -31,7 +31,7 @@
             <input type="password" name="config[{$o_key}]" class="text input" value="{$vo.value}" style="{$vo.style}">
           </div>
         	</td>
-    		<td><div class="fun_tips"></div></td>
+    		<td><div class="fun_tips">{$vo.tips}</div></td>
     	</tr>
         </case>
         <case value="hidden">
@@ -40,7 +40,7 @@
       		<td>
           <input type="hidden" name="config[{$o_key}]" value="{$vo.value}">
         	</td>
-    		<td><div class="fun_tips"></div></td>
+    		<td><div class="fun_tips">{$vo.tips}</div></td>
     	</tr>
         </case>
         <case value="radio">
@@ -51,7 +51,7 @@
             <label class="radio"> <input type="radio" name="config[{$o_key}]" value="{$opt_k}" <eq name="vo.value" value="$opt_k"> checked</eq>>{$opt} </label>
           </foreach>
         	</td>
-    		<td><div class="fun_tips"></div></td>
+    		<td><div class="fun_tips">{$vo.tips}</div></td>
     	</tr>
         </case>
         <case value="checkbox">
@@ -62,7 +62,7 @@
             <label class="checkbox"> <input type="checkbox" name="config[{$o_key}][]" value="{$opt_k}" <if condition=" in_array($opt_k,$vo['value']) "> checked</if>>{$opt} </label>
           </foreach>
         	</td>
-    		<td><div class="fun_tips"></div></td>
+    		<td><div class="fun_tips">{$vo.tips}</div></td>
     	</tr>
         </case>
         <case value="select">
@@ -75,7 +75,7 @@
             </foreach>
           </select>
         	</td>
-    		<td><div class="fun_tips"></div></td>
+    		<td><div class="fun_tips">{$vo.tips}</div></td>
     	</tr>
         </case>
         <case value="textarea">
@@ -86,16 +86,16 @@
             <textarea name="config[{$o_key}]" style="{$vo.style}">{$vo.value}</textarea>
           </label>
         	</td>
-    		<td><div class="fun_tips"></div></td>
+    		<td><div class="fun_tips">{$vo.tips}</div></td>
     	</tr>
         </case>
         <case value="file">
         <tr>
       		<th>{$vo.title}</th>
       		<td>
-          <?php echo Form::upfiles("config[".$o_key."]",$o_key,$vo['value'],GROUP_NAME,'',50,'input','',$vo['alowexts']); ?>
+          <?php echo \Form::upfiles("config[".$o_key."]",$o_key,$vo['value'],MODULE_NAME,'',50,'input','',$vo['alowexts']); ?>
         	</td>
-    		<td><div class="fun_tips"></div></td>
+    		<td><div class="fun_tips">{$vo.tips}</div></td>
     	</tr>
         </case>
         <case value="editor">
@@ -103,14 +103,14 @@
       		<th>{$vo.title}</th>
       		<td>
           <script type="text/plain" id="{$o_key}" name="config[{$o_key}]">{$vo.value}</script>
-		  <?php echo Form::editor($o_key,$vo['toolbar'],GROUP_NAME); ?>
+		  <?php echo \Form::editor($o_key,$vo['toolbar'],MODULE_NAME); ?>
         	</td>
-    		<td><div class="fun_tips"></div></td>
+    		<td><div class="fun_tips">{$vo.tips}</div></td>
     	</tr>
         </case>
         <case value="group">
 			  <?php
-              $memberGroup = F('Member_group');
+              $memberGroup = cache('Member_group');
               ?>
               <switch name="vo.showtype">
                 <case value="radio">
@@ -121,7 +121,7 @@
                     <label class="radio"> <input type="radio" name="config[{$o_key}]" value="{$mgro.groupid}" <eq name="vo.value" value="$mgro.groupid"> checked</eq>>{$mgro.name} </label>
                   </volist>
                     </td>
-                    <td><div class="fun_tips"></div></td>
+                    <td><div class="fun_tips">{$vo.tips}</div></td>
                 </tr>
                 </case>
                 <case value="checkbox">
@@ -132,7 +132,7 @@
                     <label class="checkbox"> <input type="checkbox" name="config[{$o_key}][]" value="{$mgro.groupid}" <if condition=" in_array($mgro['groupid'],$vo['value']) "> checked</if>>{$mgro.name} </label>
                   </volist>
                     </td>
-                    <td><div class="fun_tips"></div></td>
+                    <td><div class="fun_tips">{$vo.tips}</div></td>
                 </tr>
                 </case>
                 <case value="select">
@@ -145,7 +145,7 @@
                     </volist>
                   </select>
                     </td>
-                    <td><div class="fun_tips"></div></td>
+                    <td><div class="fun_tips">{$vo.tips}</div></td>
                 </tr>
                 </case>
               </switch>
@@ -162,6 +162,6 @@
 <input type="hidden" name="id" value="{$info.id}" />
 </form>
 </div>
-<script type="text/javascript" src="{$config_siteurl}statics/js/common.js?v"></script>
+<script type="text/javascript" src="{$config_siteurl}statics/js/common.js"></script>
 </body>
 </html>

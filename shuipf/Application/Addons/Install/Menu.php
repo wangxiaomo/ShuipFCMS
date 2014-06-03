@@ -30,24 +30,16 @@ return array(
                         "remark" => "",
                         "child" => array(
                             array(
-                                "route" => "Addons/Addons/index",
+                                "route" => "Addons/Addons/create",
                                 "type" => 1,
                                 "status" => 1,
-                                "name" => "插件管理",
-                                "child" => array(
-                                    array(
-                                        "route" => "Addons/Addons/create",
-                                        "type" => 1,
-                                        "status" => 1,
-                                        "name" => "创建新插件",
-                                    ),
-                                    array(
-                                        "route" => "Addons/Addons/local",
-                                        "type" => 1,
-                                        "status" => 1,
-                                        "name" => "本地安装",
-                                    ),
-                                ),
+                                "name" => "创建新插件",
+                            ),
+                            array(
+                                "route" => "Addons/Addons/local",
+                                "type" => 1,
+                                "status" => 1,
+                                "name" => "本地安装",
                             ),
                             array(
                                 "route" => "Addons/Addons/unpack",
@@ -60,9 +52,9 @@ return array(
                 ),
             ),
             array(
-                "route" => "Addons/Addons/index",
+                "route" => "Addons/Addons/addonadmin",
                 "type" => 0,
-                "status" => 1,
+                "status" => 0,
                 "name" => "插件后台列表",
             ),
         ),),

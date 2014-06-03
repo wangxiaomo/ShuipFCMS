@@ -47,29 +47,16 @@ class AddonsModel extends Model {
             }
         }
         $addonsCache = cache('Addons');
-        if (false == $addonsCache) {
-            $this->addons_cache();
-        }
         //检查插件是否安装
         if (empty($addonsCache) || !isset($addonsCache[$addonName])) {
             return false;
         }
         //插件对应的行为方法
         $action = $behavior['tagname'];
-        import('Addons.Util.Addon', APP_PATH . C('APP_GROUP_PATH') . '/');
-        //获取类名
-        $class = $this->getAddonClassName($addonName);
-        //执行文件地址
-        $filePath = $this->addonsPath . "{$addonName}/{$addonName}Addon.class.php";
-        //导入对应插件
-        require_cache($filePath);
-        if (!class_exists($class)) {
-            if (APP_DEBUG) { // 记录行为的执行日志
-                trace('[ 插件 ' . $addonName . ' 入口文件不存在] --File:' . $filePath, '', 'INFO');
-            }
+        $obj = $this->getAddonObject($addonName);
+        if (!is_object($obj)) {
             return false;
         }
-        $obj = get_instance_of($class);
         //执行全局行为  _globalTag()
         if (method_exists($obj, '_globalTag')) {
             $obj->_globalTag($params);
@@ -101,16 +88,12 @@ class AddonsModel extends Model {
             $this->error = '该插件已经安装，无需重复安装！';
             return false;
         }
-        //获取类名
-        $class = $this->getAddonClassName($addonName);
-        //导入对应插件
-        require_cache($this->addonsPath . "{$addonName}/{$addonName}Addon.class.php");
-        if (!class_exists($class)) {
-            $this->error = '插件不存在或者插件入口文件有误！';
+        //实例化插件入口类
+        $addonObj = $this->getAddonObject($addonName);
+        if (!is_object($addonObj)) {
+            $this->error = '获取插件对象出错！';
             return false;
         }
-        //实例化插件入口类
-        $addonObj = new $class();
         //获取插件信息
         $info = $addonObj->info;
         if (empty($info)) {
@@ -179,16 +162,11 @@ class AddonsModel extends Model {
             $this->error = '该插件未安装，无需卸载！';
             return false;
         }
-        //获取类名
-        $class = $this->getAddonClassName($addonName);
-        //导入对应插件
-        require_cache($this->addonsPath . "{$addonName}/{$addonName}Addon.class.php");
-        if (!class_exists($class)) {
-            $this->error = '插件不存在或者插件入口文件有误！';
+        $addonObj = $this->getAddonObject($addonName);
+        if (!is_object($addonObj)) {
+            $this->error = '获取插件对象出错！';
             return false;
         }
-        //实例化插件入口类
-        $addonObj = new $class();
         //卸载插件
         $uninstall = $addonObj->uninstall();
         if ($uninstall !== true) {
@@ -212,7 +190,7 @@ class AddonsModel extends Model {
             //删除行为挂载点
             M('BehaviorRule')->where(array('addons' => $addonName, 'system' => 0))->delete();
             //更新行为缓存
-            D('Behavior')->behavior_cache();
+            cache('Behavior', null);
             return true;
         } else {
             $this->error = '卸载插件失败！';
@@ -275,9 +253,7 @@ class AddonsModel extends Model {
         $filePath = $base . "{$addonName}Addon.class.php";
         //导入对应插件
         require_cache($filePath);
-        //获取类名
-        $class = $this->getAddonClassName($addonName);
-        $obj = get_instance_of($class);
+        $obj = $this->getAddonObject($addonName);
         $info = $obj->info;
         //更新版本号
         if ($info['version']) {
@@ -336,16 +312,11 @@ class AddonsModel extends Model {
         foreach ($dirs as $value) {
             //是否已经安装过
             if (!isset($addons[$value])) {
-                //获取类名
-                $class = $this->getAddonClassName($value);
-                //导入对应插件
-                require_cache("{$this->addonsPath}{$value}/{$value}Addon.class.php");
+                $addonObj = $this->getAddonObject($value);
                 //检查类名是否存在
-                if (!class_exists($class)) {
+                if ($addonObj === false) {
                     continue;
                 }
-                //实例化插件入口类
-                $addonObj = new $class();
                 //获取插件配置
                 $addons[$value] = $addonObj->info;
                 if ($addons[$value]) {
@@ -362,16 +333,33 @@ class AddonsModel extends Model {
     }
 
     /**
-     * 获取插件类名
-     * @param type $name 插件标识
-     * @return boolean
+     * 获取插件Addon.class.php对象
+     * @staticvar array $getAddonObject
+     * @param type $name 插件名
+     * @return boolean|array|\Addons\Model\na_class
      */
-    public function getAddonClassName($name) {
-        if (empty($name)) {
-            $this->error = '插件名称不能为空！';
+    public function getAddonObject($name) {
+        static $getAddonObject = array();
+        if (isset($getAddonObject[$name])) {
+            return $getAddonObject[$name];
+        }
+        //导入对应插件
+        if (!require_cache("{$this->addonsPath}{$name}/{$name}Addon.class.php")) {
             return false;
         }
-        return $name . 'Addon';
+        $class = '\\' . $name . 'Addon';
+        $na_class = '\\Addon\\' . $name . $class;
+        //检查类名是否存在
+        if (class_exists($class, false)) {
+            //不使用命名空间
+            $addonObj = new $class();
+        } else if (class_exists($na_class, false)) {
+            $addonObj = new $na_class();
+        } else {
+            return false;
+        }
+        $getAddonObject[$name] = $addonObj;
+        return $getAddonObject[$name];
     }
 
     /**
@@ -414,14 +402,14 @@ class AddonsModel extends Model {
             return false;
         }
         //查询出“插件后台列表”菜单ID
-        $menuId = M("Menu")->where(array("app" => "Addons", "model" => "Addons", "action" => "addonadmin"))->getField('id');
+        $menuId = M("Menu")->where(array("app" => "Addons", "controller" => "Addons", "action" => "addonadmin"))->getField('id');
         if (empty($menuId)) {
             return false;
         }
         //删除对应菜单
-        M("Menu")->where(array('app' => 'Addons', 'model' => $info['name']))->delete();
+        M("Menu")->where(array('app' => 'Addons', 'controller' => $info['name']))->delete();
         //删除权限
-        M("Access")->where(array("g" => "Addons", 'm' => $info['name']))->delete();
+        M("Access")->where(array("app" => "Addons", 'controller' => $info['name']))->delete();
         //检查“插件后台列表”菜单下还有没有菜单，没有就隐藏
         $count = M("Menu")->where(array('parentid' => $menuId))->count();
         if (!$count) {
@@ -441,35 +429,34 @@ class AddonsModel extends Model {
             return false;
         }
         //查询出“插件后台列表”菜单ID
-        $menuId = M("Menu")->where(array("app" => "Addons", "model" => "Addons", "action" => "addonadmin"))->getField('id');
+        $menuId = M('Menu')->where(array("app" => "Addons", "controller" => "Addons", "action" => "addonadmin"))->getField('id');
         if (empty($menuId)) {
             return false;
         }
-        //添加插件后台
-        $parentid = M("Menu")->add(
-                array(
-                    //父ID
-                    "parentid" => $menuId,
-                    //模块目录名称，也是项目名称
-                    "app" => "Addons",
-                    //插件名称
-                    "model" => $info['name'],
-                    //方法名称
-                    "action" => "index",
-                    //附加参数 例如：a=12&id=777
-                    "data" => "isadmin=1",
-                    //类型，1：权限认证+菜单，0：只作为菜单
-                    "type" => 1,
-                    //状态，1是显示，2是不显示
-                    "status" => 1,
-                    //名称
-                    "name" => $info['title'],
-                    //备注
-                    "remark" => $info['title'] . "插件管理后台！",
-                    //排序
-                    "listorder" => 0,
-                )
+        $data = array(
+            //父ID
+            "parentid" => $menuId,
+            //模块目录名称，也是项目名称
+            "app" => "Addons",
+            //插件名称
+            "controller" => $info['name'],
+            //方法名称
+            "action" => "index",
+            //附加参数 例如：a=12&id=777
+            "parameter" => "isadmin=1",
+            //类型，1：权限认证+菜单，0：只作为菜单
+            "type" => 1,
+            //状态，1是显示，0是不显示
+            "status" => 1,
+            //名称
+            "name" => $info['title'],
+            //备注
+            "remark" => $info['title'] . "插件管理后台！",
+            //排序
+            "listorder" => 0,
         );
+        //添加插件后台
+        $parentid = M("Menu")->add($data);
         if (!$parentid) {
             return false;
         }
@@ -492,14 +479,14 @@ class AddonsModel extends Model {
                     //模块目录名称，也是项目名称
                     "app" => "Addons",
                     //文件名称，比如LinksAction.class.php就填写 Links
-                    "model" => $info['name'],
+                    "controller" => $info['name'],
                     //方法名称
                     "action" => $menu['action'],
                     //附加参数 例如：a=12&id=777
-                    "data" => 'isadmin=1',
+                    "parameter" => 'isadmin=1',
                     //类型，1：权限认证+菜单，0：只作为菜单
                     "type" => $menu['type'] ? (int) $menu['type'] : 1,
-                    //状态，1是显示，2是不显示
+                    //状态，1是显示，0是不显示
                     "status" => (int) $menu['status'],
                     //名称
                     "name" => $menu['name'],
@@ -523,13 +510,7 @@ class AddonsModel extends Model {
         if (empty($addonName)) {
             return false;
         }
-        //获取类名
-        $class = $this->getAddonClassName($addonName);
-        //导入对应插件
-        require_cache($this->addonsPath . "{$addonName}/{$addonName}Addon.class.php");
-        if (!class_exists($class)) {
-            return false;
-        }
+        $class = $this->getAddonObject($addonName);
         //获取这个插件总的方法列表，数组
         $methods = get_class_methods($class);
         //取得已经存在的行为列表
@@ -541,7 +522,7 @@ class AddonsModel extends Model {
         }
         foreach ($common as $beh) {
             //检查是否有同样的行为
-            $behaviorInfo = D('Behavior')->where(array('name' => $beh))->find();
+            $behaviorInfo = M('Behavior')->where(array('name' => $beh))->find();
             if ($behaviorInfo) {
                 //添加规则
                 $data = array(
@@ -554,7 +535,7 @@ class AddonsModel extends Model {
             }
         }
         //更新行为缓存
-        D('Behavior')->behavior_cache();
+        cache('Behavior', null);
         return true;
     }
 

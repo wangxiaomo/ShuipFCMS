@@ -53,7 +53,7 @@ abstract class Addon {
      * @return type
      */
     final public function getAddonName() {
-        $class = get_class($this);
+        $class = end(explode('\\', get_class($this)));
         return substr($class, 0, strrpos($class, 'Addon'));
     }
 

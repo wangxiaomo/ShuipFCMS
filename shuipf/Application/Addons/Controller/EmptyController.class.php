@@ -1,7 +1,7 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | ShuipFCMS 插件管理
+// | ShuipFCMS 插件
 // +----------------------------------------------------------------------
 // | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
@@ -10,54 +10,28 @@
 
 namespace Addons\Controller;
 
-use Common\Controller\Base;
+class EmptyController {
 
-class EmptyController extends Base {
-
-    //方法
-    public $act = 'index';
     //插件标识
     public $addonName = NULL;
     //插件路径
     protected $addonPath = NULL;
 
-    protected function _initialize() {
-        $this->act = ACTION_NAME;
-        define('ADDON_ACT', $this->act);
-        $this->addonName = MODULE_NAME;
-        $this->addonPath = D('Addons')->getAddonsPath() . $this->addonName . '/';
+    public function __construct() {
+        $this->addonName = CONTROLLER_NAME;
+        $this->addonPath = D('Addons/Addons')->getAddonsPath() . $this->addonName . '/';
     }
 
     //魔术方法
     public function __call($method, $args) {
         $isAdmin = I('get.isadmin');
-        if ($isAdmin) {
-            define('ADDON_MODULE_NAME', 'Admin');
-            $this->admin();
-        } else {
-            define('ADDON_MODULE_NAME', 'Index');
-            $this->index();
+        $class = $isAdmin ? 'Admin' : 'Index';
+        if (!require_cache("{$this->addonPath}Controller/{$class}Controller.class.php")) {
+            E("插件{$this->addonName}实例化错误！");
         }
-    }
-
-    //插件前台
-    private function index() {
-        import('Util.AddonsAction', BASE_LIB_PATH);
-        //导入对应插件
-        require_cache($this->addonPath . "Action/IndexAction.class.php");
-        $indexAction = new IndexAction();
-        $action = $this->act;
-        $indexAction->$action();
-    }
-
-    //插件后台
-    private function admin() {
-        import('Util.AdminaddonbaseAction', BASE_LIB_PATH);
-        //导入对应插件
-        require_cache($this->addonPath . "Action/AdminAction.class.php");
-        $adminAction = new AdminAction();
-        $action = $this->act;
-        $adminAction->$action();
+        define('ADDON_MODULE_NAME', $class);
+        $object = \Think\Think::instance("\\Addon\\Controller\\{$class}Controller");
+        return $object->$method($args);
     }
 
 }

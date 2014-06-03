@@ -38,11 +38,7 @@ class Module {
      * @return void
      */
     static public function getInstance() {
-        static $systemHandier;
-        if (empty($systemHandier)) {
-            $systemHandier = new Module();
-        }
-        return $systemHandier;
+        return \Think\Think::instance('Module');
     }
 
     /**
@@ -492,7 +488,7 @@ class Module {
             return true;
         }
         $className = "\{$Dir}";
-        $installObj = new $className();
+        $installObj = \Think\Think::instance($className);
         //执行安装
         if (false == $installObj->run()) {
             $this->error = $installObj->getError();
@@ -520,7 +516,7 @@ class Module {
             return true;
         }
         $className = "\{$Dir}";
-        $installObj = new $className();
+        $installObj = \Think\Think::instance($className);
         //执行安装
         if (false == $installObj->end()) {
             $this->error = $installObj->getError();
