@@ -10,7 +10,9 @@
 
 namespace Addon\Database;
 
-class DatabaseAddon extends \Addons\Util\Addon {
+use \Addons\Util\Addon;
+
+class DatabaseAddon extends Addon {
 
     //插件信息
     public $info = array(

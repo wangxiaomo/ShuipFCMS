@@ -23,7 +23,7 @@ class AddonsBase extends Base {
 
     protected function _initialize() {
         parent::_initialize();
-        $this->addonName = MODULE_NAME;
+        $this->addonName = CONTROLLER_NAME;
         $addons = cache('Addons');
         $this->addonInfo = $addons[$this->addonName];
         if (empty($this->addonInfo)) {
@@ -31,9 +31,7 @@ class AddonsBase extends Base {
         }
         $this->addonPath = D('Addons/Addons')->getAddonsPath() . $this->addonName . '/';
         //插件配置文件
-        if (is_file($this->addonPath . 'Config.php')) {
-            $this->configFile = $this->addonPath . 'Config.php';
-        }
+        $this->configFile = $this->addonPath . 'Config.php';
     }
 
     /**

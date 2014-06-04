@@ -122,7 +122,7 @@ class AttachmentsController extends Base {
         $this->assign('isadmin', $this->isadmin);
         //是否添加水印
         $this->assign("watermark_enable", (int) $info[5]);
-        $this->display('Attachment@Attachments/swfupload');
+        $this->display(T('Attachment@Attachments/swfupload'));
     }
 
     //设置swfupload上传的json格式cookie 

@@ -8,7 +8,7 @@
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
 
-namespace Addon\Controller;
+namespace Addon\Keylink\Controller;
 
 use Addons\Util\Adminaddonbase;
 

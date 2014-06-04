@@ -30,7 +30,7 @@ class EmptyController {
             E("插件{$this->addonName}实例化错误！");
         }
         define('ADDON_MODULE_NAME', $class);
-        $object = \Think\Think::instance("\\Addon\\Controller\\{$class}Controller");
+        $object = \Think\Think::instance("\\Addon\\".$this->addonName."\\Controller\\{$class}Controller");
         return $object->$method($args);
     }
 

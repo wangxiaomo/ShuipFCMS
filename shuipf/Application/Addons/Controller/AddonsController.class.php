@@ -184,6 +184,11 @@ class AddonsController extends AdminBase {
  * Some rights reserved：abc3210.com
  * Contact email:admin@abc3210.com
  */
+
+namespace Addon\\{$info['name']};
+
+use \Addons\Util\Addon;
+
 class {$info['name']}Addon extends Addon {
 
     //插件信息
@@ -248,8 +253,7 @@ class {$info['name']}Addon extends Addon {
             $addonFile .="
 }
 ";
-            import("Dir");
-            $Dir = new Dir();
+            $Dir = new \Dir();
             //创建插件相关目录
             $status = mkdir($addonsDir, 0777, true);
             if ($status == false) {
@@ -264,22 +268,32 @@ class {$info['name']}Addon extends Addon {
             }
             //插件后台
             if ($has_adminlist) {
-                $Dir->copyDir(BASE_LIB_PATH . 'Example/Action/', $addonsDir . 'Action/');
-                $Dir->copyDir(BASE_LIB_PATH . 'Example/Tpl/', $addonsDir . 'Tpl/');
+                $Dir->copyDir(MODULE_PATH . 'Example/Controller/', $addonsDir . 'Controller/');
+                $Dir->copyDir(MODULE_PATH . 'Example/View/', $addonsDir . 'View/');
             }
             //插件前台访问
             if ($has_outurl && !$has_adminlist) {
-                $Dir->copyDir(BASE_LIB_PATH . 'Example/Action/', $addonsDir . 'Action/');
-                $Dir->copyDir(BASE_LIB_PATH . 'Example/Tpl/', $addonsDir . 'Tpl/');
-                unlink($addonsDir . 'Action/AdminAction.class.php');
-                $Dir->delDir($addonsDir . 'Tpl/Admin/');
+                $Dir->copyDir(MODULE_PATH . 'Example/Controller/', $addonsDir . 'Controller/');
+                $Dir->copyDir(MODULE_PATH . 'Example/View/', $addonsDir . 'View/');
+                unlink($addonsDir . 'Controller/AdminController.class.php');
+                $Dir->delDir($addonsDir . 'View/Admin/');
             } elseif (!$has_outurl && $has_adminlist) {
-                unlink($addonsDir . 'Action/IndexAction.class.php');
-                $Dir->delDir($addonsDir . 'Tpl/Index/');
+                unlink($addonsDir . 'Controller/IndexController.class.php');
+                $Dir->delDir($addonsDir . 'View/Index/');
+            }
+            if (is_file($addonsDir . 'Controller/AdminController.class.php')) {
+                $AdminController = file_get_contents($addonsDir . 'Controller/AdminController.class.php');
+                $AdminController = str_replace('AddonsName', $info['name'], $AdminController);
+                file_put_contents($addonsDir . 'Controller/AdminController.class.php', $AdminController);
+            }
+            if (is_file($addonsDir . 'Controller/IndexController.class.php')) {
+                $IndexController = file_get_contents($addonsDir . 'Controller/IndexController.class.php');
+                $IndexController = str_replace('AddonsName', $info['name'], $IndexController);
+                file_put_contents($addonsDir . 'Controller/IndexController.class.php', $IndexController);
             }
             //插件配置
             if ($has_config) {
-                copy(BASE_LIB_PATH . 'Example/Config.php', $addonsDir . 'Config.php');
+                copy(MODULE_PATH . 'Example/Config.php', $addonsDir . 'Config.php');
             }
             $this->success('插件创建成功~', U('Addons/index'));
         } else {

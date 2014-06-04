@@ -1,20 +1,15 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
+// | ShuipFCMS 系统行为实现
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006~2013 http://topthink.com All rights reserved.
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
+// | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
 
 namespace Think;
 
-/**
- * ThinkPHP系统钩子实现
- */
 class Hook {
 
     static private $tags = array();

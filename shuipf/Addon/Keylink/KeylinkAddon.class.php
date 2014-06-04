@@ -10,7 +10,9 @@
 
 namespace Addon\Keylink;
 
-class KeylinkAddon extends \Addons\Util\Addon {
+use \Addons\Util\Addon;
+
+class KeylinkAddon extends Addon {
 
     //插件信息
     public $info = array(

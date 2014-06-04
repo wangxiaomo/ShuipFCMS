@@ -1,5 +1,5 @@
 <?php if (!defined('SHUIPF_VERSION')) exit(); ?>
-<Admintemplate file="Common/Head"/>
+<admintemplate file="Common/Head"/>
 <body class="J_scroll_fixed">
 <div class="wrap">
   <Admintemplate file="Common/Nav"/>
