@@ -112,8 +112,7 @@ class Database {
      */
     public function backup($table, $start) {
         //创建DB对象
-        $db = Db::getInstance();
-
+        $db = M();
         //备份表结构
         if (0 == $start) {
             $result = $db->query("SHOW CREATE TABLE `{$table}`");
@@ -164,7 +163,7 @@ class Database {
 
     public function import($start) {
         //还原数据
-        $db = Db::getInstance();
+        $db = M();
 
         if ($this->config['compress']) {
             $gz = gzopen($this->file[1], 'r');

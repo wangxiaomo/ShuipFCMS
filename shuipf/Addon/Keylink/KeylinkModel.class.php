@@ -1,13 +1,18 @@
 <?php
 
-/**
- * File Name：KeylinkModel.class.php
- * File Encoding：UTF-8
- * File New Time：2014-3-21 11:05:52
- * Author：水平凡
- * Mailbox：admin@abc3210.com
- */
-class KeylinkModel extends CommonModel {
+// +----------------------------------------------------------------------
+// | ShuipFCMS 插件后台管理
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
+
+namespace Addon\Keylink;
+
+use Common\Model\Model;
+
+class KeylinkModel extends Model {
 
     //自动验证
     protected $_validate = array(

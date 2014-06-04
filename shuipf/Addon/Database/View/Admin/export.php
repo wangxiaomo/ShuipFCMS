@@ -1,8 +1,22 @@
-<?php if (!defined('SHUIPF_VERSION')) exit(); ?>
-<Admintemplate file="Common/Head"/>
+<?php
+ if (!defined('SHUIPF_VERSION')) exit();
+/**
+ * 格式化字节大小
+ * @param  number $size      字节数
+ * @param  string $delimiter 数字和单位分隔符
+ * @return string            格式化后的带单位的大小
+ */
+function format_bytes($size, $delimiter = '') {
+    $units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+    for ($i = 0; $size >= 1024 && $i < 5; $i++)
+        $size /= 1024;
+    return round($size, 2) . $delimiter . $units[$i];
+}
+ ?>
+<admintemplate file="Common/Head"/>
 <body>
 <div class="wrap J_check_wrap">
-  <Admintemplate file="Common/Nav"/>
+  <admintemplate file="Common/Nav"/>
   <form class="J_ajaxForm" id="export-form" action="{:U('Database/export',array('isadmin'=>1 ))}" method="post">
   <div class="table_list">
     <table width="100%">
@@ -40,7 +54,7 @@
     </div>
   </form>
 </div>
-<script src="{$config_siteurl}statics/js/common.js?v"></script>
+<script src="{$config_siteurl}statics/js/common.js"></script>
 <script>
 $(function () {
     var $export = $("#export");

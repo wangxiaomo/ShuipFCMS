@@ -132,12 +132,31 @@ class Hook {
                 trace('[ ' . $tag . ' ] --START--', '', 'INFO');
             }
             foreach (self::$tags[$tag] as $ar) {
-                $name = $ar['class'];
-                APP_DEBUG && G($name . '_start');
-                $result = self::exec($name, $tag, $params);
-                if (APP_DEBUG) {
-                    G($name . '_end');
-                    trace('Run ' . $name . ' [ RunTime:' . G($name . '_start', $name . '_end', 6) . 's ]', '', 'INFO');
+                switch ((int) $ar['_type']) {
+                    //规则行为
+                    case 1:
+                        $result = D('Common/Behavior')->execution($ar, $params);
+                        break;
+                    case 2:
+                        $name = $ar['class'];
+                        APP_DEBUG && G($name . '_start');
+                        $result = self::exec($name, $tag, $params);
+                        if (APP_DEBUG) {
+                            G($name . '_end');
+                            trace('Run ' . $name . ' [ RunTime:' . G($name . '_start', $name . '_end', 6) . 's ]', '', 'INFO');
+                        }
+                        break;
+                    //SQL规则行为
+                    case 3:
+                        $result = D('Common/Behavior')->executionSQL($ar, $params);
+                        break;
+                    //插件行为
+                    case 4:
+                        $result = D('Addons/Addons')->execution($ar, $params);
+                        break;
+                    default:
+                        continue;
+                        break;
                 }
                 if (false === $result) {
                     // 如果返回false 则中断插件执行
@@ -162,6 +181,9 @@ class Hook {
         if ('Behavior' == substr($name, -8)) {
             // 行为扩展必须用run入口方法
             $tag = 'run';
+        }
+        if (empty($name)) {
+            return false;
         }
         $addon = new $name();
         return $addon->$tag($params);

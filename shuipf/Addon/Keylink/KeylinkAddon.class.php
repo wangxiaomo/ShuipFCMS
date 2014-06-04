@@ -7,6 +7,9 @@
 // +----------------------------------------------------------------------
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
+
+namespace Addon\Keylink;
+
 class KeylinkAddon extends \Addons\Util\Addon {
 
     //插件信息
@@ -84,7 +87,7 @@ class KeylinkAddon extends \Addons\Util\Addon {
   PRIMARY KEY (`keylinkid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
         //检查行为是否有添加
-        $Behavior = D('Behavior');
+        $Behavior = D('Common/Behavior');
         C('TOKEN_ON', false);
         if ($Behavior->where(array('name' => 'content_add_begin'))->count() == 0) {
             $Behavior->addBehavior(array(
@@ -130,7 +133,7 @@ class KeylinkAddon extends \Addons\Util\Addon {
         $cache = S('keylink_cache');
         if (empty($cache)) {
             import('KeylinkModel', $this->addonPath);
-            $cache = D('Keylink')->keylink_cache();
+            $cache = \Think\Think::instance('\Addon\Keylink\KeylinkModel')->keylink_cache();
         }
         if (empty($cache)) {
             return false;

@@ -1,11 +1,18 @@
 <?php
 
-/**
- * 插件后台管理
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
-class AdminAction extends AdminaddonbaseAction {
+// +----------------------------------------------------------------------
+// | ShuipFCMS 插件后台管理
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
+
+namespace Addon\Controller;
+
+use Addons\Util\Adminaddonbase;
+
+class AdminController extends Adminaddonbase {
 
     private $db = NULL;
 
@@ -13,7 +20,7 @@ class AdminAction extends AdminaddonbaseAction {
     protected function _initialize() {
         parent::_initialize();
         import('KeylinkModel', $this->addonPath);
-        $this->db = D('Keylink');
+        $this->db = \Think\Think::instance('\Addon\Keylink\KeylinkModel');
     }
 
     //显示已添加的关键词
@@ -22,7 +29,7 @@ class AdminAction extends AdminaddonbaseAction {
         $count = $this->db->where($map)->count();
         $page = $this->page($count, 20);
         $data = $this->db->where($map)->limit($page->firstRow . ',' . $page->listRows)->order(array("keylinkid" => "DESC"))->select();
-        $this->assign("Page", $page->show('Admin'));
+        $this->assign("Page", $page->show());
         $this->assign("data", $data);
         $this->display();
     }

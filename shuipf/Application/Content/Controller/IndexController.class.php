@@ -36,8 +36,9 @@ class IndexController extends Base {
 //        G('end');
 //        echo G('begin', 'end', 6);
         //echo '网站首页';
-        echo md5('ShuipFCMS_Attachment');exit;
-        $this->display();
+        tag('content_edit_begin');
+        //echo md5('ShuipFCMS_Attachment');exit;
+        //$this->display();
     }
 
     //列表

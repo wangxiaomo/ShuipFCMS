@@ -1,10 +1,12 @@
 <?php
 
-/**
- * 插件相关函数
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
+// +----------------------------------------------------------------------
+// | ShuipFCMS 插件相关函数
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
 
 /**
  * 插件模板定位
@@ -15,10 +17,10 @@
  */
 function parseAddonTemplateFile($templateFile = '', $addonPath) {
     static $TemplateFileCache = array();
-    C('TEMPLATE_NAME', $addonPath . 'Tpl/');
+    C('TEMPLATE_NAME', $addonPath . 'View/');
     //模板标识
     if ('' == $templateFile) {
-        $templateFile = C('TEMPLATE_NAME') . ucwords(ADDON_MODULE_NAME) . '/' . ADDON_ACT . C('TMPL_TEMPLATE_SUFFIX');
+        $templateFile = C('TEMPLATE_NAME') . ucwords(ADDON_MODULE_NAME) . '/' . ACTION_NAME . C('TMPL_TEMPLATE_SUFFIX');
     }
     $key = md5($templateFile);
     if (isset($TemplateFileCache[$key])) {

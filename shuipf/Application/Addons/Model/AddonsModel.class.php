@@ -67,7 +67,7 @@ class AddonsModel extends Model {
                 return true;
             } else {
                 if (APP_DEBUG) { // 记录行为的执行日志
-                    trace('[ 插件 ' . $addonName . ' 中方法 ' . $action . ' 不存在] --File:' . $filePath, '', 'INFO');
+                    trace('[ 插件 ' . $addonName . ' 中方法 ' . $action . ' 不存在]', 'INFO');
                 }
             }
         }

@@ -7,7 +7,7 @@
         },
         error: function (jqXHR, textStatus, errorThrown) {
             //请求失败处理
-            alert(errorThrown ? errorThrown : "Ajax请求出现错误："+this.url);
+            //alert(errorThrown ? errorThrown : "Ajax请求出现错误："+this.url);
         }
     });
 

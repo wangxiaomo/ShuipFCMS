@@ -1,10 +1,12 @@
 <?php
 
-/**
- * 插件后台管理
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
+// +----------------------------------------------------------------------
+// | ShuipFCMS 插件后台管理
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
 
 namespace Addon\Controller;
 
@@ -228,7 +230,7 @@ class AdminController extends Adminaddonbase {
             }
         } elseif (is_numeric($part) && is_numeric($start)) {
             $list = session('backup_list');
-            $db = new Database($list[$part], array(
+            $db = new \Database($list[$part], array(
                 'path' => $this->databaseConfig['path'],
                 'compress' => $list[$part][2])
             );
@@ -282,7 +284,7 @@ class AdminController extends Adminaddonbase {
             }
 
             //检查备份目录是否可写
-            is_writeable($config['path']) || $this->error('备份目录不存在或不可写，请检查后重试！');
+            is_writeable($config['path']) || $this->error('备份目录[' . $config['path'] . ']不存在或不可写，请检查后重试！');
             session('backup_config', $config);
 
             //生成备份文件信息
@@ -296,7 +298,7 @@ class AdminController extends Adminaddonbase {
             session('backup_tables', $tables);
 
             //创建备份文件
-            $Database = new Database($file, $config);
+            $Database = new \Database($file, $config);
             if (false !== $Database->create()) {
                 $tab = array('id' => 0, 'start' => 0);
                 $this->success('初始化成功！', '', array('tables' => $tables, 'tab' => $tab));
@@ -306,7 +308,7 @@ class AdminController extends Adminaddonbase {
         } elseif (IS_GET && is_numeric($id) && is_numeric($start)) { //备份数据
             $tables = session('backup_tables');
             //备份指定表
-            $Database = new Database(session('backup_file'), session('backup_config'));
+            $Database = new \Database(session('backup_file'), session('backup_config'));
             $start = $Database->backup($tables[$id], $start);
             if (false === $start) { //出错
                 $this->error('备份出错！');
@@ -331,17 +333,4 @@ class AdminController extends Adminaddonbase {
         }
     }
 
-}
-
-/**
- * 格式化字节大小
- * @param  number $size      字节数
- * @param  string $delimiter 数字和单位分隔符
- * @return string            格式化后的带单位的大小
- */
-function format_bytes($size, $delimiter = '') {
-    $units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
-    for ($i = 0; $size >= 1024 && $i < 5; $i++)
-        $size /= 1024;
-    return round($size, 2) . $delimiter . $units[$i];
 }
