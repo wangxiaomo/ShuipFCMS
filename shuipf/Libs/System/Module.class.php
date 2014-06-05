@@ -65,7 +65,7 @@ class Module {
      * @return boolean
      */
     public function config($moduleName = '') {
-        if (!empty($this->config)) {
+        if (!empty($this->config) && empty($moduleName)) {
             return $this->config;
         }
         if (empty($moduleName)) {
