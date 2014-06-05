@@ -7,7 +7,7 @@
   <table width="100%" cellspacing="0" >
     <thead>
       <tr>
-        <td width="100" align="center">ModelID</td>
+        <td width="50" align="center">ModelID</td>
         <td width="100" align="center">模型名称</td>
         <td width="100" align="center">数据表</td>
         <td  align="center">描述</td>
@@ -40,7 +40,7 @@
 			}
 		}
 		if(\Libs\System\RBAC::authenticate('delete')){
-			$operate[] = '<a href="'.U("delete",array("modelid"=>$vo['modelid'])).'">删除</a>';
+			$operate[] = '<a class="J_ajax_del" href="'.U("delete",array("modelid"=>$vo['modelid'])).'">删除</a>';
 		}
 		if(\Libs\System\RBAC::authenticate('export')){
 			$operate[] = '<a href="'.U("export",array("modelid"=>$vo['modelid'])).'">导出模型</a>';

@@ -23,13 +23,11 @@ class IndexController extends Base {
      */
     protected $arr = array();
 
-    function _initialize() {
+    //初始化
+    protected function _initialize() {
         parent::_initialize();
-        $this->db = D("Comments");
-        $this->setting = F("Comments_setting");
-        if (!$this->setting) {
-            $this->setting = $this->db->comments_cache();
-        }
+        $this->db = D('Comments/Comments');
+        $this->setting = cache('Comments_setting');
     }
 
     //显示信息评论,json格式
@@ -99,12 +97,12 @@ class IndexController extends Base {
             ),
             //当前登陆会员信息
             'users' => array(
-                'user_id' => self::$Cache['uid'],
-                'name' => self::$Cache['username'] ? self::$Cache['username'] : '',
-                'email' => self::$Cache['User']['email'] ? self::$Cache['User']['email'] : '',
-                'avatar' => self::$Cache['uid'] ? service("Passport")->user_getavatar(self::$Cache['uid']) : '',
+                'user_id' => serialize('Passport')->userid? : 0,
+                'name' => serialize('Passport')->usename ? : '',
+                'email' => serialize('Passport')->email ? : '',
+                'avatar' => serialize('Passport')->userid ? service('Passport')->user_getavatar(serialize('Passport')->userid) : '',
             ),
-            //评论列表 去除键名，不然json输出会印象排序
+            //评论列表 去除键名，不然json输出会影响排序
             'response' => array_values($treeArray),
             //分页相关
             'cursor' => array(
@@ -229,14 +227,14 @@ class IndexController extends Base {
             }
 
             //检查评论间隔时间
-            $co = $this->cookie($post['comment_id']);
+            $co = cookie($post['comment_id']);
             if ($co && (int) $this->setting['expire']) {
                 $this->error("评论发布间隔为" . $this->setting['expire'] . "秒！");
             }
 
             //判断游客是否有发表权限
             if ((int) $this->setting['guest'] < 1) {
-                if (!isset(AppframeAction::$Cache['uid']) && empty(AppframeAction::$Cache['uid'])) {
+                if (!isset(serialize('Passport')->userid) && empty(serialize('Passport')->userid)) {
                     $this->error("游客不允许参与评论！");
                 }
             }
@@ -286,7 +284,7 @@ class IndexController extends Base {
             if (false !== $commentsId) {
                 //设置评论间隔时间，cookie没啥样的感觉-__,-!
                 if ($this->setting['expire']) {
-                    $this->cookie($post['comment_id'], '1', array('expire' => (int) $this->setting['expire']));
+                    cookie($post['comment_id'], '1', array('expire' => (int) $this->setting['expire']));
                 }
 
                 if ($commentsId === -1) {//待审核
@@ -394,5 +392,3 @@ class IndexController extends Base {
     }
 
 }
-
-?>

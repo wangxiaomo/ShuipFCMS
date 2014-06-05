@@ -48,11 +48,6 @@ body fieldset legend {
       <li class="current"><a href="http://www.abc.com/index.php?m=Content&a=classlist&catid=2">网站推荐列表</a></li>
     </ul>
   </div>
-  <div class="h_a">温馨提示</div>
-  <div class="prompt_text"> 
-    <p>请不要发布违反法律不允许的内容！</p>
-   </div>
-  <form name="myform" id="myform" action="{:U("Contents/Content/add")}" method="post" class="J_ajaxForms" enctype="multipart/form-data">
   <div class="col-right">
     <div class="table_full">
       <table width="100%">
@@ -128,140 +123,12 @@ if(is_array($forminfos['base'])) {
             <?php
 } }
 ?>
-        <!--<tr>
-          <th>标题</th>
-          <td><span class="must_red">*</span>
-            <input name="subject" type="text" class="input length_6" placeholder="请输入标题">
-            <span generated="true" class="tips_error">错误提示</span></td>
-        </tr>-->
         </tbody>
       </table>
     </div>
   </div>
-  </form>
 </div>
-<script type="text/javascript" src="{$config_siteurl}statics/js/common.js?v"></script>
+<script type="text/javascript" src="{$config_siteurl}statics/js/common.js"></script>
 <script type="text/javascript" src="{$config_siteurl}statics/js/content_addtop.js"></script>
-<script type="text/javascript"> 
-$(function () {
-	$(".J_ajax_close_btn").on('click', function (e) {
-	    e.preventDefault();
-	    Wind.use("artDialog", function () {
-	        art.dialog({
-	            id: "question",
-	            icon: "question",
-	            fixed: true,
-	            lock: true,
-	            background: "#CCCCCC",
-	            opacity: 0,
-	            content: "您确定需要关闭当前页面嘛？",
-	            ok:function(){
-					setCookie("refersh_time",1);
-					window.close();
-					return true;
-				}
-	        });
-	    });
-	});
-    Wind.use('validate', 'ajaxForm', 'artDialog', function () {
-		//javascript
-        {$formJavascript}
-        var form = $('form.J_ajaxForms');
-        //ie处理placeholder提交问题
-        if ($.browser.msie) {
-            form.find('[placeholder]').each(function () {
-                var input = $(this);
-                if (input.val() == input.attr('placeholder')) {
-                    input.val('');
-                }
-            });
-        }
-        //表单验证开始
-        form.validate({
-			//是否在获取焦点时验证
-			onfocusout:false,
-			//是否在敲击键盘时验证
-			onkeyup:false,
-			//当鼠标掉级时验证
-			onclick: false,
-            //验证错误
-            showErrors: function (errorMap, errorArr) {
-				//errorMap {'name':'错误信息'}
-				//errorArr [{'message':'错误信息',element:({})}]
-				try{
-					$(errorArr[0].element).focus();
-					art.dialog({
-						id:'error',
-						icon: 'error',
-						lock: true,
-						fixed: true,
-						background:"#CCCCCC",
-						opacity:0,
-						content: errorArr[0].message,
-						cancelVal: '确定',
-						cancel: function(){
-							$(errorArr[0].element).focus();
-						}
-					});
-				}catch(err){
-				}
-            },
-            //验证规则
-            rules: {$formValidateRules},
-            //验证未通过提示消息
-            messages: {$formValidateMessages},
-            //给未通过验证的元素加效果,闪烁等
-            highlight: false,
-            //是否在获取焦点时验证
-            onfocusout: false,
-            //验证通过，提交表单
-            submitHandler: function (forms) {
-                $(forms).ajaxSubmit({
-                    url: form.attr('action'), //按钮上是否自定义提交地址(多按钮情况)
-                    dataType: 'json',
-                    beforeSubmit: function (arr, $form, options) {
-                        
-                    },
-                    success: function (data, statusText, xhr, $form) {
-                        if(data.status){
-							setCookie("refersh_time",1);
-							//添加成功
-							Wind.use("artDialog", function () {
-							    art.dialog({
-							        id: "succeed",
-							        icon: "succeed",
-							        fixed: true,
-							        lock: true,
-							        background: "#CCCCCC",
-							        opacity: 0,
-							        content: data.info,
-									button:[
-										{
-											name: '继续添加？',
-											callback:function(){
-												reloadPage(window);
-												return true;
-											},
-											focus: true
-										},{
-											name: '关闭当前页面',
-											callback:function(){
-												window.close();
-												return true;
-											}
-										}
-									]
-							    });
-							});
-						}else{
-							isalert(data.info);
-						}
-                    }
-                });
-            }
-        });
-    });
-});
-</script>
 </body>
 </html>

@@ -17,13 +17,11 @@ class CommentsController extends AdminBase {
     public $setting;
     protected $db;
 
-    public function _initialize() {
+    //初始化
+    protected function _initialize() {
         parent::_initialize();
-        $this->setting = F("Comments_setting");
-        $this->db = D("Comments");
-        if (!$this->setting) {
-            $this->setting = $this->db->comments_cache();
-        }
+        $this->setting = cache('Comments_setting');
+        $this->db = D('Comments/Comments');
     }
 
     //显示全部评论 
@@ -63,7 +61,7 @@ class CommentsController extends AdminBase {
                 //信息id
                 $id = $aid[2];
                 //取得对应文章信息
-                $title = M(ucwords(getModel(getCategory($catid, 'modelid'), 'tablename')))->where(array("id" => $id))->find();
+                $title = \Content\Model\ContentModel::getInstance(getCategory($catid, 'modelid'))->where(array("id" => $id))->find();
                 $title['article_id'] = $title['id'];
                 unset($title['id']);
                 //替换表情
@@ -72,7 +70,7 @@ class CommentsController extends AdminBase {
                 }
                 $data[$k] = array_merge($title, $data[$k], $r);
             }
-            $this->assign("Page", $page->show('Admin'));
+            $this->assign("Page", $page->show());
             $this->assign("data", $data);
             $this->display();
         }
@@ -110,7 +108,7 @@ class CommentsController extends AdminBase {
                     //信息id
                     $id = $aid[2];
                     //取得对应文章信息
-                    $title = M(ucwords(getModel(getCategory($catid, 'modelid'), 'tablename')))->where(array("id" => $id))->find();
+                    $title = \Content\Model\ContentModel::getInstance(getCategory($catid, 'modelid'))->where(array("id" => $id))->find();
                     $title['article_id'] = $title['id'];
                     unset($title['id']);
                     //替换表情
@@ -119,7 +117,7 @@ class CommentsController extends AdminBase {
                     }
                     $data[$k] = array_merge($title, $data[$k], $r);
                 }
-                $this->assign("Page", $page->show('Admin'));
+                $this->assign("Page", $page->show());
                 $this->assign("data", $data);
                 $this->display();
             }
@@ -147,7 +145,7 @@ class CommentsController extends AdminBase {
             if ($r) {
                 $r2 = M($this->db->viceTableName($r['stb']))->where(array("id" => $id))->find();
                 $data = array_merge($r, $r2);
-                $data['content'] = Input::forTarea($data['content']);
+                $data['content'] = \Input::forTarea($data['content']);
                 //取得自定义字段
                 $field = $this->db->sideTablesField();
                 $this->assign("data", $data);
@@ -159,9 +157,7 @@ class CommentsController extends AdminBase {
         }
     }
 
-    /**
-     * 删除评论 
-     */
+    //删除评论
     public function delete() {
         $id = I('get.id', 0, 'intval');
         if (!$id) {
@@ -227,7 +223,7 @@ class CommentsController extends AdminBase {
             if ($r) {
                 $r2 = M($this->db->viceTableName($r['stb']))->where(array("id" => $id))->find();
                 $data = array_merge($r, $r2);
-                $data['content'] = Input::forTarea($data['content']);
+                $data['content'] = \Input::forTarea($data['content']);
                 //取得自定义字段
                 $field = M("CommentsField")->where(array("system" => 0))->order(array("fid" => "DESC"))->select();
                 $ca = explode("-", $data["comment_id"]);
@@ -237,10 +233,9 @@ class CommentsController extends AdminBase {
                 } else {
                     $this->assign("parent", $data['id']);
                 }
-                import("Form");
-                $this->assign("author_url", AppframeAction::$Cache['Config']['siteurl']);
-                $this->assign("author_email", AppframeAction::$Cache['User']['email']);
-                $this->assign("author", AppframeAction::$Cache['username']);
+                $this->assign("author_url", self::$Cache['Config']['siteurl']);
+                $this->assign("author_email", \Admin\Service\User::getInstance()->email);
+                $this->assign("author", \Admin\Service\User::getInstance()->username);
                 $this->assign("data", $data);
                 $this->assign("catid", $ca[1]);
                 $this->assign("commentid", $ca[2]);
@@ -260,7 +255,7 @@ class CommentsController extends AdminBase {
             $check = isset($_POST['check']) && intval($_POST['check']) ? intval($_POST['check']) : 0;
             $code = isset($_POST['code']) && intval($_POST['code']) ? intval($_POST['code']) : 0;
             $stb = isset($_POST['stb']) && intval($_POST['stb']) ? intval($_POST['stb']) : 1;
-            $order = isset($_POST['order']) && $this->_post("order") ? $this->_post("order") : "id ASC";
+            $order = isset($_POST['order']) && $_POST['order'] ? $_POST['order'] : "id ASC";
             $strlength = isset($_POST['strlength']) && intval($_POST['strlength']) ? intval($_POST['strlength']) : 0;
             $status = isset($_POST['status']) && intval($_POST['status']) ? intval($_POST['status']) : 0;
             $expire = isset($_POST['expire']) && intval($_POST['expire']) ? intval($_POST['expire']) : 0;
@@ -308,7 +303,7 @@ class CommentsController extends AdminBase {
 
     //创建一张新的分表
     public function addfenbiao() {
-        if (D("CommentsField")->addfenbiao()) {
+        if (D("Comments/CommentsField")->addfenbiao()) {
             $this->success("分表创建成功！");
         } else {
             $this->error("创建分表失败！");
@@ -316,5 +311,3 @@ class CommentsController extends AdminBase {
     }
 
 }
-
-?>

@@ -7,15 +7,15 @@
   <table width="100%" cellspacing="0" >
       <thead>
         <tr>
-          <td width="70">ID</td>
+          <td width="20">ID</td>
           <td>表名称</td>
-          <td width="80">信息量</td>
+          <td align='center' width="80">信息量</td>
         </tr>
       </thead>
       <tbody class="td-line">
       <volist name="data" id="vo">
         <tr>
-          <td align='center'>{$vo.id}</td>
+          <td>{$vo.id}</td>
           <td>{$vo.tablename}</td>
           <td align='center'>{$vo.count}</td>
         </tr>

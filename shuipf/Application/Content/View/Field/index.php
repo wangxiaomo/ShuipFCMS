@@ -10,14 +10,14 @@
           <tr>
             <td width="70" align='center'>排序</td>
             <td width="90">字段名</td>
-            <td align='center'>别名</td>
-            <td width="100" align='center'>字段类型</td>
-            <td width="100" align='center'>是否主表字段</td>
-            <td width="50" align='center'>必填</td>
-            <td width="50" align='center'>搜索</td>
-            <td width="50" align='center'>排序</td>
-            <td width="50" align='center'>投稿</td>
-            <td width="200" align='center'>管理操作</td>
+            <td>别名</td>
+            <td width="100">字段类型</td>
+            <td width="30" align='center'>主表</td>
+            <td width="30" align='center'>必填</td>
+            <td width="30" align='center'>搜索</td>
+            <td width="30" align='center'>排序</td>
+            <td width="30" align='center'>投稿</td>
+            <td width="100" align='center'>管理操作</td>
           </tr>
         </thead>
         <tbody class="td-line">
@@ -26,7 +26,7 @@
             <td align='center'><input name='listorders[{$vo.fieldid}]' type='text' size='3' value='{$vo.listorder}' class='input'></td>
             <td>{$vo.field}</td>
             <td>{$vo.name}</td>
-            <td align='center'>{$vo.formtype}</td>
+            <td>{$vo.formtype}</td>
             <td align='center'><if condition="$vo['issystem'] eq 1"><font color="blue">√</font><else /> <font color="red">╳</font></if></td>
             <td align='center'><if condition="$vo['minlength'] eq 1"><font color="blue">√</font><else /> <font color="red">╳</font></if></td>
             <td align='center'><if condition="$vo['issearch'] eq 1"><font color="blue">√</font><else /> <font color="red">╳</font></if></td>

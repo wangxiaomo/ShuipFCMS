@@ -275,15 +275,12 @@ class FieldController extends AdminBase {
 
     //模型预览
     public function priview() {
-        import('Form');
         //模型ID
         $modelid = I('get.modelid');
         if (empty($modelid)) {
             $this->error("请指定模型！");
         }
-        //载入 content_form.class.php 缓存文件
-        require_cache(RUNTIME_PATH . 'content_form.class.php');
-        $content_form = new content_form($modelid);
+        $content_form = new \content_form($modelid);
         //生成对应字段的输入表单
         $forminfos = $content_form->get();
         //生成对应的JS验证规则

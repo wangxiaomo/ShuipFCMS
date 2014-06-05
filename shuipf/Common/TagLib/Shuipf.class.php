@@ -408,10 +408,9 @@ class Shuipf extends TagLib {
         //方法
         $tag['action'] = $action = trim($tag['action']);
         //sql语句的where部分
-        if ($tag['where']) {
+        if (isset($tag['where']) && $tag['where']) {
             $tag['where'] = $this->parseSqlCondition($tag['where']);
         }
-        $tag['where'] = $where = $tag['where'];
         //拼接php代码
         $parseStr = '<?php';
         $parseStr .= ' $content_tag = \Think\Think::instance("\Content\TagLib\Content");' . "\r\n";

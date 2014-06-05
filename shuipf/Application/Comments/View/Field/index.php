@@ -3,11 +3,12 @@
 <body class="J_scroll_fixed">
 <div class="wrap J_check_wrap">
   <div class="nav">
-  <ul class="cc">
+      <ul class="cc">
+        <div class="return"><a href="{$menuReturn.url}">{$menuReturn.name}</a></div>
         <li class="current"><a href="{:U('Field/index')}">字段管理</a></li>
         <li><a href="{:U('Field/add')}">添加字段</a></li>
       </ul>
-</div>
+  </div>
   <div class="table_list">
   <table width="100%" cellspacing="0" >
       <thead>

@@ -194,13 +194,13 @@ function page($total, $size = 0, $number = 0, $config = array()) {
     //是否启用自定义规则，规则是一个数组，index和list。不启用的情况下，直接以当前$_GET的参数组成地址
     if ($defaultConfig['isrule'] && empty($defaultConfig['rule'])) {
         //通过全局参数获取分页规则
-        $URLRULE = $GLOBALS['URLRULE'] ? $GLOBALS['URLRULE'] : URLRULE;
+        $URLRULE = isset($GLOBALS['URLRULE']) ?$GLOBALS['URLRULE'] : (defined('URLRULE') ? URLRULE : '');
         $PageLink = array();
         if (!is_array($URLRULE)) {
             $URLRULE = explode('~', $URLRULE);
         }
-        $PageLink['index'] = $URLRULE['index'] ? $URLRULE['index'] : $URLRULE[0];
-        $PageLink['list'] = $URLRULE['list'] ? $URLRULE['list'] : $URLRULE[1];
+        $PageLink['index'] = isset($URLRULE['index']) && $URLRULE['index'] ? $URLRULE['index'] : $URLRULE[0];
+        $PageLink['list'] = isset($URLRULE['list']) && $URLRULE['list'] ? $URLRULE['list'] : $URLRULE[1];
         $defaultConfig['rule'] = $PageLink;
     } else if ($defaultConfig['isrule'] && !is_array($defaultConfig['rule'])) {
         $URLRULE = explode('|', $defaultConfig['rule']);

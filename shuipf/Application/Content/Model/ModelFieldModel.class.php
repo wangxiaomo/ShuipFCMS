@@ -30,7 +30,7 @@ class ModelFieldModel extends Model {
         array('modelid', 'require', '请选择模型！'),
         array('formtype', 'require', '字段类型不能为空！'),
         array('field', 'require', '字段名称必须填写！'),
-        array('field', '', '该字段名称已经存在！', 0, 'unique', 1),
+        array('field', 'isFieldUnique', '该字段名称已经存在！', 0, 'callback', 1),
         array('name', 'require', '字段别名必须填写！'),
         array('field', '/^[a-z_0-9]+$/i', '字段名只支持英文！', 0, 'regex', 3),
         array('isbase', array(0, 1), '是否作为基本信息设置错误！', 0, 'in', 3),
@@ -44,6 +44,21 @@ class ModelFieldModel extends Model {
     protected function _initialize() {
         parent::_initialize();
         $this->fieldPath = APP_PATH . 'Content/Fields/';
+    }
+
+    /**
+     * 验证字段名是否已经存在
+     * @param type $fieldName
+     * @return boolean false已经存在，true不存在
+     */
+    public function isFieldUnique($fieldName) {
+        if (empty($fieldName)) {
+            return true;
+        }
+        if ($this->where(array('modelid' => $this->modelid, 'field' => $fieldName))->count()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -170,6 +185,7 @@ class ModelFieldModel extends Model {
         //数据正则
         $pattern = $data['pattern'];
         //进行数据验证
+        $field = $data['field'];
         $data = $this->create($data, 1);
         if ($data) {
             $data['pattern'] = $pattern;

@@ -121,7 +121,7 @@ class Hook {
      * @return void
      */
     static public function listen($tag, &$params = NULL) {
-        if (isset(self::$tags[$tag])) {
+        if (isset(self::$tags[$tag]) && is_array(self::$tags[$tag])) {
             if (APP_DEBUG) {
                 G($tag . 'Start');
                 trace('[ ' . $tag . ' ] --START--', '', 'INFO');

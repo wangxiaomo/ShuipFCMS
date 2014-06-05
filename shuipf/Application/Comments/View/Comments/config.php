@@ -45,7 +45,15 @@
           <?php
           endfor;
           ?>
-          </select> <a href="javascript:confirmurl('{:U("Comments/Comments/addfenbiao")}','确认要创建一张新的分表吗？')" >创建一张新的分表</a></td>
+          </select> 
+          <?php
+		  if(\Libs\System\RBAC::authenticate('Comments/Comments/addfenbiao')){
+		  ?>
+          <a href="javascript:confirmurl('{:U("Comments/Comments/addfenbiao")}','确认要创建一张新的分表吗？')" >创建一张新的分表</a>
+          <?php
+		  }
+		  ?>
+          </td>
         </tr>
       </table>
     </div>

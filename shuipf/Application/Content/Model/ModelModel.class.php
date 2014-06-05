@@ -313,7 +313,7 @@ class ModelModel extends Model {
                     if ($value['setting']) {
                         $value['setting'] = unserialize($value['setting']);
                     }
-                    $model = new ModelFieldModel();
+                    $model = new \Content\Model\ModelFieldModel();
                     $model->addField($value);
                     unset($model);
                 }

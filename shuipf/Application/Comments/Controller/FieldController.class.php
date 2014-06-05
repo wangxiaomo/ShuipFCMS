@@ -14,16 +14,16 @@ use Common\Controller\AdminBase;
 
 class FieldController extends AdminBase {
 
-    public $setting;
     private $db;
 
-    function _initialize() {
+    //初始化
+    protected function _initialize() {
         parent::_initialize();
-        $this->setting = F("Comments_setting");
-        if (empty($this->setting)) {
-            $this->error("初始化错误，请更新缓存！");
-        }
-        $this->db = D('CommentsField');
+        $this->db = D('Comments/CommentsField');
+        $this->assign('menuReturn',array(
+            'name' => '返回评论设置',
+            'url' => U('Comments/config'),
+        ));
     }
 
     //显示字段列表
@@ -38,8 +38,8 @@ class FieldController extends AdminBase {
         if (IS_POST) {
             $data = $this->db->create();
             if ($data) {
-                $data['regular'] = Input::forTag($_POST['regular']);
-                if ($this->db->field_add($data)) {
+                $data['regular'] = \Input::forTag($_POST['regular']);
+                if ($this->db->fieldAdd($data)) {
                     $this->success("添加成功！");
                 } else {
                     $this->error("添加失败！");
@@ -58,7 +58,7 @@ class FieldController extends AdminBase {
         if (empty($fid)) {
             $this->error("参数错误！");
         };
-        if ($this->db->field_delete($fid)) {
+        if ($this->db->fieldDelete($fid)) {
             $this->success("自定义字段删除成功！");
         } else {
             $this->error("自定义字段删除失败！");
@@ -74,8 +74,8 @@ class FieldController extends AdminBase {
             }
             $data = $this->db->create($post, 2);
             if ($data) {
-                $data['regular'] = Input::forTag($_POST['regular']);
-                if ($this->db->field_edit($data)) {
+                $data['regular'] = \Input::forTag($_POST['regular']);
+                if ($this->db->fieldEdit($data)) {
                     $this->success("编辑成功！");
                 } else {
                     $this->error("编辑失败！");
@@ -89,7 +89,7 @@ class FieldController extends AdminBase {
             if (!$data) {
                 $this->error("该自定义字段不存在！");
             }
-            $data['regular'] = Input::forTag($data['regular']);
+            $data['regular'] = \Input::forTag($data['regular']);
             $this->assign("data", $data);
             $this->display();
         }
@@ -112,5 +112,3 @@ class FieldController extends AdminBase {
     }
 
 }
-
-?>

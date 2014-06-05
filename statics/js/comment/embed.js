@@ -671,7 +671,7 @@ function getCursortPosition (ctrl) {
                                   <td>网址：</td>\
                                     <td><input name="author_url" class="J_CmFormField" placeholder="http://"/></td>\
                                     <td>验证码：</td>\
-                                    <td style="vertical-align:middle"><input name="verify" placeholder="验证码"/><img  id="code_img" src="' + init.DOMAIN + init.VERIFYURL + '"  alt="验证码" onClick="this.src = \'' + init.DOMAIN + init.VERIFYURL + '&time=' + Math.random() + '\'" style="vertical-align: middle ;"></td>\
+                                    <td style="vertical-align:middle"><input name="verify" placeholder="验证码"/><img  id="code_img" src="' + init.DOMAIN + init.VERIFYURL + '"  alt="验证码" onClick="this.src = \'' + init.DOMAIN + init.VERIFYURL + '&refresh=1&time=' + Math.random() + '\'" style="vertical-align: middle ;"></td>\
                                   </tr>';
                 }
                 strHtml = '<table>' + userHtml + qtHtml + '</table>';

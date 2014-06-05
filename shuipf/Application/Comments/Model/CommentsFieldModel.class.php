@@ -67,11 +67,11 @@ class CommentsFieldModel extends Model {
     }
 
     //删除字段
-    public function field_delete($fid) {
+    public function fieldDelete($fid) {
         if (!$fid) {
             return false;
         }
-        $Setting = M("CommentsSetting")->find();
+        $Setting = M('CommentsSetting')->find();
         $r = $this->where(array("fid" => $fid))->find();
         if (!$r) {
             return false;
@@ -91,10 +91,10 @@ class CommentsFieldModel extends Model {
      * @param type $data 字段相关配置
      * @return boolean
      */
-    public function field_add($data) {
+    public function fieldAdd($data) {
         //取得字段SQL语句
-        $field = $this->ReturnPlFtype($data);
-        $setting = M("CommentsSetting")->find();
+        $field = $this->returnPlFtype($data);
+        $setting = M('CommentsSetting')->find();
         if (empty($field) || empty($setting)) {
             return false;
         }
@@ -121,7 +121,7 @@ class CommentsFieldModel extends Model {
      * @param type $data 字段相关配置
      * @return boolean
      */
-    public function field_edit($data) {
+    public function fieldEdit($data) {
         $fid = $data['fid'];
         if (!$data || !$fid) {
             return false;
@@ -132,7 +132,7 @@ class CommentsFieldModel extends Model {
         }
         //取得字段SQL语句
         $data['f'] = $r['f'];
-        $field = $this->ReturnPlFtype($data);
+        $field = $this->returnPlFtype($data);
         if (isset($data['issystem'])) {
             unset($data['issystem']);
         }
@@ -164,7 +164,7 @@ class CommentsFieldModel extends Model {
      * @param string $add 字段配置信息
      * @return string
      */
-    public function ReturnPlFtype($add) {
+    public function returnPlFtype($add) {
         //字段类型
         if ($add["ftype"] == "TINYINT" || $add["ftype"] == "SMALLINT" || $add["ftype"] == "INT" || $add["ftype"] == "BIGINT" || $add["ftype"] == "FLOAT" || $add["ftype"] == "DOUBLE") {
             $def = " default '0'";

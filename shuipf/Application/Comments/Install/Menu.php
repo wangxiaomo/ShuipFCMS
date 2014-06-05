@@ -91,8 +91,8 @@ return array(
                     array(
                         "route" => "Comments/Comments/check",
                         "type" => 1,
-                        "status" => 0,
-                        "name" => "审核",
+                        "status" => 1,
+                        "name" => "审核评论",
                     ),
                     array(
                         "route" => "Comments/Comments/spamcomment",

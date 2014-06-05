@@ -807,7 +807,7 @@ class Content extends Components {
             $content = $isContent ? $data['content'] : $data[$getRelationName]['content'];
             $auto_thumb_no = I('.auto_thumb_no', 1, 'intval') - 1;
             if (preg_match_all("/(src)=([\"|']?)([^ \"'>]+\.(gif|jpg|jpeg|bmp|png))\\2/i", $content, $matches)) {
-                $oldata['thumb'] = $data['thumb'] = $matches[3][$auto_thumb_no];
+                $data['thumb'] = $matches[3][$auto_thumb_no];
             }
         }
     }

@@ -140,6 +140,7 @@ class ModelsController extends AdminBase {
         if (empty($modelid)) {
             $this->error('请指定需要导出的模型！');
         }
+        C('SHOW_PAGE_TRACE',false);
         //导出模型
         $status = D("Content/Model")->export($modelid);
         if ($status) {

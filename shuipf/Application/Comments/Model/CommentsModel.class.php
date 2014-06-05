@@ -12,7 +12,7 @@ namespace Comments\Model;
 
 use Common\Model\Model;
 
-class CommentsModel extends CommonModel {
+class CommentsModel extends Model {
 
     //审核状态
     const statusCheck = -1;
@@ -499,10 +499,12 @@ class CommentsModel extends CommonModel {
             return false;
         }
         $modelid = getCategory($catid, 'modelid');
-        if (empty($modelid)) {
+        $tablename = ucwords(getModel($modelid, 'tablename'));
+        if (empty($tablename)) {
             return false;
         }
-        $allow_comment = \Content\Model\ContentModel::getInstance($modelid)->where(array('id' => $id))->getField('allow_comment');
+        $db = M("{$tablename}Data");
+        $allow_comment = $db->where(array("id" => $id))->getField("allow_comment");
         if ((int) $allow_comment <= 0) {
             return false;
         } else {

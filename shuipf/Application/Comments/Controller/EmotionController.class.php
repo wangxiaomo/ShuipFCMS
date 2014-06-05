@@ -17,9 +17,10 @@ class EmotionController extends AdminBase {
     private $db;
     public $emotionPath;
 
-    function _initialize() {
+    //初始化
+    protected function _initialize() {
         parent::_initialize();
-        $this->db = D("Emotion");
+        $this->db = D('Comments/Emotion');
         $this->emotionPath = SITE_PATH . "/statics/images/emotion/";
     }
 
@@ -27,7 +28,7 @@ class EmotionController extends AdminBase {
     public function index() {
         //操作
         $action = I('get.action', 'trim', '');
-        $dir = new Dir($this->emotionPath);
+        $dir = new \Dir($this->emotionPath);
         //取得表情目录全部表情信息
         $emotionPathArray = $dir->toArray();
         //取得已经添加的表情
@@ -128,5 +129,3 @@ class EmotionController extends AdminBase {
     }
 
 }
-
-?>

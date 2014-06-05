@@ -63,19 +63,19 @@
           <tr>
             <td><label><input type="checkbox" class="J_check_all" data-direction="x" data-checklist="J_check_x"></label></td>
             <td>排序</td>
-            <td>ID</td>
+            <td align="center">ID</td>
             <td>标题</td>
-            <td>点击量</td>
-            <td>发布人</td>
-            <td><span>发帖时间</span></td>
-            <td>管理操作</td>
+            <td align="center">点击量</td>
+            <td align="center">发布人</td>
+            <td align="center"><span>发帖时间</span></td>
+            <td align="center">管理操作</td>
           </tr>
         </thead>
         <volist name="data" id="vo">
           <tr>
             <td><input type="checkbox" class="J_check" data-yid="J_check_y" data-xid="J_check_x" name="ids[]" value="{$vo.id}"></td>
             <td><input name='listorders[{$vo.id}]' class="input mr5"  type='text' size='3' value='{$vo.listorder}'></td>
-            <td><a href="{:U("Createhtml/batch_show", array("catid"=>$vo['catid'] ,"steps"=>"0" ,"ids"=>$vo['id'])  )}" title="点击生成">{$vo.id}</a></td>
+            <td align="center"><a href="{:U("Createhtml/batch_show", array("catid"=>$vo['catid'] ,"steps"=>"0" ,"ids"=>$vo['id'])  )}" title="点击生成">{$vo.id}</a></td>
             <td><a href="{$vo.url}" target="_blank"><span style="" >
               <if condition=" $vo['status']==99 ">{$vo.title}
                 <else/>
@@ -84,12 +84,22 @@
               <if condition=" $vo['thumb']!='' "> <img src="{$config_siteurl}statics/images/icon/small_img.gif" title="标题图片"> </if>
               <if condition=" $vo['posid'] "> <img src="{$config_siteurl}statics/images/icon/small_elite.gif" title="推荐位"> </if>
               <if condition=" $vo['islink'] "> <img src="{$config_siteurl}statics/images/icon/link.png" title="转向地址"> </if></td>
-            <td>{$vo.views}</td>
-            <td><if condition=" $vo['sysadd'] ">{$vo.username}
+            <td align="center">{$vo.views}</td>
+            <td align="center"><if condition=" $vo['sysadd'] ">{$vo.username}
                 <else />
                 <font color="#FF0000">{$vo.username}</font><img src="{$config_siteurl}statics/images/icon/contribute.png" title="会员投稿"></if></td>
-            <td>{$vo.updatetime|date="Y-m-d H:i:s",###}</td>
-            <td><a href="javascript:;;" onClick="javascript:openwinx('{:U("Content/edit",array("catid"=>$vo['catid'],"id"=>$vo['id']))}','')">修改</a> | <a href="{:U("Content/delete",array("catid"=>$vo['catid'],"id"=>$vo['id']))}" class="J_ajax_del" >删除</a> | <a  data-title="{$vo.title}" href="{:U('Comments/Comments/index',array('searchtype'=>2,'keyword'=>'c-'.$vo['catid'].'-'.$vo['id'].''))}" target="_blank">评论</a></td>
+            <td align="center">{$vo.updatetime|date="Y-m-d H:i:s",###}</td>
+            <td align="center">
+            <?php
+			$op = array();
+			$op[] = '<a href="javascript:;;" onClick="javascript:openwinx(\''.U("Content/edit",array("catid"=>$vo['catid'],"id"=>$vo['id'])).'\',\'\')">修改</a>';
+			$op[] = '<a href="'.U("Content/delete",array("catid"=>$vo['catid'],"id"=>$vo['id'])).'" class="J_ajax_del" >删除</a>';
+			if(isModuleInstall('Comments')){
+				$op[] = '<a href="'.U('Comments/Comments/index',array('searchtype'=>2,'keyword'=>'c-'.$vo['catid'].'-'.$vo['id'].'')).'" target="_blank">评论</a>';
+			}
+			echo implode(' | ',$op);
+			?>
+            </td>
           </tr>
         </volist>
       </table>

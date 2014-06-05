@@ -487,7 +487,7 @@ class Module {
         if (require_cache($this->appPath . "{$moduleName}/{$Dir}/{$Dir}.class.php") !== true) {
             return true;
         }
-        $className = "\{$Dir}";
+        $className = "\\{$moduleName}\\{$Dir}\\{$Dir}";
         $installObj = \Think\Think::instance($className);
         //执行安装
         if (false == $installObj->run()) {
@@ -515,7 +515,7 @@ class Module {
         if (require_cache($this->appPath . "{$moduleName}/{$Dir}/{$Dir}.class.php") !== true) {
             return true;
         }
-        $className = "\{$Dir}";
+        $className = "\\{$moduleName}\\{$Dir}\\{$Dir}";
         $installObj = \Think\Think::instance($className);
         //执行安装
         if (false == $installObj->end()) {
