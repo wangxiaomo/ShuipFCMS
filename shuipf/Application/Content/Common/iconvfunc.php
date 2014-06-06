@@ -1,10 +1,14 @@
 <?php
 
-/**
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
-define('CODETABLEDIR', MODULE_PATH . 'Data/');
+// +----------------------------------------------------------------------
+// | ShuipFCMS 内容拼音转换函数
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
+define('CODETABLEDIR', APP_PATH . 'Content/Data/');
+
 /**
  * gbk转拼音
  * @param $txt

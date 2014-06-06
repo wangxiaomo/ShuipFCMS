@@ -171,10 +171,6 @@ class Content extends Components {
         $oldata['url'] = $data['url'] = $urls['url'];
         //更新url
         $model->token(false)->where(array('id' => $id))->save(array('url' => $data['url']));
-        //更新到全站搜索
-        if ($data['status'] == 99) {
-            $this->search_api($id, $data);
-        }
         $content_update = new \content_update($this->modelid);
         $status = $content_update->update($oldata);
         //发布到其他栏目,只能后台发布才可以使用该功能
@@ -347,12 +343,6 @@ class Content extends Components {
         //更新附件状态，把相关附件和文章进行管理
         $attachment = service('Attachment');
         $attachment->api_update('', 'c-' . $data['catid'] . '-' . $id, 2);
-        //更新到全站搜索
-        if ($data['status'] == 99) {
-            $this->search_api($id, $data, 'updata');
-        } else {
-            $this->search_api($id, $data, 'delete');
-        }
         //标签
         tag('content_edit_end', $data);
         //生成相关
@@ -496,13 +486,9 @@ class Content extends Components {
                 if ($content_ishtml && $status != 99) {
                     //则删除生成静态的文件
                     $this->data($data)->deleteHtml();
-                    //删除全站搜索数据
-                    $this->search_api($id, $data, 'delete');
                     //删除tags
                     D('Content/Tags')->deleteAll($data['id'], $data['catid'], $this->modelid);
                 } elseif ($status == 99) {
-                    //更新全站搜索数据
-                    $this->search_api($id, $data);
                     //更新tags
                     if (strpos($data['tags'], ',') === false) {
                         $tags = explode(' ', $data['tags']);
@@ -587,8 +573,6 @@ class Content extends Components {
         //删除附件
         $Attachment = service('Attachment');
         $Attachment->api_delete('c-' . $this->catid . '-' . $id);
-        //删除全站搜索数据
-        $this->search_api($id, $data, 'delete');
         //删除推荐位的信息
         if (!empty($data['posid'])) {
             D('Content/PositionData')->deleteByModeId($this->modelid, $id);
@@ -763,25 +747,6 @@ class Content extends Components {
             $this->Html->data($r)->show();
         }
         return true;
-    }
-
-    /**
-     * 更新搜索数据
-     * @param type $id 信息id
-     * @param type $data 数据
-     * @param type $action 动作
-     */
-    private function search_api($id = 0, $data = array(), $action = 'add') {
-        if (!isModuleInstall('Search')) {
-            return false;
-        }
-        $db = D('Search/Search');
-        //检查当前模型是否有在搜索数据源中
-        $searchConfig = cache('Search_config');
-        if (!in_array($this->modelid, $searchConfig['modelid'])) {
-            return false;
-        }
-        return $db->search_api($id, $data, $this->modelid, $action);
     }
 
     /**

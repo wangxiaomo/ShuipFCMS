@@ -25,7 +25,7 @@
     <p><b>规则字段解释：</b></p>
     <ul>
       <li>phpfile->直接调用已经定义好的行为文件。</li>
-      <li>module->行为所属模块，没有该参数时，自动定位到 shuipf\Lib\Behavior 目录。</li>
+      <li>module->行为所属模块，没有该参数时，自动定位到 shuipf\Common\Behavior 目录。</li>
     </ul>
     <p><b>规则定义格式3：</b> </p>
     <ul style="color:#00F">

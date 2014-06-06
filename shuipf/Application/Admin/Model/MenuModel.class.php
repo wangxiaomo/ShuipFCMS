@@ -186,6 +186,13 @@ class MenuModel extends Model {
         cache('Menu', NULL);
     }
 
+    /**
+     * 模块安装时进行菜单注册
+     * @param array $data 菜单数据
+     * @param array $config 模块配置
+     * @param type $parentid 父菜单ID
+     * @return boolean
+     */
     public function installModuleMenu(array $data, array $config, $parentid = 0) {
         if (empty($data) || !is_array($data)) {
             $this->error = '没有数据！';
@@ -196,7 +203,7 @@ class MenuModel extends Model {
             return false;
         }
         //默认安装时父级ID
-        $defaultMenuParentid = 0;
+        $defaultMenuParentid = $this->where(array('app' => 'Admin', 'controller' => 'Module', 'action' => 'local'))->getField('id');
         //安装模块名称
         $moduleNama = $config['module'];
         foreach ($data as $rs) {

@@ -315,11 +315,11 @@ class BehaviorModel extends Model {
                 //不存在这个行为，创建
                 $behaviorId = $this->add(array(
                     'name' => $behavior,
-                    'title' => $title ? $title : $behavior . '行为',
-                    'remark' => $remark ? $remark : "模块{$module}中的行为！",
+                    'title' => $title ? : ($behavior . '行为'),
+                    'remark' => $remark ? : "模块{$module}中的行为！",
                     'status' => 1,
                     'system' => 0,
-                    'type' => $type,
+                    'type' => $type? : 1,
                     'module' => $module,
                     'datetime' => $time,
                 ));
@@ -350,6 +350,7 @@ class BehaviorModel extends Model {
                 M('BehaviorRule')->addAll($ruleAll);
             }
         }
+        cache('Behavior',NULL);
         return true;
     }
 

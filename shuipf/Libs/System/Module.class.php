@@ -30,6 +30,7 @@ class Module {
      */
     public function __construct() {
         $this->extresPath = SITE_PATH . MODULE_EXTRESDIR;
+        $this->templatePath = TEMPLATE_PATH . 'Default/';
     }
 
     /**
@@ -163,7 +164,7 @@ class Module {
         $moduleList = cache('Module');
         //设置脚本最大执行时间
         set_time_limit(0);
-        if ($this->competence() !== true) {
+        if ($this->competence($moduleName) !== true) {
             return false;
         }
         //加载模块基本配置
@@ -257,7 +258,7 @@ class Module {
         }
         //设置脚本最大执行时间
         set_time_limit(0);
-        if ($this->competence() !== true) {
+        if ($this->competence($moduleName) !== true) {
             return false;
         }
         $model = D('Common/Module');
@@ -321,7 +322,7 @@ class Module {
         }
         //设置脚本最大执行时间
         set_time_limit(0);
-        if ($this->competence() !== true) {
+        if ($this->competence($moduleName) !== true) {
             return false;
         }
         $model = D('Common/Module');
@@ -374,13 +375,17 @@ class Module {
 
     /**
      * 目录权限检查
+     * @param type $moduleName 模块名称
      * @return boolean
      */
-    public function competence() {
+    public function competence($moduleName = '') {
         //模板目录权限检测
         if ($this->chechmod($this->templatePath) == false) {
             $this->error = '目录 ' . $this->templatePath . ' 没有可写权限！';
             return false;
+        }
+        if ($moduleName && file_exists($this->extresPath . $moduleName)) {
+            
         }
         //静态资源目录权限检测
         if (!file_exists($this->extresPath)) {

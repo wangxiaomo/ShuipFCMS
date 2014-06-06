@@ -21,7 +21,7 @@ class CategoryController extends AdminBase {
     protected function _initialize() {
         parent::_initialize();
         $this->Url = new Url();
-        load('@.iconvfunc');
+        load('Content/iconvfunc');
     }
 
     //栏目列表

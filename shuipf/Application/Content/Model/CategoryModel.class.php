@@ -114,7 +114,7 @@ class CategoryModel extends Model {
                 return false;
             }
         }
-        load("@.iconvfunc");
+        load('Content/iconvfunc');
         //栏目拼音
         $catname = iconv('utf-8', 'gbk', $data['catname']);
         $letters = gbk_to_pinyin($catname);
@@ -214,7 +214,7 @@ class CategoryModel extends Model {
                 return false;
             }
         }
-        load("@.iconvfunc");
+        load('Content/iconvfunc');
         //栏目拼音
         $catname = iconv('utf-8', 'gbk', $data['catname']);
         $letters = gbk_to_pinyin($catname);
