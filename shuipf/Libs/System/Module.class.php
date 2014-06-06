@@ -29,7 +29,7 @@ class Module {
      * 构造方法
      */
     public function __construct() {
-        $this->extresPath = SITE_PATH . MODULE_EXTRESDIR;
+        $this->extresPath = SITE_PATH . 'statics/extres/';
         $this->templatePath = TEMPLATE_PATH . 'Default/';
     }
 
@@ -385,7 +385,10 @@ class Module {
             return false;
         }
         if ($moduleName && file_exists($this->extresPath . $moduleName)) {
-            
+            if ($this->chechmod($this->extresPath . $moduleName) == false) {
+                $this->error = '目录 ' . $this->extresPath . $moduleName . ' 没有可写权限！';
+                return false;
+            }
         }
         //静态资源目录权限检测
         if (!file_exists($this->extresPath)) {
