@@ -22,6 +22,7 @@ class Html extends Base {
 
     //初始化
     protected function _initialize() {
+        load("Content/function");
         parent::_initialize();
     }
 

@@ -826,7 +826,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
             foreach (C('APP_SUB_DOMAIN_RULES') as $key => $rule) {
                 $rule = is_array($rule) ? $rule[0] : $rule;
                 if (false === strpos($key, '*') && 0 === strpos($url, $rule)) {
-                    $domain = $key . strstr($domain, '.'); // 生成对应子域名
+                    $domain = $key; // 生成对应子域名
                     $url = substr_replace($url, '', 0, strlen($rule));
                     break;
                 }
