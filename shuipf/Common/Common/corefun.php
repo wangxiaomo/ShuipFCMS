@@ -803,6 +803,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
     $config = cache('Config');
     // 解析URL
     $info = parse_url($url);
+    $siteurl = parse_url($config['siteurl']);
     $url = !empty($info['path']) ? $info['path'] : ACTION_NAME;
     if (isset($info['fragment'])) { // 解析锚点
         $anchor = $info['fragment'];
@@ -819,17 +820,36 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
     if (isset($host)) {
         $domain = $host . (strpos($host, '.') ? '' : strstr($_SERVER['HTTP_HOST'], '.'));
     } elseif ($domain === true) {
-        $domain = $_SERVER['HTTP_HOST'];
-        if (C('APP_SUB_DOMAIN_DEPLOY')) { // 开启子域名部署
-            $domain = $domain == 'localhost' ? 'localhost' : 'www' . strstr($_SERVER['HTTP_HOST'], '.');
-            // '子域名'=>array('模块[/控制器]');
-            foreach (C('APP_SUB_DOMAIN_RULES') as $key => $rule) {
-                $rule = is_array($rule) ? $rule[0] : $rule;
-                if (false === strpos($key, '*') && 0 === strpos($url, $rule)) {
-                    $domain = $key; // 生成对应子域名
-                    $url = substr_replace($url, '', 0, strlen($rule));
-                    break;
-                }
+        $domain = strtolower($siteurl['host']);
+        // 开启子域名部署
+        if (C('APP_SUB_DOMAIN_DEPLOY') && isModuleInstall('Domains')) {
+            $path_list = explode('/', $url);
+            if (count($path_list) < 3) {
+                array_unshift($path_list, MODULE_NAME);
+            }
+            //模块对应绑定域名
+            $Module_Domains_list = cache('Module_Domains_list');
+            if ($Module_Domains_list[$path_list[0]]) {
+                $domain = explode('|', $Module_Domains_list[$path_list[0]]);
+                $domain = $domain[0];
+                $_domain = true;
+            }
+            // APP_SUB_DOMAIN_NO 表示使用网站地址，不使用其他绑定域名
+            if (defined('IN_ADMIN') && IN_ADMIN && !defined('APP_SUB_DOMAIN_NO') && $Module_Domains_list['Admin']) {
+                //当在后台，且后台绑定域名，直接以后台域名访问
+                $domain = $Module_Domains_list['Admin'];
+                $domain = explode('|', $domain);
+                $domain = $domain[0];
+                //标识这里是后台模块，且后台绑定域名，强制以后台绑定的域名访问其他分组
+                $admin_domain = true;
+            } elseif (!isset($_domain)) {
+                $domain = strtolower($siteurl['host']);
+            }
+        }
+        //端口号处理
+        if ($domain) {
+            if (isset($siteurl['port']) && $siteurl['port'] && (int) $siteurl['port'] != 80) {
+                $domain .= ":{$siteurl['port']}";
             }
         }
     }
@@ -895,6 +915,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
                     }
                 }
             }
+
             if ($maps = C('URL_MODULE_MAP')) {
                 if ($_module = array_search(strtolower($var[$varModule]), $maps)) {
                     $var[$varModule] = $_module;
@@ -907,7 +928,8 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
         }
     }
     $appUrl = __APP__;
-    $showModuleName = true; //是否显示模块名(g)
+    //是否显示模块名(g)
+    $showModuleName = true;
     if (in_array(C('URL_MODEL'), array(0, 1, 3))) {
         //如果是绑定BIND_MODULE时处理
         if (defined('BIND_MODULE')) {
@@ -931,8 +953,20 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
             }
         }
         //U方法里的模块等于当前模块时，隐藏
-        if (/* $module == MODULE_NAME || */$module == C('DEFAULT_MODULE')) {
+        if (/* $module == MODULE_NAME || */$module == C('DEFAULT_MODULE') || $_domain) {
             $showModuleName = false;
+        }
+    }
+    //如果$var参数不为空，或者$module也不为空时显示
+    if (!empty($var) || ($showModuleName && $module)) {
+        $url .= '?';
+        //是否显示模块部分
+        if ($showModuleName && $module) {
+            $var[C('VAR_MODULE')] = $module;
+        }
+        //其余参数
+        if (!empty($var)) {
+            $url.= http_build_query(array_reverse($var));
         }
     }
     if (C('URL_MODEL') == 0) { // 普通模式URL转换
@@ -947,23 +981,11 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
             unset($var[C('VAR_ACTION')]);
         }
         $url = $appUrl;
-        //如果$var参数不为空，或者$module也不为空时显示
-        if (!empty($var) || ($showModuleName && $module)) {
-            $url .= '?';
-            //是否显示模块部分
-            if ($showModuleName && $module) {
-                $var[C('VAR_MODULE')] = $module;
-            }
-            //其余参数
-            if (!empty($var)) {
-                $url.= http_build_query(array_reverse($var));
-            }
-        }
         if ($urlCase) {
             $url = strtolower($url);
         }
-        if (!empty($vars)) {
-            $vars = http_build_query($vars);
+        if (!empty($var)) {
+            $vars = http_build_query($var);
             $url .= '&' . $vars;
         }
     } else { // PATHINFO模式或者兼容URL模式
