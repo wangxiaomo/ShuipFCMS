@@ -38,6 +38,16 @@ class AppBeginBehavior {
                 exit;
             }
         }
+        $config = cache('Config');
+        if (MODULE_NAME == 'Admin' && isModuleInstall('Domains') && $config['domainaccess']) {
+            $Module_Domains_list = cache('Module_Domains_list');
+            $http_host = strtolower($_SERVER['HTTP_HOST']);
+            $domain = explode('|', $Module_Domains_list['Admin']);
+            if ($Module_Domains_list['Admin'] && !in_array($http_host, $domain)) {
+                send_http_status(404);
+                exit;
+            }
+        }
     }
 
     static public function logo() {
