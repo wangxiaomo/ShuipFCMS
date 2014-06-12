@@ -1,22 +1,24 @@
 <?php
 
-/**
- * 处理信息录入表单
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
+// +----------------------------------------------------------------------
+// | ShuipFCMS 处理信息录入表单
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
 class content_form {
 
     //validate表单验证
     public $formValidateRules, $formValidateMessages, $formJavascript;
     //栏目ID
-    protected $catid = 0;
+    public $catid = 0;
     //栏目缓存
-    protected $categorys = array();
+    public $categorys = array();
     //模型ID
-    protected $modelid = 0;
+    public $modelid = 0;
     //字段信息
-    protected $fields = array();
+    public $fields = array();
     //模型缓存
     protected $model = array();
     //数据
@@ -34,10 +36,10 @@ class content_form {
     public function __construct($modelid, $catid) {
         $this->model = cache("Model");
         if ($modelid) {
-            $this->setModelid($modelid,$catid);
+            $this->setModelid($modelid, $catid);
         }
     }
-    
+
     /**
      * 初始化
      * @param type $modelid

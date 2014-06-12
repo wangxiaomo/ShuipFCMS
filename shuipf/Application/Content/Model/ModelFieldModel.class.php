@@ -45,6 +45,11 @@ class ModelFieldModel extends Model {
         parent::_initialize();
         $this->fieldPath = APP_PATH . 'Content/Fields/';
     }
+    
+    //返回字段存放路径
+    public function getFieldPath(){
+        return $this->fieldPath;
+    }
 
     /**
      * 验证字段名是否已经存在

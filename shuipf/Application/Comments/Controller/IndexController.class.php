@@ -221,9 +221,9 @@ class IndexController extends Base {
             $post['comment_id'] = "c-{$catid}-{$id}";
             //如果是登陆状态，强制使用会员帐号和会员邮箱
             if (self::$Cache['uid']) {
-                $post['user_id'] = self::$Cache['uid'];
-                $post['author'] = self::$Cache['username'];
-                $post['author_email'] = self::$Cache['User']['email'];
+                $post['user_id'] = serialize('Passport')->userid;
+                $post['author'] = serialize('Passport')->username;
+                $post['author_email'] = serialize('Passport')->email;
             }
 
             //检查评论间隔时间

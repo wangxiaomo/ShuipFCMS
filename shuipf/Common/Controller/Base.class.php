@@ -12,6 +12,13 @@ namespace Common\Controller;
 
 class Base extends ShuipFCMS {
 
+    //初始化
+    protected function _initialize() {
+        parent::_initialize();
+        //静态资源路径
+        $this->assign('model_extresdir', self::$Cache['Config']['siteurl'] . MODULE_EXTRESDIR);
+    }
+
     /**
      * 模板显示 调用内置的模板引擎显示方法，
      * @access protected

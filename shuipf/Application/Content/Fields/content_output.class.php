@@ -1,22 +1,24 @@
 <?php
 
-/**
- * 数据读取，主要用于前台数据显示
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
+// +----------------------------------------------------------------------
+// | ShuipFCMS 数据读取，主要用于前台数据显示
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
 class content_output {
 
     //信息ID
-    protected $id = 0;
+    public $id = 0;
     //栏目ID
-    protected $catid = 0;
+    public $catid = 0;
     //模型ID
-    protected $modelid = 0;
+    public $modelid = 0;
     //字段信息
-    protected $fields = array();
+    public $fields = array();
     //模型缓存
-    protected $model = array();
+    public $model = array();
     //数据
     protected $data = array();
     //最近错误信息

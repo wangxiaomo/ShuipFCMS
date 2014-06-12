@@ -100,6 +100,7 @@ class Content {
         if (!$data['catid']) {
             return false;
         }
+        $getLastSql =  array();
         $this->set_modelid($data['catid']);
         $this->where($data);
         //判断是否启用分页，如果没启用分页则显示指定条数的内容
@@ -167,6 +168,7 @@ class Content {
         if ($cache && $array = S($cacheID)) {
             return $array;
         }
+        $getLastSql =  array();
         //初始化模型
         if ($modelid) {
             $this->set_modelid($catid, true);
@@ -253,6 +255,7 @@ class Content {
         if ($cache && $key_array = S($cacheID)) {
             return $key_array;
         }
+        $getLastSql =  array();
         $catid = intval($data['catid']);
         if (!$catid) {
             return false;
