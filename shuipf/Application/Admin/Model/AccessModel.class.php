@@ -61,16 +61,16 @@ class AccessModel extends Model {
                     return false;
                 }
             } else {
-                $map = array(GROUP_NAME, CONTROLLER_NAME, ACTION_NAME,);
+                $map = array(MODULE_NAME, CONTROLLER_NAME, ACTION_NAME,);
             }
             if (count($map) >= 3) {
                 list($app, $controller, $action) = $map;
             } elseif (count($map) == 1) {
-                $app = GROUP_NAME;
+                $app = MODULE_NAME;
                 $controller = CONTROLLER_NAME;
                 $action = $map[0];
             } elseif (count($map) == 2) {
-                $app = GROUP_NAME;
+                $app = MODULE_NAME;
                 list($controller, $action) = $map;
             }
             $map = array('role_id' => array('IN', $child), 'app' => $app, 'controller' => $controller, 'action' => $action);

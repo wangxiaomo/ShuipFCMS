@@ -17,6 +17,10 @@ class Components {
             'class' => '\\Libs\\System\\Url',
             'path' => 'Libs.System.Url',
         ),
+        'Cloud' => array(
+            'class' => '\\Libs\\System\\Cloud',
+            'path' => 'Libs.System.Cloud',
+        ),
         'Html' => array(
             'class' => '\\Libs\\System\\Html',
             'path' => 'Libs.System.Html',
@@ -50,7 +54,7 @@ class Components {
             $components = self::$_components[$name];
             if (!empty($components['class'])) {
                 $class = $components['class'];
-                if ($components['path'] && !class_exists($class,false)) {
+                if ($components['path'] && !class_exists($class, false)) {
                     import($components['path'], PROJECT_PATH);
                 }
                 unset($components['class'], $components['path']);

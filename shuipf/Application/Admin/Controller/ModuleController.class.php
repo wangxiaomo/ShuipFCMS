@@ -20,7 +20,7 @@ class ModuleController extends AdminBase {
     //已安装模块列表
     protected $moduleList = array();
     //系统模块，隐藏
-    protected $systemModuleList = array('Admin', 'Api', 'Install', 'Attachment');
+    protected $systemModuleList = array('Admin', 'Api', 'Install', 'Attachment','Template');
 
     //初始化
     protected function _initialize() {

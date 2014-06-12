@@ -10,17 +10,24 @@
 
 namespace Libs\System;
 
+// =====Api 说明======
+// get.license 获取授权信息，参数 domain=网站域名
+// get.module.list 获取在线模块列表信息，参数 page=当前第几页，默认1，paging=每页显示数量
+// get.latestversion 获取最新版本号，无参数
+// get.module.latestversion 获取某个模块的最新版本号，参数 sign=模块签名
+// get.module.install.package.url 获取某个模块的安装包地址，参数 sign=模块签名
+
 class Cloud {
 
     //错误信息
-    public $error = NULL;
+    private $error = NULL;
     //需要发送的数据
     private $data = array();
     //接口
     private $act = NULL;
 
     //服务器地址
-    const serverHot = 'htpp://api.shuipfcms.com/';
+    const serverHot = 'http://api.shuipfcms.com/';
 
     /**
      * 连接云平台系统
@@ -33,6 +40,14 @@ class Cloud {
             $systemHandier = new Cloud();
         }
         return $systemHandier;
+    }
+
+    /**
+     * 获取错误信息
+     * @return type
+     */
+    public function getError() {
+        return $this->error;
     }
 
     /**
@@ -52,8 +67,7 @@ class Cloud {
      */
     public function act($act) {
         if (empty($this->data)) {
-            $this->error = '没有数据！';
-            return false;
+            $data = null;
         } else {
             $data = $this->data;
             //重置，以便下一次服务请求
@@ -71,7 +85,7 @@ class Cloud {
     private function run($data) {
         $curl = new \Curl();
         $fields = array(
-            'data' => $data,
+            'data' => json_encode($data),
             'act' => $this->act,
             'identity' => $this->Identity(),
         );
@@ -86,7 +100,28 @@ class Cloud {
             $this->error = '无法联系服务器，请稍后再试！';
             return false;
         }
-        return json_decode($status, true);
+        return $this->returnResolve($status);
+    }
+
+    /**
+     * 解析服务器返回的数据
+     * @param type $data
+     * @return type
+     */
+    private function returnResolve($data) {
+        if (empty($data)) {
+            return array();
+        }
+        $data = json_decode(base64_decode($data), true);
+        if (!is_array($data) || !isset($data['status'])) {
+            $this->error = '服务器返回信息错误！';
+            return false;
+        }
+        if (!$data['status']) {
+            $this->error = $data['error'];
+            return false;
+        }
+        return $data['data'];
     }
 
     /**
