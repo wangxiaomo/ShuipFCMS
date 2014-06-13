@@ -166,8 +166,8 @@ class AttachmentsController extends Base {
      * @return boolean|string
      */
     protected function isUpload($module, $args, $authkey) {
-        $Module_list = cache("Module");
-        if ($Module_list[ucwords($module)]) {
+        $module_list = cache('Module');
+        if ($module_list[ucwords($module)] || $module == 'Content') {
             $this->module = strtolower($module);
         } else {
             return false;
@@ -178,8 +178,8 @@ class AttachmentsController extends Base {
         }
         //如果是前台上传，判断用户组权限
         if ($this->isadmin == 0) {
-            $Member_group = cache("Member_group");
-            if ((int) $Member_group[$this->groupid]['allowattachment'] < 1) {
+            $member_group = cache('Member_group');
+            if ((int) $member_group[$this->groupid]['allowattachment'] < 1) {
                 return "所在的用户组没有附件上传权限！";
             }
         }

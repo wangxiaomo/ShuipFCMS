@@ -141,6 +141,9 @@ class Module {
                 return false;
             }
         }
+        if ('Content' == $moduleName) {
+            return true;
+        }
         $moduleList = cache('Module');
         return (isset($moduleList[$moduleName]) && $moduleList[$moduleName]) ? true : false;
     }

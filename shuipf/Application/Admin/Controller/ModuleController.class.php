@@ -20,12 +20,12 @@ class ModuleController extends AdminBase {
     //已安装模块列表
     protected $moduleList = array();
     //系统模块，隐藏
-    protected $systemModuleList = array('Admin', 'Api', 'Install', 'Attachment','Template');
+    protected $systemModuleList = array('Admin', 'Api', 'Install', 'Attachment', 'Template', 'Content');
 
     //初始化
     protected function _initialize() {
         parent::_initialize();
-        $this->moduleList = cache('Module');
+        $this->moduleList = M('Module')->select();
     }
 
     //本地模块列表
@@ -53,6 +53,7 @@ class ModuleController extends AdminBase {
                 unset($dirs_arr[$key[0]]);
             }
         }
+
         //数量
         $count = count($dirs_arr);
         //把一个数组分割为新的数组块
@@ -118,6 +119,19 @@ class ModuleController extends AdminBase {
         } else {
             $error = $this->Module->error;
             $this->error($error ? $error : "模块卸载失败！", U("Module/index"));
+        }
+    }
+
+    //模块状态转换
+    public function disabled() {
+        $module = I('get.module', '', 'trim,ucwords');
+        if (empty($module)) {
+            $this->error('请选择模块！');
+        }
+        if (D('Common/Module')->disabled($module)) {
+            $this->success("状态转换成功，请及时更新缓存！", U("Module/index"));
+        } else {
+            $this->error("状态转换成功失败！", U("Module/index"));
         }
     }
 

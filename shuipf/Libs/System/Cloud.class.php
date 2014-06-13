@@ -12,13 +12,20 @@ namespace Libs\System;
 
 // =====Api 说明======
 // get.license 获取授权信息，参数 domain=网站域名
-// get.module.list 获取在线模块列表信息，参数 page=当前第几页，默认1，paging=每页显示数量
-// get.module.info 获取某个模块的信息，参数 sign
+// get.competence 判断帐号权限是否正常
 // get.latestversion 获取最新版本号，无参数
+// get.notice 远程通知
+// 模块
+// get.module.list 获取在线模块列表信息，参数 page=当前第几页，默认1，paging=每页显示数量
+// get.module.info 获取某个模块的信息，参数 sign=模块签名
 // get.module.latestversion 获取某个模块的最新版本号，参数 sign=模块签名，sign为数组时，返回多个
 // get.module.install.package.url 获取某个模块的安装包地址，参数 sign=模块签名
 // get.module.upgrade.package.url 获取某个模块的升级包地址，参数 sign=模块签名，version=安装版本
-// get.competence 判断帐号权限是否正常
+// 插件
+// get.addons.list 获取在线插件列表信息，参数 page=当前第几页，默认1，paging=每页显示数量
+// get.addons.info 获取某个插件的信息，参数 name=插件标识
+// get.addons.install.package.url 获取某个插件的安装包地址，参数 name=插件标识
+// get.addons.upgrade.package.url 获取某个模块的升级包地址，参数 name=插件标识，version=安装版本
 
 class Cloud {
 

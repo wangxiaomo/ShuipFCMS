@@ -58,9 +58,11 @@ class AppInitBehavior {
         define("SHUIPF_APPNAME", C("SHUIPF_APPNAME"));
         //MODULE_ALLOW_LIST配置
         $moduleList = cache('Module');
-        $moduleAllowList = array('Admin', 'Api', 'Attachment', 'Content', 'Install','Template');
+        $moduleAllowList = array('Admin', 'Api', 'Attachment', 'Content', 'Install', 'Template');
         foreach ($moduleList as $rs) {
-            $moduleAllowList[] = $rs['module'];
+            if ($rs['disabled']) {
+                $moduleAllowList[] = $rs['module'];
+            }
         }
         C('MODULE_ALLOW_LIST', $moduleAllowList);
     }

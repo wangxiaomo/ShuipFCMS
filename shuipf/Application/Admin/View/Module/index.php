@@ -61,7 +61,6 @@
 				  $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn btn_submit  mr5">启用</a>';
 			  }
 		  }
-		  $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn btn_submit  mr5">升级</a>';
 		  echo implode('  ',$op);
 		  ?>
         </td>

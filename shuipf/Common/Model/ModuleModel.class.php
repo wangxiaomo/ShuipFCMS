@@ -66,7 +66,7 @@ class ModuleModel extends Model {
         $disabled = $info['disabled'] ? 0 : 1;
         if (false !== $this->where(array('module' => $module))->save(array('disabled' => $disabled))) {
             //更新缓存
-            cache("Module", NULL);
+            cache('Module', NULL);
             return true;
         } else {
             $this->error = '状态转换失败！';
@@ -79,7 +79,7 @@ class ModuleModel extends Model {
      * @return type
      */
     public function module_cache() {
-        $data = $this->where(array("disabled" => 1))->select();
+        $data = $this->select();
         $Module = array();
         foreach ($data as $v) {
             $Module[$v['module']] = $v;
