@@ -27,4 +27,5 @@ return array(
     'PclZip' => PROJECT_PATH . 'Libs/Util/PclZip.class.php',
     'Libs\System\UninstallBase' => PROJECT_PATH . 'Libs/System/UninstallBase.class.php',
     'Libs\System\InstallBase' => PROJECT_PATH . 'Libs/System/InstallBase.class.php',
+    'PclZip' => PROJECT_PATH . 'Libs/Util/PclZip.class.php',
 );

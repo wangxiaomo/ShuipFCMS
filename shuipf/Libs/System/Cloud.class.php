@@ -13,14 +13,17 @@ namespace Libs\System;
 // =====Api 说明======
 // get.license 获取授权信息，参数 domain=网站域名
 // get.module.list 获取在线模块列表信息，参数 page=当前第几页，默认1，paging=每页显示数量
+// get.module.info 获取某个模块的信息，参数 sign
 // get.latestversion 获取最新版本号，无参数
-// get.module.latestversion 获取某个模块的最新版本号，参数 sign=模块签名
+// get.module.latestversion 获取某个模块的最新版本号，参数 sign=模块签名，sign为数组时，返回多个
 // get.module.install.package.url 获取某个模块的安装包地址，参数 sign=模块签名
+// get.module.upgrade.package.url 获取某个模块的升级包地址，参数 sign=模块签名，version=安装版本
+// get.competence 判断帐号权限是否正常
 
 class Cloud {
 
     //错误信息
-    private $error = NULL;
+    private $error = '出现未知错误 Cloud ！';
     //需要发送的数据
     private $data = array();
     //接口
@@ -78,6 +81,14 @@ class Cloud {
     }
 
     /**
+     * 检测当前站点云端帐号密码是否正常
+     * @return boolean
+     */
+    public function competence() {
+        return true;
+    }
+
+    /**
      * 请求
      * @param type $data
      * @return type
@@ -87,7 +98,7 @@ class Cloud {
         $fields = array(
             'data' => json_encode($data),
             'act' => $this->act,
-            'identity' => $this->Identity(),
+            'identity' => $this->getIdentity(),
         );
         //curl支持 检测
         if ($curl->create() == false) {
@@ -128,7 +139,7 @@ class Cloud {
      * ShuipFCMS官网会员帐号信息
      * @return type
      */
-    private function Identity() {
+    private function getIdentity() {
         return json_encode(array(
             'username' => 'demo',
             'password' => 'demo',

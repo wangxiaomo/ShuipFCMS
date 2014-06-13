@@ -121,7 +121,7 @@ class Module {
         //检查是否安装，如果安装了，加载模块安装后的相关配置信息
         if ($this->isInstall($moduleName)) {
             $moduleList = cache('Module');
-            $config = array_merge($config, $moduleList[$moduleName]);
+            $config = array_merge($moduleList[$moduleName], $config);
         }
         $this->config = $config;
         return $config;
@@ -364,7 +364,7 @@ class Module {
         $config = $this->config($moduleName);
         if (!empty($config)) {
             //更新版本号
-            $this->where(array('module' => $moduleName))->save(array('version' => $config['version'], 'updatedate' => time()));
+            $model->where(array('module' => $moduleName))->save(array('version' => $config['version'], 'updatetime' => time()));
         }
         //卸载结束，最后调用卸载脚本完成
         $this->runInstallScriptEnd($moduleName, 'Upgrade');

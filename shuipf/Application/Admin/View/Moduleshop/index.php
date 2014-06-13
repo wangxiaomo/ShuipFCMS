@@ -22,7 +22,6 @@
         <tr>
           <td align="center">应用图标</td>
           <td>应用介绍</td>
-          <td align="center">安装时间</td>
           <td align="center">操作</td>
         </tr>
       </thead>
@@ -43,25 +42,17 @@
             <div class="gray"><if condition=" $vo['introduce'] ">{$vo.introduce}<else />没有任何介绍</if></div>
             <div> <span class="mr20"><a href="{$vo.authorsite}" target="_blank">{$vo.authorsite}</a></span> </div>
         </td>
-        <td align="center"><if condition=" $vo['installtime'] "><span>{$vo.installtime|date='Y-m-d H:i:s',###}</span><else/>/</if></td>
         <td align="center">
           <?php
 		  $op = array();
-		  if(empty($vo['installtime'])){
-			  $op[] = '<a href="'.U('install',array('module'=>$vo['module'])).'" class="btn btn_submit mr5">安装</a>';
+		  if(!isModuleInstall($vo['module'])){
+			  $op[] = '<a href="'.U('install',array('sign'=>$vo['sign'])).'" class="btn btn_submit mr5 Js_install">安装</a>';
 		  }else{
-			  if($vo['iscore'] == 0){
-				  $op[] = '<a href="'.U('uninstall',array('module'=>$vo['module'])).'" class="J_ajax_upgrade btn">卸载</a>';
-			  }
-			  if($vo['disabled']){
-				  if($vo['iscore'] == 0){
-					 $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn mr5">禁用</a>'; 
-				  }
-			  }else{
-				  $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn btn_submit  mr5">启用</a>';
-			  }
+			 //有安装，检测升级
+			 if($vo['upgrade']){
+				 $op[] = '<a href="'.U('upgrade',array('sign'=>$vo['sign'])).'" class="btn btn_submit mr5 Js_upgrade" id="upgrade_tips_'.$vo['sign'].'">升级到最新'.$vo['newVersion'].'</a>';
+			 }
 		  }
-		  $op[] = '<a href="'.U('disabled',array('module'=>$vo['module'])).'" class="btn btn_submit  mr5">升级</a>';
 		  echo implode('  ',$op);
 		  ?>
         </td>
@@ -74,41 +65,5 @@
    </div>
 </div>
 <script src="{$config_siteurl}statics/js/common.js"></script>
-<script>
-if ($('a.J_ajax_upgrade').length) {
-    Wind.use('artDialog', function () {
-        $('.J_ajax_upgrade').on('click', function (e) {
-            e.preventDefault();
-           var $_this = this,$this = $(this), url = this.href, msg = $this.data('msg'), act = $this.data('act');
-            art.dialog({
-                title: false,
-                icon: 'question',
-                content: '确定要卸载吗？',
-                follow: $_this,
-                close: function () {
-                    $_this.focus();; //关闭时让触发弹窗的元素获取焦点
-                    return true;
-                },
-                ok: function () {
-                    $.getJSON(url).done(function (data) {
-                        if (data.state === 'success') {
-                            if (data.referer) {
-                                location.href = data.referer;
-                            } else {
-                                reloadPage(window);
-                            }
-                        } else if (data.state === 'fail') {
-                            art.dialog.alert(data.info);
-                        }
-                    });
-                },
-                cancelVal: '关闭',
-                cancel: true
-            });
-        });
-
-    });
-}
-</script>
 </body>
 </html>

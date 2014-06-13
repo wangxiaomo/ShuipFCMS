@@ -203,7 +203,7 @@ class MenuModel extends Model {
             return false;
         }
         //默认安装时父级ID
-        $defaultMenuParentid = $this->where(array('app' => 'Admin', 'controller' => 'Module', 'action' => 'local'))->getField('id');
+        $defaultMenuParentid = $this->where(array('app' => 'Admin', 'controller' => 'Module', 'action' => 'local'))->getField('id')? : 42;
         //安装模块名称
         $moduleNama = $config['module'];
         foreach ($data as $rs) {
@@ -212,7 +212,7 @@ class MenuModel extends Model {
                 return false;
             }
             $route = $this->menuRoute($rs['route']);
-            $pid = $parentid ? : ((is_null($rs['parentid']) || !isset($rs['parentid'])) ? $defaultMenuParentid : $rs['parentid']);
+            $pid = $parentid ? : ((is_null($rs['parentid']) || !isset($rs['parentid'])) ? (int) $defaultMenuParentid : $rs['parentid']);
             $newData = array_merge(array(
                 'name' => $rs['name'],
                 'parentid' => $pid,

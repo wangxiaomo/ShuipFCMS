@@ -21,6 +21,10 @@ class Components {
             'class' => '\\Libs\\System\\Cloud',
             'path' => 'Libs.System.Cloud',
         ),
+        'CloudDownload' => array(
+            'class' => '\\Libs\\System\\CloudDownload',
+            'path' => 'Libs.System.CloudDownload',
+        ),
         'Html' => array(
             'class' => '\\Libs\\System\\Html',
             'path' => 'Libs.System.Html',
