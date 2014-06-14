@@ -55,7 +55,7 @@
                   <option value="1" <eq name="data.type" value="1">selected</eq>>权限认证+菜单</option>
                    <option value="0" <eq name="data.type" value="0">selected</eq>>只作为菜单</option>
                 </select>
-                注意：“权限认证+菜单”表示加入后台权限管理，纯碎是菜单项请不要选择此项。</td>
+                注意：“权限认证+菜单”表示加入后台权限管理，纯粹是菜单项请不要选择此项。</td>
             </tr>
           </tbody>
         </table>
