@@ -49,7 +49,7 @@ class AdminController extends AdminBase {
             //取得栏目ID
             $catid = I('post.catid', 0, 'intval');
             //取得模块名称
-            $module = I('post.module', 'contents', 'trim,strtolower');
+            $module = I('post.module', 'content', 'trim,strtolower');
             //获取附件服务
             $Attachment = service("Attachment", array('module' => $module, 'catid' => $catid, 'isadmin' => self::isadmin, 'userid' => $upuserid));
             //缩略图宽度

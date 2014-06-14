@@ -95,7 +95,7 @@ class PositionController extends AdminBase {
             $db = D('Content/Position');
             $_POST['info'] = array_merge($_POST['info'], array(C("TOKEN_NAME") => $_POST[C("TOKEN_NAME")]));
             if ($db->positionAdd($_POST['info'])) {
-                $this->success("添加成功！<font color=\"#FF0000\">请更新缓存！</font>", U("Contents/Position/index"));
+                $this->success("添加成功！<font color=\"#FF0000\">请更新缓存！</font>", U("Content/Position/index"));
             } else {
                 $this->error($db->getError());
             }

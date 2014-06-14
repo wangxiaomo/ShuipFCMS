@@ -49,7 +49,7 @@ class AttachmentModel extends Model {
      *      'size' => 112102,//文件大小
      *      'key' => 0,
      *      'extension' => 'jpg',//上传文件后缀
-     *      'savepath' => '/home/wwwroot/lvyou.abc3210.com/d/file/contents/2012/07/',//文件保存完整路径
+     *      'savepath' => '/home/wwwroot/lvyou.abc3210.com/d/file/content/2012/07/',//文件保存完整路径
      *      'savename' => '5002ba343fc9d.jpg',//保存文件名
      *      'hash' => '77b5118c1722da672b0ddce3c4388e64',
      * )
@@ -72,7 +72,7 @@ class AttachmentModel extends Model {
         if (empty($filePath)) {
             return false;
         }
-        //文件url地址，不包含附件目录 例如 contents/2012/07/5002ba343fc9d.jpg
+        //文件url地址，不包含附件目录 例如 content/2012/07/5002ba343fc9d.jpg
         $fileUrlPath = str_replace(C("UPLOADFILEPATH"), '', $filePath);
         //保存数据
         $data = array(

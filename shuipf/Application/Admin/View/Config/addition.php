@@ -135,7 +135,7 @@
                     <tr>
                         <th width="140">默认模块:</th>
                         <td><input type="text" class="input"  name="DEFAULT_MODULE" value="{$addition.DEFAULT_MODULE}" size="40">
-                            <span class="gray"> 默认：Contents，建议不修改，填写时注意大小写</span></td>
+                            <span class="gray"> 默认：Content，建议不修改，填写时注意大小写</span></td>
                     </tr>
                     <tr>
                         <th width="140">默认时区:</th>
