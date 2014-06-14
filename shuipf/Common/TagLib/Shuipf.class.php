@@ -476,6 +476,9 @@ class Shuipf extends TagLib {
      * @param string $content  标签内容
      */
     public function _comment($tag, $content) {
+        if (!isModuleInstall('Comments')) {
+            return false;
+        }
         static $_comment_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
         $cacheIterateId = to_guid_string($tag);
