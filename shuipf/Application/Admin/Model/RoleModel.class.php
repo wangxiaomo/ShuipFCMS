@@ -85,7 +85,7 @@ class RoleModel extends Model {
             return false;
         }
         //角色信息
-        $info = $this->where(array("id" => $roleid))->find();
+        $info = $this->where(array('id' => $roleid))->find();
         if (empty($info)) {
             $this->error = '该角色不存在！';
             return false;
@@ -96,10 +96,10 @@ class RoleModel extends Model {
             $this->error = '该角色下有子角色，请删除子角色才可以删除！';
             return false;
         }
-        $status = $this->where(array("id" => $roleid))->delete();
+        $status = $this->where(array('id' => $roleid))->delete();
         if ($status !== false) {
             //删除access中的授权信息
-            return D("Admin/Access")->where(array("role_id" => $roleid))->delete();
+            return D('Admin/Access')->where(array('role_id' => $roleid))->delete() !== false ? true : false;
         }
         return false;
     }

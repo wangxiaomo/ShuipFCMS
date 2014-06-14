@@ -69,7 +69,7 @@ class RbacController extends AdminBase {
             $this->success("删除成功！", U('Rbac/rolemanage'));
         } else {
             $error = D("Admin/Role")->getError();
-            $this->error($error ? $error : '添加失败！');
+            $this->error($error ? $error : '删除失败！');
         }
     }
 
