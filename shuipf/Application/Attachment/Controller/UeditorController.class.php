@@ -77,11 +77,49 @@ class UeditorController extends AttachmentsController {
     protected function _initialize() {
         defined('Ueditor') or define('Ueditor', true);
         parent::_initialize();
+        if ($this->isadmin) {
+            //上传大小
+            $this->confing['imageMaxSize'] = $this->confing['scrawlMaxSize'] = $this->confing['catcherMaxSize'] = $this->confing['videoMaxSize'] = $this->confing['fileMaxSize'] = self::$Cache['Config']['uploadmaxsize'] * 1024;
+            //上传文件类型
+            $uploadallowext = explode('|', self::$Cache['Config']['uploadallowext']);
+            foreach ($uploadallowext as $k => $rs) {
+                $uploadallowext[$k] = ".{$rs}";
+            }
+            $this->confing['fileAllowFiles'] = $uploadallowext;
+        } else {
+            $this->confing['imageMaxSize'] = $this->confing['scrawlMaxSize'] = $this->confing['catcherMaxSize'] = $this->confing['videoMaxSize'] = $this->confing['fileMaxSize'] = self::$Cache['Config']['qtuploadmaxsize'] * 1024;
+            //上传文件类型
+            $uploadallowext = explode('|', self::$Cache['Config']['qtuploadallowext']);
+            foreach ($uploadallowext as $k => $rs) {
+                $uploadallowext[$k] = ".{$rs}";
+            }
+            $this->confing['fileAllowFiles'] = $uploadallowext;
+        }
     }
 
     //编辑器配置
-    public function config() {
-        echo json_encode($this->confing);
+    public function run() {
+        $action = I('get.action');
+        switch ($action) {
+            case 'config':
+                $result = $this->confing;
+                break;
+            //上传图片
+            case 'uploadimage':
+                $result = array(
+                    'state' => 'SUCCESS', //成功返回标准，否则是错误提示
+                    'url' => '/d/file/content/2014/06/539c18ca68b41.jpg', //成功地址
+                    'title' => 'title', //上传后的文件名
+                    'original' => 'original', //原来的
+                );
+                break;
+            default:
+                $result = array(
+                    'state' => '请求地址出错'
+                );
+                break;
+        }
+        exit(json_encode($result));
     }
 
 }
