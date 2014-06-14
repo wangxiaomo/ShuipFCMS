@@ -488,7 +488,7 @@ class Shuipf extends TagLib {
         $action = $tag['action']; //方法
 
         $parseStr = '<?php';
-        $parseStr .= ' $comment_tag = \Think\Think::instance("\Comment\TagLib\Comment");';
+        $parseStr .= ' $comment_tag = \Think\Think::instance("\Comments\TagLib\Comments");';
         $parseStr .= ' if(method_exists($comment_tag, "' . $action . '")){';
         $parseStr .= ' $' . $return . ' = $comment_tag->' . $action . '(' . self::arr_to_html($tag) . ');';
         $parseStr .= ' }';

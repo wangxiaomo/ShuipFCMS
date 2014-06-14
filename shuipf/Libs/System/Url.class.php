@@ -459,7 +459,7 @@ class Url {
      * @param type $ruleid 规则ID
      * @return type
      */
-    public function tags($data = '', $page = 1, $ruleid = 9) {
+    public function tags($data = '', $page = 1, $ruleid = 0) {
         static $_tags = array();
         if (empty($data)) {
             if (!empty($this->data)) {
@@ -485,7 +485,7 @@ class Url {
                 return false;
             }
             //url规则
-            $urlrule = $this->urlrules[$ruleid ? $ruleid : $config['tagurl']]['urlrule'];
+            $urlrule = $this->urlrules[$ruleid ?  : $config['tagurl']]['urlrule'];
             $urlrule = $urlrule? : 'index.php?m=Tags&tag={$tag}|index.php?m=Tags&page={$page}&tag={$tag}';
             $replace_l = array(); //需要替换的标签
             $replace_r = array(); //替换的内容

@@ -152,6 +152,59 @@ function seo($catid = '', $title = '', $description = '', $keyword = '') {
 }
 
 /**
+ *  通过用户邮箱，取得gravatar头像
+ * @since 2.5
+ * @param int|string|object $id_or_email 一个用户ID，电子邮件地址
+ * @param int $size 头像图片的大小
+ * @param string $default 如果没有可用的头像是使用默认图像的URL
+ * @param string $alt 替代文字使用中的形象标记。默认为空白
+ * @return string <img>
+ */
+function get_avatar($id_or_email, $size = '96', $default = '', $alt = false) {
+    //头像大小
+    if (!is_numeric($size))
+        $size = '96';
+    //邮箱地址
+    $email = '';
+    //如果是数字，表示使用会员头像 暂时没有写！
+    if (is_int($id_or_email)) {
+        $id = (int) $id_or_email;
+        $userdata = service("Passport")->getLocalUser($id);
+        $email = $userdata['email'];
+    } else {
+        $email = $id_or_email;
+    }
+    //设置默认头像
+    if (empty($default)) {
+        $default = 'mystery';
+    }
+    if (!empty($email))
+        $email_hash = md5(strtolower($email));
+    if (!empty($email))
+        $host = sprintf("http://%d.gravatar.com", ( hexdec($email_hash[0]) % 2));
+    else
+        $host = 'http://0.gravatar.com';
+    if ('mystery' == $default)
+        $default = "$host/avatar/ad516503a11cd5ca435acc9bb6523536?s={$size}"; // ad516503a11cd5ca435acc9bb6523536 == md5('unknown@gravatar.com')
+    elseif (!empty($email) && 'gravatar_default' == $default)
+        $default = '';
+    elseif ('gravatar_default' == $default)
+        $default = "$host/avatar/s={$size}";
+    elseif (empty($email))
+        $default = "$host/avatar/?d=$default&amp;s={$size}";
+    if (!empty($email)) {
+        $out = "$host/avatar/";
+        $out .= $email_hash;
+        $out .= '?s=' . $size;
+        $out .= '&amp;d=' . urlencode($default);
+        $avatar = $out;
+    } else {
+        $avatar = $default;
+    }
+    return $avatar;
+}
+
+/**
  * 分页处理
  * @param type $total 信息总数
  * @param type $size 每页数量
@@ -221,7 +274,7 @@ function page($total, $size = 0, $number = 0, $config = array()) {
     //是否启用自定义规则，规则是一个数组，index和list。不启用的情况下，直接以当前$_GET的参数组成地址
     if ($defaultConfig['isrule'] && empty($defaultConfig['rule'])) {
         //通过全局参数获取分页规则
-        $URLRULE = isset($GLOBALS['URLRULE']) ?$GLOBALS['URLRULE'] : (defined('URLRULE') ? URLRULE : '');
+        $URLRULE = isset($GLOBALS['URLRULE']) ? $GLOBALS['URLRULE'] : (defined('URLRULE') ? URLRULE : '');
         $PageLink = array();
         if (!is_array($URLRULE)) {
             $URLRULE = explode('~', $URLRULE);
@@ -641,4 +694,121 @@ function parseTemplateFile($templateFile = '') {
     }
     $TemplateFileCache[$key] = $templateFile;
     return $TemplateFileCache[$key];
+}
+
+/**
+ * 获取点击数
+ * @param type $catid 栏目ID
+ * @param type $id 信息ID
+ * @return type
+ */
+function hits($catid, $id) {
+    return \Content\Model\ContentModel::getInstance(getCategory($catid, 'modelid'))->where(array('id' => $id))->getField('views');
+}
+
+/**
+ * 标题链接获取
+ * @param type $catid 栏目id
+ * @param type $id 信息ID
+ * @return type 链接地址
+ */
+function titleurl($catid, $id) {
+    return \Content\Model\ContentModel::getInstance(getCategory($catid, 'modelid'))->where(array('id' => $id))->getField("url");
+}
+
+/**
+ * 获取文章评论总数
+ * @param type $catid 栏目ID
+ * @param type $id 信息ID
+ * @return type 
+ */
+function commcount($catid, $id) {
+    $comment_id = "c-{$catid}-{$id}";
+    return M('Comments')->where(array("comment_id" => $comment_id, "parent" => 0, "approved" => 1))->count();
+}
+
+/**
+ * 生成标题样式
+ * @param $style   样式，通常时字段style，以“;”隔开，第一个是文字颜色，第二个是否加粗
+ * @param $html    是否显示完整的STYLE样式代码
+ */
+function title_style($style, $html = 1) {
+    $str = '';
+    if ($html) {
+        $str = ' style="';
+    }
+    $style_arr = explode(';', $style);
+    if (!empty($style_arr[0])) {
+        $str .= 'color:' . $style_arr[0] . ';';
+    }
+    if (!empty($style_arr[1])) {
+        $str .= 'font-weight:' . $style_arr[1] . ';';
+    }
+    if ($html) {
+        $str .= '" ';
+    }
+    return $style ? $str : "";
+}
+
+/**
+ * 生成缩略图
+ * @param type $imgurl 图片地址
+ * @param type $width 缩略图宽度
+ * @param type $height 缩略图高度
+ * @param type $thumbType 缩略图生成方式 1 按设置大小截取 0 按原图等比例缩略
+ * @param type $smallpic 图片不存在时显示默认图片
+ * @return type
+ */
+function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic = 'nopic.gif') {
+    static $_thumb_cache = array();
+    if (empty($imgurl)) {
+        return $smallpic;
+    }
+    //区分
+    $key = md5($imgurl . $width . $height . $thumbType . $smallpic);
+    if (isset($_thumb_cache[$key])) {
+        return $_thumb_cache[$key];
+    }
+    if (!$width || !$height) {
+        return $smallpic;
+    }
+    //当获取不到DOCUMENT_ROOT值时的操作！
+    if (empty($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['SCRIPT_FILENAME'])) {
+        $_SERVER['DOCUMENT_ROOT'] = str_replace('\\', '/', substr($_SERVER['SCRIPT_FILENAME'], 0, 0 - strlen($_SERVER['PHP_SELF'])));
+    }
+    if (empty($_SERVER['DOCUMENT_ROOT']) && !empty($_SERVER['PATH_TRANSLATED'])) {
+        $_SERVER['DOCUMENT_ROOT'] = str_replace('\\', '/', substr(str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED']), 0, 0 - strlen($_SERVER['PHP_SELF'])));
+    }
+    // 解析URLsitefileurl
+    $imgParse = parse_url($imgurl);
+    //图片路径
+    $imgPath = $_SERVER['DOCUMENT_ROOT'] . $imgParse['path'];
+    //取得文件名
+    $basename = basename($imgurl);
+    //取得文件存放目录
+    $imgPathDir = str_replace($basename, '', $imgPath);
+    //生成的缩略图文件名
+    $newFileName = "thumb_{$width}_{$height}_" . $basename;
+    //检查生成的缩略图是否已经生成过
+    if (file_exists($imgPathDir . $newFileName)) {
+        return str_replace($basename, $newFileName, $imgurl);
+    }
+    //检查文件是否存在，如果是开启远程附件的，估计就通过不了，以后在考虑完善！
+    if (!file_exists($imgPath)) {
+        return $imgurl;
+    }
+    //取得图片相关信息
+    list($width_t, $height_t, $type, $attr) = getimagesize($imgPath);
+    //判断生成的缩略图大小是否正常
+    if ($width >= $width_t || $height >= $height_t) {
+        return $imgurl;
+    }
+    //生成缩略图
+    if (1 == $thumbType) {
+        \Image::thumb2($imgPath, $imgPathDir . $newFileName, '', $width, $height, true);
+    } else {
+        \Image::thumb($imgPath, $imgPathDir . $newFileName, '', $width, $height, true);
+    }
+    $_thumb_cache[$key] = str_replace($basename, $newFileName, $imgurl);
+    return $_thumb_cache[$key];
 }
