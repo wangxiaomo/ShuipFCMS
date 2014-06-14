@@ -105,7 +105,7 @@ class CustomlistController extends AdminBase {
      * @param type $info
      */
     private function templateAndRule($info = array('urlruleid' => '')) {
-        $filepath = TEMPLATE_PATH . (empty(self::$Cache["Config"]['theme']) ? "Default" : self::$Cache["Config"]['theme']) . DIRECTORY_SEPARATOR . "Contents" . DIRECTORY_SEPARATOR;
+        $filepath = TEMPLATE_PATH . (empty(self::$Cache["Config"]['theme']) ? "Default" : self::$Cache["Config"]['theme']) . DIRECTORY_SEPARATOR . "Content" . DIRECTORY_SEPARATOR;
         $tp_list = str_replace($filepath . "List" . DIRECTORY_SEPARATOR, "", glob($filepath . "List" . DIRECTORY_SEPARATOR . 'list*'));
         $this->assign('list_html_ruleid', \Form::urlrule('content', 'category', 1, $info['urlruleid'], 'name="urlruleid"'));
         $this->assign('tp_list', $tp_list);
