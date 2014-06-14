@@ -182,6 +182,9 @@ class Module {
         //依赖模块检测
         if (!empty($config['depend']) && is_array($config['depend'])) {
             foreach ($config['depend'] as $mod) {
+                if ('Content' == $mod) {
+                    continue;
+                }
                 if (!isset($moduleList[$mod])) {
                     $this->error = "安装该模块，需要安装依赖模块 {$mod} !";
                     return false;
