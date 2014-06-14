@@ -443,7 +443,7 @@ CREATE TABLE `shuipfcms_menu` (
   `listorder` smallint(6) unsigned NOT NULL DEFAULT '0' COMMENT '排序ID',
   PRIMARY KEY (`id`),
   KEY `parentid` (`parentid`)
-) ENGINE=MyISAM AUTO_INCREMENT=108 DEFAULT CHARSET=utf8 COMMENT='后台菜单表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='后台菜单表';
 
 -- ----------------------------
 -- Records of shuipfcms_menu
@@ -559,6 +559,7 @@ INSERT INTO `shuipfcms_menu` VALUES ('108', '安装模块', '39', 'Admin', 'Modu
 INSERT INTO `shuipfcms_menu` VALUES ('109', '升级模块', '39', 'Admin', 'Moduleshop', 'upgrade', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('110', '安装插件', '40', 'Admin', 'Addonshop', 'install', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('111', '升级插件', '40', 'Admin', 'Addonshop', 'upgrade', '', '1', '0', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('112', '栏目授权', '26', 'Admin', 'Rbac', 'setting_cat_priv', '', '1', '0', '', '0');
 
 -- ----------------------------
 -- Table structure for shuipfcms_model

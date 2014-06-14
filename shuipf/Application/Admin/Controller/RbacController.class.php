@@ -25,7 +25,7 @@ class RbacController extends AdminBase {
             if ($rs['id'] == 1) {
                 $operating = '<font color="#cccccc">权限设置</font> | <a href="' . U('Management/manager', array('role_id' => $rs['id'])) . '">成员管理</a> | <font color="#cccccc">修改</font> | <font color="#cccccc">删除</font>';
             } else {
-                $operating = '<a href="' . U("Rbac/authorize", array("id" => $rs["id"])) . '">权限设置</a> | <a href="' . U('Management/manager', array('role_id' => $rs['id'])) . '">成员管理</a> | <a href="' . U('Rbac/roleedit', array('id' => $rs['id'])) . '">修改</a> | <a class="J_ajax_del" href="' . U('Rbac/roledelete', array('id' => $rs['id'])) . '">删除</a>';
+                $operating = '<a href="' . U("Rbac/authorize", array("id" => $rs["id"])) . '">权限设置</a> | <a href="' . U("Rbac/setting_cat_priv", array("roleid" => $rs["id"])) . '">栏目权限</a> | <a href="' . U('Management/manager', array('role_id' => $rs['id'])) . '">成员管理</a> | <a href="' . U('Rbac/roleedit', array('id' => $rs['id'])) . '">修改</a> | <a class="J_ajax_del" href="' . U('Rbac/roledelete', array('id' => $rs['id'])) . '">删除</a>';
             }
             $roleList[$k]['operating'] = $operating;
         }
@@ -60,9 +60,7 @@ class RbacController extends AdminBase {
         }
     }
 
-    /**
-     * 删除角色
-     */
+    //删除角色
     public function roledelete() {
         $id = I('get.id', 0, 'intval');
         if (D("Admin/Role")->roleDelete($id)) {
@@ -171,6 +169,88 @@ class RbacController extends AdminBase {
                     ->assign("roleid", $roleid)
                     ->assign('name', D("Admin/Role")->getRoleIdName($roleid))
                     ->display();
+        }
+    }
+
+    //栏目授权
+    public function setting_cat_priv() {
+        if (IS_POST) {
+            $roleid = I('post.roleid', 0, 'intval');
+            $priv = array();
+            foreach ($_POST['priv'] as $k => $v) {
+                foreach ($v as $e => $q) {
+                    $priv[] = array("roleid" => $roleid, "catid" => $k, "action" => $q, "is_admin" => 1);
+                }
+            }
+            C('TOKEN_ON', false);
+            //循环验证每天数据是否都合法
+            foreach ($priv as $r) {
+                $data = M("CategoryPriv")->create($r);
+                if (!$data) {
+                    $this->error(M("CategoryPriv")->getError());
+                } else {
+                    $addpriv[] = $data;
+                }
+            }
+            C('TOKEN_ON', true);
+            //设置权限前，先删除原来旧的权限
+            M("CategoryPriv")->where(array("roleid" => $roleid))->delete();
+            //添加新的权限数据，使用D方法有操作记录产生
+            M("CategoryPriv")->addAll($addpriv);
+            $this->success("权限赋予成功！");
+        } else {
+            $roleid = I('get.roleid', 0, 'intval');
+            if(empty($roleid)){
+                $this->error('请指定需要授权的角色！');
+            }
+            $categorys = cache("Category");
+            $tree = new \Tree();
+            $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
+            $tree->nbsp = '&nbsp;&nbsp;&nbsp;';
+            $category_priv = M("CategoryPriv")->where(array("roleid" => $roleid))->select();
+            $priv = array();
+            foreach ($category_priv as $k => $v) {
+                $priv[$v['catid']][$v['action']] = true;
+            }
+
+            foreach ($categorys as $k => $v) {
+                $v = getCategory($v['catid']);
+                if ($v['type'] == 1 || $v['child']) {
+                    $v['disabled'] = 'disabled';
+                    $v['init_check'] = '';
+                    $v['add_check'] = '';
+                    $v['delete_check'] = '';
+                    $v['listorder_check'] = '';
+                    $v['push_check'] = '';
+                    $v['move_check'] = '';
+                } else {
+                    $v['disabled'] = '';
+                    $v['add_check'] = isset($priv[$v['catid']]['add']) ? 'checked' : '';
+                    $v['delete_check'] = isset($priv[$v['catid']]['delete']) ? 'checked' : '';
+                    $v['listorder_check'] = isset($priv[$v['catid']]['listorder']) ? 'checked' : '';
+                    $v['push_check'] = isset($priv[$v['catid']]['push']) ? 'checked' : '';
+                    $v['move_check'] = isset($priv[$v['catid']]['remove']) ? 'checked' : '';
+                    $v['edit_check'] = isset($priv[$v['catid']]['edit']) ? 'checked' : '';
+                }
+                $v['init_check'] = isset($priv[$v['catid']]['init']) ? 'checked' : '';
+                $categorys[$k] = $v;
+            }
+            $str = "<tr>
+	<td align='center'><input type='checkbox'  value='1' onclick='select_all(\$catid, this)' ></td>
+	<td>\$spacer\$catname</td>
+	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$init_check  value='init' ></td>
+	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$add_check value='add' ></td>
+	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$edit_check value='edit' ></td>
+	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$delete_check  value='delete' ></td>
+	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$listorder_check value='listorder' ></td>
+	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$push_check value='push' ></td>
+	<td align='center'><input type='checkbox' name='priv[\$catid][]' \$disabled \$move_check value='remove' ></td>
+            </tr>";
+            $tree->init($categorys);
+            $categorydata = $tree->get_tree(0, $str);
+            $this->assign("categorys", $categorydata);
+            $this->assign("roleid", $roleid);
+            $this->display("categoryrbac");
         }
     }
 
