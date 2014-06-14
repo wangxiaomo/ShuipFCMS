@@ -32,7 +32,7 @@ class OperationlogModel extends Model {
             $fangs = 'POST';
         }
         $data = array(
-            'uid' => \Admin\Service\User::getInstance()->id,
+            'uid' => \Admin\Service\User::getInstance()->id? : 0,
             'status' => $status,
             'info' => "提示语：{$message}<br/>模块：" . MODULE_NAME . ",控制器：" . CONTROLLER_NAME . ",方法：" . ACTION_NAME . "<br/>请求方式：{$fangs}",
             'get' => $_SERVER['HTTP_REFERER'],
