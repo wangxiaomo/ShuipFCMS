@@ -555,6 +555,10 @@ INSERT INTO `shuipfcms_menu` VALUES ('104', '添加列表', '103', 'Template', '
 INSERT INTO `shuipfcms_menu` VALUES ('105', '删除列表', '103', 'Template', 'Customlist', 'delete', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('106', '编辑列表', '103', 'Template', 'Customlist', 'edit', '', '1', '0', '', '0');
 INSERT INTO `shuipfcms_menu` VALUES ('107', '生成列表', '103', 'Template', 'Customlist', 'generate', '', '1', '0', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('108', '安装模块', '39', 'Admin', 'Moduleshop', 'install', '', '1', '0', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('109', '升级模块', '39', 'Admin', 'Moduleshop', 'upgrade', '', '1', '0', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('110', '安装插件', '40', 'Admin', 'Addonshop', 'install', '', '1', '0', '', '0');
+INSERT INTO `shuipfcms_menu` VALUES ('111', '升级插件', '40', 'Admin', 'Addonshop', 'upgrade', '', '1', '0', '', '0');
 
 -- ----------------------------
 -- Table structure for shuipfcms_model
