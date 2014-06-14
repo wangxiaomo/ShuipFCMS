@@ -18,7 +18,12 @@ class UrlruleController extends AdminBase {
     protected function _initialize() {
         parent::_initialize();
         //可用模块列表
-        $Module = array();
+        $Module = array(
+            'content' => array(
+                'module' => 'content',
+                'name' => '内容模块',
+            ),
+        );
         foreach (cache('Module') as $r) {
             $Module[strtolower($r['module'])] = array(
                 'module' => strtolower($r['module']),

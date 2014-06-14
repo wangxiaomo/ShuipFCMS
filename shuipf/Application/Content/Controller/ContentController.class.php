@@ -24,8 +24,23 @@ class ContentController extends AdminBase {
     //初始化
     protected function _initialize() {
         parent::_initialize();
-        $this->catid = I('request.catid', 0, 'intval');
+        $this->catid = I('request.catid', $_POST['info']['catid'], 'intval');
         $this->model = cache('Model');
+        //权限验证
+        if (User::getInstance()->isAdministrator() !== true) {
+            //如果是public_开头的方法通过验证
+            if (strpos(ACTION_NAME, 'public_') === false && ACTION_NAME != 'index') {
+                //操作
+                $action = getCategory($this->catid, 'type') == 0 ? ACTION_NAME : 'init';
+                if ($action == 'classlist') {
+                    $action = 'init';
+                }
+                $priv_datas = M('CategoryPriv')->where(array('catid' => $this->catid, 'is_admin' => 1, 'roleid' => User::getInstance()->role_id, 'action' => $action))->find();
+                if (empty($priv_datas)) {
+                    $this->error('您没有操作该项的权限！');
+                }
+            }
+        }
     }
 
     //显示内容管理首页

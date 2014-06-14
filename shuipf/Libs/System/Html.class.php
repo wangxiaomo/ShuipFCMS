@@ -22,7 +22,6 @@ class Html extends Base {
 
     //初始化
     protected function _initialize() {
-        load("Content/function");
         parent::_initialize();
     }
 
@@ -414,7 +413,6 @@ class Html extends Base {
             return false;
         }
         //seo分配到模板
-        load("Content/function");
         $seo = seo(0, $data['title'], $data['description'], $data['keywords']);
         $this->assign("SEO", $seo);
         //分页总数

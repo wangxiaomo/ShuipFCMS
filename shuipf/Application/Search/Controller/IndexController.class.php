@@ -26,7 +26,6 @@ class IndexController extends Base {
     //搜索首页
     public function index() {
         C('TOKEN_ON', false);
-        load("Content/function");
         $seo = seo();
         $this->assign('seo', $seo);
         $q = I('request.q', '', 'trim');

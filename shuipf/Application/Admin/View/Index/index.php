@@ -523,9 +523,6 @@ Wind.use('requestFullScreen', function () {
 })
 */
 </script>
-<!--[if lte IE 7]>
-<script src="http://letskillie6.googlecode.com/svn/trunk/2/zh_CN.js"></script>
-<![endif]--> 
 </literal>
 </body>
 </html>

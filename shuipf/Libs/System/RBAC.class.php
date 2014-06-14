@@ -127,6 +127,11 @@ class RBAC {
                             session($accessGuid, true);
                             return true;
                         }
+                        //内容模块特殊处理
+                        if ($appName == 'Content' && CONTROLLER_NAME == 'Content') {
+                            session($accessGuid, true);
+                            return true;
+                        }
                     }
                     session($accessGuid, false);
                     return false;

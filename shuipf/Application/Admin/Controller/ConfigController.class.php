@@ -41,7 +41,7 @@ class ConfigController extends AdminBase {
             $IndexURL = array();
             $TagURL = array();
             foreach ($Urlrules as $k => $v) {
-                if ($v['module'] == 'tags' && $v['file'] == 'tags') {
+                if ($v['file'] == 'tags') {
                     $TagURL[$v['urlruleid']] = $v['example'];
                 }
                 if ($v['module'] == 'content' && $v['file'] == 'index') {

@@ -33,7 +33,7 @@ class ContentModel extends RelationModel {
             //内容模型缓存
             $modelCache = cache("Model");
             if (empty($modelCache[$modelid])) {
-                return false;
+                return new ContentModel();
             }
             $tableName = $modelCache[$modelid]['tablename'];
             $_instance[$modelid] = new ContentModel(ucwords($tableName));

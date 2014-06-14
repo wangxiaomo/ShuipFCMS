@@ -19,7 +19,6 @@ class PublicController extends AdminBase {
     public function login() {
         //如果已经登录
         if (User::getInstance()->id) {
-            echo U('Admin/Index/index');exit;
             $this->redirect('Admin/Index/index');
         }
         $this->display();
@@ -122,6 +121,22 @@ class PublicController extends AdminBase {
             }
             $this->assign('json', json_encode($json))
                     ->display();
+        }
+    }
+
+    public function checkupdates() {
+        $latestversion = S('server_latestversion');
+        if (empty($latestversion)) {
+            $latestversion = $this->Cloud->act('get.latestversion');
+            S('server_latestversion', $latestversion, 3600);
+        }
+        if (version_compare(SHUIPF_VERSION, $latestversion['version'], '<')) {
+            $this->ajaxReturn(array(
+                'status' => true,
+                'version' => $latestversion['version'],
+            ));
+        } else {
+            $this->error('已经是最新的版本！');
         }
     }
 

@@ -9,6 +9,8 @@
 <title><if condition=" isset($SEO['title']) && !empty($SEO['title']) ">{$SEO['title']}</if>{$SEO['site_title']}</title>
 <meta name="description" content="{$SEO['description']}" />
 <meta name="keywords" content="{$SEO['keyword']}" />
+<link href="{$config_siteurl}statics/default/css/article_list.css" rel="stylesheet" type="text/css" />
+<link href="{$config_siteurl}statics/default/css/layout.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
 //全局变量
 var GV = {
@@ -17,10 +19,11 @@ var GV = {
 };
 </script>
 <script src="{$config_siteurl}statics/js/jquery.js" type="text/javascript"></script>
+<script src="{$config_siteurl}statics/default/js/w3cer.js" type="text/javascript"></script>
 <script type="text/javascript" src="{$config_siteurl}statics/js/ajaxForm.js"></script>
 </head>
 <body>
-<template file="Contents/header.php"/>
+<template file="Content/header.php"/>
 <div class="map"><span class="home_ico">当前位置：<a href="{$config_siteurl}">{$Config.sitename}</a> &gt; <navigate catid="$catid" space=" &gt; " /></span>
   <p style="float:right;padding-right:15px;"></p>
 </div>
@@ -29,7 +32,13 @@ var GV = {
     <div class="article_con">
       <h1 title="{$title}">{$title}</h1>
       <p class="info"> 出处:本站原创&nbsp;&nbsp;&nbsp;发布时间:{$updatetime}&nbsp;&nbsp;&nbsp;   您是第<span id="hits">0</span>位浏览者 </p>
-      
+      <div class="tool_con">
+        <div class="btn_fontsize"><a onFocus="if(this.blur)this.blur()" href="javascript:put_layer(2);"><img src="{$config_siteurl}statics/default/images/btn_fontsize_up.gif" title="工具栏"/></a> </div>
+        <div id="put_layer2" class="tools" style="display:block;"> 
+          <script src="{$config_siteurl}statics/default/js/tools.js" language="javascript" type="text/javascript"></script> 
+        </div>
+        <div style="clear:both;"></div>
+      </div>
       <div class="article_txt" id="a_fontsize">
         {$content}
         <if condition=" $voteid "> 
@@ -124,6 +133,17 @@ var GV = {
       <div style="clear:both"></div>
     </div>
     <!--分类栏目end-->
+    <div class="rand_pic">
+      <h2><span class="h2_txt">推荐图文</span></h2>
+      <ul>
+      <content action="lists" catid="$catid"  order="id DESC" num="4" thumb="1">
+       <volist name="data" id="vo">
+        <li><a href="{$vo.url}" title="{$vo.title}"><img src='<if condition="$vo['thumb']">{$vo.thumb}<else />{$config_siteurl}statics/default/images/defaultpic.gif</if>' border='0' width='140' height='100' alt='{$vo.title}'><span title="{$vo.title}">{$vo.title|str_cut=###,50}</span></a></li>
+       </volist>
+      </content>
+      </ul>
+      <div style="clear:both"></div>
+    </div>
     <div class="ad250" style="width:250px;height:250px;margin-bottom:8px;border:1px solid #ccc;"> 
       <img src="http://placekitten.com/250/250" />
     </div>
@@ -142,9 +162,10 @@ var GV = {
   </div>
   <div style="clear:both"></div>
 </div>
-<template file="Contents/footer.php"/>
+<template file="Content/footer.php"/>
 <script type="text/javascript">
 $(function (){
+	$(window).toTop({showHeight : 100});
 	//点击
 	$.get("{$config_siteurl}api.php?m=Hits&catid={$catid}&id={$id}", function (data) {
 	    $("#hits").html(data.views);
