@@ -16,7 +16,7 @@ define('SITE_PATH', getcwd() . '/');
 //项目路径
 define('PROJECT_PATH', SITE_PATH . 'shuipf/');
 // 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false
-define('APP_DEBUG', True);
+define('APP_DEBUG', false);
 // 应用公共目录
 define('COMMON_PATH', PROJECT_PATH . 'Common/');
 // 定义应用目录
