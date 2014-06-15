@@ -631,10 +631,11 @@ function file_icon($file, $type = 'png') {
         else
             $ext = 'do';
     }
+    $config = cache('Config');
     if (in_array($ext, $ext_arr)) {
-        return CONFIG_SITEURL . 'statics/images/ext/' . $ext . '.' . $type;
+        return $config['siteurl'] . 'statics/images/ext/' . $ext . '.' . $type;
     } else {
-        return CONFIG_SITEURL . 'statics/images/ext/blank.' . $type;
+        return $config['siteurl'] . 'statics/images/ext/blank.' . $type;
     }
 }
 
