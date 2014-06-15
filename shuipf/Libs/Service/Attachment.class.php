@@ -31,6 +31,24 @@ class Attachment extends \Libs\System\Service {
     public $error = null;
 
     /**
+     * 魔术方法，获取配置
+     * @param type $name
+     * @return type
+     */
+    public function __get($name) {
+        return isset($this->options[$name]) ? $this->options[$name] : NULL;
+    }
+
+    /**
+     *  魔术方法，设置options参数
+     * @param type $name
+     * @param type $value
+     */
+    public function __set($name, $value) {
+        $this->options[$name] = $value;
+    }
+
+    /**
      * 连接附件系统
      * @param type $name 服务名
      * @param type $options 参数
@@ -57,12 +75,12 @@ class Attachment extends \Libs\System\Service {
         }
         return $connect;
     }
-    
+
     /**
      * 返回最近一条错误信息
      * @return type
      */
-    public function getError(){
+    public function getError() {
         return $this->error;
     }
 

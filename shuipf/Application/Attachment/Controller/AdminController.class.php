@@ -146,6 +146,7 @@ class AdminController extends AdminBase {
     //图片在线裁减，保存图片 
     public function public_crop_upload() {
         $Prefix = "thumb_"; //默认裁减图片前缀
+        C('SHOW_PAGE_TRACE', false);
         if (isset($GLOBALS["HTTP_RAW_POST_DATA"])) {
             $pic = $GLOBALS["HTTP_RAW_POST_DATA"];
             if (isset($_GET['width']) && !empty($_GET['width'])) {
@@ -155,9 +156,10 @@ class AdminController extends AdminBase {
                 $height = intval($_GET['height']);
             }
             if (isset($_GET['file']) && !empty($_GET['file'])) {
-                if (is_image($_GET['file']) == false)
+                if (isImage($_GET['file']) == false) {
                     exit();
-                $file = $_GET['file'];
+                }
+                $file = urldecode($_GET['file']);
                 $basename = basename($file);
                 if (strpos($basename, $Prefix) !== false) {
                     $file_arr = explode('_', $basename);
@@ -171,9 +173,9 @@ class AdminController extends AdminBase {
                 //附件存放路径
                 $file_path = $Attachment->savePath;
                 //附件原始名称
-                $filename = basename($_GET['file']);
+                $filename = basename($file);
                 //上传文件的后缀类型
-                $fileextension = fileext($_GET['file']);
+                $fileextension = fileext($file);
                 //保存图片
                 file_put_contents($file_path . $new_file, $pic);
                 //图片信息
