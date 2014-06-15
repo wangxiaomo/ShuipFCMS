@@ -57,6 +57,14 @@ class Attachment extends \Libs\System\Service {
         }
         return $connect;
     }
+    
+    /**
+     * 返回最近一条错误信息
+     * @return type
+     */
+    public function getError(){
+        return $this->error;
+    }
 
     /**
      * 上传全部文件

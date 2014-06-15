@@ -169,7 +169,7 @@ return array(
         'Libs' => PROJECT_PATH . 'Libs',
     ),
     /* 上传路径配置 */
-    "UPLOADFILEPATH" => SITE_PATH . '/d/file/', //上传附件路径
+    "UPLOADFILEPATH" => SITE_PATH . 'd/file/', //上传附件路径
     'HTML_FILE_SUFFIX' => '', // 设置静态缓存文件后缀
     'COMPONENTS' => array(
     ),

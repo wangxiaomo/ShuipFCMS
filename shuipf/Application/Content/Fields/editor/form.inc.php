@@ -23,7 +23,7 @@ function editor($field, $value, $fieldinfo) {
         $toolbar = $setting['toolbar'];
     } else {
         //获取当前登陆会员组id
-        $groupid = SiteCookie('groupid');
+        $groupid = cookie('groupid');
         if (isModuleInstall('Member')) {
             $Member_group = cache("Member_group");
             //是否允许上传
@@ -47,13 +47,9 @@ function editor($field, $value, $fieldinfo) {
     $form = \Form::editor($field, $toolbar, $module, $this->catid, $allowupload, $allowupload, '', 10, $height, $disabled_page);
     //javascript
     $this->formJavascript .= "
-            //编辑器
-            //editor{$field} = new baidu.editor.ui.Editor(editor_config_{$field});
-            //editor{$field}.render( '{$field}' );
             //增加编辑器验证规则
             jQuery.validator.addMethod('editor{$field}',function(){
-                try{editor{$field}.sync();}catch(err){};
-                return " . ($fieldinfo['minlength'] ? "editor{$field}.hasContents();" : "true") . "
+                return " . ($fieldinfo['minlength'] ? "editor{$field}.getContent();" : "true") . "
             });
     ";
     //错误提示

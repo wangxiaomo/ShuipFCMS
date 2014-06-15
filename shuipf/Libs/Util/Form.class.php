@@ -34,53 +34,56 @@ class Form {
         //编辑器类型
         if ($toolbar == 'basic') {//简洁型
             $toolbar = "['FullScreen', 'Source', '|', 'Undo', 'Redo', '|','FontSize','Bold', 'forecolor', 'Italic', 'Underline', 'Link',  '|',  'InsertImage', 
-                 'ClearDoc',  'CheckImage','Emotion',  " . ($allowupload && $allowbrowser ? "'Attachments'," : "") . " 'PageBreak','insertcode', 'WordImage','RemoveFormat', 'FormatMatch','AutoTypeSet']
+                 'ClearDoc',  'CheckImage','Emotion',  " . ($allowupload && $allowbrowser ? "'attachment'," : "") . " 'PageBreak','insertcode', 'WordImage','RemoveFormat', 'FormatMatch','AutoTypeSet']
                 ";
         } elseif ($toolbar == 'full') {//标准型
-            $toolbar = "['FullScreen', 'Source', '|', 'Undo', 'Redo', '|',
-                'Bold', 'Italic', 'Underline', 'StrikeThrough', 'Superscript', 'Subscript', 'RemoveFormat', 'FormatMatch','AutoTypeSet', '|',
-                'BlockQuote', '|', 'PastePlain', '|', 'ForeColor', 'BackColor', 'InsertOrderedList', 'InsertUnorderedList','SelectAll', 'ClearDoc', '|', 'CustomStyle',
-                'Paragraph', '|','RowSpacingTop', 'RowSpacingBottom','LineHeight', '|','FontFamily', 'FontSize', '|',
-                'DirectionalityLtr', 'DirectionalityRtl', '|', '', 'Indent', '|',
-                'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyJustify', '|',
-                'Link', 'Unlink', 'Anchor', '|', 'ImageNone', 'ImageLeft', 'ImageRight', 'ImageCenter', '|', 'InsertImage', 'Emotion', 'InsertVideo', 'Music'," . ($allowupload && $allowbrowser ? "'Attachments'," : "") . " 'Map', 'GMap', 'InsertFrame', 'PageBreak', 'insertcode', 'Webapp','Template','Background','|',
-                'Horizontal', 'Date', 'Time', 'Spechars', 'WordImage', '|',
-                'InsertTable', 'DeleteTable', 'InsertParagraphBeforeTable', 'InsertRow', 'DeleteRow', 'InsertCol', 'DeleteCol', 'MergeCells', 'MergeRight', 'MergeDown', 'SplittoCells', 'SplittoRows', 'SplittoCols', '|',
-                 'Print', 'Preview', 'SearchReplace','Help']";
-        } elseif ($toolbar == 'desc') {
-            $toolbar = '1';
-        } else {
-            $toolbar = '2';
+            $toolbar = "[
+            'fullscreen', 'source', '|', 'undo', 'redo', '|',
+            'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+            'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+            'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+            'directionalityltr', 'directionalityrtl', 'indent', '|',
+            'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+            'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+            'simpleupload', 'insertimage', 'emotion', 'scrawl', 'insertvideo', 'music', 'attachment', 'map', 'gmap', 'insertframe', 'insertcode', 'webapp', 'pagebreak', 'template', 'background', '|',
+            'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+            'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+            'print', 'preview', 'searchreplace', 'help', 'drafts'
+        ]";
         }
-
-        //1, 允许上传的文件类型, 是否允许从已上传中选择, 图片高度, 图片宽度,是否添加水印1是
-        $cu = "$allowuploadnum,$alowuploadexts,$allowbrowser,,,0";
-        $authkey = upload_key($cu);
+        $sess_id = time();
+        $isadmin = \Admin\Service\User::getInstance()->id ? 1 : 0;
+        if ($isadmin) {
+            $userid = \Admin\Service\User::getInstance()->id;
+            $groupid = 0;
+        } else {
+            $userid = service('Passport')->userid;
+            $groupid = service('Passport')->groupid ? service('Passport')->groupid : 8;
+        }
+        $authkey = md5(C("AUTHCODE") . $sess_id . $userid . $isadmin);
         $str .= "\r\n<script type=\"text/javascript\">\r\n";
-        $str .="    var editor$textareaid;
-                        UE.commands['attachments'] = {
-                            execCommand : function(cmd){
-                                flashupload('flashupload', '附件上传','$textareaid',ueAttachment,'$cu','$module','$catid','$authkey');
-                            },
-                            queryCommandState : function(){
-                                return this.highlight ? -1 :0;
-                            }
-                        };
-                        var editor_config_$textareaid = {
-                             _catid:'{$catid}',
-                             _https: '" . CONFIG_SITEURL_MODEL . "',
-                             imageUrl:'" . U('Attachment/Ueditor/imageUp', array('catid' => $catid)) . "',
-                             textarea:'" . ( in_array($module, array("Contents", "contents")) ? "info[$textareaid]" : "$textareaid" ) . "',
-                             toolbars:[$toolbar],
-                             minFrameHeight:{$height}
-                        };
-        ";
-        //内容模块，编辑器实例化在formValidator里面
-        //if (!in_array($module, array("Contents", "contents"))) {
-        $str .="\r\n $(document).ready(function(){\r\n    editor$textareaid = new baidu.editor.ui.Editor(editor_config_$textareaid);";
-        $str .="\r\n    editor$textareaid.render( '$textareaid' );\r\n }); \r\n";
-        // }
-        $str .= '</script>';
+        $str .= " var editor{$textareaid} = UE.getEditor('{$textareaid}',{  
+                            textarea:'" . ( in_array($module, array("Content", "content")) ? "info[$textareaid]" : "$textareaid" ) . "',
+                            toolbars:[$toolbar],
+                            minFrameHeight:'{$height}px'
+                      });
+                      editor{$textareaid}.ready(function(){
+                            editor{$textareaid}.execCommand('serverparam', {
+                                  'catid': '{$catid}',
+                                  '_https':'" . CONFIG_SITEURL_MODEL . "',
+                                  'isadmin':'{$isadmin}',
+                                  'module':'{$module}',
+                                  'uid':'{$userid}',
+                                  'groupid':'{$groupid}',
+                                  'sessid':'{$sess_id}',
+                                  'authkey':'$authkey',
+                                  'allowupload':'{$allowupload}',
+                                  'allowbrowser':'{$allowbrowser}',
+                                  'alowuploadexts':'{$alowuploadexts}'
+                             });
+                      });
+                      ";
+        $str .= "\r\n</script>";
         return $str;
     }
 

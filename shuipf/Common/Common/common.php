@@ -610,6 +610,47 @@ function get_url() {
 }
 
 /**
+ * 返回附件类型图标
+ * @param $file 附件名称
+ * @param $type png为大图标，gif为小图标
+ */
+function file_icon($file, $type = 'png') {
+    $ext_arr = array('doc', 'docx', 'ppt', 'xls', 'txt', 'pdf', 'mdb', 'jpg', 'gif', 'png', 'bmp', 'jpeg', 'rar', 'zip', 'swf', 'flv');
+    $ext = fileext($file);
+    if ($type == 'png') {
+        if ($ext == 'zip' || $ext == 'rar')
+            $ext = 'rar';
+        elseif ($ext == 'doc' || $ext == 'docx')
+            $ext = 'doc';
+        elseif ($ext == 'xls' || $ext == 'xlsx')
+            $ext = 'xls';
+        elseif ($ext == 'ppt' || $ext == 'pptx')
+            $ext = 'ppt';
+        elseif ($ext == 'flv' || $ext == 'swf' || $ext == 'rm' || $ext == 'rmvb')
+            $ext = 'flv';
+        else
+            $ext = 'do';
+    }
+    if (in_array($ext, $ext_arr)) {
+        return CONFIG_SITEURL . 'statics/images/ext/' . $ext . '.' . $type;
+    } else {
+        return CONFIG_SITEURL . 'statics/images/ext/blank.' . $type;
+    }
+}
+
+/**
+ * 根据文件扩展名来判断是否为图片类型
+ * @param type $file 文件名
+ * @return type 是图片类型返回 true，否则返回 false
+ */
+function isImage($file) {
+    $ext_arr = array('jpg', 'gif', 'png', 'bmp', 'jpeg', 'tiff');
+    //取得扩展名
+    $ext = fileext($file);
+    return in_array($ext, $ext_arr) ? true : false;
+}
+
+/**
  * 对URL中有中文的部分进行编码处理
  * @param type $url 地址 http://www.abc3210.com/s?wd=博客
  * @return type ur;编码后的地址 http://www.abc3210.com/s?wd=%E5%8D%9A%20%E5%AE%A2
