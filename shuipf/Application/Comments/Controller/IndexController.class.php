@@ -174,7 +174,7 @@ class IndexController extends Base {
     //获取评论表情
     public function json_emote() {
         $cacheReplaceExpression = S('cacheReplaceExpression');
-        if (!$cacheReplaceExpression) {
+        if (empty($cacheReplaceExpression)) {
             $cacheReplaceExpression = D('Comments/Emotion')->cacheReplaceExpression();
         }
         // jsonp callback

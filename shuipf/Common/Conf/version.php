@@ -14,7 +14,7 @@
 defined('THINK_PATH') or exit();
 return array(
     "SHUIPF_APPNAME" => "ShuipFCMS内容管理系统", //产品名称
-    "SHUIPF_BUILD" => 20140614, //产品流水号
+    "SHUIPF_BUILD" => 20140616, //产品流水号
     "SHUIPF_VERSION" => "2.0.0", //产品版本号
 );
 

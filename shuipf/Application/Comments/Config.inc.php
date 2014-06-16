@@ -35,5 +35,10 @@ return array(
             'model' => 'Comments',
             'action' => 'comments_cache',
         ),
+        'Emotion' => array(
+            'name' => '评论表情',
+            'model' => 'Emotion',
+            'action' => 'emotion_cache',
+        ),
     ),
 );

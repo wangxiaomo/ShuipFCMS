@@ -563,7 +563,7 @@ class Url {
         //页码
         $page = max(intval($page), 1);
         //取得规则
-        if (empty($data['urlruleid'])) {
+        if (!empty($data['urlrule'])) {
             $urlrule = $data['urlrule'];
         } else {
             $urlrule = $this->urlrules[$data['urlruleid']]['urlrule'];
