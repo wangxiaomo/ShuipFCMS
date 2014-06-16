@@ -167,7 +167,7 @@ class AttachmentsController extends Base {
      */
     protected function isUpload($module, $args, $authkey) {
         $module_list = cache('Module');
-        if ($module_list[ucwords($module)] || $module == 'Content') {
+        if ($module_list[ucwords($module)] || ucwords($module) == 'Content') {
             $this->module = strtolower($module);
         } else {
             return false;
