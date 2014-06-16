@@ -700,7 +700,7 @@ $(function(){
 										},{
 											name: '返回栏目管理页',
 											callback:function(){
-												window.location.href = "{:U('Category/index',array('catid'=>$catid))}";
+												window.location.href = "{:U('Category/index')}";
 												return true;
 											}
 										}

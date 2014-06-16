@@ -136,7 +136,7 @@ class Page {
             }
         } else {
             //动态地址是根据当前页面模块方法使用U方法生成的
-            return str_replace("%2A", "*", U("" . GROUP_NAME . "/" . MODULE_NAME . "/" . ACTION_NAME, $arg));
+            return str_replace("%2A", "*", U("" . MODULE_NAME . "/" . CONTROLLER_NAME . "/" . ACTION_NAME, $arg));
         }
     }
 

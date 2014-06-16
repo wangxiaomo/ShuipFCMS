@@ -44,7 +44,8 @@ class EmotionModel extends Model {
         $emotion = cache('Emotion');
         //表情存放路径
         if (empty($emotionPath)) {
-            $emotionPath = CONFIG_SITEURL . 'statics/images/emotion/';
+            $config = cache('Config');
+            $emotionPath = $config['siteurl'] . 'statics/images/emotion/';
         }
         //需要替换的标签
         $replace = array();
