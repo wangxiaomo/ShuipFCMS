@@ -80,12 +80,15 @@ class ModuleModel extends Model {
      */
     public function module_cache() {
         $data = $this->select();
-        $Module = array();
-        foreach ($data as $v) {
-            $Module[$v['module']] = $v;
+        if (empty($data)) {
+            return false;
         }
-        cache("Module", $Module);
-        return $data;
+        $module = array();
+        foreach ($data as $v) {
+            $module[$v['module']] = $v;
+        }
+        cache('Module', $module);
+        return $module;
     }
 
 }
