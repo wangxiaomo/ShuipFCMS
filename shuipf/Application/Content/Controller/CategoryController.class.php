@@ -27,7 +27,7 @@ class CategoryController extends AdminBase {
     //栏目列表
     public function index() {
         if (IS_POST) {
-            $Category = M("Category");
+            $Category = M('Category');
             foreach ($_POST['listorders'] as $id => $listorder) {
                 $Category->where(array('catid' => $id))->save(array('listorder' => $listorder));
             }
@@ -35,10 +35,7 @@ class CategoryController extends AdminBase {
             $this->success("排序更新成功！");
             exit;
         }
-        $tree = new \Tree();
-        $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
-        $tree->nbsp = '&nbsp;&nbsp;&nbsp;';
-        $models = cache("Model");
+        $models = cache('Model');
         $categorys = array();
         //栏目数据，可以设置为缓存的方式
         $result = cache('Category');
@@ -100,8 +97,14 @@ class CategoryController extends AdminBase {
 	<td align='center'>\$help</td>
 	<td align='center' >\$str_manage</td>
 	</tr>";
-        $tree->init($categorys);
-        $categorydata = $tree->get_tree(0, $str);
+        if (!empty($categorys) && is_array($categorys)) {
+            $this->Tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
+            $this->Tree->nbsp = '&nbsp;&nbsp;&nbsp;';
+            $this->Tree->init($categorys);
+            $categorydata = $this->Tree->get_tree(0, $str);
+        } else {
+            $categorydata = '';
+        }
         $this->assign("categorys", $categorydata);
         $this->display();
     }
@@ -178,13 +181,15 @@ class CategoryController extends AdminBase {
                     $array[$k]['disabled'] = "";
                 }
             }
-
-            $tree = new \Tree();
-            $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
-            $tree->nbsp = '&nbsp;&nbsp;&nbsp;';
-            $str = "<option value='\$catid' \$selected \$disabled>\$spacer \$catname</option>";
-            $tree->init($array);
-            $categorydata = $tree->get_tree(0, $str, $parentid);
+            if (!empty($array) && is_array($array)) {
+                $this->Tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
+                $this->Tree->nbsp = '&nbsp;&nbsp;&nbsp;';
+                $str = "<option value='\$catid' \$selected \$disabled>\$spacer \$catname</option>";
+                $this->Tree->init($array);
+                $categorydata = $this->Tree->get_tree(0, $str, $parentid);
+            } else {
+                $categorydata = '';
+            }
             $this->assign("tp_category", $this->tp_category);
             $this->assign("tp_list", $this->tp_list);
             $this->assign("tp_show", $this->tp_show);
@@ -244,10 +249,6 @@ class CategoryController extends AdminBase {
             }
         } else {
             $catid = I('get.catid', 0, 'intval');
-            $tree = new \Tree();
-            $tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
-            $tree->nbsp = '&nbsp;&nbsp;&nbsp;';
-            $str = "<option value='\$catid' \$selected \$disabled>\$spacer \$catname</option>";
             $array = cache("Category");
             foreach ($array as $k => $v) {
                 $array[$k] = getCategory($v['catid']);
@@ -267,8 +268,15 @@ class CategoryController extends AdminBase {
                     $models[] = $v;
                 }
             }
-            $tree->init($array);
-            $categorydata = $tree->get_tree(0, $str, $data['parentid']);
+            if (!empty($array) && is_array($array)) {
+                $this->Tree->icon = array('&nbsp;&nbsp;&nbsp;│ ', '&nbsp;&nbsp;&nbsp;├─ ', '&nbsp;&nbsp;&nbsp;└─ ');
+                $this->Tree->nbsp = '&nbsp;&nbsp;&nbsp;';
+                $this->Tree->init($array);
+                $str = "<option value='\$catid' \$selected \$disabled>\$spacer \$catname</option>";
+                $categorydata = $this->Tree->get_tree(0, $str, $data['parentid']);
+            } else {
+                $categorydata = '';
+            }
 
             $this->assign("category_php_ruleid", \Form::urlrule('content', 'category', 0, $setting['category_ruleid'], 'name="category_php_ruleid"'));
             $this->assign("category_html_ruleid", \Form::urlrule('content', 'category', 1, $setting['category_ruleid'], 'name="category_html_ruleid"'));
