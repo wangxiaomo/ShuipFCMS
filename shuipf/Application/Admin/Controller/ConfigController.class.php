@@ -77,7 +77,7 @@ class ConfigController extends AdminBase {
     public function addition() {
         if (IS_POST) {
             if ($this->Config->addition($_POST)) {
-                $this->success("修改成功，即将更新缓存！", U("Admin/Index/public_cache", "type=site"));
+                $this->success("修改成功，请及时更新缓存！");
             } else {
                 $error = $this->Config->getError();
                 $this->error($error ? $error : "高级配置更新失败！");
