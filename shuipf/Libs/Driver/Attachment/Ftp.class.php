@@ -394,7 +394,7 @@ class Ftp extends Attachment {
                     "hash" => md5(str_replace($this->options['uploadfilepath'], "", $this->options['savePath'] . $filename)),
                 );
                 $info['url'] = $this->options['sitefileurl'] . str_replace($this->options['uploadfilepath'], '', $info['savepath'] . $info['savename']);
-                $aid = D('Attachment')->fileInfoAdd($info, $this->options['module'], $this->options['catid'], $this->options['thumb'], $this->options['isadmin'], $this->options['userid'], $this->options['time']);
+                $aid = D('Attachment/Attachment')->fileInfoAdd($info, $this->options['module'], $this->options['catid'], $this->options['thumb'], $this->options['isadmin'], $this->options['userid'], $this->options['time']);
                 //上传到FTP
                 $filePath = $info['savepath'] . $info['savename'];
                 if ($this->FTPuplode($filePath, $filePath)) {

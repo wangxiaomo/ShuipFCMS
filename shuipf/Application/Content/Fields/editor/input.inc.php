@@ -15,9 +15,9 @@ function editor($field, $value) {
         $isadmin = 1;
     }
     if ($enablesaveimage) {
-        $Attachment = service("Attachment", array(
-            "module" => "Contents",
-            "catid" => $this->catid,
+        $Attachment = service('Attachment', array(
+            "module" => $this->catid ? 'Content' : MODULE_NAME,
+            "catid" => $this->catid? : 0,
             "isadmin" => $isadmin,
         ));
         //下载远程图片
