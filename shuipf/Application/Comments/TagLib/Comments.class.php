@@ -70,7 +70,7 @@ class Comments {
         }
         $where['approved'] = array("EQ", 1);
 
-        $db = M('Comments');
+        $db = D('Comments/Comments');
         $order = array("date" => "DESC");
         if ($hot == 0) {
             $order = array("date" => "DESC");

@@ -115,7 +115,7 @@ class CommentsModel extends Model {
             }
         }
         //副表对象
-        $secondaryDb = D($this->viceTableName());
+        $secondaryDb = M($this->viceTableName());
         $secondaryField = $secondaryDb->token(false)->validate($this->_autoSecondary)->create($secondaryField);
         if (!$secondaryField) {
             //设置错误信息
