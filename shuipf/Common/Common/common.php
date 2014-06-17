@@ -854,3 +854,66 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
     $_thumb_cache[$key] = str_replace($basename, $newFileName, $imgurl);
     return $_thumb_cache[$key];
 }
+
+/**
+ * 获取用户头像 
+ * @param type $uid 用户ID
+ * @param int $format 头像规格，默认参数90，支持 180,90,45,30
+ * @param type $dbs 该参数为true时，表示使用查询数据库的方式，取得完整的头像地址。默认false
+ * @return type 返回头像地址
+ */
+function getavatar($uid, $format = 90, $dbs = false) {
+    return service('Passport')->user_getavatar($uid, $format, $dbs);
+}
+
+/**
+ * 邮件发送
+ * @param type $address 接收人 单个直接邮箱地址，多个可以使用数组
+ * @param type $title 邮件标题
+ * @param type $message 邮件内容
+ */
+function SendMail($address, $title, $message) {
+    $config = cache('Config');
+    import('PHPMailer');
+    try {
+        $mail = new \PHPMailer();
+        $mail->IsSMTP();
+        // 设置邮件的字符编码，若不指定，则为'UTF-8'
+        $mail->CharSet = C("DEFAULT_CHARSET");
+        $mail->IsHTML(true);
+        // 添加收件人地址，可以多次使用来添加多个收件人
+        if (is_array($address)) {
+            foreach ($address as $k => $v) {
+                if (is_array($v)) {
+                    $mail->AddAddress($v[0], $v[1]);
+                } else {
+                    $mail->AddAddress($v);
+                }
+            }
+        } else {
+            $mail->AddAddress($address);
+        }
+        // 设置邮件正文
+        $mail->Body = $message;
+        // 设置邮件头的From字段。
+        $mail->From = $config['mail_from'];
+        // 设置发件人名字
+        $mail->FromName = $config['mail_fname'];
+        // 设置邮件标题
+        $mail->Subject = $title;
+        // 设置SMTP服务器。
+        $mail->Host = $config['mail_server'];
+        // 设置为“需要验证”
+        if ($config['mail_auth']) {
+            $mail->SMTPAuth = true;
+        } else {
+            $mail->SMTPAuth = false;
+        }
+        // 设置用户名和密码。
+        $mail->Username = $config['mail_user'];
+        $mail->Password = $config['mail_password'];
+        return $mail->Send();
+    } catch (phpmailerException $e) {
+        return $e->errorMessage();
+    }
+}

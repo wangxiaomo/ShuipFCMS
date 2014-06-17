@@ -100,7 +100,7 @@ class IndexController extends Base {
                 'user_id' => serialize('Passport')->userid? : 0,
                 'name' => serialize('Passport')->usename ? : '',
                 'email' => serialize('Passport')->email ? : '',
-                'avatar' => serialize('Passport')->userid ? service('Passport')->user_getavatar(serialize('Passport')->userid) : '',
+                'avatar' => serialize('Passport')->userid ? service('Passport')->getUserAvatar(serialize('Passport')->userid) : '',
             ),
             //评论列表 去除键名，不然json输出会影响排序
             'response' => array_values($treeArray),

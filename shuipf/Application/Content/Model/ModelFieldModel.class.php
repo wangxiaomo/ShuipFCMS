@@ -14,7 +14,9 @@ use Common\Model\Model;
 
 class ModelFieldModel extends Model {
 
-    private $fieldPath = ''; //字段类型存放路径
+    protected $tableName = 'model_field';
+    //字段类型存放路径
+    private $fieldPath = '';
     //不显示的字段类型（字段类型）
     public $not_allow_fields = array('catid', 'typeid', 'title', 'keyword', 'template', 'username', 'tags');
     //允许添加但必须唯一的字段（字段名）
@@ -45,9 +47,9 @@ class ModelFieldModel extends Model {
         parent::_initialize();
         $this->fieldPath = APP_PATH . 'Content/Fields/';
     }
-    
+
     //返回字段存放路径
-    public function getFieldPath(){
+    public function getFieldPath() {
         return $this->fieldPath;
     }
 
@@ -817,8 +819,8 @@ class ModelFieldModel extends Model {
         foreach ($modelList as $info) {
             $data = $this->where(array("modelid" => $info['modelid'], "disabled" => 0))->order(" listorder ASC ")->select();
             $fieldList = array();
-            if(!empty($data) && is_array($data)){
-                foreach($data as $rs){
+            if (!empty($data) && is_array($data)) {
+                foreach ($data as $rs) {
                     $fieldList[$rs['field']] = $rs;
                 }
             }

@@ -15,16 +15,14 @@ class Passport extends \Libs\System\Service {
     //存储用户uid的Key
     const userUidKey = 'spf_userid';
 
-    //操作句柄
-    protected $handler;
     //参数
     protected $options = array();
     //网站配置参数
     protected $config = array();
     //错误信息
-    public $error = null;
+    protected $error = null;
     //当前登录会员详细信息
-    private static $userInfo = array();
+    static protected $userInfo = array();
 
     /**
      * 连接会员系统
@@ -76,6 +74,14 @@ class Passport extends \Libs\System\Service {
     }
 
     /**
+     * 获取错误信息
+     * @return type
+     */
+    public function getError() {
+        return $this->error;
+    }
+
+    /**
      * 获取当前登录用户资料
      * @return array 
      */
@@ -87,37 +93,43 @@ class Passport extends \Libs\System\Service {
     }
 
     /**
+     * 获取cookie中记录的用户ID
+     * @return type 成功返回用户ID，失败返回false
+     */
+    public function getCookieUid() {
+        $userId = \Libs\Util\Encrypt::authcode(cookie(self::userUidKey), 'DECODE');
+        return (int) $userId ? : false;
+    }
+
+    /**
+     * 获取用户信息
+     * @param type $identifier 用户/UID
+     * @param type $password 明文密码，填写表示验证密码
+     * @return array|boolean
+     */
+    public function getLocalUser($identifier, $password = null) {
+        return array();
+    }
+
+    /**
+     * 获取用户头像 
+     * @param type $uid 用户ID
+     * @param int $format 头像规格，默认参数90，支持 180,90,45,30
+     * @param type $dbs 该参数为true时，表示使用查询数据库的方式，取得完整的头像地址。默认false
+     * @return type 返回头像地址
+     */
+    public function getUserAvatar($uid, $format = 90, $dbs = false) {
+        return false;
+    }
+
+    /**
      * 用户积分变更
      * @param type $uid 数字为用户ID，其他为用户名
      * @param type $integral 正数增加积分，负数扣除积分
      * @return int 成功返回当前积分数，失败返回false，-1 表示当前积分不够扣除
      */
-    public function user_integral($uid, $integral) {
-        $map = array();
-        if (is_numeric($uid)) {
-            $map['userid'] = $uid;
-        } else {
-            $map['username'] = $uid;
-        }
-        if (empty($map)) {
-            return false;
-        }
-        $member = D("Member/Member");
-        $info = $member->where($map)->find();
-        if (empty($info)) {
-            return false;
-        }
-        $point = $info['point'] + $integral;
-        if ($point < 0) {
-            return -1;
-        }
-        //计算会员组
-        $groupid = $member->get_usergroup_bypoint((int) $point);
-        //更新
-        if (false !== $member->where($map)->save(array("point" => (int) $point, "groupid" => $groupid))) {
-            return $point;
-        }
-        return false;
+    public function userIntegration($uid, $integral) {
+        return true;
     }
 
     /**
@@ -146,6 +158,7 @@ class Passport extends \Libs\System\Service {
 
     /**
      * 注销登陆
+     * @return boolean
      */
     public function logoutLocal() {
         // 注销cookie
@@ -154,37 +167,22 @@ class Passport extends \Libs\System\Service {
     }
 
     /**
-     * 获取cookie中记录的用户ID
-     * @return type 成功返回用户ID，失败返回false
-     */
-    public function getCookieUid() {
-        $userId = \Libs\Util\Encrypt::authcode(cookie(self::userUidKey), 'DECODE');
-        return $userId ? $userId : false;
-    }
-
-    /**
-     * 前台会员信息
-     * 根据提示符(username)和未加密的密码(密码为空时不参与验证)获取本地用户信息，前后台公用方法
-     * @param type $identifier 为数字时，表示uid，其他为用户名
-     * @param type $password 
-     * @return 成功返回用户信息array()，否则返回布尔值false
-     */
-    public function getLocalUser($identifier, $password = null) {
-        return false;
-    }
-
-    /**
-     * 使用本地账号登陆 (密码为null时不参与验证)
-     * @param type $identifier 用户标识，用户uid或者用户名
-     * @param type $password 用户密码，未加密，如果为空，不参与验证
+     * 会员登录
+     * @param type $identifier 用户/UID
+     * @param type $password 明文密码，填写表示验证密码
      * @param type $is_remember_me cookie有效期
-     * return 返回状态，大于 0:返回用户 ID，表示用户登录成功
-     *                                     -1:用户不存在，或者被删除
-     *                                     -2:密码错
-     *                                     -3会员注册登陆状态失败
+     * @return boolean
      */
     public function loginLocal($identifier, $password = null, $is_remember_me = 3600) {
         return false;
+    }
+
+    /**
+     * 记录登陆信息
+     * @param type $uid 用户ID
+     */
+    public function recordLogin($uid) {
+        return true;
     }
 
     /**
@@ -201,7 +199,7 @@ class Passport extends \Libs\System\Service {
      *                              -5:Email 不允许注册
      *                              -6:该 Email 已经被注册
      */
-    public function user_register($username, $password, $email, $_data = array()) {
+    public function userRegister($username, $password, $email, $_data = array()) {
         return false;
     }
 
@@ -212,17 +210,10 @@ class Passport extends \Libs\System\Service {
      * @param type $newpw 新密码，如不修改为空
      * @param type $email Email，如不修改为空
      * @param type $ignoreoldpw 是否忽略旧密码
-     * @param type $_data 附加数据
-     * @return int 1:更新成功
-     *                      0:没有做任何修改
-     *                     -1:旧密码不正确
-     *                     -4:Email 格式有误
-     *                     -5:Email 不允许注册
-     *                     -6:该 Email 已经被注册
-     *                     -7:没有做任何修改
-     *                     -8:该用户受保护无权限更改
+     * @param type $data 其他信息
+     * @return boolean
      */
-    public function user_edit($username, $oldpw, $newpw, $email, $ignoreoldpw = 0, $_data = array()) {
+    public function userEdit($username, $oldpw, $newpw = '', $email = '', $ignoreoldpw = 0, $data = array()) {
         return false;
     }
 
@@ -232,8 +223,8 @@ class Passport extends \Libs\System\Service {
      * @return int 1:成功
      *                      0:失败
      */
-    public function user_delete($uid) {
-        return false;
+    public function userDelete($uid) {
+        return true;
     }
 
     /**
@@ -242,7 +233,7 @@ class Passport extends \Libs\System\Service {
      * @return int 1:成功
      *                      0:失败
      */
-    public function user_deleteavatar($uid) {
+    public function userDeleteAvatar($uid) {
         return false;
     }
 
@@ -254,7 +245,7 @@ class Passport extends \Libs\System\Service {
      *                      -5:Email 不允许注册
      *                      -6:该 Email 已经被注册
      */
-    public function user_checkemail($email) {
+    public function userCheckeMail($email) {
         return false;
     }
 
@@ -266,7 +257,7 @@ class Passport extends \Libs\System\Service {
      *                      -2:包含要允许注册的词语
      *                      -3:用户名已经存在
      */
-    public function user_checkname($username) {
+    public function userCheckUsername($username) {
         return false;
     }
 
@@ -282,35 +273,8 @@ class Passport extends \Libs\System\Service {
      * @return string:返回设置头像的 HTML 代码
      *                array:返回设置头像的 Flash 调用数组
      */
-    public function user_avatar($uid, $type = 'virtual', $returnhtml = 1) {
+    public function userAvatarEdit($uid, $type = 'virtual', $returnhtml = 1) {
         return false;
-    }
-
-    /**
-     * 获取用户头像 
-     * @param type $uid 用户ID
-     * @param int $format 头像规格，默认参数90，支持 180,90,45,30
-     * @param type $dbs 该参数为true时，表示使用查询数据库的方式，取得完整的头像地址。默认false
-     * @return type 返回头像地址
-     */
-    public function user_getavatar($uid, $format = 90, $dbs = false) {
-        return false;
-    }
-
-    /**
-     * 记录登陆信息
-     * @param type $uid 用户ID
-     */
-    public function recordLogin($uid) {
-        return true;
-    }
-
-    /**
-     * 获取错误信息
-     * @return type
-     */
-    public function getErrorMsg() {
-        return $this->error;
     }
 
 }

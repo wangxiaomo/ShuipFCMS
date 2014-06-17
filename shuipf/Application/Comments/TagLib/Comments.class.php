@@ -100,7 +100,7 @@ class Comments {
                 $data[$k] = array_merge($r, $listComment[$r['id']]);
                 //增加头像调用
                 if ($r['user_id']) {
-                    $data[$k]['avatar'] = service("Passport")->user_getavatar((int) $r['user_id']);
+                    $data[$k]['avatar'] = service("Passport")->getUserAvatar((int) $r['user_id']);
                 } else {
                     $data[$k]['avatar'] = CONFIG_SITEURL_MODEL . 'api.php?m=avatar&a=gravatar&email=' . $r['author_email'];
                 }

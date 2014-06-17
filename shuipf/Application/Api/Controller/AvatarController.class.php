@@ -28,7 +28,7 @@ class AvatarController extends ShuipFCMS {
             header("Last-Modified:" . date('r'));
             header("Expires: " . date('r', time() + 86400));
         }
-        $avatar_url = service("Passport")->user_getavatar((int) $uid, (int) $size, $connect);
+        $avatar_url = service("Passport")->getUserAvatar((int) $uid, (int) $size, $connect);
         header('Location: ' . $avatar_url);
     }
 

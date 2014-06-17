@@ -471,7 +471,7 @@ class Content extends Components {
                     //检查是否已经赠送过积分
                     $integral = M('MemberContent')->where(array('content_id' => $id, 'catid' => $catid))->getField('integral');
                     if (!$integral) {
-                        if (service('Passport')->user_integral($data['username'], $setting['member_addpoint'])) {
+                        if (service('Passport')->userIntegration($data['username'], $setting['member_addpoint'])) {
                             M('MemberContent')->where(array('content_id' => $id, 'catid' => $catid))->save(array('integral' => 1));
                         }
                     }

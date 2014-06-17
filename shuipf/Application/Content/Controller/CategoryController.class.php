@@ -15,13 +15,35 @@ use Libs\System\Url;
 
 class CategoryController extends AdminBase {
 
-    //地址生成对象
-    protected $Url;
+    //模板文件夹
+    private $filepath;
+    //频道模板路径
+    protected $tp_category;
+    //列表页模板路径
+    protected $tp_list;
+    //内容页模板路径
+    protected $tp_show;
+    //单页模板路径
+    protected $tp_page;
+    //评论模板路径
+    protected $tp_comment;
 
+    //初始化
     protected function _initialize() {
         parent::_initialize();
-        $this->Url = new Url();
         load('Content/iconvfunc');
+        //取得当前内容模型模板存放目录
+        $this->filepath = TEMPLATE_PATH . (empty(self::$Cache["Config"]['theme']) ? "Default" : self::$Cache["Config"]['theme']) . "/Content/";
+        //取得栏目频道模板列表
+        $this->tp_category = str_replace($this->filepath . "Category/", '', glob($this->filepath . 'Category/category*'));
+        //取得栏目列表模板列表
+        $this->tp_list = str_replace($this->filepath . "List/", '', glob($this->filepath . 'List/list*'));
+        //取得内容页模板列表
+        $this->tp_show = str_replace($this->filepath . "Show/", '', glob($this->filepath . 'Show/show*'));
+        //取得单页模板
+        $this->tp_page = str_replace($this->filepath . "Page/", '', glob($this->filepath . 'Page/page*'));
+        //取得评论模板列表
+        $this->tp_comment = str_replace($this->filepath . "Comment/", '', glob($this->filepath . 'Comment/comment*'));
     }
 
     //栏目列表
@@ -357,10 +379,10 @@ class CategoryController extends AdminBase {
     }
 
     /**
-     * 更新F('Category')栏目缓存
+     * 清除栏目缓存
      */
     protected function cache() {
-        D("Content/Category")->category_cache();
+        cache('Category', NULL);
     }
 
     /**

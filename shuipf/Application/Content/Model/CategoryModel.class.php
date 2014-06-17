@@ -341,7 +341,7 @@ class CategoryModel extends Model {
      */
     public function getArrchildid($catid) {
         if (!$this->categorys) {
-            $this->categorys = cache('CategoryIds');
+            $this->categorys = cache('Category');
         }
         $arrchildid = $catid;
         if (is_array($this->categorys)) {
@@ -361,8 +361,8 @@ class CategoryModel extends Model {
      * @param integer $n                  查找的层次
      */
     public function getArrparentid($catid, $arrparentid = '', $n = 1) {
-        if (!$this->categorys) {
-            $this->categorys = cache('CategoryIds');
+        if (empty($this->categorys)) {
+            $this->categorys = cache('Category');
         }
         if ($n > 10 || !is_array($this->categorys) || !isset($this->categorys[$catid])) {
             return false;
