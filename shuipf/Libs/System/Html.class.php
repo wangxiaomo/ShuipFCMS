@@ -456,11 +456,8 @@ class Html extends Base {
                     throw_exception("自定义列表生成失败：" . $htmlpath);
                 }
             } else {
-                //去除后缀开始
-                $tpar = explode(".", "List/{$data['listpath']}", 2);
                 //去除完后缀的模板
-                $template = $tpar[0];
-                unset($tpar);
+                $template = TEMPLATE_PATH . (empty(self::$Cache["Config"]['theme']) ? "Default" : self::$Cache["Config"]['theme'])  . "/Content/List/{$data['listpath']}";
                 //模板检测
                 $template = parseTemplateFile($template);
                 //生成

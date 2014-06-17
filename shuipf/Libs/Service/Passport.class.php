@@ -119,7 +119,8 @@ class Passport extends \Libs\System\Service {
      * @return type 返回头像地址
      */
     public function getUserAvatar($uid, $format = 90, $dbs = false) {
-        return false;
+        $config = cache('Config');
+        return "{$config['siteurl']}statics/images/member/nophoto.gif";
     }
 
     /**
@@ -186,18 +187,11 @@ class Passport extends \Libs\System\Service {
     }
 
     /**
-     * 用户注册
+     * 注册会员
      * @param type $username 用户名
      * @param type $password 明文密码
-     * @param type $email
-     * @param type $_data 附加数据
-     * @return int 大于 0:返回用户 ID，表示用户注册成功
-     *                              -1:用户名不合法
-     *                              -2:包含不允许注册的词语
-     *                              -3:用户名已经存在
-     *                              -4:Email 格式有误
-     *                              -5:Email 不允许注册
-     *                              -6:该 Email 已经被注册
+     * @param type $email 邮箱
+     * @return boolean
      */
     public function userRegister($username, $password, $email, $_data = array()) {
         return false;
@@ -240,10 +234,7 @@ class Passport extends \Libs\System\Service {
     /**
      * 检查 Email 地址
      * @param type $email 邮箱地址
-     * @return int 1:成功
-     *                      -4:Email 格式有误
-     *                      -5:Email 不允许注册
-     *                      -6:该 Email 已经被注册
+     * @return boolean
      */
     public function userCheckeMail($email) {
         return false;
@@ -252,10 +243,7 @@ class Passport extends \Libs\System\Service {
     /**
      * 检查用户名
      * @param type $username 用户名
-     * @return int 1:成功
-     *                      -1:用户名不合法
-     *                      -2:包含要允许注册的词语
-     *                      -3:用户名已经存在
+     * @return boolean|int
      */
     public function userCheckUsername($username) {
         return false;
