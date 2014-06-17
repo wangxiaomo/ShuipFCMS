@@ -63,6 +63,7 @@ class IndexController extends Controller {
             '/d/',
             '/shuipf/Application/Install/',
             '/shuipf/Common/Conf/',
+            '/shuipf/Common/Conf/addition.php',
         );
         $dir = new \Dir();
         $folderInfo = array();
