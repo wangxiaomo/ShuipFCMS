@@ -76,11 +76,10 @@
             <td><input type="checkbox" class="J_check" data-yid="J_check_y" data-xid="J_check_x" name="ids[]" value="{$vo.id}"></td>
             <td><input name='listorders[{$vo.id}]' class="input mr5"  type='text' size='3' value='{$vo.listorder}'></td>
             <td align="center"><a href="{:U("Createhtml/batch_show", array("catid"=>$vo['catid'] ,"steps"=>"0" ,"ids"=>$vo['id'])  )}" title="点击生成">{$vo.id}</a></td>
-            <td><a href="{$vo.url}" target="_blank"><span style="" >
-              <if condition=" $vo['status']==99 ">{$vo.title}
+            <td><if condition=" $vo['status']==99 "><a href="{$vo.url}" target="_blank"><span style="" >{$vo.title}</span></a>
                 <else/>
-                <font color="#FF0000">[未审核]</font> - {$vo.title}</if>
-              </span></a>
+                <a href="{:U('public_preview',array('catid'=>$vo['catid'],'id'=>$vo['id']) )}" target="_blank"><font color="#FF0000">[未审核]</font> - {$vo.title}</a>
+                </if>
               <if condition=" $vo['thumb']!='' "> <img src="{$config_siteurl}statics/images/icon/small_img.gif" title="标题图片"> </if>
               <if condition=" $vo['posid'] "> <img src="{$config_siteurl}statics/images/icon/small_elite.gif" title="推荐位"> </if>
               <if condition=" $vo['islink'] "> <img src="{$config_siteurl}statics/images/icon/link.png" title="转向地址"> </if></td>
