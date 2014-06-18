@@ -229,6 +229,16 @@ class BehaviorModel extends Model {
         $behaviorRule = M('BehaviorRule');
         //删除规则
         if (false !== $behaviorRule->where(array('module' => $module, 'system' => 0))->delete()) {
+            //判断是否还有其他地方有使用
+            $info = $this->where(array('module' => $module, 'system' => 0))->find();
+            if (!empty($info)) {
+                $count = $behaviorRule->where(array('behaviorid' => $info['id']))->count();
+                if ($count) {
+                    //更新缓存
+                    $this->behavior_cache();
+                    return true;
+                }
+            }
             //删除行为
             $this->where(array('module' => $module, 'system' => 0))->delete();
             //更新缓存
@@ -350,7 +360,7 @@ class BehaviorModel extends Model {
                 M('BehaviorRule')->addAll($ruleAll);
             }
         }
-        cache('Behavior',NULL);
+        $this->behavior_cache();
         return true;
     }
 

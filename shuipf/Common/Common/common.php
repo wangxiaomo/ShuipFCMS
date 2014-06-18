@@ -863,7 +863,7 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
  * @return type 返回头像地址
  */
 function getavatar($uid, $format = 90, $dbs = false) {
-    return service('Passport')->user_getavatar($uid, $format, $dbs);
+    return service('Passport')->getUserAvatar($uid, $format, $dbs);
 }
 
 /**

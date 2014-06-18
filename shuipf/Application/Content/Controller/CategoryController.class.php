@@ -156,6 +156,10 @@ class CategoryController extends AdminBase {
                         if ($catid) {
                             //更新角色栏目权限
                             D("Content/Category_priv")->update_priv($catid, $_POST['priv_roleid'], 1);
+                            if (isModuleInstall('Member')) {
+                                //更新会员组权限
+                                D("Content/Category_priv")->update_priv($catid, $_POST['priv_groupid'], 0);
+                            }
                         }
                     }
                 }
@@ -228,6 +232,10 @@ class CategoryController extends AdminBase {
             $this->assign("show_html_ruleid", \Form::urlrule('content', 'show', 1, "", 'name="show_html_ruleid"'));
             //角色组
             $this->assign("Role_group", M("Role")->order(array("id" => "ASC"))->select());
+            if (isModuleInstall('Member')) {
+                //会员组
+                $this->assign("Member_group", cache("Member_group"));
+            }
             $this->display();
         }
     }
@@ -263,6 +271,10 @@ class CategoryController extends AdminBase {
                 } else {
                     //更新角色栏目权限
                     D("Content/Category_priv")->update_priv($catid, $_POST['priv_roleid'], 1);
+                    if (isModuleInstall('Member')) {
+                        //更新会员组权限
+                        D("Content/Category_priv")->update_priv($catid, $_POST['priv_groupid'], 0);
+                    }
                 }
                 $this->success("更新成功！", U("Category/index"));
             } else {
@@ -322,6 +334,10 @@ class CategoryController extends AdminBase {
             $this->assign("big_menu", array(U("Category/index"), "栏目管理"));
             //权限数据
             $this->assign("privs", M("CategoryPriv")->where(array('catid' => $catid))->select());
+            if (isModuleInstall('Member')) {
+                //会员组
+                $this->assign("Member_group", cache("Member_group"));
+            }
             if ($data['type'] == 1) {//单页栏目
                 $this->display("singlepage_edit");
             } else if ($data['type'] == 2) {//外部栏目
