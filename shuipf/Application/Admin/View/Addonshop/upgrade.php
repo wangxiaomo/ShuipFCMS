@@ -13,6 +13,7 @@
       <li>开始检查目录权限和下载升级包....</li>
     </ul>
   </div>
+  <div class="loading">loading...</div>
   <div class="btn_wrap1" style="display:none">
       <div class="btn_wrap_pd">             
         <input type="hidden" name="id" value="53">
@@ -31,6 +32,7 @@ function getStep(url){
 				step(data.url);
 			}else{
 				$('#cloud_button').html('完成升级');
+				$('div.loading').hide();
 				$('button.J_ajax_submit_btn').click(function(){
 					window.location.href = '{:U("index")}';
 				});
