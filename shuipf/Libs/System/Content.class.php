@@ -549,9 +549,6 @@ class Content extends Components {
         $setting = getCategory($this->catid, 'setting');
         //内容页是否生成静态
         $content_ishtml = $setting['content_ishtml'];
-        if (!$content_ishtml) {
-            return true;
-        }
         if (empty($data)) {
             $this->error = '该信息不存在！';
             return false;
@@ -565,11 +562,6 @@ class Content extends Components {
         $content_update->get($data);
         //删除内容
         ContentModel::getInstance($this->modelid)->relation(true)->where(array('id' => $id))->delete();
-        //删除评论
-        if (isModuleInstall('Comments')) {
-            $comment_id = "c-{$this->catid}-{$id}";
-            D('Comments/Comments')->deleteCommentsMark($comment_id);
-        }
         //删除附件
         $Attachment = service('Attachment');
         $Attachment->api_delete('c-' . $this->catid . '-' . $id);

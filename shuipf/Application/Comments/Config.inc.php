@@ -28,6 +28,15 @@ return array(
     'sign' => '54d4717144d5ed6e415af8249190cc8b',
     //依赖模块
     'depend' => array(),
+    //行为注册
+    'tags' => array(
+        'content_delete_end' => array(
+            'title' => '内容删除结束行为标签',
+            'type' => 1,
+            'remark' => '内容模型行为标签',
+            'phpfile:CommentsApi|module:Comments',
+        ),
+    ),
     //缓存，格式：缓存key=>array('module','model','action')
     'cache' => array(
         'Comments_setting' => array(
