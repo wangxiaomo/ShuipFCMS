@@ -212,10 +212,9 @@ class Passport extends \Libs\System\Service {
     }
 
     /**
-     *  删除用户
-     * @param type $uid 用户名
-     * @return int 1:成功
-     *                      0:失败
+     * 删除用户
+     * @param type $uid 用户UID
+     * @return boolean
      */
     public function userDelete($uid) {
         return true;
@@ -223,9 +222,8 @@ class Passport extends \Libs\System\Service {
 
     /**
      * 删除用户头像
-     * @param type $uid 用户名
-     * @return int 1:成功
-     *                      0:失败
+     * @param type $uid 用户名UID
+     * @return boolean
      */
     public function userDeleteAvatar($uid) {
         return false;
