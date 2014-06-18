@@ -378,8 +378,8 @@ function getCursortPosition (ctrl) {
                     });
                     var emote = jQuery(this);
                     var winheight = jQuery(e).height();
-                    var top = emote.offset().top - 169;
-                    var left = emote.offset().left;//按钮的位置左边距离
+                    var top = emote.offset().top - 236;
+                    var left = emote.offset().left - 10;//按钮的位置左边距离
                     //表单对象
                     var form = emote.parents('.ds_form_post');
                     jQuery('#ds-reset #ds-smilies-tooltip').offset({ top: top, left: left });
@@ -403,11 +403,13 @@ function getCursortPosition (ctrl) {
                 }
                 var reset = jQuery("#ds-reset");
                 var emote = '';
-                var strhtml = '<div id="ds-smilies-tooltip" style="width: 385px;">\
+                var strhtml = '<div id="ds-smilies-tooltip" style="width: 600px;">\
+				<h2>选择表情</h2>\
                                   <div class="ds-smilies-container">\
                                     <ul>Loading...</ul>\
                                   </div>\
-                                </div>';
+								  <div id="ds-foot5">&nbsp;&nbsp;&nbsp; </div>\
+								 </div>';
                 reset.append(strhtml);
                 jQuery.ajax({
                     type: "GET",
