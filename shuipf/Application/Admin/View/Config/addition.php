@@ -8,16 +8,14 @@
                 <div class="h_a">云平台设置</div>
                 <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
                     <tr>
-                        <th width="140">是否开启云平台:</th>
-                        <td><select name="CLOUD_ON" id="CLOUD_ON" >
-                                <option value="0" <if condition="$addition['CLOUD_ON'] eq '0' "> selected</if>>关闭</option>
-                                <option value="1" <if condition="$addition['CLOUD_ON'] eq '1' "> selected</if>>开启</option>
-                            </select> <span class="gray"> 为了安全，请在需要的时候开启！</span></td>
+                        <th width="140">帐号:</th>
+                        <td><input type="text" class="input"  name="CLOUD_USERNAME" value="{$addition.CLOUD_USERNAME}" size="40">
+                        <span class="gray"> http://www.shuipfcms.com 会员帐号</span></td>
                     </tr>
                     <tr>
-                        <th width="140">站点密钥:</th>
-                        <td>{:C('AUTHCODE')}
-                            <span class="gray"> 为了安全，请不要随意泄露，建议定期更改！</span></td>
+                        <th width="140">密码:</th>
+                        <td><input type="password" class="input"  name="CLOUD_PASSWORD" value="{$addition.CLOUD_PASSWORD}" size="40">
+                        <span class="gray"> http://www.shuipfcms.com 会员密码</span></td>
                     </tr>
                 </table>
                 <div class="h_a">Cookie配置</div>

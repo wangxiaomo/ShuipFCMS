@@ -148,8 +148,8 @@ class Cloud {
      */
     private function getIdentity() {
         return json_encode(array(
-            'username' => 'demo',
-            'password' => 'demo',
+            'username' => C('CLOUD_USERNAME'),
+            'password' => C('CLOUD_PASSWORD'),
         ));
     }
 
