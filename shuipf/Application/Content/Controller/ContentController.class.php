@@ -634,8 +634,8 @@ class ContentController extends AdminBase {
                 $pages = page($pagenumber, 1, $page, array(
                     'isrule' => true,
                     'rule' => array(
-                        'index' => 'index.php?m=Content&a=public_preview&catid='.$catid.'&id='.$id,
-                        'list' => 'index.php?m=Content&a=public_preview&catid='.$catid.'&id='.$id.'&page={$page}',
+                        'index' => 'index.php?m=Content&a=public_preview&catid=' . $catid . '&id=' . $id,
+                        'list' => 'index.php?m=Content&a=public_preview&catid=' . $catid . '&id=' . $id . '&page={$page}',
                     ),
                         ))->show("default");
                 //判断[page]出现的位置是否在第一位 
