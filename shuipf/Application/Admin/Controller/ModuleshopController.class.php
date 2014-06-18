@@ -17,26 +17,31 @@ class ModuleshopController extends AdminBase {
     //在线模块列表
     public function index() {
         $parameter = array(
-            'page' => $_GET[C('VAR_PAGE')],
+            'page' => $_GET[C('VAR_PAGE')]?:1,
             'paging' => 10,
         );
-        $data = $this->Cloud->data($parameter)->act('get.module.list');
-        if (false === $data) {
-            $this->error($this->Cloud->getError());
-        }
-        $data['data'] = $data['data']? : array();
-        foreach ($data['data'] as $sign => $rs) {
-            $version = D('Common/Module')->where(array('module' => $rs['module']))->getField('version');
-            if ($version && version_compare($version, $rs['version'], '<')) {
-                $data['data'][$sign]['upgrade'] = true;
-                $data['data'][$sign]['newVersion'] = $rs['version'];
-            } else {
-                $data['data'][$sign]['upgrade'] = false;
+        if (IS_AJAX) {
+            $data = $this->Cloud->data($parameter)->act('get.module.list');
+            if (false === $data) {
+                $this->error($this->Cloud->getError());
             }
+            $data['data'] = $data['data']? : array();
+            foreach ($data['data'] as $sign => $rs) {
+                $version = D('Common/Module')->where(array('module' => $rs['module']))->getField('version');
+                if ($version && version_compare($version, $rs['version'], '<')) {
+                    $data['data'][$sign]['upgrade'] = true;
+                    $data['data'][$sign]['newVersion'] = $rs['version'];
+                } else {
+                    $data['data'][$sign]['upgrade'] = false;
+                }
+            }
+            $page = $this->page($data['total'], $data['paging']);
+            $this->assign('Page', $page->show());
+            $this->assign('data', $data['data']);
+            $this->display('ajax');
+            return true;
         }
-        $page = $this->page($data['total'], $data['paging']);
-        $this->assign('Page', $page->show());
-        $this->assign('data', $data['data']);
+        $this->assign('page', $parameter['page']);
         $this->display();
     }
 
