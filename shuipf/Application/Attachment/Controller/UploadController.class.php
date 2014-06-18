@@ -60,7 +60,7 @@ class UploadController extends Base {
             //是否添加水印  post:watermark_enable 等于1也需要加水印
             if (I('post.watermark_enable', 0, 'intval')) {
                 $Callback = array(
-                    array("AttachmentsAction", "water"),
+                    array("\\Attachment\\Controller\\AttachmentsController", "water"),
                 );
             }
             //开始上传

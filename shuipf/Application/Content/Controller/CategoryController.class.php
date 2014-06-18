@@ -163,8 +163,6 @@ class CategoryController extends AdminBase {
                         }
                     }
                 }
-                //更新缓存
-                $this->cache();
                 $this->success("添加成功！", U("Category/index"));
             } else {
                 $catid = $Category->addCategory($_POST);
