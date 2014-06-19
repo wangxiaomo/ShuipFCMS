@@ -113,6 +113,7 @@ class UeditorController extends AttachmentsController {
     //编辑器配置
     public function run() {
         $action = I('get.action');
+        $result = array();
         switch ($action) {
             case 'config':
                 $result = $this->confing;
