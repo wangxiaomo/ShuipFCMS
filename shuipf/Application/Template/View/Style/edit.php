@@ -15,7 +15,7 @@
             </ul>
         </div>
         <div class="h_a">模板编辑</div>
-        <form name="myform" id="myform" action="{:U("Template/Style/edit_file")}" method="post">
+        <form name="myform" id="myform" action="{:U("Template/Style/edit")}" method="post">
               <input type="hidden" name="dir" value="{$dir}"/>
             <input type="hidden" name="file" value="{$file}"/>
             <div class="table_full">
