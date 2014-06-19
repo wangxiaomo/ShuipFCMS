@@ -174,7 +174,7 @@ class TagsController extends AdminBase {
                 $_GET['lun'] = $lun + 1;
             }
             $this->assign('waitSecond', 200);
-            $this->success("模型：" . $models_v['name'] . "，第 " . ($lun + 1) . "/$zlun 轮更新成功，进入下一轮更新中...", U('Tags/Tags/create', $_GET));
+            $this->success("模型：" . $models_v['name'] . "，第 " . ($lun + 1) . "/$zlun 轮更新成功，进入下一轮更新中...", U('create', $_GET));
             exit;
         } else {
             $model = cache('Model');
