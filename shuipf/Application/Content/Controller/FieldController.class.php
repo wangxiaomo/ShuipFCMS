@@ -209,6 +209,8 @@ class FieldController extends AdminBase {
             foreach ($_POST['listorders'] as $id => $listorder) {
                 $this->modelfield->where(array('fieldid' => $id))->save(array('listorder' => $listorder));
             }
+			cache('Model',NULL);
+			cache('ModelField',NULL);
             $this->success("排序更新成功！");
         } else {
             $this->error("排序失败！");
@@ -280,6 +282,8 @@ class FieldController extends AdminBase {
         if (empty($modelid)) {
             $this->error("请指定模型！");
         }
+		cache('Model',NULL);
+        cache('ModelField',NULL);
         $content_form = new \content_form($modelid);
         //生成对应字段的输入表单
         $forminfos = $content_form->get();
