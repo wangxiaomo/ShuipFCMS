@@ -42,6 +42,7 @@ function getStep(url){
 		}else{
 			$('#record ul').append('<li style="color:#F00">'+data.info+'</li>');
 			$('#cloud_button').html('重新安装');
+			$('div.loading').hide();
 			$('button.J_ajax_submit_btn').click(function(){
 				location.reload();
 			});
