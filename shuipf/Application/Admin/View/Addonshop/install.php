@@ -10,7 +10,7 @@
   <div class="prompt_text" id="explanation">
    <div class="loading">loading...</div>
   </div>
-  <div class="h_a">在线安装</div>
+  <div class="h_a">在线安装日志</div>
   <div class="prompt_text logs" id="record">
     <ul>
     </ul>
@@ -55,10 +55,10 @@ function getStep(url){
 }
 //获取使用说明
 function getExplanation(name){
-	$('#record ul').append('<li>获取模块安装使用说明....</li>');
+	$('#record ul').append('<li>获取插件安装使用说明....</li>');
 	$.getJSON('{:U("public_explanation")}',{ name:name },function(data){
 		if(data.status){
-			$('#record ul').append('<li>获取模块安装使用说明成功....</li>');
+			$('#record ul').append('<li>获取插件安装使用说明成功....</li>');
 			$('#explanation').html(data.data);
 		}else{
 			$('#explanation').html('<p>暂无说明</p>');
