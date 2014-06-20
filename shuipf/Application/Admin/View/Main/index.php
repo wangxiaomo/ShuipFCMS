@@ -101,20 +101,6 @@ artDialog.notice = function (options) {
     
     return artDialog(config);
 };
-<?php
-if(!empty($notice)){
-?>
-art.dialog.notice({
-    title: '{$notice.title}',
-    width: 400,// 必须指定一个像素宽度值或者百分比，否则浏览器窗口改变可能导致artDialog收缩
-    content: '{$notice.content}',
-	close:function(){
-		setCookie('notice_{$notice.id}',1,30);
-	}
-});
-<?php	
-}
-?>
 $(function(){
 	$.getJSON('{:U("Public/checkupdates")}',function(data){
 		if(data.status){
@@ -124,6 +110,24 @@ $(function(){
 				content: '系统检测到新版本发布，请尽快更新到 '+data.version + '，以确保网站安全！',
 				cancelVal: '关闭',
 				cancel: true //为true等价于function(){}
+			});
+		}
+	});
+	$.getJSON('{:U("public_license")}',function(data){
+		if(data.name){$('#server_license').html(data.name);}else{$('#server_license').html('非授权用户');}
+	});
+	$.getJSON('{:U("public_latestversion")}',function(data){
+		if(data.version){$('#server_version').html(data.version);$('#server_build').html(data.build);}
+	});
+	$.getJSON('{:U("public_notice")}',function(data){
+		if(data.title){
+			art.dialog.notice({
+				title: data.title,
+				width: 400,// 必须指定一个像素宽度值或者百分比，否则浏览器窗口改变可能导致artDialog收缩
+				content: data.content,
+				close:function(){
+					setCookie('notice_'+data.id,1,30);
+				}
 			});
 		}
 	});
