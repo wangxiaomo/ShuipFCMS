@@ -21,11 +21,13 @@ namespace Libs\System;
 // get.module.latestversion 获取某个模块的最新版本号，参数 sign=模块签名，sign为数组时，返回多个
 // get.module.install.package.url 获取某个模块的安装包地址，参数 sign=模块签名
 // get.module.upgrade.package.url 获取某个模块的升级包地址，参数 sign=模块签名，version=安装版本
+// get.module.explanation 获取模块的使用/安装说明，参数 sign=模块签名
 // 插件
 // get.addons.list 获取在线插件列表信息，参数 page=当前第几页，默认1，paging=每页显示数量
 // get.addons.info 获取某个插件的信息，参数 name=插件标识
 // get.addons.install.package.url 获取某个插件的安装包地址，参数 name=插件标识
 // get.addons.upgrade.package.url 获取某个模块的升级包地址，参数 name=插件标识，version=安装版本
+// get.addons.explanation 获取插件的使用/安装说明，参数 name=插件标识
 
 class Cloud {
 
