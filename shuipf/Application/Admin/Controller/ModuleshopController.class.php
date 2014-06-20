@@ -17,7 +17,7 @@ class ModuleshopController extends AdminBase {
     //在线模块列表
     public function index() {
         $parameter = array(
-            'page' => $_GET[C('VAR_PAGE')]?:1,
+            'page' => $_GET[C('VAR_PAGE')]? : 1,
             'paging' => 10,
         );
         if (IS_AJAX) {
@@ -67,6 +67,7 @@ class ModuleshopController extends AdminBase {
             S('Cloud', $data, 3600);
         }
         $this->assign('stepUrl', U('public_step_1'));
+        $this->assign('sign', $sign);
         $this->display();
     }
 
@@ -232,6 +233,22 @@ class ModuleshopController extends AdminBase {
             $error = $this->Module->error;
             $this->error($error ? $error : '模块安装失败！');
         }
+    }
+
+    //获取模块使用说明
+    public function public_explanation() {
+        $sign = I('get.sign');
+        if (empty($sign)) {
+            $this->error('缺少参数！');
+        }
+        $parameter = array(
+            'sign' => $sign
+        );
+        $data = $this->Cloud->data($parameter)->act('get.module.explanation');
+        if (false === $data) {
+            $this->error($this->Cloud->getError());
+        }
+        $this->ajaxReturn(array('status' => true, 'sign' => $sign, 'data' => $data));
     }
 
     protected function errors($message = '', $jumpUrl = '', $ajax = false) {

@@ -74,6 +74,7 @@ class AddonshopController extends AdminBase {
             S('Cloud', $data, 3600);
         }
         $this->assign('stepUrl', U('public_step_1'));
+        $this->assign('name',$name);
         $this->display();
     }
 
@@ -237,6 +238,22 @@ class AddonshopController extends AdminBase {
             $error = $this->Module->error;
             $this->error($error ? $error : '插件升级失败！');
         }
+    }
+    
+    //获取插件使用说明
+    public function public_explanation() {
+        $name = I('get.name');
+        if (empty($name)) {
+            $this->error('缺少参数！');
+        }
+        $parameter = array(
+            'name' => $name
+        );
+        $data = $this->Cloud->data($parameter)->act('get.addons.explanation');
+        if (false === $data) {
+            $this->error($this->Cloud->getError());
+        }
+        $this->ajaxReturn(array('status' => true, 'name' => $name, 'data' => $data));
     }
 
     protected function errors($message = '', $jumpUrl = '', $ajax = false) {
