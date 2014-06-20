@@ -58,21 +58,6 @@ class AddonshopController extends AdminBase {
         if (empty($name)) {
             $this->error('请选择需要安装的插件！');
         }
-        $cache = S('Cloud');
-        if (!empty($cache)) {
-            $this->error('已经有任务在执行，请稍后！');
-        }
-        //帐号权限检测
-        if ($this->Cloud->competence() == false) {
-            $this->error($this->Cloud->getError());
-        }
-        //获取插件信息
-        $data = $this->Cloud->data(array('name' => $name))->act('get.addons.info');
-        if (false === $data) {
-            $this->error($this->Cloud->getError());
-        } else {
-            S('Cloud', $data, 3600);
-        }
         $this->assign('stepUrl', U('public_step_1'));
         $this->assign('name',$name);
         $this->display();
@@ -83,7 +68,21 @@ class AddonshopController extends AdminBase {
         if (\Libs\System\RBAC::authenticate('install') !== true) {
             $this->errors('您没有该项权限！');
         }
-        $data = S('Cloud');
+        $cache = S('Cloud');
+        if (!empty($cache)) {
+            $this->error('已经有任务在执行，请稍后！');
+        }
+        //帐号权限检测
+        if ($this->Cloud->competence() == false) {
+            $this->errors($this->Cloud->getError());
+        }
+        //获取插件信息
+        $data = $this->Cloud->data(array('name' => $name))->act('get.addons.info');
+        if (false === $data) {
+            $this->error($this->Cloud->getError());
+        } else {
+            S('Cloud', $data, 3600);
+        }
         if (empty($data)) {
             $this->errors('获取不到需要安装的插件信息缓存！');
         }

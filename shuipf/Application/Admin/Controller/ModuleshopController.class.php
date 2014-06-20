@@ -51,21 +51,6 @@ class ModuleshopController extends AdminBase {
         if (empty($sign)) {
             $this->error('请选择需要安装的模块！');
         }
-        $cache = S('Cloud');
-        if (!empty($cache)) {
-            $this->error('已经有任务在执行，请稍后！');
-        }
-        //帐号权限检测
-        if ($this->Cloud->competence() == false) {
-            $this->error($this->Cloud->getError());
-        }
-        //获取模块信息
-        $data = $this->Cloud->data(array('sign' => $sign))->act('get.module.info');
-        if (false === $data) {
-            $this->error($this->Cloud->getError());
-        } else {
-            S('Cloud', $data, 3600);
-        }
         $this->assign('stepUrl', U('public_step_1'));
         $this->assign('sign', $sign);
         $this->display();
@@ -174,7 +159,21 @@ class ModuleshopController extends AdminBase {
         if (\Libs\System\RBAC::authenticate('install') !== true) {
             $this->errors('您没有该项权限！');
         }
-        $data = S('Cloud');
+        $cache = S('Cloud');
+        if (!empty($cache)) {
+            $this->error('已经有任务在执行，请稍后！');
+        }
+        //帐号权限检测
+        if ($this->Cloud->competence() == false) {
+            $this->errors($this->Cloud->getError());
+        }
+        //获取模块信息
+        $data = $this->Cloud->data(array('sign' => $sign))->act('get.module.info');
+        if (false === $data) {
+            $this->error($this->Cloud->getError());
+        } else {
+            S('Cloud', $data, 3600);
+        }
         if (empty($data)) {
             $this->errors('获取不到需要安装的模块信息缓存！');
         }
