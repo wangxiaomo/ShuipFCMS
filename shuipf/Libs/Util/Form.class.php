@@ -65,7 +65,7 @@ class Form {
         $str .= " var editor{$textareaid} = UE.getEditor('{$textareaid}',{  
                             textarea:'" . ( in_array($module, array("Content", "content")) ? "info[$textareaid]" : "$textareaid" ) . "',
                             toolbars:[$toolbar],
-                            autoHeightEnabled:true
+                            autoHeightEnabled:false
                       });
                       editor{$textareaid}.ready(function(){
                             editor{$textareaid}.execCommand('serverparam', {
