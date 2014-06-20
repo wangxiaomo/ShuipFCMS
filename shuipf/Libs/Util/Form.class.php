@@ -65,7 +65,7 @@ class Form {
         $str .= " var editor{$textareaid} = UE.getEditor('{$textareaid}',{  
                             textarea:'" . ( in_array($module, array("Content", "content")) ? "info[$textareaid]" : "$textareaid" ) . "',
                             toolbars:[$toolbar],
-                            initialFrameHeight:'{$height}px'
+                            autoHeightEnabled:true
                       });
                       editor{$textareaid}.ready(function(){
                             editor{$textareaid}.execCommand('serverparam', {
@@ -81,6 +81,7 @@ class Form {
                                   'allowbrowser':'{$allowbrowser}',
                                   'alowuploadexts':'{$alowuploadexts}'
                              });
+                             editor{$textareaid}.setHeight($height);
                       });
                       ";
         $str .= "\r\n</script>";
