@@ -63,7 +63,7 @@ class CustompageController extends AdminBase {
     public function edit() {
         $model = D('Template/Customtemp');
         if (IS_POST) {
-            if ($model->create()) {
+            if ($model->create($_POST)) {
                 $tempid = I('post.tempid');
                 $status = $model->where(array("tempid" => $tempid))->save();
                 if (false !== $status) {
