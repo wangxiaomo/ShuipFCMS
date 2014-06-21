@@ -51,7 +51,7 @@ class ModuleshopController extends AdminBase {
         if (empty($sign)) {
             $this->error('请选择需要安装的模块！');
         }
-        $this->assign('stepUrl', U('public_step_1'));
+        $this->assign('stepUrl', U('public_step_1',array('sign'=>$sign)));
         $this->assign('sign', $sign);
         $this->display();
     }
@@ -158,6 +158,10 @@ class ModuleshopController extends AdminBase {
     public function public_step_1() {
         if (\Libs\System\RBAC::authenticate('install') !== true) {
             $this->errors('您没有该项权限！');
+        }
+        $sign = I('get.sign', '', 'trim');
+        if (empty($sign)) {
+            $this->error('请选择需要安装的模块！');
         }
         $cache = S('Cloud');
         if (!empty($cache)) {

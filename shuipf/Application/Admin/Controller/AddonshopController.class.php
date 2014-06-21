@@ -58,8 +58,8 @@ class AddonshopController extends AdminBase {
         if (empty($name)) {
             $this->error('请选择需要安装的插件！');
         }
-        $this->assign('stepUrl', U('public_step_1'));
-        $this->assign('name',$name);
+        $this->assign('stepUrl', U('public_step_1', array('name' => $name)));
+        $this->assign('name', $name);
         $this->display();
     }
 
@@ -67,6 +67,10 @@ class AddonshopController extends AdminBase {
     public function public_step_1() {
         if (\Libs\System\RBAC::authenticate('install') !== true) {
             $this->errors('您没有该项权限！');
+        }
+        $name = I('get.name', '', 'trim');
+        if (empty($name)) {
+            $this->error('请选择需要安装的插件！');
         }
         $cache = S('Cloud');
         if (!empty($cache)) {
@@ -238,7 +242,7 @@ class AddonshopController extends AdminBase {
             $this->error($error ? $error : '插件升级失败！');
         }
     }
-    
+
     //获取插件使用说明
     public function public_explanation() {
         $name = I('get.name');
