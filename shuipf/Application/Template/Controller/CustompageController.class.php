@@ -23,7 +23,7 @@ class CustompageController extends AdminBase {
     public function add() {
         if (IS_POST) {
             $model = D('Template/Customtemp');
-            if ($model->create()) {
+            if ($model->create($_POST)) {
                 $tempid = $model->add();
                 if ($tempid) {
                     $this->Html->createHtml((int) $tempid);

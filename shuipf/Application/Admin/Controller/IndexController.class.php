@@ -65,6 +65,8 @@ class IndexController extends AdminBase {
                                     exit;
                                 }
                             }
+                            //更新开启其他方式的缓存
+                            \Think\Cache::getInstance()->clear();
                         } catch (Exception $exc) {
                             
                         }
@@ -76,7 +78,7 @@ class IndexController extends AdminBase {
                         if ($cacheInfo) {
                             if ($cache->runUpdate($cacheInfo) !== false) {
                                 $this->assign("waitSecond", 200);
-                                $this->success('更新缓存：'.$cacheInfo['name'], U('Index/cache', array('type' => 'site', 'stop' => $stop + 1)));
+                                $this->success('更新缓存：' . $cacheInfo['name'], U('Index/cache', array('type' => 'site', 'stop' => $stop + 1)));
                                 exit;
                             } else {
                                 $this->error('缓存[' . $cacheInfo['name'] . ']更新失败！', U('Index/cache', array('type' => 'site', 'stop' => $stop + 1)));
@@ -93,6 +95,8 @@ class IndexController extends AdminBase {
                     $Dir->del(RUNTIME_PATH);
                     $Dir->delDir(RUNTIME_PATH . "Cache/");
                     $Dir->delDir(RUNTIME_PATH . "Temp/");
+                    //更新开启其他方式的缓存
+                    \Think\Cache::getInstance()->clear();
                     $this->success("模板缓存清理成功！", U('Index/cache'));
                     break;
                 case "logs":
