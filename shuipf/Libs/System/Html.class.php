@@ -13,6 +13,8 @@ namespace Libs\System;
 use Common\Controller\Base;
 use Content\Model\ContentModel;
 
+define('APP_SUB_DOMAIN_NO', 1);
+
 class Html extends Base {
 
     //数据
@@ -457,7 +459,7 @@ class Html extends Base {
                 }
             } else {
                 //去除完后缀的模板
-                $template = TEMPLATE_PATH . (empty(self::$Cache["Config"]['theme']) ? "Default" : self::$Cache["Config"]['theme'])  . "/Content/List/{$data['listpath']}";
+                $template = TEMPLATE_PATH . (empty(self::$Cache["Config"]['theme']) ? "Default" : self::$Cache["Config"]['theme']) . "/Content/List/{$data['listpath']}";
                 //模板检测
                 $template = parseTemplateFile($template);
                 //生成
