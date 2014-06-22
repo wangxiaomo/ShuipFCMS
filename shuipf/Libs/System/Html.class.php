@@ -13,8 +13,6 @@ namespace Libs\System;
 use Common\Controller\Base;
 use Content\Model\ContentModel;
 
-define('APP_SUB_DOMAIN_NO', 1);
-
 class Html extends Base {
 
     //数据
@@ -24,6 +22,7 @@ class Html extends Base {
 
     //初始化
     protected function _initialize() {
+        define('APP_SUB_DOMAIN_NO', 1);
         parent::_initialize();
     }
 

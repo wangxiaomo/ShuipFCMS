@@ -923,7 +923,6 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
             }
             if (isset($var[$varModule])) {
                 $_module = $module = $var[$varModule];
-                unset($var[$varModule]);
             }
         }
     }
@@ -972,8 +971,13 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
         if (!empty($var) || ($showModuleName && $module)) {
             $url .= '?';
             //是否显示模块部分
-            if ($showModuleName && $module) {
+            if (isset($admin_domain) && $var[$varModule] != 'Admin') {
+                //如果后台绑定域名访问，且非Admin模块，都要加上模块标识
                 $var[C('VAR_MODULE')] = $module;
+            } else {
+                if ($showModuleName && $module) {
+                    $var[C('VAR_MODULE')] = $module;
+                }
             }
             //其余参数
             if (!empty($var)) {
