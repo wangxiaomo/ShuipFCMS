@@ -154,7 +154,7 @@ class Content extends Components {
         $this->getThumb($data);
         $oldata['thumb'] = $data['thumb'];
         //添加内容
-        $id = $data['id'] = $oldata['id'] = $model->relation(true)->add($data);
+        $this->id = $id = $data['id'] = $oldata['id'] = $model->relation(true)->add($data);
         if (false == $id) {
             $this->error = $model->getError();
             $this->tokenRecovery($oldata);
@@ -247,7 +247,7 @@ class Content extends Components {
         }
         //生成上一篇下一篇
         if ($data['status'] == 99) {
-            $this->relatedContent($data['catid'], $id, 'add');
+            $this->relatedContent($this->catid, $this->id, 'add');
         }
         return $id;
     }
@@ -418,7 +418,7 @@ class Content extends Components {
                 break;
         }
         //生成上一篇下一篇
-        $this->relatedContent($data['catid'], $id, 'edit');
+        $this->relatedContent($this->catid, $this->id, 'edit');
         return true;
     }
 
@@ -713,6 +713,7 @@ class Content extends Components {
      */
     public function relatedContent($catid, $id, $action = 'edit') {
         if (!$catid || !$id) {
+            dump($id);exit;
             return;
         }
         $modelid = getCategory($catid, 'modelid');
