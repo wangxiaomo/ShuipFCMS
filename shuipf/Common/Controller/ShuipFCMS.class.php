@@ -53,9 +53,13 @@ class ShuipFCMS extends \Think\Controller {
      */
     protected function initSite() {
         $Config = cache("Config");
-        $config_siteurl = $Config['siteurl'];
-        defined('CONFIG_SITEURL_MODEL') or define("CONFIG_SITEURL_MODEL", $config_siteurl);
         self::$Cache['Config'] = $Config;
+        $config_siteurl = $Config['siteurl'];
+        if (isModuleInstall('Domains')) {
+            $parse_url = parse_url($config_siteurl);
+            $config_siteurl = (is_ssl() ? 'https://' : 'http://') . "{$_SERVER['HTTP_HOST']}{$parse_url['path']}";
+        }
+        defined('CONFIG_SITEURL_MODEL') or define('CONFIG_SITEURL_MODEL', $config_siteurl);
         $this->assign("config_siteurl", $config_siteurl);
         $this->assign("Config", $Config);
     }
