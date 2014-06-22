@@ -203,10 +203,6 @@ class Html extends Base {
         $parentdir = $category['parentdir'];
         //目录
         $catdir = $category['catdir'];
-        //生成路径
-        $category_url = $this->generateCategoryUrl($catid);
-        //取得URL规则
-        $urls = $category_url['page'];
         //生成类型为0的栏目
         if ($category['type'] == 0) {
             //栏目首页模板
