@@ -680,7 +680,7 @@ class Content extends Components {
                 }
                 if (is_array($nurls) && $_categorys['setting']['content_ishtml'] && $othordata['status'] == 99) {
                     //生成静态
-                    $this->generateShow($othordata, 0, "add");
+                    $this->Html->show($othordata);
                 }
             } else {
                 //不同模型，则以链接的形式添加，也就是转向地址

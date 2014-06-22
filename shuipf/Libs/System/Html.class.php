@@ -199,23 +199,12 @@ class Html extends Base {
         }
         //初始化一些模板分配变量
         $this->assignInitialize();
-        //生成静态分页数
-        $repagenum = (int) $setting['repagenum'];
-        if ($repagenum && !$GLOBALS['dynamicRules']) {
-            //设置动态访问规则给page分页使用
-            $GLOBALS['Rule_Static_Size'] = $repagenum;
-            $GLOBALS['dynamicRules'] = CONFIG_SITEURL_MODEL . "index.php?a=lists&catid={$catid}&page=*";
-        }
-        if ($repagenum && $page > $repagenum) {
-            unset($GLOBALS['dynamicRules']);
-            return true;
-        }
         //父目录
         $parentdir = $category['parentdir'];
         //目录
         $catdir = $category['catdir'];
         //生成路径
-        $category_url = $this->generateCategoryUrl($catid, $page);
+        $category_url = $this->generateCategoryUrl($catid);
         //取得URL规则
         $urls = $category_url['page'];
         //生成类型为0的栏目
@@ -232,7 +221,6 @@ class Html extends Base {
             $template = $tpar[0];
             //模板文件路径
             $template = parseTemplateFile($template);
-            $GLOBALS['URLRULE'] = $urls;
         } else if ($category['type'] == 1) {//单页
             $db = D('Content/Page');
             $template = $setting['page_template'] ? $setting['page_template'] : 'page';
@@ -244,7 +232,6 @@ class Html extends Base {
             $template = $tpar[0];
             //模板文件路径
             $template = parseTemplateFile($template);
-            $GLOBALS['URLRULE'] = $urls;
             $info = $db->getPage($catid);
             $this->assign($category['setting']['extend']);
             $this->assign($info);
@@ -259,6 +246,20 @@ class Html extends Base {
         $j = 1;
         unset($GLOBALS["Total_Pages"]);
         do {
+            $category_url = $this->generateCategoryUrl($catid, $page);
+            $urls = $category_url['page'];
+            $GLOBALS['URLRULE'] = $urls;
+            //生成静态分页数
+            $repagenum = (int) $setting['repagenum'];
+            if ($repagenum && !$GLOBALS['dynamicRules']) {
+                //设置动态访问规则给page分页使用
+                $GLOBALS['Rule_Static_Size'] = $repagenum;
+                $GLOBALS['dynamicRules'] = CONFIG_SITEURL_MODEL . "index.php?a=lists&catid={$catid}&page=*";
+            }
+            if ($repagenum && $page > $repagenum) {
+                unset($GLOBALS['dynamicRules']);
+                return true;
+            }
             //把分页分配到模板
             $this->assign(C("VAR_PAGE"), $page);
             //生成
