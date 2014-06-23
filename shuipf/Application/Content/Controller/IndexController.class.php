@@ -215,11 +215,13 @@ class IndexController extends Base {
             $key = 'Tags_Index_index';
             $dataCache = S($key);
             if (empty($dataCache)) {
-                $data = M('Tags')->order(array('hits' => 'DESC'))->select();
+                $data = M('Tags')->order(array('hits' => 'DESC'))->limit(100)->select();
                 if (!empty($data)) {
                     //查询每个tag最新的一条数据
                     $tagsContent = M('TagsContent');
                     foreach ($data as $k => $r) {
+					    $url = $this->Url->tags($r);
+                        $data[$k]['url'] = $url['url'];
                         $data[$k]['info'] = $tagsContent->where(array('tag' => $r['tag']))->order(array('updatetime' => 'DESC'))->find();
                     }
                     //进行缓存
