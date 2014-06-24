@@ -106,6 +106,7 @@ class Cloud {
         $curl = new \Curl();
         $fields = array(
             'data' => json_encode($data),
+            'version' => SHUIPF_VERSION,
             'act' => $this->act,
             'identity' => $this->getIdentity(),
         );
