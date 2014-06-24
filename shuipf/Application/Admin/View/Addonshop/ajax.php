@@ -30,6 +30,9 @@
 			 }
 		  }
 		  echo implode('  ',$op);
+		  if($vo['price']){
+			  echo "<br /><font color=\"#FF0000\">价格：".$vo['price']." 元</font>";
+		  }
 		  ?>
          </td>
       </tr>

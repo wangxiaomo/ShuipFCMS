@@ -30,7 +30,7 @@ class AddonshopController extends AdminBase {
         if (IS_AJAX) {
             $data = $this->Cloud->data($parameter)->act('get.addons.list');
             if (false === $data) {
-                $this->error($this->Cloud->getError());
+                exit($this->Cloud->getError());
             }
             $data['data'] = $data['data']? : array();
             foreach ($data['data'] as $sign => $rs) {
