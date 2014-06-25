@@ -63,7 +63,7 @@ class MainController extends AdminBase {
             S('server_notice', $notice, 3600);
         }
         if (empty($_COOKIE['notice_' . $notice['id']])) {
-            $this->assign('notice', $notice);
+            $this->ajaxReturn($notice);
         }
     }
 
