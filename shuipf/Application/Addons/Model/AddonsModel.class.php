@@ -491,7 +491,7 @@ class AddonsModel extends Model {
                     //名称
                     "name" => $menu['name'],
                     //备注
-                    "remark" => $menu['remark'],
+                    "remark" => $menu['remark']? : '',
                     //排序
                     "listorder" => (int) $menu['listorder'],
                 );

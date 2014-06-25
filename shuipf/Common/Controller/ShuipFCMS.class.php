@@ -156,6 +156,9 @@ class ShuipFCMS extends \Think\Controller {
     protected function baseAdd($model, $u = 'index', $data = '') {
         $model = $this->getModelObject($model);
         if (IS_POST) {
+            if (empty($data)) {
+                $data = I('post.', '', '');
+            }
             if ($model->create($data) && $model->add()) {
                 $this->success('添加成功！', $u ? U($u) : '');
             } else {
@@ -176,12 +179,15 @@ class ShuipFCMS extends \Think\Controller {
     protected function baseEdit($model, $u = 'index', $data = '') {
         $model = $this->getModelObject($model);
         $fidePk = $model->getPk();
-        $pk = I('request.' . $fidePk);
+        $pk = I('request.' . $fidePk, '', '');
         if (empty($pk)) {
             $this->error('请指定需要修改的信息！');
         }
         $where = array($fidePk => $pk);
         if (IS_POST) {
+            if (empty($data)) {
+                $data = I('post.', '', '');
+            }
             if ($model->create($data) && $model->where($where)->save() !== false) {
                 $this->success('修改成功！', $u ? U($u) : '');
             } else {

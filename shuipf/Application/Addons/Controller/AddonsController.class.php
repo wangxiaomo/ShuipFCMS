@@ -205,7 +205,7 @@ class {$info['name']}Addon extends Addon {
             if ($has_adminlist) {
                 $addonFile .="
     //有开启插件后台情况下，添加对应的控制器方法
-    //也就是插件目录下 Action/AdminAction.class.php中，public属性的方法！
+    //也就是插件目录下 Action/AdminController.class.php中，public属性的方法！
     //每个方法都是一个数组形式，删除，修改类需要具体参数的，建议隐藏！
     public \$adminlist = array(
         array(
