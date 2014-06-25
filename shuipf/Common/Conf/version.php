@@ -8,13 +8,9 @@
 // | Author: 水平凡 <admin@abc3210.com>
 // +----------------------------------------------------------------------
 
-/**
- * 系统版本号配置
- */
-defined('THINK_PATH') or exit();
 return array(
     "SHUIPF_APPNAME" => "ShuipFCMS内容管理系统", //产品名称
-    "SHUIPF_BUILD" => 20140622, //产品流水号
+    "SHUIPF_BUILD" => 20140625, //产品流水号
     "SHUIPF_VERSION" => "2.0.0", //产品版本号
 );
 

@@ -664,7 +664,7 @@ function tag($tag, &$params = NULL) {
 /**
  * 执行某个行为
  * @param string $name 行为名称
- * @param string $tag 标签名称（行为类无需传入） 
+ * @param string $tag 标签名称（行为类无需传入）
  * @param Mixed $params 传入的参数
  * @return void
  */
@@ -923,6 +923,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
             }
             if (isset($var[$varModule])) {
                 $_module = $module = $var[$varModule];
+                unset($var[$varModule]);
             }
         }
     }
@@ -1126,7 +1127,7 @@ function F($name, $value = '', $path = DATA_PATH) {
         if (is_null($value)) {
             // 删除缓存
             if (false !== strpos($name, '*')) {
-                return false; // TODO 
+                return false; // TODO
             } else {
                 unset($_cache[$name]);
                 return Think\Storage::unlink($filename, 'F');
@@ -1429,7 +1430,7 @@ function load_ext_file($path) {
 /**
  * 获取客户端IP地址
  * @param integer $type 返回类型 0 返回IP地址 1 返回IPV4地址数字
- * @param boolean $adv 是否进行高级模式获取（有可能被伪装） 
+ * @param boolean $adv 是否进行高级模式获取（有可能被伪装）
  * @return mixed
  */
 function get_client_ip($type = 0, $adv = false) {
