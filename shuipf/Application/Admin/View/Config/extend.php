@@ -43,14 +43,14 @@
   </div>
   <div class="btn_wrap_pd"><button class="btn btn_submit mr10 J_ajax_submit_btn" type="submit">添加</button></div>
   </form>
-  <div class="h_a">扩展配置</div>
+  <div class="h_a">扩展配置 ，用法：模板调用标签：<literal>{:cache('Config</literal>.键名')}，PHP代码中调用：<literal>cache('Config</literal>.键名');</div>
   <div class="table_full">
     <form method='post'   id="myform" class="J_ajaxForm"  action="{:U('Config/extend')}">
       <table width="100%"  class="table_form">
         <volist name="extendList" id="vo">
         <php>$setting = unserialize($vo['setting']);</php>
         <tr>
-          <th width="120">{$setting.title}</th>
+          <th width="120">{$setting.title} <a href="{:U('Config/extend',array('fid'=>$vo['fid'],'action'=>'delete'))}" class="J_ajax_del" title="删除该项配置" style="color:#F00">X</a></th>
           <th class="y-bg">
           <switch name="vo.type">
              <case value="input">
@@ -69,8 +69,6 @@
              </case>
           </switch>
            <span class="gray"> {$setting.tips}</span>
-		   <br/><span class="gray">模板调用标签：<literal>{:cache('Config</literal>.{$vo.fieldname}')}，PHP代码中调用：<literal>cache('Config</literal>.{$vo.fieldname}');</span>
-           <br/><a href="{:U('Config/extend',array('fid'=>$vo['fid'],'action'=>'delete'))}" class="J_ajax_del">删除该项配置</a>
           </th>
         </tr>
         </volist>
