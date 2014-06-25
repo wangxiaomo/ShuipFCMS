@@ -50,7 +50,7 @@
         <volist name="extendList" id="vo">
         <php>$setting = unserialize($vo['setting']);</php>
         <tr>
-          <th width="120">{$setting.title} <a href="{:U('Config/extend',array('fid'=>$vo['fid'],'action'=>'delete'))}" class="J_ajax_del" title="删除该项配置" style="color:#F00">X</a></th>
+          <th width="200">{$setting.title} <a href="{:U('Config/extend',array('fid'=>$vo['fid'],'action'=>'delete'))}" class="J_ajax_del" title="删除该项配置" style="color:#F00">X</a><span class="gray"><br/>键名：{$vo.fieldname}</span></th>
           <th class="y-bg">
           <switch name="vo.type">
              <case value="input">
