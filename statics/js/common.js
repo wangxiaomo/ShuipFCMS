@@ -2,17 +2,12 @@
     //全局ajax处理
     $.ajaxSetup({
         complete: function (jqXHR) {
-            //登录失效处理
-            if (jqXHR.responseText.state === 'logout') {
-                location.href = GV.URL.LOGIN;
-            }
         },
         data: {
-            __hash__: GV.TOKEN
         },
         error: function (jqXHR, textStatus, errorThrown) {
             //请求失败处理
-            alert(errorThrown ? errorThrown : '操作失败');
+            //alert(errorThrown ? errorThrown : "Ajax请求出现错误："+this.url);
         }
     });
 
@@ -187,13 +182,13 @@
 
                         if (data.state === 'success') {
                             $('<span class="tips_success">' + data.info + '</span>').appendTo(btn.parent()).fadeIn('slow').delay(1000).fadeOut(function () {
-                                if (data.referer) {
+                                if (data.url) {
                                     //返回带跳转地址
                                     if(window.parent.art){
                                         //iframe弹出页
-                                        window.parent.location.href = data.referer;
+                                        window.parent.location.href = data.url;
                                     }else{
-                                        window.location.href = data.referer;
+                                        window.location.href = data.url;
                                     }
                                 } else {
                                     if(window.parent.art){
@@ -248,8 +243,8 @@
                     ok: function () {
                         $.getJSON(href).done(function (data) {
                             if (data.state === 'success') {
-                                if (data.referer) {
-                                    location.href = data.referer;
+                                if (data.url) {
+                                    location.href = data.url;
                                 } else {
                                     reloadPage(window);
                                 }
@@ -281,8 +276,8 @@
                 refresh_lock = false;
 
                 if (data.state === 'success') {
-                    if (data.referer) {
-                        location.href = data.referer;
+                    if (data.url) {
+                        location.href = data.url;
                     } else {
                         reloadPage(window);
                     }

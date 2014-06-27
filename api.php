@@ -1,17 +1,15 @@
 <?php
 
-/**
- * API调用
- * Some rights reserved：abc3210.com
- * Contact email:admin@abc3210.com
- */
-define('IS_API', true);
-//判断是否请求Api模块
-if( isset($_GET["g"]) ){
-    $url = "./index.php?".http_build_query($_GET);
-    header("location:$url");
-    exit;
-}else{
-    $_GET["g"] = "Api";
+// +----------------------------------------------------------------------
+// | ShuipFCMS
+// +----------------------------------------------------------------------
+// | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
+// +----------------------------------------------------------------------
+// | Author: 水平凡 <admin@abc3210.com>
+// +----------------------------------------------------------------------
+// 检测PHP环境
+if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+    die('require PHP > 5.3.0 !');
 }
+define('BIND_MODULE', 'Api');
 require './index.php';

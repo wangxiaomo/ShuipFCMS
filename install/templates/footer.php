@@ -1,1 +1,0 @@
-<div class="footer"> &copy; 2012-<?php echo date("Y"); ?> <a href="http://www.shuipfcms.com" target="_blank">www.shuipfcms.com</a>（ShuipFCMS） </div>
