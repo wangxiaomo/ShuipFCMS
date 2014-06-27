@@ -1,9 +1,11 @@
 #交流
 * 官方QQ群：49219815
 * 官方支持站点：[http://www.shuipfcms.com](http://www.shuipfcms.com)
+
 ----
 #环境要求
 * PHP版本需要5.3+以上才可以。
+
 ----
 #ShuipFCMS简介 
 * ShuipFCMS 基于[ThinkPHP](http://www.thinkphp.cn)框架开发，采用独立分组的方式开发的内容管理系统。；
