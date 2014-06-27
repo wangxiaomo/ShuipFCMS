@@ -1,11 +1,13 @@
 #交流
-* QQ群：49219815
-* 网址：[http://www.shuipfcms.com](http://www.shuipfcms.com)
-
+* 官方QQ群：49219815
+* 官方支持站点：[http://www.shuipfcms.com](http://www.shuipfcms.com)
+#环境要求
+* PHP版本需要5.3+以上才可以。
 ----
 #ShuipFCMS简介 
 * ShuipFCMS 基于[ThinkPHP](http://www.thinkphp.cn)框架开发，采用独立分组的方式开发的内容管理系统。；
 * 支持模块安装/卸载，模型自定义，整合UCenter通行证等。
+* 同时系统对扩展方面也支持比较大，可以使用内置的行为控制，对现有功能进行扩展。
 
 ##根据安装程序安装好后，进入后台需要进行如下操作：
 * 更新站点缓存。
