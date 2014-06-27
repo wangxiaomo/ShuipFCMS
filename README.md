@@ -1,6 +1,7 @@
 #交流
 * 官方QQ群：49219815
 * 官方支持站点：[http://www.shuipfcms.com](http://www.shuipfcms.com)
+----
 #环境要求
 * PHP版本需要5.3+以上才可以。
 ----
