@@ -13,9 +13,12 @@ function tags($field, $value) {
     //把Tags进行分割成数组
     $tags = strpos($value, ',') !== false ? explode(',', $value) : explode(' ', $value);
     $return = array();
-    $url = new \Libs\System\Url();
     foreach ($tags as $k => $v) {
-        $return[$k] = $url->tags($v);
+        $url = ShuipFCMS()->Url->tags($v);
+        $return[$k] = array(
+            'url' => $url['url'],
+            'tag' => $v,
+        );
     }
     return $return;
 }
