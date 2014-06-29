@@ -25,8 +25,8 @@ class DownloadController extends Base {
         parent::_initialize();
         $this->id = I('get.id', 0, 'intval');
         $this->catid = I('get.catid', 0, 'intval');
-        $this->userid = serialize('Passport')->userid? : 0;
-        $this->groupid = serialize('Passport')->groupid;
+        $this->userid = service("Passport")->userid? : 0;
+        $this->groupid = service("Passport")->groupid;
     }
 
     //显示下载页面

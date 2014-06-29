@@ -97,10 +97,10 @@ class IndexController extends Base {
             ),
             //当前登陆会员信息
             'users' => array(
-                'user_id' => serialize('Passport')->userid? : 0,
-                'name' => serialize('Passport')->usename ? : '',
-                'email' => serialize('Passport')->email ? : '',
-                'avatar' => serialize('Passport')->userid ? service('Passport')->getUserAvatar(serialize('Passport')->userid) : '',
+                'user_id' => service("Passport")->userid? : 0,
+                'name' => service("Passport")->usename ? : '',
+                'email' => service("Passport")->email ? : '',
+                'avatar' => service("Passport")->userid ? service("Passport")->getUserAvatar(service("Passport")->userid) : '',
             ),
             //评论列表 去除键名，不然json输出会影响排序
             'response' => array_values($treeArray),
@@ -221,9 +221,9 @@ class IndexController extends Base {
             $post['comment_id'] = "c-{$catid}-{$id}";
             //如果是登陆状态，强制使用会员帐号和会员邮箱
             if (self::$Cache['uid']) {
-                $post['user_id'] = serialize('Passport')->userid;
-                $post['author'] = serialize('Passport')->username;
-                $post['author_email'] = serialize('Passport')->email;
+                $post['user_id'] = service("Passport")->userid;
+                $post['author'] = service("Passport")->username;
+                $post['author_email'] = service("Passport")->email;
             }
 
             //检查评论间隔时间
@@ -234,7 +234,7 @@ class IndexController extends Base {
 
             //判断游客是否有发表权限
             if ((int) $this->setting['guest'] < 1) {
-                if (!isset(serialize('Passport')->userid) && empty(serialize('Passport')->userid)) {
+                if (!isset(service("Passport")->userid) && empty(service("Passport")->userid)) {
                     $this->error("游客不允许参与评论！");
                 }
             }
