@@ -102,23 +102,19 @@ class PositionDataModel extends Model {
     public function contentPos($id, $modelid) {
         $id = intval($id);
         $modelid = intval($modelid);
-        $tablename = ucwords(getModel($modelid, 'tablename'));
-        $db = M($tablename);
         $info = $this->where(array('id' => $id, 'modelid' => $modelid))->find();
-        if (empty($info)) {
-            return false;
-        }
         if ($info) {
             $posids = 1;
         } else {
             $posids = 0;
         }
         //更改文章推荐位状态
-        $status = $db->where(array('id' => $id))->save(array('posid' => $posids));
+        $status = ContentModel::getInstance($modelid)->where(array('id' => $id))->save(array('posid' => $posids));
         if (false !== $status && $status > 0) {
             return true;
         } else {
             //有可能副表
+            $tablename = ucwords(getModel($modelid, 'tablename'));
             return M($tablename . 'Data')->where(array('id' => $id))->save(array('posid' => $posids)) !== false ? true : false;
         }
     }
