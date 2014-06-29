@@ -263,4 +263,18 @@ class Passport extends \Libs\System\Service {
         return false;
     }
 
+    /**
+     * 获取头像存储路径
+     * @param type $uid 会员UID
+     * @return type
+     */
+    public function getAvatarPath($uid) {
+        $uid = abs(intval($uid)); //UID取整数绝对值
+        $uid = sprintf("%09d", $uid); //前边加0补齐9位，例如UID为31的用户变成 000000031
+        $dir1 = substr($uid, 0, 3);  //取左边3位，即 000
+        $dir2 = substr($uid, 3, 2);  //取4-5位，即00
+        $dir3 = substr($uid, 5, 2);  //取6-7位，即00
+        return 'avatar/' . $dir1 . '/' . $dir2 . '/' . $dir3 . '/';
+    }
+
 }
