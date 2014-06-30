@@ -220,7 +220,7 @@ class IndexController extends Base {
             $post = array_map('htmlspecialchars', $_POST);
             $post['comment_id'] = "c-{$catid}-{$id}";
             //如果是登陆状态，强制使用会员帐号和会员邮箱
-            if (self::$Cache['uid']) {
+            if (service("Passport")->userid) {
                 $post['user_id'] = service("Passport")->userid;
                 $post['author'] = service("Passport")->username;
                 $post['author_email'] = service("Passport")->email;
