@@ -348,8 +348,7 @@ class {$info['name']}Addon extends Addon {
             if (!$data) {
                 $this->error($this->addons->getError());
             }
-            import("Pclzip");
-            $zip = new PclZip($filename);
+            $zip = new \PclZip($filename);
             $status = $zip->extract(PCLZIP_OPT_PATH, $addonsDir . $addonName);
             if ($status) {
                 $this->success('插件解压成功，可以进入插件管理进行安装！', U('Addons/index'));
