@@ -59,6 +59,7 @@ class CloudDownload {
         $stat = $zip->extract(PCLZIP_OPT_PATH, $tmpdir);
         //返回文件数量 不能正常解压附件
         if ($stat) {
+            unlink($package);
             return true;
         } else {
             //错误信息
@@ -85,6 +86,12 @@ class CloudDownload {
         //批量迁移文件
         foreach ($list as $file) {
             $newd = str_replace($tmpdir, $newdir, $file);
+            //目录
+            $dirname = dirname($newd);
+            if (file_exists($dirname) == false && mkdir($dirname, 0777, TRUE) == false) {
+                $this->error = "创建文件夹{$dirname}失败！";
+                return false;
+            }
             //检查缓存包中的文件如果文件或者文件夹存在，但是不可写提示错误
             if (file_exists($file) && is_writable($file) == false) {
                 $this->error = "文件或者目录{$file}，不可写！";
