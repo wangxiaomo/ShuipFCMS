@@ -39,7 +39,7 @@ class Cloud {
     private $act = NULL;
 
     //服务器地址
-    const serverHot = 'http://v2.shuipfcms.com/index.php?g=Cloud';
+    const serverHot = 'http://api.shuipfcms.com/index.php';
 
     /**
      * 连接云平台系统
