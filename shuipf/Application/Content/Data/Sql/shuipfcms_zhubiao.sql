@@ -26,5 +26,6 @@ CREATE TABLE `@shuipfcms@@zhubiao@` (
   PRIMARY KEY  (`id`),
   KEY `status` (`status`,`listorder`,`id`),
   KEY `listorder` (`catid`,`status`,`listorder`,`id`),
-  KEY `catid` (`catid`,`status`,`id`)
+  KEY `catid` (`catid`,`weekviews`,`views`,`dayviews`,`monthviews`,`status`,`id`),
+  KEY `thumb` (`thumb`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
