@@ -211,7 +211,7 @@ class SearchModel extends Model {
             'data' => $data,
         ));
         if ($searchid !== false) {
-            return $searchid;
+            return true;
         }
         return false;
     }
