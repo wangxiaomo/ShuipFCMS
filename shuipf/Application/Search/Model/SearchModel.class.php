@@ -248,8 +248,8 @@ class SearchModel extends Model {
         //更新动作
         if ($action == 'add' || $action == 'updata') {
             //取得模型字段
-            $modelList = cache('Model');
-            $fulltext_array = $modelList[$modelid];
+            $modelField = cache('ModelField');
+            $fulltext_array = $modelField[$modelid];
             if (!$fulltext_array) {
                 $fulltext_array = array();
             }
