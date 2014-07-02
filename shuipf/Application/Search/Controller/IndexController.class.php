@@ -36,7 +36,9 @@ class IndexController extends Base {
                 exit;
             }
             if (IS_POST) {
-                header('Location: ' . U("Search/Index/index", array("q" => I('request.q', '', 'trim'))));
+                $data = array("q" => I('request.q', '', 'trim'));
+                $data = array_merge($_POST, $data);
+                header('Location: ' . U("Search/Index/index", $data));
                 exit;
             }
             //关键字
