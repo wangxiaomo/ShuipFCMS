@@ -713,7 +713,6 @@ class Content extends Components {
      */
     public function relatedContent($catid, $id, $action = 'edit') {
         if (!$catid || !$id) {
-            dump($id);exit;
             return;
         }
         $modelid = getCategory($catid, 'modelid');

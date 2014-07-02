@@ -234,8 +234,6 @@ class CreatehtmlController extends AdminBase {
                     $pages = ceil($total / $pagesize);
                     $start = 1;
                 }
-                dump($where);
-                exit;
                 $data = $model->where($where)->order(array("id" => $order))->limit($offset . "," . $pagesize)->select();
                 foreach ($data as $r) {
                     if ($r['islink'])
