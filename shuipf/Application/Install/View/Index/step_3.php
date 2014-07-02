@@ -212,11 +212,9 @@ $(function(){
 			dbuser: {
 				required	: true
 			},
-			/*
 			dbpw: {
 				required	: true
 			},
-			*/
 			dbname: {
 				required	: true
 			},
