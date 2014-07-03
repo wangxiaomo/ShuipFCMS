@@ -217,6 +217,7 @@ class CloudDownload {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             $temp = curl_exec($ch);
             if (file_put_contents($file, $temp) && !curl_error($ch)) {
                 return $file;
