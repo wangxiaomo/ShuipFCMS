@@ -263,7 +263,7 @@ class FieldController extends AdminBase {
             $this->error("该字段不存在！");
         }
         //检查是否允许被删除
-        if (in_array($field['field'], $this->modelfield->forbid_fields) || in_array($field['field'], $this->modelfield->forbid_delete)) {
+        if (in_array($field['field'], $this->modelfield->forbid_fields)) {
             $this->error("该字段不允许被禁用！");
         }
         $disabled = (int) $_GET['disabled'] ? 0 : 1;

@@ -142,10 +142,6 @@ class ModelFieldModel extends Model {
      * @return boolean
      */
     public function isDelField($field) {
-        //禁止被禁用的字段列表（字段名）
-        if (in_array($field, $this->forbid_fields)) {
-            return false;
-        }
         //禁止被删除的字段列表（字段名）
         if (in_array($field, $this->forbid_delete)) {
             return false;

@@ -107,7 +107,7 @@ class ContentModel extends RelationModel {
     public function dataMerger(&$data) {
         $relationName = $this->getRelationName();
         $datafb = $data[$relationName];
-        unset($data[$relationName]);
+        unset($datafb['id'], $data[$relationName]);
         if (is_array($datafb)) {
             $data = array_merge($data, $datafb);
         }
@@ -298,7 +298,7 @@ class ContentModel extends RelationModel {
         }
         return $this->_auto;
     }
-    
+
     /**
      * 信息锁定
      * @param type $catid 栏目ID
