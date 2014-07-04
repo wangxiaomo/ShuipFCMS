@@ -974,7 +974,7 @@ function U($url = '', $vars = '', $suffix = true, $domain = true) {
             //是否显示模块部分
             if (isset($admin_domain) && $var[$varModule] != 'Admin') {
                 //如果后台绑定域名访问，且非Admin模块，都要加上模块标识
-                $var[C('VAR_MODULE')] = $module;
+                $var[C('VAR_MODULE')] = $module? : MODULE_NAME;
             } else {
                 if ($showModuleName && $module) {
                     $var[C('VAR_MODULE')] = $module;
