@@ -87,14 +87,14 @@ class ManagementController extends AdminBase {
         if (empty($id)) {
             $this->error("没有指定删除对象！");
         }
-        if ((int) $id == AppframeAction::$Cache["uid"]) {
+        if ((int) $id == User::getInstance()->id) {
             $this->error("你不能删除你自己！");
         }
         //执行删除
-        if ($this->UserMod->delUser($id)) {
+        if (D('Admin/User')->deleteUser($id)) {
             $this->success("删除成功！");
         } else {
-            $this->error($this->UserMod->getError());
+            $this->error(D('Admin/User')->getError()? : '删除失败！');
         }
     }
 

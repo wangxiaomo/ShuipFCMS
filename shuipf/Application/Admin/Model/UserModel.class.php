@@ -153,6 +153,29 @@ class UserModel extends Model {
     }
 
     /**
+     * 删除管理员
+     * @param type $userId
+     * @return boolean
+     */
+    public function deleteUser($userId) {
+        $userId = (int) $userId;
+        if (empty($userId)) {
+            $this->error = '请指定需要删除的用户ID！';
+            return false;
+        }
+        if ($userId == 1) {
+            $this->error = '该管理员不能被删除！';
+            return false;
+        }
+        if (false !== $this->where(array('id' => $userId))->delete()) {
+            return true;
+        } else {
+            $this->error = '删除失败！';
+            return false;
+        }
+    }
+
+    /**
      * 插入成功后的回调方法
      * @param type $data 数据
      * @param type $options 表达式
