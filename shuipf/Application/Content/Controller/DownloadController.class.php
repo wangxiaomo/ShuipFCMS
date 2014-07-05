@@ -97,13 +97,13 @@ class DownloadController extends Base {
         //key
         $key = I('get.key', '', 'trim');
         if (!empty($key)) {
-            $key = str_replace(array('+', '%23', '%2F', '%3F', '%26', '%3D','%2B'), array(' ', '#', '/', '?', '&', '=','+'), $key);
+            $key = str_replace(array('+', '%23', '%2F', '%3F', '%26', '%3D', '%2B'), array(' ', '#', '/', '?', '&', '=', '+'), $key);
         }
         $key = \Libs\Util\Encrypt::authcode($key, "DECODE");
-        if(empty($key)){
+        if (empty($key)) {
             $this->error('下载地址非法！');
         }
-        
+
         //格式：aut|栏目ID|信息id|下载编号|字段
         $key = explode("|", $key);
         //栏目ID
@@ -148,10 +148,8 @@ class DownloadController extends Base {
                     if ((int) $info['point'] > 0) {
                         $point = 0 - $info['point'];
                         $status = service("Passport")->userIntegration($this->userid, $point);
-                        if ($status == -1) {
-                            $this->error("您当前的积分不足，无法下载！");
-                        } else if ($status == false) {
-                            $this->error("系统出现错误，请联系管理员！");
+                        if ($status !== true) {
+                            $this->error(service("Passport")->getError()? : '积分扣除失败！');
                         }
                         //下载记录----暂时木有这功能，后期增加
                     }
