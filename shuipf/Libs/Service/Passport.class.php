@@ -130,7 +130,38 @@ class Passport extends \Libs\System\Service {
      * @return int 成功返回当前积分数，失败返回false，-1 表示当前积分不够扣除
      */
     public function userIntegration($uid, $integral) {
-        return true;
+        if (!isModuleInstall('Member')) {
+            return true;
+        }
+        $map = array();
+        if (is_numeric($uid)) {
+            $map['userid'] = $uid;
+        } else {
+            $map['username'] = $uid;
+        }
+        if (empty($map)) {
+            $this->error = '该用户不存在！';
+            return false;
+        }
+        $member = D('Member/Member');
+        $info = $member->where($map)->find();
+        if (empty($info)) {
+            $this->error = '该用户不存在！';
+            return false;
+        }
+        $point = $info['point'] + $integral;
+        if ($point < 0) {
+            $this->error = '用户积分不足！';
+            return false;
+        }
+        //计算会员组
+        $groupid = $member->get_usergroup_bypoint((int) $point);
+        //更新
+        if (false !== $member->where($map)->save(array("point" => (int) $point, "groupid" => $groupid))) {
+            return true;
+        }
+        $this->error = '积分扣除失败！';
+        return false;
     }
 
     /**
