@@ -93,7 +93,7 @@ class Shuipf extends TagLib {
      */
     public function _template($attr, $content) {
         static $_templateParseCache = array();
-        $cacheIterateId = to_guid_string($attr);
+        $cacheIterateId = to_guid_string(array($tag, $content));
         if (isset($_templateParseCache[$cacheIterateId])) {
             return $_templateParseCache[$cacheIterateId];
         }
@@ -128,7 +128,7 @@ class Shuipf extends TagLib {
      * @return type
      */
     public function _blockcache($tag, $content) {
-        $cacheIterateId = to_guid_string(to_guid_string($tag) . $content);
+        $cacheIterateId = to_guid_string(array($tag, $content));
         //缓存时间
         $cache = (int) $tag['cache'] ? : 300;
         $parsestr = '<?php ';
@@ -164,7 +164,7 @@ class Shuipf extends TagLib {
      */
     public function _pre($tag, $content) {
         static $_preParseCache = array();
-        $cacheIterateId = md5(to_guid_string($tag) . $content);
+        $cacheIterateId = to_guid_string(array($tag, $content));
         if (isset($_preParseCache[$cacheIterateId])) {
             return $_preParseCache[$cacheIterateId];
         }
@@ -208,7 +208,7 @@ class Shuipf extends TagLib {
      */
     public function _next($tag, $content) {
         static $_nextParseCache = array();
-        $cacheIterateId = md5(to_guid_string($tag) . $content);
+        $cacheIterateId = to_guid_string(array($tag, $content));
         if (isset($_nextParseCache[$cacheIterateId])) {
             return $_nextParseCache[$cacheIterateId];
         }
@@ -253,7 +253,7 @@ class Shuipf extends TagLib {
      */
     public function _navigate($tag, $content) {
         static $_navigateCache = array();
-        $key = md5(to_guid_string($tag) . $content);
+        $key = to_guid_string(array($tag, $content));
         if (isset($_navigateCache[$key])) {
             return $_navigateCache[$key];
         }
@@ -312,7 +312,7 @@ class Shuipf extends TagLib {
      */
     public function _form($tag, $content) {
         static $_FormParseCache = array();
-        $cacheIterateId = md5(to_guid_string($tag) . $content);
+        $cacheIterateId = to_guid_string(array($tag, $content));
         if (isset($_FormParseCache[$cacheIterateId])) {
             return $_FormParseCache[$cacheIterateId];
         }
@@ -392,7 +392,7 @@ class Shuipf extends TagLib {
     public function _content($tag, $content) {
         static $content_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($tag);
+        $cacheIterateId = to_guid_string(array($tag, $content));
         if (isset($content_iterateParseCache[$cacheIterateId])) {
             return $content_iterateParseCache[$cacheIterateId];
         }
@@ -481,7 +481,7 @@ class Shuipf extends TagLib {
         }
         static $_comment_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($tag);
+        $cacheIterateId = to_guid_string(array($tag, $content));
         if (isset($_comment_iterateParseCache[$cacheIterateId])) {
             return $_comment_iterateParseCache[$cacheIterateId];
         }
@@ -535,7 +535,7 @@ class Shuipf extends TagLib {
     public function _tags($tag, $content) {
         static $_tags_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($tag);
+        $cacheIterateId = to_guid_string(array($tag,$content));
         if (isset($_tags_iterateParseCache[$cacheIterateId])) {
             return $_tags_iterateParseCache[$cacheIterateId];
         }
@@ -611,7 +611,7 @@ class Shuipf extends TagLib {
     public function _position($tag, $content) {
         static $_position_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($tag);
+        $cacheIterateId = to_guid_string(array($tag,$content));
         if (isset($_position_iterateParseCache[$cacheIterateId])) {
             return $_position_iterateParseCache[$cacheIterateId];
         }
@@ -654,7 +654,7 @@ class Shuipf extends TagLib {
     public function _get($tag, $content) {
         static $_get_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string($tag);
+        $cacheIterateId = to_guid_string(array($tag,$content));
         if (isset($_get_iterateParseCache[$cacheIterateId])) {
             return $_get_iterateParseCache[$cacheIterateId];
         }
@@ -849,7 +849,7 @@ class Shuipf extends TagLib {
     public function _spf($tag, $content) {
         static $sp_iterateParseCache = array();
         //如果已经解析过，则直接返回变量值
-        $cacheIterateId = md5($attr . $content);
+        $cacheIterateId = to_guid_string(array($tag,$content));
         if (isset($sp_iterateParseCache[$cacheIterateId])) {
             return $sp_iterateParseCache[$cacheIterateId];
         }
