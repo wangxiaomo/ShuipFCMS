@@ -3,7 +3,7 @@
     <table width="100%">
       <thead>
         <tr>
-          <td width="100">名称</td>
+          <td width="200">名称</td>
           <td width="100">标识</td>
           <td align="center">描述</td>
           <td align="center" width="100">作者</td>
