@@ -37,6 +37,7 @@ class Cloud {
     private $data = array();
     //接口
     private $act = NULL;
+    private $token = NULL;
 
     //服务器地址
     const serverHot = 'http://api.shuipfcms.com/index.php';
@@ -94,6 +95,13 @@ class Cloud {
      * @return boolean
      */
     public function competence() {
+        $key = $this->getTokenKey();
+        $token = S($key);
+        if (empty($token)) {
+            $token = \Libs\Util\Encrypt::authcode($this->act('get.token'), 'DECODE', C('CLOUD_USERNAME'));
+            S($key,$token,3600);
+        }
+        $this->token = $token;
         return true;
     }
 
@@ -109,6 +117,7 @@ class Cloud {
             'version' => SHUIPF_VERSION,
             'act' => $this->act,
             'identity' => $this->getIdentity(),
+            'token' => $this->token,
         );
         //curl支持 检测
         if ($curl->create() == false) {
@@ -143,6 +152,14 @@ class Cloud {
             return false;
         }
         return $data['data'];
+    }
+
+    /**
+     * 获取token Key
+     * @return type
+     */
+    public function getTokenKey() {
+        return md5(date('Y-m-d H') . 'cloud_token');
     }
 
     /**
