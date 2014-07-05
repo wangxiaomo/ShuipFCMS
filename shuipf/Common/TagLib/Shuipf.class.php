@@ -92,11 +92,6 @@ class Shuipf extends TagLib {
      * @return string|array 返回模板解析后的内容
      */
     public function _template($attr, $content) {
-        static $_templateParseCache = array();
-        $cacheIterateId = to_guid_string(array($tag, $content));
-        if (isset($_templateParseCache[$cacheIterateId])) {
-            return $_templateParseCache[$cacheIterateId];
-        }
         $config = cache('Config');
         $theme = $attr['theme']? : $config['theme'];
         $templateFile = $attr['file'];
@@ -117,7 +112,6 @@ class Shuipf extends TagLib {
         $tmplContent = file_get_contents($templateFile);
         //解析模板
         $parseStr = $this->tpl->parse($tmplContent);
-        $_templateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
     }
 
@@ -163,11 +157,6 @@ class Shuipf extends TagLib {
      * @return type
      */
     public function _pre($tag, $content) {
-        static $_preParseCache = array();
-        $cacheIterateId = to_guid_string(array($tag, $content));
-        if (isset($_preParseCache[$cacheIterateId])) {
-            return $_preParseCache[$cacheIterateId];
-        }
         //当没有内容时的提示语
         $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
         //是否新窗口打开
@@ -189,7 +178,6 @@ class Shuipf extends TagLib {
             $parsestr .= ' echo $_pre_r?"<a class=\"pre_a\" href=\"".$_pre_r["url"]."\" ' . $target . '>".$_pre_r["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
         }
         $parsestr .= ' ?>';
-        $_preParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
     }
 
@@ -207,11 +195,6 @@ class Shuipf extends TagLib {
      * @return type
      */
     public function _next($tag, $content) {
-        static $_nextParseCache = array();
-        $cacheIterateId = to_guid_string(array($tag, $content));
-        if (isset($_nextParseCache[$cacheIterateId])) {
-            return $_nextParseCache[$cacheIterateId];
-        }
         //当没有内容时的提示语
         $msg = !empty($tag['msg']) ? $tag['msg'] : '已经没有了';
         //是否新窗口打开
@@ -233,7 +216,6 @@ class Shuipf extends TagLib {
             $parsestr .= ' echo $_pre_n?"<a class=\"pre_a\" href=\"".$_pre_n["url"]."\" ' . $target . '>".$_pre_n["title"]."</a>":"' . str_replace('"', '\"', $msg) . '";';
         }
         $parsestr .= ' ?>';
-        $_nextParseCache[$cacheIterateId] = $parsestr;
         return $parsestr;
     }
 
@@ -252,14 +234,10 @@ class Shuipf extends TagLib {
      * @return array|string
      */
     public function _navigate($tag, $content) {
-        static $_navigateCache = array();
         $key = to_guid_string(array($tag, $content));
-        if (isset($_navigateCache[$key])) {
-            return $_navigateCache[$key];
-        }
         $cache = (int) $tag['cache'];
         if ($cache) {
-            $_navigateCache[$key] = $data = S($key);
+            $data = S($key);
             if ($data) {
                 return $data;
             }
@@ -292,11 +270,10 @@ class Shuipf extends TagLib {
             $parsestr .= '  echo  implode("' . $space . '", $parsestr);';
             $parsestr .= '?>';
         }
-        $_navigateCache[$key] = $parsestr;
         if ($cache) {
-            S($key, $_navigateCache[$key], $cache);
+            S($key, $parsestr, $cache);
         }
-        return $_navigateCache[$key];
+        return $parsestr;
     }
 
     /**
@@ -311,11 +288,6 @@ class Shuipf extends TagLib {
      * @param type $content
      */
     public function _form($tag, $content) {
-        static $_FormParseCache = array();
-        $cacheIterateId = to_guid_string(array($tag, $content));
-        if (isset($_FormParseCache[$cacheIterateId])) {
-            return $_FormParseCache[$cacheIterateId];
-        }
         $function = $tag['function'];
         if (empty($function)) {
             return false;
@@ -333,8 +305,6 @@ class Shuipf extends TagLib {
         $parseStr .= ' echo call_user_func_array(array("\Form","' . $function . '"),' . $parameter . ');';
         //$parseStr .= " echo Form::$function(".$tag['parameter'].");\r\n";
         $parseStr .= " ?>";
-
-        $_FormParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
     }
 
@@ -390,12 +360,6 @@ class Shuipf extends TagLib {
       +----------------------------------------------------------
      */
     public function _content($tag, $content) {
-        static $content_iterateParseCache = array();
-        //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string(array($tag, $content));
-        if (isset($content_iterateParseCache[$cacheIterateId])) {
-            return $content_iterateParseCache[$cacheIterateId];
-        }
         $tag['catid'] = $catid = $tag['catid'];
         //每页显示总数
         $tag['num'] = $num = (int) $tag['num'];
@@ -440,7 +404,6 @@ class Shuipf extends TagLib {
         $parseStr .= ' ?>';
         //解析模板
         $parseStr .= $this->tpl->parse($content);
-        $content_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
     }
 
@@ -479,12 +442,6 @@ class Shuipf extends TagLib {
         if (!isModuleInstall('Comments')) {
             return false;
         }
-        static $_comment_iterateParseCache = array();
-        //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string(array($tag, $content));
-        if (isset($_comment_iterateParseCache[$cacheIterateId])) {
-            return $_comment_iterateParseCache[$cacheIterateId];
-        }
         /* 属性列表 */
         $num = (int) $tag['num']; //每页显示总数
         $return = empty($tag['return']) ? "data" : $tag['return']; //数据返回变量
@@ -497,7 +454,6 @@ class Shuipf extends TagLib {
         $parseStr .= ' }';
         $parseStr .= ' ?>';
         $parseStr .= $this->tpl->parse($content);
-        $_comment_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
     }
 
@@ -533,12 +489,6 @@ class Shuipf extends TagLib {
      * @param string $content  标签内容
      */
     public function _tags($tag, $content) {
-        static $_tags_iterateParseCache = array();
-        //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string(array($tag,$content));
-        if (isset($_tags_iterateParseCache[$cacheIterateId])) {
-            return $_tags_iterateParseCache[$cacheIterateId];
-        }
         /* 属性列表 */
         //每页显示总数
         $tag['num'] = $num = (int) $tag['num'];
@@ -582,7 +532,6 @@ class Shuipf extends TagLib {
         $parseStr .= ' ?>';
         //解析模板
         $parseStr .= $this->tpl->parse($content);
-        $_tags_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
     }
 
@@ -609,12 +558,6 @@ class Shuipf extends TagLib {
      * @param string $content  标签内容
      */
     public function _position($tag, $content) {
-        static $_position_iterateParseCache = array();
-        //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string(array($tag,$content));
-        if (isset($_position_iterateParseCache[$cacheIterateId])) {
-            return $_position_iterateParseCache[$cacheIterateId];
-        }
         /* 属性列表 */
         $return = empty($tag['return']) ? "data" : $tag['return']; //数据返回变量
         $action = $tag['action']; //方法
@@ -630,7 +573,6 @@ class Shuipf extends TagLib {
         $parseStr .= ' };';
         $parseStr .= ' ?>';
         $parseStr .= $this->tpl->parse($content);
-        $_position_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
     }
 
@@ -652,12 +594,6 @@ class Shuipf extends TagLib {
      * @param type $content 
      */
     public function _get($tag, $content) {
-        static $_get_iterateParseCache = array();
-        //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string(array($tag,$content));
-        if (isset($_get_iterateParseCache[$cacheIterateId])) {
-            return $_get_iterateParseCache[$cacheIterateId];
-        }
         //当前分页参数
         $tag['page'] = $page = (isset($tag['page'])) ? ( (substr($tag['page'], 0, 1) == '$') ? $tag['page'] : (int) $tag['page'] ) : 0;
         //数据返回变量
@@ -820,7 +756,6 @@ class Shuipf extends TagLib {
         }
         $parseStr .= '  ?>';
         $parseStr .= $this->tpl->parse($content);
-        $_get_iterateParseCache[$cacheIterateId] = $parseStr;
         return $parseStr;
     }
 
@@ -847,12 +782,6 @@ class Shuipf extends TagLib {
      * @return array
      */
     public function _spf($tag, $content) {
-        static $sp_iterateParseCache = array();
-        //如果已经解析过，则直接返回变量值
-        $cacheIterateId = to_guid_string(array($tag,$content));
-        if (isset($sp_iterateParseCache[$cacheIterateId])) {
-            return $sp_iterateParseCache[$cacheIterateId];
-        }
         //模块
         $tag['module'] = $mo = ucwords($tag['module']);
         //每页显示总数
@@ -899,8 +828,7 @@ class Shuipf extends TagLib {
         $parseStr .= ' }';
         $parseStr .= ' ?>';
         $parseStr .= $this->tpl->parse($content);
-        $sp_iterateParseCache[$cacheIterateId] = $parseStr;
-        return $sp_iterateParseCache[$cacheIterateId];
+        return $parseStr;
     }
 
     /**
