@@ -199,6 +199,10 @@ class SearchModel extends Model {
         if (!$id || !$catid || !$modelid || !$data) {
             return false;
         }
+        $info = $this->where(array("id" => $id, "catid" => $catid, "modelid" => $modelid,))->find();
+        if (empty($info)) {
+            return false;
+        }
         //发布时间
         $inputtime = $inputtime ? (int) $inputtime : time();
         $data = $this->dataHandle($data, $text);
