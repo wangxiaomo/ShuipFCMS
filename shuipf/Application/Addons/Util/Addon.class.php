@@ -115,7 +115,7 @@ abstract class Addon {
     protected function renderFile($templateFile = '') {
         if (empty($templateFile)) {
             //如果没有填写，尝试直接以当前插件名称
-            $templateFile = $this->addonPath . 'View/Behavior/' . $this->addonName . C('TMPL_TEMPLATE_SUFFIX');
+            $templateFile = $this->addonPath . 'View/Behavior/' . strtolower($this->addonName) . C('TMPL_TEMPLATE_SUFFIX');
         } else {
             $templateFile = $this->addonPath . 'View/Behavior/' . $templateFile . C('TMPL_TEMPLATE_SUFFIX');
         }
