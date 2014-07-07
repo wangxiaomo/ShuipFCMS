@@ -18,6 +18,7 @@ class ModuleModel extends Model {
     protected $_validate = array(
         //array(验证字段,验证规则,错误提示,验证条件,附加规则,验证时间)
         array('module', 'require', '模块目录名称不能为空！', 1, 'regex', 3),
+        array('sign', 'require', '模块签名不能为空！', 1, 'regex', 3),
         //array('module', 'isInstall', '该模块已经安装过了！', 0, 'callback', 1),
         array('modulename', 'require', '模块名称不能为空！', 1, 'regex', 3),
         array('version', 'require', '模块版本号不能为空！', 1, 'regex', 3),

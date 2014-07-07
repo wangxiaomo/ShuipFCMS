@@ -100,6 +100,10 @@ class AddonsModel extends Model {
             $this->error = '插件信息获取失败！';
             return false;
         }
+        //插件签名如果没有，使用name，为了兼容旧版吧
+        if (!isset($info['sign']) || empty($info['sign'])) {
+            $info['sign'] = $info['name'];
+        }
         //插件信息验证
         $data = $this->token(false)->create($info, 1);
         if (!$data) {

@@ -637,6 +637,7 @@ DROP TABLE IF EXISTS `shuipfcms_module`;
 CREATE TABLE `shuipfcms_module` (
   `module` varchar(15) NOT NULL COMMENT '模块',
   `modulename` varchar(20) NOT NULL COMMENT '模块名称',
+  `sign` varchar(255) NOT NULL COMMENT '签名',
   `iscore` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '内置模块',
   `disabled` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否可用',
   `version` varchar(50) NOT NULL DEFAULT '' COMMENT '版本',
@@ -644,7 +645,8 @@ CREATE TABLE `shuipfcms_module` (
   `installtime` int(10) NOT NULL COMMENT '安装时间',
   `updatetime` int(10) NOT NULL COMMENT '更新时间',
   `listorder` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
-  PRIMARY KEY (`module`)
+  PRIMARY KEY (`module`),
+  KEY `sign` (`sign`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='已安装模块列表';
 
 -- ----------------------------

@@ -21,6 +21,11 @@
           <td><div class="fun_tips"></div></td>
         </tr>
         <tr>
+          <th>插件签名</th>
+          <td><input type="text" name="info[sign]" class="input length_3" value="" ></td>
+          <td><div class="fun_tips">用于标识插件唯一标识，请不要使用特殊字符，推荐英文、数子、字母组成，或者md5加密后作为签名</div></td>
+        </tr>
+        <tr>
           <th>版本</th>
           <td><input type="text" name="info[version]" class="input length_3" value="" ></td>
           <td><div class="fun_tips">例如：1.0.1</div></td>

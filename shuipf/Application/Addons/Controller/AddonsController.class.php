@@ -150,6 +150,8 @@ class AddonsController extends AdminBase {
                 array('name', 'require', '插件标识不能为空！', 1, 'regex', 3),
                 array('name', '/^[a-zA-Z][a-zA-Z0-9_]+$/i', '插件标识只支持英文、数字、下划线！', 0, 'regex', 3),
                 array('name', '', '该插件标识已经存在！', 0, 'unique', 1),
+                array('sign', 'require', '插件签名不能为空！', 1, 'regex', 3),
+                array('sign', '', '该插件签名已经存在！', 0, 'unique', 1),
                 array('title', 'require', '插件名称不能为空！', 1, 'regex', 3),
                 array('version', 'require', '插件版本不能为空！', 1, 'regex', 3),
                 array('author', 'require', '插件作者不能为空！', 1, 'regex', 3),
@@ -200,6 +202,7 @@ class {$info['name']}Addon extends Addon {
         'author' => '{$info['author']}',
         'version' => '{$info['version']}',
         'has_adminlist' => {$has_adminlist},
+        'sign' => '{$info['sign']}',
     );
 ";
             if ($has_adminlist) {
