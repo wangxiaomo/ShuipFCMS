@@ -75,7 +75,7 @@ class ModuleshopController extends AdminBase {
         if (false === $data) {
             $this->error($this->Cloud->getError());
         } else {
-            $version = D('Common/Module')->where(array('module' => $data['module']))->getField('version');
+            $version = D('Common/Module')->where(array('sign' => $data['sign']))->getField('version');
             if ($version && !version_compare($version, $data['version'], '<')) {
                 $this->error('该模板无需升级！');
             }

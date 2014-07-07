@@ -54,12 +54,12 @@ class AddonshopController extends AdminBase {
 
     //云端插件下载安装
     public function install() {
-        $name = I('get.name', '', 'trim');
-        if (empty($name)) {
+        $sign = I('get.sign', '', 'trim');
+        if (empty($sign)) {
             $this->error('请选择需要安装的插件！');
         }
-        $this->assign('stepUrl', U('public_step_1', array('name' => $name)));
-        $this->assign('name', $name);
+        $this->assign('stepUrl', U('public_step_1', array('sign' => $sign)));
+        $this->assign('sign', $sign);
         $this->display();
     }
 
@@ -68,8 +68,8 @@ class AddonshopController extends AdminBase {
         if (\Libs\System\RBAC::authenticate('install') !== true) {
             $this->errors('您没有该项权限！');
         }
-        $name = I('get.name', '', 'trim');
-        if (empty($name)) {
+        $sign = I('get.sign', '', 'trim');
+        if (empty($sign)) {
             $this->error('请选择需要安装的插件！');
         }
         $cache = S('Cloud');
@@ -81,7 +81,7 @@ class AddonshopController extends AdminBase {
             $this->errors($this->Cloud->getError());
         }
         //获取插件信息
-        $data = $this->Cloud->data(array('name' => $name))->act('get.addons.info');
+        $data = $this->Cloud->data(array('sign' => $sign))->act('get.addons.info');
         if (false === $data) {
             $this->error($this->Cloud->getError());
         } else {
@@ -90,14 +90,13 @@ class AddonshopController extends AdminBase {
         if (empty($data)) {
             $this->errors('获取不到需要安装的插件信息缓存！');
         }
-        $name = $data['name'];
-        $path = PROJECT_PATH . 'Addon/' . $name;
+        $path = PROJECT_PATH . 'Addon/' . $data['name'];
         //检查是否有同样的插件目录存在
         if (file_exists($path)) {
             $this->errors("目录：{$path} 已经存在，无法安装在同一目录！");
         }
         //获取下载地址
-        $packageUrl = $this->Cloud->data(array('name' => $name))->act('get.addons.install.package.url');
+        $packageUrl = $this->Cloud->data(array('sign' => $sign))->act('get.addons.install.package.url');
         if (empty($packageUrl)) {
             $this->errors($this->Cloud->getError());
         }
@@ -148,8 +147,8 @@ class AddonshopController extends AdminBase {
 
     //插件升级
     public function upgrade() {
-        $name = I('get.name', '', 'trim');
-        if (empty($name)) {
+        $sign = I('get.sign', '', 'trim');
+        if (empty($sign)) {
             $this->error('请选择需要升级的插件！');
         }
         $cache = S('Cloud');
@@ -161,11 +160,11 @@ class AddonshopController extends AdminBase {
             $this->error($this->Cloud->getError());
         }
         //获取插件信息
-        $data = $this->Cloud->data(array('name' => $name))->act('get.addons.info');
+        $data = $this->Cloud->data(array('sing' => $sign))->act('get.addons.info');
         if (false === $data) {
             $this->error($this->Cloud->getError());
         } else {
-            $version = M('Addons')->where(array('name' => $data['name']))->getField('version');
+            $version = M('Addons')->where(array('sign' => $data['sign']))->getField('version');
             if ($version && !version_compare($version, $data['version'], '<')) {
                 $this->error('该插件无需升级！');
             }
@@ -184,17 +183,17 @@ class AddonshopController extends AdminBase {
         if (empty($data)) {
             $this->errors('获取不到需要升级的插件信息缓存！');
         }
-        $name = $data['name'];
+        $sign = $data['sign'];
         //检查是否安装
         if (!D('Addons/Addons')->isInstall($data['name'])) {
             $this->errors("没有安装该插件无法升级！");
         }
-        $config = M('Addons')->where(array('name' => $name))->find();
+        $config = M('Addons')->where(array('sign' => $sign))->find();
         if (empty($config)) {
             $this->errors("无法获取插件安装信息！");
         }
         //获取下载地址
-        $packageUrl = $this->Cloud->data(array('name' => $name, 'version' => $config['version']))->act('get.addons.upgrade.package.url');
+        $packageUrl = $this->Cloud->data(array('sign' => $sign, 'version' => $config['version']))->act('get.addons.upgrade.package.url');
         if (empty($packageUrl)) {
             $this->errors($this->Cloud->getError());
         }
@@ -245,18 +244,18 @@ class AddonshopController extends AdminBase {
 
     //获取插件使用说明
     public function public_explanation() {
-        $name = I('get.name');
-        if (empty($name)) {
+        $sign = I('get.sign');
+        if (empty($sign)) {
             $this->error('缺少参数！');
         }
         $parameter = array(
-            'name' => $name
+            'sign' => $sign
         );
         $data = $this->Cloud->data($parameter)->act('get.addons.explanation');
         if (false === $data) {
             $this->error($this->Cloud->getError());
         }
-        $this->ajaxReturn(array('status' => true, 'name' => $name, 'data' => $data));
+        $this->ajaxReturn(array('status' => true, 'sign' => $sign, 'data' => $data));
     }
 
     protected function errors($message = '', $jumpUrl = '', $ajax = false) {

@@ -54,9 +54,9 @@ function getStep(url){
 	});
 }
 //获取使用说明
-function getExplanation(name){
+function getExplanation(sign){
 	$('#record ul').append('<li>获取插件安装使用说明....</li>');
-	$.getJSON('{:U("public_explanation")}',{ name:name },function(data){
+	$.getJSON('{:U("public_explanation")}',{ sign:sign },function(data){
 		if(data.status){
 			$('#record ul').append('<li>获取插件安装使用说明成功....</li>');
 			$('#explanation').html(data.data);
@@ -70,7 +70,7 @@ function step(url){
 	getStep(url);
 }
 $(function(){
-	getExplanation('{$name}');
+	getExplanation('{$sign}');
 	$('#cloud_start').click(function(){
 		$(this).hide();
 		$('#record ul').append('<li>开始执行安装....</li>');
