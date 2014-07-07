@@ -20,8 +20,6 @@ abstract class Addon {
     public $configFile = NULL;
     //插件目录
     public $addonPath = NULL;
-    // 使用的模板引擎 每个行为可以单独配置不受系统影响
-    protected $template = 'Think';
 
     /**
      * 模板输出变量
@@ -117,9 +115,9 @@ abstract class Addon {
     protected function renderFile($templateFile = '') {
         if (empty($templateFile)) {
             //如果没有填写，尝试直接以当前插件名称
-            $templateFile = $this->addonPath . 'Tpl/Behavior/' . $this->addonName . C('TMPL_TEMPLATE_SUFFIX');
+            $templateFile = $this->addonPath . 'View/Behavior/' . $this->addonName . C('TMPL_TEMPLATE_SUFFIX');
         } else {
-            $templateFile = $this->addonPath . 'Tpl/Behavior/' . $templateFile . C('TMPL_TEMPLATE_SUFFIX');
+            $templateFile = $this->addonPath . 'View/Behavior/' . $templateFile . C('TMPL_TEMPLATE_SUFFIX');
         }
         //检查模板
         if (!is_file($templateFile)) {
@@ -130,38 +128,14 @@ abstract class Addon {
         }
         ob_start();
         ob_implicit_flush(0);
-        $template = strtolower($this->template ? $this->template : (C('TMPL_ENGINE_TYPE') ? C('TMPL_ENGINE_TYPE') : 'php'));
-        if ('php' == $template) {
-            // 使用PHP模板
-            if (!empty($this->tVar))
-                extract($this->tVar, EXTR_OVERWRITE);
-            // 直接载入PHP模板
-            include $templateFile;
-        }elseif ('think' == $template) { // 采用Think模板引擎
-            if ($this->checkCache($templateFile)) { // 缓存有效
-                // 分解变量并载入模板缓存
-                extract($this->tVar, EXTR_OVERWRITE);
-                //载入模版缓存文件
-                include C('CACHE_PATH') . md5($templateFile) . C('TMPL_CACHFILE_SUFFIX');
-            } else {
-                //如果取不到相关配置，尝试加载下ParseTemplate行为
-                if (!C('TMPL_L_DELIM')) {
-                    B('ParseTemplate');
-                }
-                $tpl = Think::instance('ThinkTemplate');
-                // 编译并加载模板文件
-                $tpl->fetch($templateFile, $this->tVar);
-            }
+        if ($this->checkCache($templateFile)) { // 缓存有效
+            // 分解变量并载入模板缓存
+            extract($this->tVar, EXTR_OVERWRITE);
+            //载入模版缓存文件
+            include C('CACHE_PATH') . md5($templateFile) . C('TMPL_CACHFILE_SUFFIX');
         } else {
-            $class = 'Template' . ucwords($template);
-            if (is_file(CORE_PATH . 'Driver/Template/' . $class . '.class.php')) {
-                // 内置驱动
-                $path = CORE_PATH;
-            } else { // 扩展驱动
-                $path = EXTEND_PATH;
-            }
-            require_cache($path . 'Driver/Template/' . $class . '.class.php');
-            $tpl = new $class;
+            $tpl = \Think\Think::instance('\\Think\\Template');
+            // 编译并加载模板文件
             $tpl->fetch($templateFile, $this->tVar);
         }
         $content = ob_get_clean();
