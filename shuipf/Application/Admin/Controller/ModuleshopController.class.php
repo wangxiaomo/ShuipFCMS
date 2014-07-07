@@ -27,7 +27,7 @@ class ModuleshopController extends AdminBase {
             }
             $data['data'] = $data['data']? : array();
             foreach ($data['data'] as $sign => $rs) {
-                $version = D('Common/Module')->where(array('module' => $rs['module']))->getField('version');
+                $version = D('Common/Module')->where(array('sign' => $rs['sign']))->getField('version');
                 if ($version && version_compare($version, $rs['version'], '<')) {
                     $data['data'][$sign]['upgrade'] = true;
                     $data['data'][$sign]['newVersion'] = $rs['version'];
@@ -181,7 +181,6 @@ class ModuleshopController extends AdminBase {
         if (empty($data)) {
             $this->errors('获取不到需要安装的模块信息缓存！');
         }
-        $sign = $data['sign'];
         $path = APP_PATH . $data['module'];
         //检查是否有同样的模块目录存在
         if (file_exists($path)) {

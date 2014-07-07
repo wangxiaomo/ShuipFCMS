@@ -34,7 +34,7 @@ class AddonshopController extends AdminBase {
             }
             $data['data'] = $data['data']? : array();
             foreach ($data['data'] as $sign => $rs) {
-                $version = M('Addons')->where(array('name' => $rs['name']))->getField('version');
+                $version = M('Addons')->where(array('sign' => $rs['sign']))->getField('version');
                 if ($version && version_compare($version, $rs['version'], '<')) {
                     $data['data'][$sign]['upgrade'] = true;
                     $data['data'][$sign]['newVersion'] = $rs['version'];

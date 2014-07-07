@@ -22,11 +22,11 @@
           <?php
 		  $op = array();
 		  if(!D('Addons/Addons')->isInstall($vo['name'])){
-			  $op[] = '<a href="'.U('install',array('name'=>$vo['name'])).'" class="btn btn_submit mr5 Js_install">安装</a>';
+			  $op[] = '<a href="'.U('install',array('sign'=>$vo['sign']?:$vo['name'])).'" class="btn btn_submit mr5 Js_install">安装</a>';
 		  }else{
 			 //有安装，检测升级
 			 if($vo['upgrade']){
-				 $op[] = '<a href="'.U('upgrade',array('name'=>$vo['name'])).'" class="btn btn_submit mr5 Js_upgrade" id="upgrade_tips_'.$vo['name'].'">升级到最新'.$vo['newVersion'].'</a>';
+				 $op[] = '<a href="'.U('upgrade',array('sign'=>$vo['sign']?:$vo['name'])).'" class="btn btn_submit mr5 Js_upgrade" id="upgrade_tips_'.$vo['name'].'">升级到最新'.$vo['newVersion'].'</a>';
 			 }
 		  }
 		  echo implode('  ',$op);
