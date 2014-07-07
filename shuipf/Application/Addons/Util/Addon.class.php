@@ -1,7 +1,7 @@
 <?php
 
 // +----------------------------------------------------------------------
-// | ShuipFCMS 数据库备份 插件
+// | ShuipFCMS Addon
 // +----------------------------------------------------------------------
 // | Copyright (c) 2012-2014 http://www.shuipfcms.com, All rights reserved.
 // +----------------------------------------------------------------------
@@ -13,7 +13,7 @@ namespace Addons\Util;
 abstract class Addon {
 
     //视图实例对象
-    protected $view = null;
+    protected $view = NULL;
     //插件名称
     public $addonName = NULL;
     //插件配置文件
@@ -32,7 +32,7 @@ abstract class Addon {
      * 架构函数 取得模板对象实例
      * @access public
      */
-    final public function __construct() {
+    public function __construct() {
         //获取插件名称
         $this->addonName = $this->getAddonName();
         //插件目录
@@ -50,7 +50,7 @@ abstract class Addon {
      * 获取插件名称
      * @return type
      */
-    final public function getAddonName() {
+    public function getAddonName() {
         $class = end(explode('\\', get_class($this)));
         return substr($class, 0, strrpos($class, 'Addon'));
     }
@@ -61,7 +61,7 @@ abstract class Addon {
      * @param type $name
      * @return type
      */
-    final public function getAddonConfig($name = NULL) {
+    public function getAddonConfig($name = NULL) {
         static $_config = array();
         if (empty($name)) {
             $name = $this->addonName;
