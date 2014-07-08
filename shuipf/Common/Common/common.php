@@ -842,7 +842,7 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
     //取得图片相关信息
     list($width_t, $height_t, $type, $attr) = getimagesize($imgPath);
     //如果高是0，自动计算高
-    if ($height < 0) {
+    if ($height <= 0) {
         $height = round(($width / $width_t) * $height_t);
     }
     //判断生成的缩略图大小是否正常
