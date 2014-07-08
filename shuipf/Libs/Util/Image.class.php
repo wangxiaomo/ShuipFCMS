@@ -297,7 +297,11 @@ class Image {
             //ImageString($thumbImg,2,5,5,"ThinkPHP",$gray);
             // 生成图片
             $imageFun = 'image' . ($type == 'jpg' ? 'jpeg' : $type);
-            $imageFun($thumbImg, $thumbname);
+            if ($type == 'png') {
+                $imageFun($thumbImg, $thumbname, 0); //png 0-9
+            } else {
+                $imageFun($thumbImg, $thumbname, 100); //jpg 100-0
+            }
             imagedestroy($thumbImg);
             imagedestroy($srcImg);
             return $thumbname;
@@ -371,7 +375,11 @@ class Image {
 
             // 生成图片
             $imageFun = 'image' . ($type == 'jpg' ? 'jpeg' : $type);
-            $imageFun($thumbImg, $thumbname);
+            if ($type == 'png') {
+                $imageFun($thumbImg, $thumbname, 0); //png 0-9
+            } else {
+                $imageFun($thumbImg, $thumbname, 100); //jpg 100-0
+            }
             imagedestroy($thumbImg);
             imagedestroy($srcImg);
             return $thumbname;

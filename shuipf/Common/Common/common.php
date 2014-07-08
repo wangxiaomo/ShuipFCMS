@@ -811,7 +811,7 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
     if (isset($_thumb_cache[$key])) {
         return $_thumb_cache[$key];
     }
-    if (!$width || !$height) {
+    if (!$width) {
         return $smallpic;
     }
     //当获取不到DOCUMENT_ROOT值时的操作！
@@ -841,6 +841,10 @@ function thumb($imgurl, $width = 100, $height = 100, $thumbType = 0, $smallpic =
     }
     //取得图片相关信息
     list($width_t, $height_t, $type, $attr) = getimagesize($imgPath);
+    //如果高是0，自动计算高
+    if ($height < 0) {
+        $height = round(($width / $width_t) * $height_t);
+    }
     //判断生成的缩略图大小是否正常
     if ($width >= $width_t || $height >= $height_t) {
         return $imgurl;
