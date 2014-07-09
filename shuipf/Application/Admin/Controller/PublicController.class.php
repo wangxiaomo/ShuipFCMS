@@ -56,6 +56,13 @@ class PublicController extends AdminBase {
             tag('admin_public_tologin', $admin_public_tologin);
             $this->redirect('Index/index');
         } else {
+            //增加登陆失败行为调用
+            $admin_public_tologin = array(
+                'username' => $username,
+                'password' => $password,
+                'ip' => $ip,
+            );
+            tag('admin_public_tologin_error', $admin_public_tologin);
             $this->error("用户名或者密码错误，登陆失败！", U("Public/login"));
         }
     }
