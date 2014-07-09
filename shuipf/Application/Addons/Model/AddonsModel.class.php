@@ -113,7 +113,7 @@ class AddonsModel extends Model {
         $install = $addonObj->install();
         if ($install !== true) {
             if (method_exists($addonObj, 'getError')) {
-                $this->error = $addonObj->getError() ? $addonObj->getError() : '执行插件预安装操作失败！';
+                $this->error = $addonObj->getError() ? : '执行插件预安装操作失败！';
             } else {
                 $this->error = '执行插件预安装操作失败！';
             }
@@ -211,45 +211,37 @@ class AddonsModel extends Model {
         //检查模块是否安装
         if ($this->isInstall($addonName) == false) {
             $this->error = '插件没进行安装，无法进行插件升级！';
-            return -10025;
+            return false;
         }
         //获取插件信息
         $info = $this->where(array('name' => $addonName))->find();
         if (empty($info)) {
             $this->error = '获取插件信息错误！';
-            return -10026;
+            return false;
         }
         //插件路径
         $base = $this->addonsPath . $addonName . '/';
-        //SQL脚本文件
-        $exec = $base . 'upgrade.sql';
+        //SQL升级脚本文件
+        $exec = $base . 'Upgrade/Upgrade.sql';
         //phpScript
-        $phpScript = $base . 'Upgrade.class.php';
+        $phpScript = $base . 'Upgrade/Upgrade.class.php';
         //判断是否有数据库升级脚本
         if (file_exists($exec)) {
-            //获取全部参数
-            preg_match_all("/#\[version=(.*?)\](.+?)#\[\/version\]/ism", file_get_contents($exec), $match);
-            //遍历
-            foreach ($match[1] as $index => $version) {
-                //比较模块版本，仅处理小于或等于当前版本
-                if ($version && version_compare($version, $info['version'], '>=')) {
-                    $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
-                    if (!empty($sql) && is_array($sql)) {
-                        foreach ($sql as $sql_split) {
-                            $this->execute($sql_split);
-                        }
-                    }
+            $sql = $this->sqlSplit(file_get_contents($exec), C("DB_PREFIX"));
+            if (!empty($sql) && is_array($sql)) {
+                foreach ($sql as $sql_split) {
+                    $this->execute($sql_split);
                 }
             }
         }
         //判断是否有升级程序脚本
-        if (file_exists($phpScript)) {
-            require_cache($phpScript);
-            if (class_exists('Upgrade')) {
-                $Upgrade = new Upgrade();
-                if ($Upgrade->run() == false) {
-                    $this->error = $Upgrade->getError() ? $Upgrade->getError() : "执行插件升级脚本错误，升级未完成！";
-                    return -10027;
+        if (require_cache($phpScript)) {
+            $class = "\\Addon\\{$addonName}\\Upgrade\\Upgrade";
+            if (class_exists($class)) {
+                $Upgrade = new $class();
+                if ($Upgrade->run() != true) {
+                    $this->error = $Upgrade->getError() ? : "执行插件升级脚本错误，升级未完成！";
+                    return false;
                 }
             }
         }
