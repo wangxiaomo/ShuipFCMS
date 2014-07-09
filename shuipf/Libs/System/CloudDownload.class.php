@@ -217,11 +217,25 @@ class CloudDownload {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             $temp = curl_exec($ch);
-            if (file_put_contents($file, $temp) && !curl_error($ch)) {
-                return $file;
+            if (!curl_error($ch)) {
+                if (empty($temp)) {
+                    $this->error = '下载失败，下载的文件为空！';
+                    return false;
+                }
+                if (file_put_contents($file, $temp)) {
+                    return $file;
+                } else {
+                    $this->error = "保存文件失败！文件:{$file}";
+                    return false;
+                }
             } else {
+                $error = curl_error($ch);
+                $this->error = "Curl 下载出现错误！";
+                if ($error) {
+                    $this->error .= "错误信息：{$error}";
+                }
                 return false;
             }
         } else {
@@ -242,6 +256,7 @@ class CloudDownload {
             if ($res) {
                 return $file;
             }
+            $this->error = '使用 copy 下载文件失败，请检查防火墙，或者网络不稳定请稍后！';
             return false;
         }
     }
