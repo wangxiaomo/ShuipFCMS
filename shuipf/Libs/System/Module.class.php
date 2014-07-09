@@ -338,29 +338,8 @@ class Module {
             $this->error = '该模块未安装，无需升级！';
             return false;
         }
-        //模块路径
-        $base = $this->appPath . $moduleName . '/';
-        //SQL脚本文件
-        $exec = $base . 'Upgrade/Upgrade.sql';
-        //判断是否有数据库升级脚本
-        if (file_exists($exec)) {
-            //获取全部参数
-            preg_match_all("/#\[version=(.*?)\](.+?)#\[\/version\]/ism", file_get_contents($exec), $match);
-            //遍历
-            foreach ($match[1] as $index => $version) {
-                //比较模块版本，仅处理小于或等于当前版本
-                if ($version && version_compare($version, $info['version'], '>=')) {
-                    //记录最后一个更新的版本号
-                    $upgradeVersion = $version;
-                    $sql = $this->sqlSplit($sql, C("DB_PREFIX"));
-                    if (!empty($sql) && is_array($sql)) {
-                        foreach ($sql as $sql_split) {
-                            $this->execute($sql_split);
-                        }
-                    }
-                }
-            }
-        }
+        //执行数据库升级脚本
+        $this->runSQL($moduleName, 'Upgrade');
         //执行卸载脚本
         if (!$this->runInstallScript($moduleName, 'Upgrade')) {
             $this->installRollback($moduleName);
