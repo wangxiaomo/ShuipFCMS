@@ -98,8 +98,8 @@ class Cloud {
         $key = $this->getTokenKey();
         $token = S($key);
         if (empty($token)) {
-            $token = \Libs\Util\Encrypt::authcode($this->act('get.token'), 'DECODE', C('CLOUD_USERNAME'));
-            S($key,$token,3600);
+            $this->act('get.token');
+            $token = S($key);
         }
         $this->token = $token;
         return true;
