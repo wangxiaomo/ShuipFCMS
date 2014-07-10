@@ -10,7 +10,7 @@
 
 return array(
     "SHUIPF_APPNAME" => "ShuipFCMS内容管理系统", //产品名称
-    "SHUIPF_BUILD" => 20140704, //产品流水号
+    "SHUIPF_BUILD" => 20140710, //产品流水号
     "SHUIPF_VERSION" => "2.0.1", //产品版本号
 );
 
