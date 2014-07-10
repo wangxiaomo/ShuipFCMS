@@ -39,7 +39,7 @@ class Module {
      * @return void
      */
     static public function getInstance() {
-        return \Think\Think::instance('Module');
+        return \Think\Think::instance('\\Libs\\System\\Module');
     }
 
     /**
