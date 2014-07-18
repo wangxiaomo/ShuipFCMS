@@ -16,7 +16,7 @@
 <script src="{$config_siteurl}statics/js/common.js"></script>
 <script>
 $(function(){
-	$.get('{:U("index")}',{ page:'{$page}' },function(data){
+	$.get('{:U("index")}',{ page:'{$page}',r:Math.random() },function(data){
 		$('#loadhtml').append(data);
 		$('div.loading').hide();
 	});
