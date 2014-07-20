@@ -11,12 +11,23 @@
       <li>官网地址：<font color="#FF0000">http://www.shuipfcms.com</font>，<a href="http://www.shuipfcms.com" target="_blank">立即前往</a>！</li>
     </ul>
   </div>
+  <div class="h_a">搜索</div>
+  <div class="search_type  mb10">
+    <form action="{:U('index')}" method="post">
+      <div class="mb10">
+        <div class="mb10"> <span class="mr20"> 插件名称：
+          <input type="text" class="input length_2" name="keyword" style="width:200px;" value="{$keyword}" placeholder="请输入关键字...">
+          <button class="btn">搜索</button>
+          </span> </div>
+      </div>
+    </form>
+  </div>
   <div class="loading">loading...</div>
 </div>
 <script src="{$config_siteurl}statics/js/common.js"></script>
 <script>
 $(function(){
-	$.get('{:U("index")}',{ page:'{$page}',r:Math.random() },function(data){
+	$.get('{:U("index")}',{ page:'{$page}',keyword:'{$keyword}',r:Math.random() },function(data){
 		$('#loadhtml').append(data);
 		$('div.loading').hide();
 	});

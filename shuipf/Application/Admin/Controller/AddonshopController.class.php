@@ -23,10 +23,18 @@ class AddonshopController extends AdminBase {
 
     //在线插件列表
     public function index() {
+        if (IS_POST) {
+            $this->redirect('index', $_POST);
+        }
         $parameter = array(
             'page' => $_GET[C('VAR_PAGE')]? : 1,
             'paging' => 10,
         );
+        $keyword = I('get.keyword', '', 'trim');
+        if (!empty($keyword)) {
+            $parameter['keyword'] = $keyword;
+            $this->assign('keyword', $keyword);
+        }
         if (IS_AJAX) {
             $data = $this->Cloud->data($parameter)->act('get.addons.list');
             if (false === $data) {

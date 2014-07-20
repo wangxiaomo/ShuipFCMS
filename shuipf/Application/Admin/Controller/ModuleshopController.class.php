@@ -16,10 +16,18 @@ class ModuleshopController extends AdminBase {
 
     //在线模块列表
     public function index() {
+        if (IS_POST) {
+            $this->redirect('index', $_POST);
+        }
         $parameter = array(
             'page' => $_GET[C('VAR_PAGE')]? : 1,
             'paging' => 10,
         );
+        $keyword = I('get.keyword', '', 'trim');
+        if (!empty($keyword)) {
+            $parameter['keyword'] = $keyword;
+            $this->assign('keyword', $keyword);
+        }
         if (IS_AJAX) {
             $data = $this->Cloud->data($parameter)->act('get.module.list');
             if (false === $data) {
@@ -51,7 +59,7 @@ class ModuleshopController extends AdminBase {
         if (empty($sign)) {
             $this->error('请选择需要安装的模块！');
         }
-        $this->assign('stepUrl', U('public_step_1',array('sign'=>$sign)));
+        $this->assign('stepUrl', U('public_step_1', array('sign' => $sign)));
         $this->assign('sign', $sign);
         $this->display();
     }
