@@ -236,6 +236,10 @@ class PositionController extends AdminBase {
             $categorys = array();
             foreach ($result as $r) {
                 $r = getCategory($r['catid']);
+                //过滤非普通栏目信息
+                if ($r['type'] != 0) {
+                    continue;
+                }
                 $categorys[$r['catid']] = $r['catname'];
                 if ($r['child'] != 0) {
                     unset($categorys[$r['catid']]);
