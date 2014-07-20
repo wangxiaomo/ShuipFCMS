@@ -243,6 +243,7 @@ class AddonshopController extends AdminBase {
         $name = I('get.name');
         S('Cloud', NULL);
         if (D('Addons/Addons')->upgradeAddon($name)) {
+            ShuipFCMS()->Dir->delDir(PROJECT_PATH . "Addon/{$name}/Upgrade/");
             $this->success('插件升级成功！');
         } else {
             $error = $this->Module->error;

@@ -154,7 +154,7 @@ class ModuleshopController extends AdminBase {
         $module = I('get.module');
         S('Cloud', NULL);
         if ($this->Module->upgrade($module)) {
-            ShuipFCMS()->Dir->delDir(APP_PATH . "{$module}/upgrade/");
+            ShuipFCMS()->Dir->delDir(APP_PATH . "{$module}/Upgrade/");
             $this->success('模块升级成功！');
         } else {
             $error = $this->Module->error;
