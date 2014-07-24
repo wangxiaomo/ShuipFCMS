@@ -150,7 +150,7 @@ class Html extends Base {
                     //$pagenumber 分页总数
                     $_GET[C('VAR_PAGE')] = $page;
                     $pages = page($pagenumber, 1, $page, array('isrule' => true, 'rule' => $pageurl,))->show();
-                    $content = $contents[$page];
+                    $content = $contents[$page-1];
                     //分页
                     $this->assign('pages', $pages);
                     $this->assign('content', $content);
