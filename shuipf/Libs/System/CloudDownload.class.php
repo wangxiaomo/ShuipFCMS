@@ -83,6 +83,10 @@ class CloudDownload {
             $this->error = '移动文件到指定目录错误，原因：文件列表为空！';
             return false;
         }
+        //权限检查
+        if ($this->competence($tmpdir, $newdir) !== true) {
+            return false;
+        }
         //批量迁移文件
         foreach ($list as $file) {
             $newd = str_replace($tmpdir, $newdir, $file);
@@ -127,6 +131,56 @@ class CloudDownload {
         }
         //删除临时目录
         ShuipFCMS()->Dir->delDir($tmpdir);
+        return true;
+    }
+
+    /**
+     * 文件权限检查
+     * @param type $tmpdir 需要移动的文件路径
+     * @param type $newdir 目标路径
+     * @return boolean
+     */
+    public function competence($tmpdir, $newdir) {
+        $list = $this->rglob($tmpdir . '*', GLOB_BRACE);
+        if (empty($list)) {
+            return true;
+        }
+        //权限检查
+        foreach ($list as $file) {
+            $newd = str_replace($tmpdir, $newdir, $file);
+            //目录
+            $dirname = dirname($newd);
+            if (file_exists($dirname) == false && mkdir($dirname, 0777, TRUE) == false) {
+                $this->error = "创建文件夹{$dirname}失败！";
+                return false;
+            }
+            //检查缓存包中的文件如果文件或者文件夹存在，但是不可写提示错误
+            if (file_exists($file) && is_writable($file) == false) {
+                $this->error = "文件或者目录{$file}，不可写！";
+                return false;
+            }
+            //检查目标文件是否存在，如果文件或者文件夹存在，但是不可写提示错误
+            if (file_exists($newd) && is_writable($newd) == false) {
+                $this->error = "文件或者目录{$newd}，不可写！";
+                return false;
+            }
+            //检查缓存包对应的文件是否文件夹，如果是，则创建文件夹
+            if (is_dir($file)) {
+                //文件夹不存在则创建
+                if (file_exists($newd) == false && mkdir($newd, 0777, TRUE) == false) {
+                    $this->error = "创建文件夹{$newd}失败！";
+                    return false;
+                }
+            } else {
+                //========文件处理！=============
+                if (file_exists($newd)) {
+                    if (!is_writable($newd)) {
+                        $this->error = "文件 {$newd} 不可写！";
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
     }
 
