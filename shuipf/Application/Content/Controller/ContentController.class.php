@@ -327,6 +327,7 @@ class ContentController extends AdminBase {
             if (trim($_POST['info']['title']) == '') {
                 $this->error("标题不能为空！");
             }
+            $id = $id? : $_POST['info']['id'];
             //取得原有文章信息
             $data = $model->where(array("id" => $id))->find();
             //如果有自定义文件名，需要删除原来生成的静态文件

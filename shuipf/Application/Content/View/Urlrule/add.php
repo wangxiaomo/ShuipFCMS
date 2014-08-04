@@ -6,7 +6,7 @@
   <div class="h_a">温馨提示</div>
   <div class="prompt_text">
     <p>实现伪静态地址，规则需要自己写，同时也要服务器支持！<br/>
-      例如实现伪静态这样的：http://www.abc3210.com/tag-标签.html ，URL规则是：tag-{$tag}.html|/tag-{$tag}-{$page}.html，服务器上设置，如果是.htaccess则规则是：RewriteRule ^(tag|Tag)-(.*?)\.html$ index.php?g=Tags&m=Index&a=index&tag=$2</p>
+      例如实现伪静态这样的：http://www.abc3210.com/tag-标签.html ，URL规则是：tag-{$tag}.html|/tag-{$tag}-{$page}.html，服务器上设置，如果是.htaccess则规则是：RewriteRule ^(tag|Tag)-(.*?)\.html$ /Tags/Index/index/tag/$2</p>
   </div>
   <div class="h_a">规则内容</div>
   <form action="{:U("Urlrule/add")}" method="post" name="myform" class="J_ajaxForm">
