@@ -759,7 +759,7 @@ class ContentController extends AdminBase {
                 $r = getCategory($r['catid']);
                 if ($r['type'])
                     continue;
-                if ($modelid && $modelid != $r['modelid'] && $r['child'] != 0)
+                if ($modelid && $modelid != $r['modelid'] && $r['child']==0)
                     continue;
                 $r['disabled'] = $r['child'] ? 'disabled' : '';
                 $r['selected'] = $cid == $catid ? 'selected' : '';
