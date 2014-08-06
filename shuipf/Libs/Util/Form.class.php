@@ -339,7 +339,7 @@ class Form {
         if (empty($config['theme'])) {
             $config['theme'] = "Default";
         }
-        $filepath = TEMPLATE_PATH . $config['theme'] . "/Contents" . DIRECTORY_SEPARATOR;
+        $filepath = TEMPLATE_PATH . $config['theme'] . "/Content" . DIRECTORY_SEPARATOR;
         $tp_show = str_replace($filepath . "Show" . DIRECTORY_SEPARATOR, "", glob($filepath . "Show" . DIRECTORY_SEPARATOR . 'show*'));
         foreach ($tp_show as $k => $v) {
             $tp_show[$v] = $v;
