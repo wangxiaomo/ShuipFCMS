@@ -21,7 +21,6 @@ class AppInitBehavior {
         // 注册AUTOLOAD方法
         spl_autoload_register('Common\Behavior\AppInitBehavior::autoload');
         //检查是否安装
-        $this->richterInstall();
         if ($this->richterInstall() == false) {
             redirect('./install.php');
             return false;
