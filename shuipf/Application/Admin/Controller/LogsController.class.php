@@ -29,13 +29,15 @@ class LogsController extends AdminBase {
             $where['username'] = array('like', '%' . $username . '%');
         }
         if (!empty($start_time) && !empty($end_time)) {
-            $where['_string'] = " `logintime` >'$start_time' AND  `logintime`<'$end_time' ";
+            $start_time = strtotime($start_time);
+            $end_time = strtotime($end_time) + 86399;
+            $where['logintime'] = array(array('GT', $start_time), array('LT', $start_time), 'AND');
         }
         if (!empty($loginip)) {
-            $where['loginip '] = array('like', '%' . $loginip . '%');
+            $where['loginip '] = array('like', "%{$loginip}%");
         }
         if ($status != '') {
-            $where['status'] = array('eq', $status);
+            $where['status'] = $status;
         }
         $model = D("Admin/Loginlog");
         $count = $model->where($where)->count();
@@ -66,27 +68,24 @@ class LogsController extends AdminBase {
         $end_time = I('end_time');
         $ip = I('ip');
         $status = I('status');
+        $where = array();
         if (!empty($uid)) {
-            $data['uid'] = array('eq', $uid);
+            $where['uid'] = array('eq', $uid);
         }
         if (!empty($start_time) && !empty($end_time)) {
-            $data['_string'] = " `time` >'$start_time' AND  `time`<'$end_time' ";
+            $start_time = strtotime($start_time);
+            $end_time = strtotime($end_time) + 86399;
+            $where['time'] = array(array('GT', $start_time), array('LT', $start_time), 'AND');
         }
         if (!empty($ip)) {
-            $data['ip '] = array('like', '%' . $ip . '%');
+            $where['ip '] = array('like', "%{$ip}%");
         }
         if ($status != '') {
-            $data['status'] = array('eq', (int) $status);
+            $where['status'] = (int) $status;
         }
-        if (is_array($data)) {
-            $data['_logic'] = 'or';
-            $map['_complex'] = $data;
-        } else {
-            $map = array();
-        }
-        $count = M("Operationlog")->where($map)->count();
+        $count = M("Operationlog")->where($where)->count();
         $page = $this->page($count, 20);
-        $Logs = M("Operationlog")->where($map)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "desc"))->select();
+        $Logs = M("Operationlog")->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array("id" => "desc"))->select();
         $this->assign("Page", $page->show());
         $this->assign("logs", $Logs);
         $this->display();
