@@ -31,7 +31,7 @@ class LogsController extends AdminBase {
         if (!empty($start_time) && !empty($end_time)) {
             $start_time = strtotime($start_time);
             $end_time = strtotime($end_time) + 86399;
-            $where['logintime'] = array(array('GT', $start_time), array('LT', $start_time), 'AND');
+            $where['logintime'] = array(array('GT', $start_time), array('LT', $end_time), 'AND');
         }
         if (!empty($loginip)) {
             $where['loginip '] = array('like', "%{$loginip}%");
@@ -75,7 +75,7 @@ class LogsController extends AdminBase {
         if (!empty($start_time) && !empty($end_time)) {
             $start_time = strtotime($start_time);
             $end_time = strtotime($end_time) + 86399;
-            $where['time'] = array(array('GT', $start_time), array('LT', $start_time), 'AND');
+            $where['time'] = array(array('GT', $start_time), array('LT', $end_time), 'AND');
         }
         if (!empty($ip)) {
             $where['ip '] = array('like', "%{$ip}%");
