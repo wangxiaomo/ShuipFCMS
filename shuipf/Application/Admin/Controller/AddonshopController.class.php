@@ -161,14 +161,14 @@ class AddonshopController extends AdminBase {
         }
         $cache = S('Cloud');
         if (!empty($cache)) {
-            //$this->error('已经有任务在执行，请稍后！');
+            $this->error('已经有任务在执行，请稍后！');
         }
         //帐号权限检测
         if ($this->Cloud->competence() == false) {
             $this->error($this->Cloud->getError());
         }
         //获取插件信息
-        $data = $this->Cloud->data(array('sing' => $sign))->act('get.addons.info');
+        $data = $this->Cloud->data(array('sign' => $sign))->act('get.addons.info');
         if (false === $data) {
             $this->error($this->Cloud->getError());
         } else {
