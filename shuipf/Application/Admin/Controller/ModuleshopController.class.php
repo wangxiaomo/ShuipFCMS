@@ -241,6 +241,8 @@ class ModuleshopController extends AdminBase {
             $this->success('模块安装成功！');
         } else {
             $error = $this->Module->error;
+            //删除目录
+            ShuipFCMS()->Dir->delDir(APP_PATH . $module);
             $this->error($error ? $error : '模块安装失败！');
         }
     }

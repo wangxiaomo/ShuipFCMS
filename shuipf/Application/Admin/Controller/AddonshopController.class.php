@@ -149,6 +149,8 @@ class AddonshopController extends AdminBase {
             $this->success('插件安装成功！');
         } else {
             $error = D('Addons/Addons')->getError();
+            //删除目录
+            ShuipFCMS()->Dir->delDir(PROJECT_PATH . 'Addon/' . $name);
             $this->error($error ? $error : '插件安装失败！');
         }
     }
