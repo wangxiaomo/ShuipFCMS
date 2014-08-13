@@ -58,6 +58,7 @@ class [MODEL]Model extends Model {
                 RUNTIME_PATH,
                 CACHE_PATH,
                 LOG_PATH,
+                LOG_PATH.$module.'/',                
                 TEMP_PATH,
                 DATA_PATH,
                 );
