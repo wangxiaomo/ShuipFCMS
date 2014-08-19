@@ -16,6 +16,7 @@ class IndexController extends Controller {
 
     //初始化
     public function _initialize() {
+        header('Content-Type:text/html;charset=utf-8;');
         if (!defined('INSTALL')) {
             exit('请不要直接访问本模块。');
         }
@@ -215,7 +216,7 @@ class IndexController extends Controller {
                 $Dir = new \Dir();
                 $Dir->delDir(SITE_PATH . 'd/file/contents/');
             } catch (Exception $exc) {
-                
+
             }
         }
         $sqlFormat = sql_split($sqldata, $dbPrefix);
