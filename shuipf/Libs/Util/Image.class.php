@@ -128,7 +128,7 @@ class Image {
                 break;
             case 5://5为中部居中 
                 $posX = ($sInfo["width"] - $wInfo["width"]) / 2;
-                $posY = ($sInfo["height"] - $wInfo["width"]) / 2;
+                $posY = ($sInfo["height"] - $wInfo["height"]) / 2;
                 break;
             case 6://6为中部居右 
                 $posX = $sInfo["width"] - $wInfo["width"];
