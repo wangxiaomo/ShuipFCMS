@@ -39,13 +39,13 @@ class Hook {
      */
     static public function import($data, $recursive = true) {
         //初始化
-        if (empty(self::$tags) && empty($data) && C('DB_HOST') && C('DB_NAME') && C('DB_USER') && C('DB_PWD')) {
+        if (empty(self::$tags) && empty($data) && C('DB_HOST') && C('DB_NAME') && C('DB_USER')) {
             $tags = cache('Behavior');
             if (empty($tags)) {
                 $tags = D('Common/Behavior')->behavior_cache();
             }
             self::$tags = $tags;
-        } else if (!C('DB_HOST') && !C('DB_NAME') && !C('DB_USER') && !C('DB_PWD')) {
+        } else if (!C('DB_HOST') && !C('DB_NAME') && !C('DB_USER')) {
             //当没有安装的时候载入初始tag
             $data = array(
                 'app_init' => array(
