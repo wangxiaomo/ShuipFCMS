@@ -13,7 +13,6 @@
 <div class="wrap">
   <div class="h_a">搜索</div>
   <form name="searchform" action="{:U("Content/Content/public_relationlist")}" method="post">
-    <input type="hidden" value="{$modelid}" name="modelid">
     <div class="search_type cc mb10">
       <div class="mb10"> 
         <span class="mr20">
@@ -50,7 +49,7 @@
           </tr>
         </thead>
         <volist name="data" id="vo">
-          <tr onClick="select_list(this,'{$vo.title}',{$vo.id})"  class="cu" title="点击选择">
+          <tr onClick="select_list(this,'{$vo.title}',{:getCategory($vo['catid'],'modelid')},{$vo.id})"  class="cu" title="点击选择">
             <td>{$vo.id}</td>
             <td ><a href="javascript:;;"><span style="" >
               <if condition=" $vo['status']==99 ">{$vo.title}
@@ -72,9 +71,9 @@
     </div>
 </div>
 <script>
-function select_list(obj, title, id) {
+function select_list(obj, title,modelid, id) {
     var relation_ids = window.top.$('#relation').val();
-    var sid = 'v{$modelid}' + id;
+    var sid = 'v'+modelid+ '_' + id;
     if ($(obj).attr('class') == 'line_ff9966' || $(obj).attr('class') == null) {
         $(obj).attr('class', 'line_fbffe4');
         window.top.$('#' + sid).remove();
@@ -99,7 +98,7 @@ function select_list(obj, title, id) {
         if (relation_ids == '') {
             window.top.$('#relation').val(id);
         } else {
-            relation_ids = relation_ids + '|' + id;
+            relation_ids = relation_ids + '|' + modelid+','+id;
             window.top.$('#relation').val(relation_ids);
         }
     }

@@ -100,7 +100,7 @@ class Content {
         if (!$data['catid']) {
             return false;
         }
-        $getLastSql =  array();
+        $getLastSql = array();
         $this->set_modelid($data['catid']);
         $this->where($data);
         //判断是否启用分页，如果没启用分页则显示指定条数的内容
@@ -168,7 +168,7 @@ class Content {
         if ($cache && $array = S($cacheID)) {
             return $array;
         }
-        $getLastSql =  array();
+        $getLastSql = array();
         //初始化模型
         if ($modelid) {
             $this->set_modelid($catid, true);
@@ -255,7 +255,7 @@ class Content {
         if ($cache && $key_array = S($cacheID)) {
             return $key_array;
         }
-        $getLastSql =  array();
+        $getLastSql = array();
         $catid = intval($data['catid']);
         if (!$catid) {
             return false;
@@ -285,22 +285,50 @@ class Content {
         }
         //根据手动添加的相关文章
         if ($data['relation']) {
-            $relations = explode('|', $data['relation']);
-            $relations = array_diff($relations, array(null));
-            $relations = implode(',', $relations);
-            $where['id'] = array('IN', $relations);
-            $_key_array = $this->db->relation($data['moreinfo'] ? true : false)->where($where)->limit($limit)->order($order)->select();
-            $getLastSql[] = $this->db->getLastSql();
+            //跨模型
+            if (strpos($data['relation'], ',')) {
+                $relations = explode('|', $data['relation']);
+                $newRela = array();
+                $i = 1;
+                foreach ($relations as $rs) {
+                    if ($i >= $limit) {
+                        break;
+                    }
+                    if (strpos($rs, ',')) {
+                        $rs = explode(',', $rs);
+                    } else {
+                        $rs = array($this->modelid, $rs);
+                    }
+                    $newRela[$rs[0]][] = $rs[1];
+                    $i++;
+                }
+                $_key_array = array();
+                foreach ($newRela as $modelid => $catidList) {
+                    $where['id'] = array('IN', $catidList);
+                    $_list = \Content\Model\ContentModel::getInstance($modelid)->relation($data['moreinfo'] ? true : false)->where($where)->order($order)->select();
+                    if (!empty($_list)) {
+                        $_key_array = array_merge($_key_array, $_list);
+                    }
+                    $getLastSql[] = \Content\Model\ContentModel::getInstance($modelid)->getLastSql();
+                }
+            } else {
+                $relations = explode('|', $data['relation']);
+                $relations = array_diff($relations, array(null));
+                $where['id'] = array('IN', $relations);
+                $_key_array = $this->db->relation($data['moreinfo'] ? true : false)->where($where)->limit($limit)->order($order)->select();
+                $getLastSql[] = $this->db->getLastSql();
+            }
             foreach ($_key_array as $r) {
-                $key_array[$r['id']] = $r;
+                $key = $r['catid'].'_'.$r['id'];
+                $key_array[$key] = $r;
                 //调用副表的数据
                 if (isset($data['moreinfo']) && intval($data['moreinfo']) == 1) {
-                    $this->db->dataMerger($key_array[$r['id']]);
+                    $this->db->dataMerger($key_array[$key]);
                 }
                 if ($data['output']) {
-                    $_original = $key_array[$r['id']];
-                    $key_array[$r['id']] = ShuipFCMS()->ContentOutput->get($key_array[$r['id']]);
-                    $key_array[$r['id']]['_original'] = $_original;
+                    $_original = $key_array[$key];
+                    $key_array[$key] = ShuipFCMS()->ContentOutput->get($key_array[$key]);
+                    $key_array[$key]['_original'] = $_original;
                 }
             }
             $number = count($key_array);
@@ -342,8 +370,9 @@ class Content {
                 }
                 $number += count($r);
                 foreach ($r as $id => $v) {
+                    $key = $v['catid'].'_'.$v['id'];
                     if ($i <= $data['num'] && !in_array($id, $key_array)) {
-                        $key_array[$v['id']] = $v;
+                        $key_array[$key] = $v;
                     }
                     $i++;
                 }
@@ -354,7 +383,8 @@ class Content {
         }
         //去除排除信息
         if ($data['nid']) {
-            unset($key_array[$data['nid']]);
+            $key = $data['catid'].'_'.$data['nid'];
+            unset($key_array[$key]);
         }
         //结果进行缓存
         if ($cache) {

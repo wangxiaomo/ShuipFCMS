@@ -510,6 +510,8 @@ class ContentController extends AdminBase {
     //相关文章选择
     public function public_relationlist() {
         if (IS_POST) {
+            $modelid = getCategory($this->catid, 'modelid');
+            $_POST['modelid'] = $modelid;
             $this->redirect('public_relationlist', $_POST);
         }
         $modelid = I('get.modelid', 0, 'intval');
@@ -538,7 +540,7 @@ class ContentController extends AdminBase {
             $count = $model->where($where)->count();
             $page = $this->page($count, 12);
             $data = $model->where($where)->limit($page->firstRow . ',' . $page->listRows)->order(array('id' => "DESC"))->select();
-            $this->assign('Formcategory', \Form::select_category($catid, 'name="catid"', "不限栏目", $modelid, 0, 1));
+            $this->assign('Formcategory', \Form::select_category($catid, 'name="catid"', "不限栏目", 0, 0, 1));
             $this->assign('data', $data);
             $this->assign('Page', $page->show());
             $this->assign('modelid', $modelid);
@@ -558,11 +560,32 @@ class ContentController extends AdminBase {
         $model->dataMerger($r);
         $where = array();
         if ($r['relation']) {
-            $relation = str_replace('|', ',', $r['relation']);
-            $where['id'] = array("in", $relation);
-            $datas = $model->where($where)->select();
+            if (strpos($r['relation'], ',')) {
+                $relations = explode('|', $r['relation']);
+                $newRela = array();
+                foreach ($relations as $rs) {
+                    if (strpos($rs, ',')) {
+                        $rs = explode(',', $rs);
+                    } else {
+                        $rs = array($modelid, $rs);
+                    }
+                    $newRela[$rs[0]][] = $rs[1];
+                }
+                $datas = array();
+                foreach ($newRela as $modelid => $catidList) {
+                    $where['id'] = array('IN', $catidList);
+                    $_list = \Content\Model\ContentModel::getInstance($modelid)->where($where)->select();
+                    if (!empty($_list)) {
+                        $datas = array_merge($datas, $_list);
+                    }
+                }
+            } else {
+                $relation = str_replace('|', ',', $r['relation']);
+                $where['id'] = array("in", $relation);
+                $datas = $model->where($where)->select();
+            }
             foreach ($datas as $_v) {
-                $_v['sid'] = 'v' . $_v['id'];
+                $_v['sid'] = 'v' . getCategory($_v['catid'], 'modelid') . '_' . $_v['id'];
                 $infos[] = $_v;
             }
         }
@@ -759,7 +782,7 @@ class ContentController extends AdminBase {
                 $r = getCategory($r['catid']);
                 if ($r['type'])
                     continue;
-                if ($modelid && $modelid != $r['modelid'] && $r['child']==0)
+                if ($modelid && $modelid != $r['modelid'] && $r['child'] == 0)
                     continue;
                 $r['disabled'] = $r['child'] ? 'disabled' : '';
                 $r['selected'] = $cid == $catid ? 'selected' : '';
