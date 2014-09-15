@@ -120,7 +120,7 @@ class DownloadController extends Base {
         $Model_field = $ModelField[$modelid];
         //判断字段类型
         if (!in_array($Model_field[$f]['formtype'], array('downfiles', 'downfile'))) {
-            $this->error('下载地址错误11！');
+            $this->error('下载地址错误！');
         }
         //主表名称
         if ((int) $Model_field[$f]['issystem'] == 1) {
@@ -151,7 +151,16 @@ class DownloadController extends Base {
                         if ($status !== true) {
                             $this->error(service("Passport")->getError()? : '积分扣除失败！');
                         }
-                        //下载记录----暂时木有这功能，后期增加
+                        //下载记录
+                        $content_download_log = array(
+                            'id' => $this->id,
+                            'catid' => $this->catid,
+                            'field' => $f,
+                            'userid' => $this->userid,
+                            'groupid' => $this->groupid,
+                            'info' => $info,
+                        );
+                        tag('content_download_log', $content_download_log);
                     }
                 }
                 //下载地址
@@ -169,10 +178,9 @@ class DownloadController extends Base {
                 $statistics = trim($setting['statistics']);
                 M(ucwords(getModel($modelid, 'tablename')))->where(array("id" => $this->id))->setInc($statistics);
             }
-            if (!urlDomain(self::$Cache['Cache']['siteurl'])) {
+            $urlDomain = urlDomain(self::$Cache['Cache']['siteurl']);
+            if (!$urlDomain) {
                 $urlDomain = urlDomain(get_url()); //当前页面地址域名
-            } else {
-                $urlDomain = urlDomain(self::$Cache['Cache']['siteurl']);
             }
             //不管附件地址是远程地址，还是不带域名的地址，都进行替换
             $fileurl = str_replace($urlDomain, "", $fileurl);
