@@ -38,6 +38,17 @@ class Checkcode {
     //构造方法初始化
     public function __construct() {
         $this->font = COMMON_PATH . 'Font/elephant.ttf';
+        $checkcode_type = (int) cache('Config.checkcode_type');
+        switch ($checkcode_type) {
+            //纯数字
+            case 1:
+                $this->charset = '0123456789';
+                break;
+            //纯字母
+            case 2:
+                $this->charset = 'abcdefghkmnprstuvwxyzABCDEFGHKMNPRSTUVWXYZ';
+                break;
+        }
     }
 
     //魔术方法，设置
