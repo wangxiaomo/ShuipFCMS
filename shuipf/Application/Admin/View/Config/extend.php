@@ -21,6 +21,7 @@
           <td>类型:</td>
           <td><select name="type" onChange="extend_type(this.value)">
               <option value="input" >单行文本框</option>
+              <option value="select" >下拉框</option>
               <option value="textarea" >多行文本框</option>
               <option value="radio" >单选框</option>
               <option value="password" >密码输入框</option>
@@ -56,6 +57,13 @@
              <case value="input">
              <input type="text" class="input" style="{$setting.style}"  name="{$vo.fieldname}" value="{$Site[$vo['fieldname']]}">
              </case>
+             <case value="select">
+             <select name="{$vo.fieldname}">
+             <volist name="setting['option']" id="rs">
+             <option value="{$rs.value}" <if condition=" $Site[$vo['fieldname']] == $rs['value'] ">selected</if>>{$rs.title}</option>
+             </volist>
+             </select>
+             </case>
              <case value="textarea">
              <textarea name="{$vo.fieldname}" style="{$setting.style}">{$Site[$vo['fieldname']]}</textarea>
              </case>
@@ -84,7 +92,7 @@
 <script src="{$config_siteurl}statics/js/common.js?v"></script>
 <script>
 function extend_type(type){
-	if(type == 'radio'){
+	if(type == 'radio' || type == 'select'){
 		$('.setting_radio').show();
 		$('.setting_radio textarea').attr('disabled',false);
 	}else{

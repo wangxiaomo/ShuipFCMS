@@ -44,7 +44,7 @@ class ConfigModel extends Model {
                 return false;
             }
             $setting = $data['setting'];
-            if ($data['type'] == 'radio') {
+            if ($data['type'] == 'radio' || $data['type'] == 'select') {
                 $option = array();
                 $optionList = explode("\n", $setting['option']);
                 if (is_array($optionList)) {
