@@ -92,6 +92,8 @@ class BehaviorModel extends Model {
                         M('BehaviorRule')->addAll($data);
                     }
                 }
+                //更新行为
+                $this->behavior_cache();
                 return $id;
             } else {
                 $this->error = '行为添加失败！';
@@ -167,6 +169,8 @@ class BehaviorModel extends Model {
                         $behaviorRule->addAll($data);
                     }
                 }
+                //更新行为
+                $this->behavior_cache();
                 return true;
             } else {
                 $this->error = '更新失败！';
@@ -391,6 +395,11 @@ class BehaviorModel extends Model {
             $return[$behavior['name']] = $this->parseBehavior($behavior['name']);
         }
         cache('Behavior', $return);
+        try {
+            unlink(RUNTIME_PATH . APP_MODE . '~runtime.php');
+        } catch (Exception $exc) {
+            
+        }
         return $return;
     }
 
