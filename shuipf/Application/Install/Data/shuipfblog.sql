@@ -326,6 +326,8 @@ INSERT INTO `shuipfcms_config` VALUES ('38', 'generate', '是否生成首页', '
 INSERT INTO `shuipfcms_config` VALUES ('39', 'index_urlruleid', '首页URL规则', '1', '11');
 INSERT INTO `shuipfcms_config` VALUES ('40', 'indextp', '首页模板', '1', 'index.php');
 INSERT INTO `shuipfcms_config` VALUES ('41', 'tagurl', 'TagURL规则', '1', '8');
+INSERT INTO `shuipfcms_config` VALUES ('42', 'checkcode_type', '验证码类型', '1', '0');
+INSERT INTO `shuipfcms_config` VALUES ('43', 'attachment_driver', '附件驱动', '1', 'Local');
 
 -- ----------------------------
 -- Table structure for shuipfcms_config_field

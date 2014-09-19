@@ -66,6 +66,14 @@
 	     <th width="140">TagURL规则:</th>
 	     <td><?php echo Form::select($TagURL, $Site['tagurl'], 'name="tagurl" id="tagurl"', 'TagURL规则选择');?></td>
       </tr>
+      <tr>
+	     <th width="140">验证码类型:</th>
+	     <td><select name="checkcode_type">
+         	<option value="0" <if condition="$Site['checkcode_type'] eq '0' "> selected</if>>数字字母混合</option>
+            <option value="1" <if condition="$Site['checkcode_type'] eq '1' "> selected</if>>纯数字</option>
+            <option value="2" <if condition="$Site['checkcode_type'] eq '2' "> selected</if>>纯字母</option>
+          </select></td>
+      </tr>
       </table>
       <div class="btn_wrap">
       <div class="btn_wrap_pd">             

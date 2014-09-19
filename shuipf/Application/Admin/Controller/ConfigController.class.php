@@ -69,6 +69,18 @@ class ConfigController extends AdminBase {
         if (IS_POST) {
             $this->index();
         } else {
+            $path = PROJECT_PATH . 'Libs/Driver/Attachment/';
+            $dirverList = glob($path . '*');
+            $lang = array(
+                'Local' => '本地存储驱动',
+                'Ftp' => 'FTP远程附件驱动',
+            );
+            foreach ($dirverList as $k => $rs) {
+                unset($dirverList[$k]);
+                $dirverName = str_replace(array($path, '.class.php'), '', $rs);
+                $dirverList[$dirverName] = $lang[$dirverName]? : $dirverName;
+            }
+            $this->assign('dirverList', $dirverList);
             $this->display();
         }
     }

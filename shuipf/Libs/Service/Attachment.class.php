@@ -56,12 +56,12 @@ class Attachment extends \Libs\System\Service {
      */
     public static function connect($name = '', $options = array()) {
         if (empty($options['type'])) {
-            //网站配置
-            $config = cache("Config");
-            if ((int) $config['ftpstatus']) {
-                $type = 'Ftp';
+            //驱动类型
+            $attachment_driver = cache("Config.attachment_driver");
+            if (empty($attachment_driver)) {
+                $attachment_driver = 'Local';
             } else {
-                $type = 'Local';
+                $type = $attachment_driver;
             }
         } else {
             $type = $options['type'];

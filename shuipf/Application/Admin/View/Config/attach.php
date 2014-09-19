@@ -8,6 +8,10 @@
     <form method='post'   id="myform" class="J_ajaxForm"  action="{:U('Config/attach')}">
       <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
       <tr>
+        <th width="140">网站存储方案:</th>
+        <th><?php echo \Form::select($dirverList,$Site['attachment_driver'],'name="attachment_driver"');  ?> <em>存储方案请放在 Libs/Driver/Attachment/ 目录下</em></th>
+      </tr>
+      <tr>
         <th width="140">允许上传附件大小:</th>
         <th><input type="text" class="input" name="uploadmaxsize" id="uploadmaxsize" size="10" value="{$Site.uploadmaxsize}"/>
           <span class="gray">KB</span></th>
@@ -31,10 +35,6 @@
         <th width="140">保存远程图片过滤域名:</th>
         <th><input type="text" class="input" name="fileexclude" id="fileexclude" style="width:314px;" value="{$Site.fileexclude}"/>
         <span class="gray">多个用"|"隔开，域名以"/"结尾，例如：http://www.abc3210.com/</span></th>
-      </tr>
-      <tr>
-        <th width="140">开启远程FTP附件上传:</th>
-        <th><input name="ftpstatus" type="radio" value="1"  <if condition=" $Site['ftpstatus'] == '1' ">checked</if> /> 开启 <input name="ftpstatus" type="radio" value="0" <if condition=" $Site['ftpstatus'] == '0' ">checked</if> /> 关闭</th>
       </tr>
       <tr>
         <th width="140">FTP服务器地址:</th>
