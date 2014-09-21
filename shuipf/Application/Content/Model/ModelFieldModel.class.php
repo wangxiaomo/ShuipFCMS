@@ -525,7 +525,7 @@ class ModelFieldModel extends Model {
             case "double":
                 $minnumber = intval($minnumber);
                 $defaultvalue = intval($defaultvalue);
-                $sql = "ALTER TABLE `{$tablename}` ADD `{$fieldname}` INT DOUBLE NOT NULL DEFAULT '{$defaultvalue}'";
+                $sql = "ALTER TABLE `{$tablename}` ADD `{$fieldname}` DOUBLE NOT NULL DEFAULT '{$defaultvalue}'";
                 if (false === $this->query($sql)) {
                     $this->error = '数据库字段添加失败！';
                     return false;
@@ -534,7 +534,7 @@ class ModelFieldModel extends Model {
             case "float":
                 $minnumber = intval($minnumber);
                 $defaultvalue = intval($defaultvalue);
-                $sql = "ALTER TABLE `{$tablename}` ADD `{$fieldname}` INT FLOAT NOT NULL DEFAULT '{$defaultvalue}'";
+                $sql = "ALTER TABLE `{$tablename}` ADD `{$fieldname}` FLOAT NOT NULL DEFAULT '{$defaultvalue}'";
                 if (false === $this->query($sql)) {
                     $this->error = '数据库字段添加失败！';
                     return false;
@@ -543,7 +543,7 @@ class ModelFieldModel extends Model {
             case "bigint":
                 $minnumber = intval($minnumber);
                 $defaultvalue = intval($defaultvalue);
-                $sql = "ALTER TABLE `{$tablename}` ADD `{$fieldname}` INT BIGINT NOT NULL DEFAULT '{$defaultvalue}'";
+                $sql = "ALTER TABLE `{$tablename}` ADD `{$fieldname}` BIGINT NOT NULL DEFAULT '{$defaultvalue}'";
                 if (false === $this->query($sql)) {
                     $this->error = '数据库字段添加失败！';
                     return false;
