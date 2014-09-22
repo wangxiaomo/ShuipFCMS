@@ -102,31 +102,34 @@ artDialog.notice = function (options) {
     return artDialog(config);
 };
 $(function(){
-	$.getJSON('{:U("Public/checkupdates")}',function(data){
-		if(data.status){
+	$.getJSON('{:U("public_server")}',function(data){
+		if(data.state != 'fail'){
+			return false;
+		}
+		if(data.latestversion.status){
 			art.dialog({
 				title:'升级提示',
 				 icon: 'warning',
-				content: '系统检测到新版本发布，请尽快更新到 '+data.version + '，以确保网站安全！',
+				content: '系统检测到新版本发布，请尽快更新到 '+data.latestversion.version + '，以确保网站安全！',
 				cancelVal: '关闭',
-				cancel: true //为true等价于function(){}
+				cancel: true
 			});
 		}
-	});
-	$.getJSON('{:U("public_license")}',function(data){
-		if(data.name){$('#server_license').html(data.name);}else{$('#server_license').html('非授权用户');}
-	});
-	$.getJSON('{:U("public_latestversion")}',function(data){
-		if(data.version){$('#server_version').html(data.version);$('#server_build').html(data.build);}
-	});
-	$.getJSON('{:U("public_notice")}',function(data){
-		if(data.title){
+		if(data.license.authorize){
+			$('#server_license').html(data.license.name);
+		}else{
+			$('#server_license').html('非授权用户');
+		}
+		$('#server_version').html(data.latestversion.version.version);
+		$('#server_build').html(data.latestversion.version.build);
+		
+		if(data.notice.id > 0){
 			art.dialog.notice({
 				title: data.title,
 				width: 400,// 必须指定一个像素宽度值或者百分比，否则浏览器窗口改变可能导致artDialog收缩
-				content: data.content,
+				content: data.notice.content,
 				close:function(){
-					setCookie('notice_'+data.id,1,30);
+					setCookie('notice_'+data.notice.id,1,30);
 				}
 			});
 		}

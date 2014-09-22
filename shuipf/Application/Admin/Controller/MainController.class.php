@@ -34,37 +34,32 @@ class MainController extends AdminBase {
         $this->display();
     }
 
-    public function public_license() {
-        $license = S('server_license');
-        if (empty($license)) {
-            $license = $this->Cloud->data(array('domain' => $_SERVER['SERVER_NAME']))->act('get.license');
-            if (empty($license)) {
-                $license = array('name' => '非授权用户',);
-            } else {
-                S('server_license', $license, 3600);
-            }
+    public function public_server() {
+        $post = array(
+            'domain' => $_SERVER['SERVER_NAME'],
+        );
+        $cache = S('_serverinfo');
+        if (!empty($cache)) {
+            $data = $cache;
+        } else {
+            $data = $this->Cloud->data($post)->act('get.serverinfo');
+            S('_serverinfo', $data, 300);
         }
-        $this->ajaxReturn($license);
-    }
-
-    public function public_latestversion() {
-        $latestversion = S('server_latestversion');
-        if (empty($latestversion)) {
-            $latestversion = $this->Cloud->act('get.latestversion');
-            S('server_latestversion', $latestversion, 3600);
+        if (!empty($_COOKIE['notice_' . $data['notice']['id']])) {
+            $data['notice']['id'] = 0;
         }
-        $this->ajaxReturn($latestversion);
-    }
-
-    public function public_notice() {
-        $notice = S('server_notice');
-        if (empty($notice)) {
-            $notice = $this->Cloud->act('get.notice');
-            S('server_notice', $notice, 3600);
+        if (version_compare(SHUIPF_VERSION, $data['latestversion']['version'], '<')) {
+            $data['latestversion'] = array(
+                'status' => true,
+                'version' => $data['latestversion'],
+            );
+        } else {
+            $data['latestversion'] = array(
+                'status' => false,
+                'version' => $data['latestversion'],
+            );
         }
-        if (empty($_COOKIE['notice_' . $notice['id']])) {
-            $this->ajaxReturn($notice);
-        }
+        $this->ajaxReturn($data);
     }
 
 }
