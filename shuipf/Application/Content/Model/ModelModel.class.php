@@ -314,7 +314,10 @@ class ModelModel extends Model {
                         $value['setting'] = unserialize($value['setting']);
                     }
                     $model = new \Content\Model\ModelFieldModel();
-                    $model->addField($value);
+                    if ($model->addField($value) == false) {
+                        $value['setting'] = serialize($value['setting']);
+                        $model->where(array('modelid' => $modelid, 'field' => $value['field'], 'name' => $value['name']))->save($value);
+                    }
                     unset($model);
                 }
             }
