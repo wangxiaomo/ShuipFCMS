@@ -110,7 +110,7 @@ $(function(){
 			art.dialog({
 				title:'升级提示',
 				 icon: 'warning',
-				content: '系统检测到新版本发布，请尽快更新到 '+data.latestversion.version + '，以确保网站安全！',
+				content: '系统检测到新版本发布，请尽快更新到 '+data.latestversion.version.version + '，以确保网站安全！',
 				cancelVal: '关闭',
 				cancel: true
 			});
